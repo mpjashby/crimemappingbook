@@ -19,3 +19,4 @@ assignees: ''
 - [ ] Convert pre-filled exercise chunks and exercise solution chunks to R code.
 - [ ] Convert video URLs to use the quarto shortcode `{{< video https://example.com/ab1sc >}}`.
 - [ ] Add reference to chapter file in top-level `_quarto.yml` file.
+- [ ] Run `Build > Render Book`.
