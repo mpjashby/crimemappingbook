@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Learn crime mapping with R - 7&nbsp; Handling bugs in your code</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../06_map_context/index.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<!-- START OF INCLUDED HEADER -->
+
+<!--
+This file contains code that will be included in the header of each page of the
+quarto book
+-->
+
+<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+
+<!-- END OF INCLUDED HEADER -->
+
+
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Learn crime mapping with R</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/mpjashby/crimemappingbook/" title="Source Code" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+    <a href="../Learn-crime-mapping-with-R.epub" title="Download ePub" class="sidebar-tool px-1"><i class="bi bi-journal"></i></a>
+    <a href="" title="Share" id="sidebar-tool-dropdown-0" class="sidebar-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-share"></i></a>
+    <ul class="dropdown-menu" aria-labelledby="sidebar-tool-dropdown-0">
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+            <i class="bi bi-bi-twitter pe-1"></i>
+          Twitter
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=|url|">
+            <i class="bi bi-bi-facebook pe-1"></i>
+          Facebook
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+            <i class="bi bi-bi-linkedin pe-1"></i>
+          LinkedIn
+          </a>
+        </li>
+    </ul>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">Welcome!</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00_setup/index.html" class="sidebar-item-text sidebar-link">Install the software needed for this book</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_getting_started/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_your_first_crime_map/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_data_wrangling/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Wrangling data</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_code_with_style/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Code with style</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../05_your_second_crime_map/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Your second crime map</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../06_map_context/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Giving a map context</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../07_handling_bugs/index.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="toc-section-number">7.1</span>  Introduction</a></li>
+  <li><a href="#errors-warnings-and-messages" id="toc-errors-warnings-and-messages" class="nav-link" data-scroll-target="#errors-warnings-and-messages"><span class="toc-section-number">7.2</span>  Errors, warnings and messages</a></li>
+  <li><a href="#finding-problems" id="toc-finding-problems" class="nav-link" data-scroll-target="#finding-problems"><span class="toc-section-number">7.3</span>  Finding problems</a>
+  <ul class="collapse">
+  <li><a href="#errors-caused-by-data-problems" id="toc-errors-caused-by-data-problems" class="nav-link" data-scroll-target="#errors-caused-by-data-problems"><span class="toc-section-number">7.3.1</span>  Errors caused by data problems</a></li>
+  </ul></li>
+  <li><a href="#understanding-problems" id="toc-understanding-problems" class="nav-link" data-scroll-target="#understanding-problems"><span class="toc-section-number">7.4</span>  Understanding problems</a></li>
+  <li><a href="#how-to-fix-some-common-errors" id="toc-how-to-fix-some-common-errors" class="nav-link" data-scroll-target="#how-to-fix-some-common-errors"><span class="toc-section-number">7.5</span>  How to fix some common errors</a></li>
+  <li><a href="#getting-external-help" id="toc-getting-external-help" class="nav-link" data-scroll-target="#getting-external-help"><span class="toc-section-number">7.6</span>  Getting external help</a>
+  <ul class="collapse">
+  <li><a href="#reproducible-examples" id="toc-reproducible-examples" class="nav-link" data-scroll-target="#reproducible-examples"><span class="toc-section-number">7.6.1</span>  Reproducible examples</a></li>
+  <li><a href="#reproducible-code" id="toc-reproducible-code" class="nav-link" data-scroll-target="#reproducible-code"><span class="toc-section-number">7.6.2</span>  Reproducible code</a></li>
+  <li><a href="#reproducible-data" id="toc-reproducible-data" class="nav-link" data-scroll-target="#reproducible-data"><span class="toc-section-number">7.6.3</span>  Reproducible data</a></li>
+  <li><a href="#checking-your-reprex-is-reproducible" id="toc-checking-your-reprex-is-reproducible" class="nav-link" data-scroll-target="#checking-your-reprex-is-reproducible"><span class="toc-section-number">7.6.4</span>  Checking your reprex is reproducible</a></li>
+  </ul></li>
+  <li><a href="#sources-of-help" id="toc-sources-of-help" class="nav-link" data-scroll-target="#sources-of-help"><span class="toc-section-number">7.7</span>  Sources of help</a></li>
+  <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="toc-section-number">7.8</span>  In summary</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="toc-section-number">7.9</span>  Summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p><strong>Learn how to deal with error messages and other problems with the code that you write</strong></p>
+<div class="box load-tutorial">
+<p>To load the <a href="../#how-to-use-this-book">interactive tutorial</a> for this chapter, copy and paste the following code into the RStudio console:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>crimemapping<span class="sc">::</span><span class="fu">tutorial</span>(<span class="st">"07_handling_bugs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>and press <code>Enter</code>.</p>
+</div>
+<section id="introduction" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">7.1</span> Introduction</h2>
+<p>In this tutorial we will learn how to deal with bugs in the R code that we write. It’s inevitable that you will make mistakes in the R code that you write. Everyone types the wrong command every now and again, just as everyone sometimes clicks the wrong button in other pieces of software. Learning how to identify and fix bugs is part of the process of learning to code.</p>
+<p>Some errors are easy to identify and easy to fix. If you try to select the column name <code>offense_category</code> from a dataset when you should have typed <code>offense_type</code> because you have mis-remembered the name of that column:</p>
+<div class="cell">
+<div class="cell-output cell-output-error">
+<pre><code>Error in `select()`:
+! Can't subset columns that don't exist.
+✖ Column `offense_category` doesn't exist.</code></pre>
+</div>
+</div>
+<p>You will get an error message saying something like:</p>
+<pre><code>Error: Can't subset columns that don't exist. x Column `offense_category` doesn't exist</code></pre>
+<p>In this case it is fairly easy to identify that one of the columns you have tried to select does not exist. To find out what the correct column name is, print the first few rows of the object (by typing the code <code>head0(frauds)</code> into the R console) or use the <code>names()</code> function to print a list of column names present in the data:</p>
+<div class="cell" data-exercise="true">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "uid"          "offense_code" "offense_type" "date"         "longitude"   
+[6] "latitude"    </code></pre>
+</div>
+</div>
+<p>Now we know the correct column name, we can extract it using the correct name:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 1
+  offense_type                              
+  &lt;chr&gt;                                     
+1 credit card/automated teller machine fraud
+2 credit card/automated teller machine fraud
+3 false pretenses/swindle/confidence game   
+4 false pretenses/swindle/confidence game   
+5 impersonation                             
+6 impersonation                             </code></pre>
+</div>
+</div>
+<p>Other errors will be harder to identify and fix. In this tutorial we will go through the process of debugging – identifying, understanding and fixing errors in your code. Sometimes fixing issues with your code can feel like a bit of a roller coaster, but (like most things) it becomes much easier with practice, and if you approach errors in a systematic way.</p>
+<p class="full-width-image">
+<img src="images/debugging.jpg" alt="Cartoon showing 10 furry monsters showing different stages of learning to debug code. The monsters are marked '1. I got this', '2. Huh, really though that was it', '3. (...)', '4. Fine. Restarting.', '5. OH WTF', '6. Zombie meltdown', '7. [crying]', '8. A NEW HOPE!', '9. [insert awesome theme song]' and '10. I LOVE CODING!'">
+</p>
+<p class="credits">
+<a href="https://github.com/allisonhorst/stats-illustrations">Stats Illustrations by Allison Horst</a> licensed under the <a href="https://github.com/allisonhorst/stats-illustrations/blob/master/license">Creative Commons Attribution licence</a>.
+</p>
+</section>
+<section id="errors-warnings-and-messages" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="errors-warnings-and-messages"><span class="header-section-number">7.2</span> Errors, warnings and messages</h2>
+<p>When something is not quite right, or just when there is an issue in your code that you should be aware of, R has three ways of communicating with you: messages, warnings and errors.</p>
+<section id="messages" class="level4" data-number="7.2.0.1">
+<h4 data-number="7.2.0.1" class="anchored" data-anchor-id="messages"><span class="header-section-number">7.2.0.1</span> Messages</h4>
+<p><em>Messages</em> are usually for information only and typically don’t require you to take any action. For example, the function <code>get_crime_data()</code> from the <code>crimedata</code> package issues a message to tell you what data it is downloading. It does this because downloading data sometimes takes a few seconds and without a message you might wonder if the code was working.</p>
+<p>By default, messages are displayed in RStudio in <span style="color: rgb(197, 6, 11); background-color: #FFFFFF; font-family: monospace; font-weight: normal;">dark red text</span>, although this might vary if you have changed any settings in the Appearance tab of the RStudio Options dialogue. You can generate a message for yourself using the <code>message()</code> function. This is useful if you are writing code and you want to remind yourself of something, or record a particular value. For example, if your code is likely to take a long time to run, you might want to record the time your code started running by generating a message on the first line of your code:</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Code started: 2023-01-30 21:16:39</code></pre>
+</div>
+</div>
+<p>When R prints a message about your code, any code underneath the code that generated the message will still run:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is a message. It might be important so make sure you understand it.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+</div>
+</section>
+<section id="warnings" class="level4" data-number="7.2.0.2">
+<h4 data-number="7.2.0.2" class="anchored" data-anchor-id="warnings"><span class="header-section-number">7.2.0.2</span> Warnings</h4>
+<p><em>Warnings</em> are generated when there is a potential problem with your code, but the problem was not serious enough to stop your code running entirely. For example, <code>ggplot2</code> functions like <code>geom_point()</code> will send a warning if some of the rows in your data contain missing values (e.g.&nbsp;if some crimes have missing co-ordinates).</p>
+<p>Warnings are important and you should take time to read and understand them, but it is possible that having done so it will be safe to not take any action. <em>Whether</em> it is safe to take no action will often depend on exactly what you are trying to do, which is why it is important that you understand each warning that you see. For example, if you already know that some rows in your data contain missing values and are happy to plot the remaining values, it will be safe to ignore the warning produced by <code>geom_point()</code>. But if your dataset should not have any missing values in it, you will need to investigate why <code>geom_point()</code> is warning you about missing values and whether those values have been accidentally introduced by some part of your code.</p>
+<div class="box notewell">
+<p><strong>It is not safe to ignore warnings</strong> unless you are sure why they occurred and certain that you don’t need to take any action.</p>
+<p>One particularly dangerous scenario is where your code produces warnings but still produces what looks like a reasonable result. In these circumstances it can be tempting to ignore the warnings and assume that everything is fine, since the code still produced roughly what you were expecting. However, it’s possible that the plausible answer is nevertheless wrong because of whatever problem is generating the warning in R. Do not assume that warnings are safe to ignore just because they don’t stop your code running.</p>
+</div>
+<p>Warnings are displayed in the same font as messages, but with the text <code>Warning message:</code> at the start. You can generate your own warning messages using the <code>warning()</code> function:</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Something might be wrong. Check to make sure.</code></pre>
+</div>
+</div>
+<p>As with messages, warnings will not stop your code running. This means that if the warning signalled a genuine problem with your code, the results of the lines underneath the warning might not be reliable. That is why it is important to understand warnings when you see them.</p>
+</section>
+<section id="errors" class="level4" data-number="7.2.0.3">
+<h4 data-number="7.2.0.3" class="anchored" data-anchor-id="errors"><span class="header-section-number">7.2.0.3</span> Errors</h4>
+<p><em>Errors</em> are generated when there is something wrong with your code or the results it produces that means the code cannot continue running any further. An error might occur, for example, because the function <code>read_csv()</code> could not open the requested file (maybe because the file does not exist). In this case, it would make no sense for the rest of the code to run because it probably depends on the data that <code>read_csv()</code> was supposed to load but could not.</p>
+<p>It would make sense to be able to generate your own errors using the <code>error()</code> function, but this is one of those times when the function to do something in R has a different name from that you might be expecting. In fact, you can generate an error using the <code>stop()</code> function:</p>
+<div class="cell">
+<div class="cell-output cell-output-error">
+<pre><code>Error in eval(expr, envir, enclos): Something is defintely wrong. Don't go any further until you've fixed it.</code></pre>
+</div>
+</div>
+<p>There are two types of errors in R: <em>syntax</em> errors and <em>logical</em> errors. Syntax errors happen when R cannot read your code because of a mistake in how it has been typed out. For example, if you forget to put a comma between the arguments of a function, you will get this error:</p>
+<div class="cell">
+<div class="cell-output cell-output-error">
+<pre><code>Error: &lt;text&gt;:1:13: unexpected string constant
+1: message("A" "B"
+                ^</code></pre>
+</div>
+</div>
+<p>When you run R code, R reads all the code and checks if it can be interpreted as valid R code. If not, R will produce a syntax error. Because all of your code is checked for syntax errors before any code is actually run, a syntax error anywhere in your code will stop all of your code running. Syntax errors are typically fairly easy to fix, because they are usually caused by typos.</p>
+<p>The second type of error is a logical error. This happens when R is able to interpret what you have written, but something is wrong with what you have asked it to do. These are called logical errors because there is usually some problem with the logic of what you are asking R to do. Like syntax errors, logical errors can be caused by typos, but logical errors can also have many other causes.</p>
+<p>There is a saying in programming that a computer will do exactly what you tell it to do, which may not be the same thing as what you <em>wanted</em> it do. Logical errors happen when you have told R to do something that it cannot do. For example, you might be asking R to multiply together a numeric value and a character value, which is illogical.</p>
+<p>Since every step in your code depends on the steps that went before it, it is only possible to identify a logical error during the process of running the code. This means that a lot of your code might run successfully before an error occurs.</p>
+<p>Logical errors are typically harder to fix than syntax errors are, because fixing a logical error involves understanding (a) what you have asked R to do and (b) the current state of everything in your code at the moment when the error occurs. Fortunately, there are lots of ways to identify and fix logical errors.</p>
+<p>Now we know what errors, warning and messages are, we need to find out how to deal with them when they happen.</p>
+</section>
+</section>
+<section id="finding-problems" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="finding-problems"><span class="header-section-number">7.3</span> Finding problems</h2>
+<p>If an error or warning has a simple cause, such as the example of the incorrect column name in the previous section, you can just fix the problem and re-run the code. For problems that are more difficult to handle, you will need to follow a step-by-step process to find and fix them. Think of this as like being a mechanic fixing a car – first you work out what the problem is, then you fix it.</p>
+<p>If you code only has one line, it will probably be obvious where any problem lies. But most of your code does several things to achieve a particular goal, such as making a map. The first task in dealing with a problem is therefore to work out exactly which function or other piece of code has caused it. For example, take this data-wrangling code to reduce the size of a dataset and sort it in date order:</p>
+<div class="cell">
+<div class="cell-output cell-output-error">
+<pre><code>Error in `filter()`:
+! Problem while computing `..1 = offence_type == "impersonation"`.
+Caused by error in `mask$eval_all_filter()`:
+! object 'offence_type' not found</code></pre>
+</div>
+</div>
+<p>This code produces a fairly complicated error message. As is often the case, the most useful part of the error message is the last part:</p>
+<pre><code>Input `..1` is `offence_type == "impersonation"`</code></pre>
+<p>This suggests the error is on line 3 of the code, since that is the only line containing the code <code>offence_type == "impersonation"</code>. To check this, we can <em>comment out</em> that line by placing a <code>#</code> symbol at the start of the line. Do this and re-run the code above – it should now run without a problem.</p>
+<p>Now we know the problem is on the line <code>filter(offence_type == "impersonation")</code>, we can look at that line in more detail. Can you spot the problem with that line?</p>
+<p>The error message in this case has been caused by a typo – the code <code>offence_type == "impersonation"</code> uses the British spelling of the word ‘offence’ but in the dataset the variable is spelled using the American English ‘offense’ (you can see the US spelling in the line of code above the line that is causing the error). If you correct the spelling in the code above, it should now run without a problem.</p>
+<p>Sometimes it will not be as clear as this where to start in looking for the problem. For example, if you run this code:</p>
+<div class="cell">
+<div class="cell-output cell-output-error">
+<pre><code>Error in `arrange()`:
+! Problem with the implicit `transmute()` step.
+✖ Problem while computing `..1 = date`.
+✖ `..1` must be a vector, not a function.</code></pre>
+</div>
+</div>
+<p>The error message produced suggests the problem is with the <code>arrange()</code> function, but everything is correct with that function since <code>arrange()</code> is a correct function name and <code>date</code> is a column in the tibble named <code>frauds</code>. So the problem must lie elsewhere. In cases like this, it can be helpful to comment out all the lines of code except the first one and then uncomment one line at a time until you find the one that causes the problem.</p>
+<p>Have you found the problem? If you uncomment all but the last line and run the code, you will see that the line <code>filter(offense_code == "26G")</code> results in zero rows of data – all the rows have been removed by the <code>filter()</code> function. This is because <code>26G</code> is not a valid offence code in this dataset. This means that no rows are kept in the dataset by <code>filter()</code> because there are no rows for which <code>offense_code == "26G"</code>. In turn, this means there are no rows for <code>arrange()</code> to sort, so running <code>arrange(date)</code> produces an error.</p>
+<p>Uncommenting one line at a time until you find an error or output that is not what you expected is a useful way to isolate problems, but it will not always work. In particular, it will not work if the problem is caused by some code that should have been included but is missing from your code entirely. For example, if you try to run the function <code>st_transform()</code> on a tibble without first changing it into an SF object:</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in UseMethod("st_transform"): no applicable method for 'st_transform' applied to an object of class "c('tbl_df', 'tbl', 'data.frame')"</code></pre>
+</div>
+</div>
+<p>In these cases it is particularly useful to check every argument that you have used in a function to track down the error. We will look at this later in this tutorial.</p>
+<section id="errors-caused-by-data-problems" class="level3" data-number="7.3.1">
+<h3 data-number="7.3.1" class="anchored" data-anchor-id="errors-caused-by-data-problems"><span class="header-section-number">7.3.1</span> Errors caused by data problems</h3>
+<p>Many logical errors will be caused by problems with the code you have written, such as when you try to use a function (e.g.&nbsp;<code>st_intersection()</code>) that only works on an SF object but specify that it should use an object of another type. But sometimes logical errors are caused not by your code, but by a mis-match between the structure that your data actually has and the structure you think your data has. We have already seen an example of this in this tutorial, in the code that tried to refer to a column called <code>offense_category</code> in a dataset that did not have a column with that name.</p>
+<p>Errors caused by a mismatch between the data you think you have and the data you actually have can be particularly frustrating, because there is no way to identify them from just looking at your code. For this reason, it is often important when trying to identify problems in your code to <em>look</em> at the data that is used as the input for your code, <em>and</em> the data that is produced by each step in your code. We used this technique to find the error in our code above that was caused by <code>filter()</code> removing all the rows from a dataset because we had told <code>filter()</code> to only keep rows containing a value that was not present in the dataset. There were no obvious problems with the code we had written, so the only way to find the cause of this problem was to view the dataset returned by the <code>filter()</code> function.</p>
+<p>Finding data problems is one of the reasons why we have used the <code>head()</code> function so often in these tutorials to look at the data at each step in writing a block of code. <code>head()</code> only shows us the first few rows of a dataset, which will not always be enough to identify a problem if the problem is caused by values that are only present in a few rows in the data. For small datasets, we can use the <code>View()</code> function (note the capital letter) to open the entire dataset in a new tab in RStudio.</p>
+<p>For bigger datasets, this will not work. In that case, we can use the <code>sample_n()</code> or <code>sample_frac()</code> functions from the <code>dplyr</code> package to return a random sample of rows from the data. This can be useful to let us look at a representative sample of a large dataset. <code>sample_n()</code> returns a specific number of rows, e.g.&nbsp;<code>sample_n(frauds, 10)</code> returns 10 rows at random from the <code>frauds</code> dataset. <code>sample_frac()</code> returns a specific proportion of the dataset, e.g.&nbsp;<code>sample_frac(frauds, 0.1)</code> returns a sample of 10% of rows from the data.</p>
+</section>
+</section>
+<section id="understanding-problems" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="understanding-problems"><span class="header-section-number">7.4</span> Understanding problems</h2>
+<p>So far, we have tried two ways to deal with errors:</p>
+<ol type="1">
+<li>reading a simple error message that makes the problem obvious,</li>
+<li>commenting out all the code and then uncommenting one line a time until the error appears.</li>
+</ol>
+<p>Sometimes you will encounter an error that is still not simple to solve. In this case, it is still important to identify the line of code causing the problem, either by working it out from the text of the error message or commenting out lines of code in turn.</p>
+<p>Once you know what line is causing the problem, you should focus on understanding exactly what that line of code does. In particular:</p>
+<ol type="1">
+<li>What data do any functions on that line expect to work on?</li>
+<li>What are the values of any arguments to the functions on that line?</li>
+<li>What value do the functions on that line produce?</li>
+</ol>
+<p>You can get a lot of help in understanding each function by referring to its manual page. You can access the manual page for a function by:</p>
+<ul>
+<li>typing a question mark followed by the function name without parentheses (e.g.&nbsp;<code>?mutate</code>) into the R console,</li>
+<li>typing the function name without parentheses into the search box in the Help panel in RStudio, or</li>
+<li>clicking on the function name anywhere in your R code to place the cursor on the function name, then pressing <code>F1</code> on your keyboard.</li>
+</ul>
+<p>Any of these options opens up a manual page for that function in the Help panel in RStudio. For example, this is the manual page for the <code>str_wrap()</code> function from the <code>stringr</code> package. You can load it by typing <code>?str_wrap</code> in the R console.</p>
+<div class="box extra-detail">
+<h5 id="understanding-box1-title" class="box-title anchored">
+Did you get an error beginning <code>No documentation for ‘str_wrap’</code>?
+</h5>
+<div id="understanding-box1" class="box-content">
+<p>When you use the <code>?</code> operator to look up the manual page for a function, R searches through all the functions in the packages you have loaded. If there is no function of the name you have given in the loaded packages, R will produce an error.</p>
+<p>To access the manual page of a function in a package that is not loaded, you can specify the package in which R should look for the function using the package name and the <code>::</code> operator (this is the same way that we have already learned to call functions from packages that haven’t been loaded). For example, you can use the code <code>?stringr::str_wrap</code> to access the manual page for the <code>str_wrap()</code> function from the <code>stringr</code> package even if the <code>stringr</code> package is not loaded.</p>
+</div>
+</div>
+<script>
+$("#understanding-box1-title").click(function () { $("#section-understanding-box1").toggle("slow") })
+</script>
+<p class="full-width-image">
+<img src="https://github.com/mpjashby/crimemapping/raw/main/inst/tutorials/07_handling_bugs/images/man_page.png" alt="Screenshot of the R manual page for the ">
+</p>
+<p>All manual pages have the same format.</p>
+<ul>
+<li><strong>Description</strong> gives a short description of what the function does. If multiple related functions are described in a single manual page, this section will explain the differences between them. For example, the manual page for the <code>mutate()</code> function from the <code>dplyr</code> package explains the difference between the <code>mutate()</code> function and the closely related <code>transmute()</code> function.</li>
+<li><strong>Usage</strong> shows a single example of how the function works. If there are any optional arguments to the function, this section will show what the default values of those optional arguments are. For example, the manual page for the <code>str_wrap()</code> function from the <code>stringr</code> package show that the default value of the <code>width</code> argument is <code>width = 80</code>.</li>
+<li><strong>Arguments</strong> gives a list of arguments and the values they can take. It is particularly important to note the type of value expected. So the <code>st_transform()</code> function from the <code>sf</code> package expects an SF object as its first argument – if you provide another sort of object (such as a tibble), this will cause an error.</li>
+<li><strong>Value</strong> explains the type of value that the function will return, and whether this value might be of a different type depending on the values of particular arguments. For example, the <code>mean()</code> function in base R returns the arithmetic mean of a vector of numbers. However, if any of the numbers is <code>NA</code> then mean will return <code>NA</code> <em>unless</em> the argument <code>na.rm = TRUE</code> is used. In that case, <code>mean()</code> will ignore the missing values and return the mean of the values that are present.</li>
+<li><strong>Examples</strong> gives more examples of how the function can be used.</li>
+</ul>
+<p>Checking the manual page for a function can often help you understand why a particular piece of code is not working. If you have set any optional arguments for a function that is producing an error, it may help to reset those arguments to their default values (as shown in the Usage section of the manual page) one by one to understand what effect this has on your code.</p>
+<p>By reading the error message, isolating the error by commenting out and then reading the manual page, you will be able to fix almost all the errors you will come across in writing R code. Occasionally, however, you will find an error that you just can’t understand. In that case, you will need to get some help from others.</p>
+</section>
+<section id="how-to-fix-some-common-errors" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="how-to-fix-some-common-errors"><span class="header-section-number">7.5</span> How to fix some common errors</h2>
+<p>There are some mistakes that it is common for people to make when writing code. The table on this page gives some common error messages and how to fix them. Read through this list now but you can also refer back to it later on if you need to. You can <a href="www/common_errors.pdf">download a PDF version of this table for future reference</a>.</p>
+<p>In these error messages, the code <code>blah</code> represents the function, object or value that the error relates to.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Error message</th>
+<th style="text-align: left;">How to fix it</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>there is no package called 'blah'</code></td>
+<td style="text-align: left;">You have either mis-typed the package name or the package is not installed. Check the spelling or use <code>install.packages()</code> to install the package.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>could not find function "blah"</code></td>
+<td style="text-align: left;">You have either mis-typed the function name or the package containing that function is not loaded. Check the spelling or use <code>library()</code> to load the package.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>object 'blah' not found</code></td>
+<td style="text-align: left;">You have either mis-typed the name of the object or the object does not exist. Check the spelling and make sure you have run the code that creates the object. This error can also occur when you have forgotten to put quotes around a character value in an argument, since R treats words without quotes around them as the names of objects. In this case, check that you have used quote marks around any character values in your code.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>'blah' does not exist</code> <code>in current working directory</code></td>
+<td style="text-align: left;">You have either mis-typed the name of a file that R is trying to access or the file does not exist in the location you have specified. Check the spelling and make sure the file exists.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>non-numeric argument to binary operator</code></td>
+<td style="text-align: left;">You have tried to use a mathematical operator such as <code>+</code> or <code>-</code> with a non-numeric value. For example, you might have written the code <code>1 + blah</code> thinking that <code>blah</code> holds a numeric value, but if <code>blah</code> actually holds a character value then trying to add it to <code>1</code> makes no sense. Check that any objects in your code have the values you expect them to.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>object of type 'closure'</code> <code>is not subsettable</code></td>
+<td style="text-align: left;">You have tried to use a function as if it is an object, which can happen when you store data in an object that has the same name as an R function (most commonly, when you store some data in an object called <code>data</code>, since there is a function called <code>data()</code>). The circumstances that produce this error are often not simple to understand, so the best way to handle this error is to avoid it by not naming objects using the names of functions.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>no applicable method for 'blah' applied</code> <code>to an object of class "blah"</code></td>
+<td style="text-align: left;">Some R functions (called generic functions) work in different ways depending on what type of object you use them on. But if you use a generic function on an object that it does not know how to handle, you will see this error. Check the object(s) that you provided to the function causing the error to make sure it is the type of object you are expecting it to be.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>unexpected numeric constant in "blah"</code>, <code>unexpected string constant in "blah"</code> or <code>unexpected symbol in "blah"</code></td>
+<td style="text-align: left;">You have a typo somewhere in your code. Check the line of code producing the error to make sure it is formatted correctly. The most common typos that cause this error are a missing comma or closing parenthesis, but there are <a href="https://stackoverflow.com/a/25889235/8222654">several other typos that can cause similar errors</a>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>unused argument (var = "blah")</code></td>
+<td style="text-align: left;">You have used an argument name in a function that does not understand it. Check the manual page for that function.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>argument "blah" is missing,</code> <code>with no default</code></td>
+<td style="text-align: left;">You have used a function without providing all the necessary arguments. Check the manual page for that function.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="getting-external-help" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="getting-external-help"><span class="header-section-number">7.6</span> Getting external help</h2>
+<p>If you cannot fix an error using any of the techniques we have already covered, it is probably time to get some help from others. Fortunately, one of the big benefits of using R is that there is a friendly, welcoming community of R coders online who are willing to help fix problems. Almost everyone in this community will remember when they were knew to using R and so will be gentle with people who are asking their first question.</p>
+<section id="reproducible-examples" class="level3" data-number="7.6.1">
+<h3 data-number="7.6.1" class="anchored" data-anchor-id="reproducible-examples"><span class="header-section-number">7.6.1</span> Reproducible examples</h3>
+<p><img src="images/code_hero.jpg" style="width: 60%; max-width: 500px; float: right; margin: 0 0 2em 2em;"></p>
+<p>One of the things that makes it much more likely that you will find help with your problem in the R community is if you phrase your plea for help in a way that makes it easier to help you. We can do this by providing a <em>reproducible example</em> or <em>reprex</em> of our problem (also sometimes called a <em>minimum working example</em>).</p>
+<p>Producing a reprex makes it much easier for someone to understand your issue. This not only makes it easier for someone to help you, but also shows that you know it will make it easier for them and that you value their time.</p>
+<blockquote class="blockquote">
+<p><a href="https://www.jessemaegan.com/post/so-you-ve-been-asked-to-make-a-reprex/">Imagine that you’ve made a cake</a>, and for some reason it’s turned out absolutely awful – we’re talking completely inedible. Asking a question without a reprex is like asking, “Why didn’t my cake turn out right?” – there are hundreds of possible answers to that question, and it’s going to take a long time to narrow in on the exact cause for your inedible cake creation.</p>
+<p>Asking a question with a reprex is like asking, “My cake didn’t turn out, and here’s the recipe I used and the steps that I followed. Where did I go wrong?” Using this method is going to significantly increase the likelihood of you getting a helpful response, faster!</p>
+</blockquote>
+<p>To make a reprex, we have to do two things:</p>
+<ol type="1">
+<li>Remove everything from our code that does not contribute to causing the error. We do this by removing each line from our code and only keeping those lines that are necessary to produce the error – this is why a reproducible example is sometimes called a <em>minimum</em> working example.</li>
+<li>Make sure that someone trying to help us can reproduce the issue on their own computer even if they don’t have access to the particular dataset we are using. We do this by replacing our own dataset with a publicly available one, preferably one of the datasets that are built into R for exactly this purpose.</li>
+</ol>
+</section>
+<section id="reproducible-code" class="level3" data-number="7.6.2">
+<h3 data-number="7.6.2" class="anchored" data-anchor-id="reproducible-code"><span class="header-section-number">7.6.2</span> Reproducible code</h3>
+<p>Our first step is to remove every line from our code that isn’t necessary to produce the error. For example, run the following code to see what error it produces.</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'magrittr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:purrr':
+
+    set_names</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:tidyr':
+
+    extract</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 192 Columns: 9
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl  (8): DriversKilled, drivers, front, rear, kms, PetrolPrice, VanKilled, law
+date (1): month_beginning
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `fortify()`:
+! `data` must be a &lt;data.frame&gt;, or an object coercible by `fortify()`,
+  not an S3 object with class &lt;uneval&gt;.
+ℹ Did you accidentally pass `aes()` to the `data` argument?</code></pre>
+</div>
+</div>
+<p>As you can see, this code produces an error message that is not easy to decipher, so we might need help to deal with it. As the first stage to making a reprex, remove all the lines of the code above that it is possible to remove while still producing the same error. If the error disappears and the chart is produced successfully, you have probably found the line that contains the error. If you remove a line and the code starts to produce a different error, you have removed a line that is needed to produce the original error and should put that line back into the code.</p>
+<p>It is actually possible to remove a lot of the original code and still produce the same error. You can remove:</p>
+<ol type="1">
+<li>All the lines of code that fine-tune the appearance of the chart (lines 23–38 above).</li>
+<li>The line creating the trend line (line 22).</li>
+<li>The code that wrangles our data in ways that don’t affect the error (lines 9–15).</li>
+<li>The line that loads the <code>dplyr</code> package (line 2), since we are no-longer using the data wrangling functions from that package.</li>
+</ol>
+<p>We cannot remove the code that loads necessary packages (lines 3 and 5), loads the data (line 8) or produces the basic unformatted chart (lines 19–21), because if we remove any of those then the error message changes or disappears.</p>
+<p>This leaves us with the following code, which produces the same error message but is much easier for someone to check for errors because it is much shorter. Because we have removed the data-wrangling code, we have had to change the name of the argument on line 20 of the code above from <code>y = ksi_driver_rate</code> to <code>y = drivers</code>, since the column <code>ksi_driver_rate</code> is no longer in the data.</p>
+<div class="box notewell">
+<p>If we forgot to change <code>y = ksi_driver_rate</code> to <code>y = drivers</code> then the code would still produce an error, <em>but it would be a different error</em>. The purpose of producing a reprex is to find the minimum code that still produces <em>the same error</em> we are interested in. If you remove a line of code and the error message you see changes, put that line of code back.</p>
+</div>
+<p>If this shortened code were to run successfully then the resulting chart would look quite different to the original chart we wanted, but that does not matter because what we are interested in is showing code that produces a specific error. If you run this code, you will see it produces the same error as the code above.</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 192 Columns: 9
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl  (8): DriversKilled, drivers, front, rear, kms, PetrolPrice, VanKilled, law
+date (1): month_beginning
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `fortify()`:
+! `data` must be a &lt;data.frame&gt;, or an object coercible by `fortify()`,
+  not an S3 object with class &lt;uneval&gt;.
+ℹ Did you accidentally pass `aes()` to the `data` argument?</code></pre>
+</div>
+</div>
+</section>
+<section id="reproducible-data" class="level3" data-number="7.6.3">
+<h3 data-number="7.6.3" class="anchored" data-anchor-id="reproducible-data"><span class="header-section-number">7.6.3</span> Reproducible data</h3>
+<p>Our shortened code would make a great reproducible example except for one thing: the data file <code>road_deaths_data.csv</code> only exists on our computer. This means the example is not actually <em>reproducible</em>, since anyone trying to run this code on their computer to identify the error would find that they instead got a different error saying that the file <code>road_deaths_data.csv</code> was not found.</p>
+<p>You could deal with this by uploading your dataset to a website and then having the <code>read_csv()</code> function read it from that URL. But you might not want to share your data (perhaps it is sensitive in some way), or your dataset might be too large to post online. For this reason, many R packages come with toy datasets that can be used in learning or in testing for errors. You can see a list of all the toy datasets available in the packages you have loaded by typing <code>data()</code> in the R console. This will produce a file that gives the name and description of each available dataset.</p>
+<p>To use one of these toy datasets, you just use the the name of the dataset as you would use any other R object (like the <code>road_deaths</code> object we created above). One commonly used toy dataset is the <code>mpg</code> dataset from the <code>ggplot2</code> package, which contains fuel economy data for 38 models of car.</p>
+<p>The data in this dataset are on a completely different topic to the data we were trying to use, but this does not matter as long as the data contains variables of the same type (numeric, character, etc.) as the original data. We can see what variables are in the <code>mpg</code> dataset using the <code>head()</code> function as usual.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 11
+  manufacturer model displ  year   cyl trans      drv     cty   hwy fl    class 
+  &lt;chr&gt;        &lt;chr&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;      &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt; 
+1 audi         a4      1.8  1999     4 auto(l5)   f        18    29 p     compa…
+2 audi         a4      1.8  1999     4 manual(m5) f        21    29 p     compa…
+3 audi         a4      2    2008     4 manual(m6) f        20    31 p     compa…
+4 audi         a4      2    2008     4 auto(av)   f        21    30 p     compa…
+5 audi         a4      2.8  1999     6 auto(l5)   f        16    26 p     compa…
+6 audi         a4      2.8  1999     6 manual(m5) f        18    26 p     compa…</code></pre>
+</div>
+</div>
+<p>From this, we can see that there is a <code>year</code> variable that we can use as a substitute for the <code>month_beginning</code> variable in our original code, a variable called <code>hwy</code> that is numeric and so can be substituted for the <code>drivers</code> variable in our code, and a categorical variable called <code>trans</code> that we can substitute for the <code>law</code> variable in our data. This means we can use this data instead of our own data, knowing that anyone on any computer with the <code>ggplot2</code> package installed can run the code and should get the same result.</p>
+<p>So we can change the code below so that it uses the <code>mpg</code> dataset rather than loads data from the <code>road_deaths_data.csv</code> file:</p>
+<div class="cell">
+<div class="cell-output cell-output-error">
+<pre><code>Error in `fortify()`:
+! `data` must be a &lt;data.frame&gt;, or an object coercible by `fortify()`,
+  not an S3 object with class &lt;uneval&gt;.
+ℹ Did you accidentally pass `aes()` to the `data` argument?</code></pre>
+</div>
+</div>
+<p>We have now managed to reduce our original 37 lines of code down to 8 lines, as well as making the example reproducible by using a widely available toy dataset. The shorter code still produces the same error while being much easier to read, so we are much more likely to get help quickly than if we had just sent someone our original code.</p>
+<p>Most of the time, the act of producing a reprex will be enough for us to find and fix the error without any external help. Can you see the problem with our code that is making this error happen? If not, we will reveal it at the end of this tutorial.</p>
+</section>
+<section id="checking-your-reprex-is-reproducible" class="level3" data-number="7.6.4">
+<h3 data-number="7.6.4" class="anchored" data-anchor-id="checking-your-reprex-is-reproducible"><span class="header-section-number">7.6.4</span> Checking your reprex is reproducible</h3>
+<p>Now that you have the minimum code needed to reproduce the error, it’s almost time to share it with people who can help you. But before you do that, it’s worth checking that the code is truly reproducible. To do this we will use the <code>reprex</code> package, which is part of the <code>tidyverse</code> suite of packages you already have installed.</p>
+<p class="full-width-image">
+<img src="images/reprex-cartoon.jpg" alt="Cartoon of furry monsters celebrating, with the caption 'reprex: make reproducible examples'">
+</p>
+<p><a href="https://reprex.tidyverse.org/" title="reprex website"><img src="images/reprex.png" style="width: 33%; max-width: 150px; float: right; margin: 0 0 2em 2em;"></a></p>
+<p>To use the <code>reprex</code> package, first put your code in a separate R document in the Source panel in RStudio. Open a new R script in RStudio now and paste the code from the last exercise into it. Once you’ve done that, select all the code in that document. Now click the <code>Addins</code> button in RStudio and scroll down until you can choose <code>Reprex selection</code>.</p>
+<p>After a few seconds, some code should appear in the RStudio Viewer panel showing your code and the error message that it produces. This code has also been copied to your computer clipboard so that you can paste it into an email or web form when you are asking for help.</p>
+<p>If the error message that you see along with the code in the Viewer panel is not the error message you were expecting, you example is not yet reproducible. For example if you tried to run the <code>Reprex selection</code> command on the original code that we started this section with, we would get an error message <code>'road_deaths_data.csv' does not exist in current working directory</code>.</p>
+<p>Once your reprex produces the same error as the code you originally had the issue with, you’re ready to share it to get help.</p>
+<p class="credits">
+<a href="https://github.com/allisonhorst/stats-illustrations">Stats Illustrations by Allison Horst</a> licensed under the <a href="https://github.com/allisonhorst/stats-illustrations/blob/master/license">Creative Commons Attribution licence</a>.
+</p>
+</section>
+</section>
+<section id="sources-of-help" class="level2" data-number="7.7">
+<h2 data-number="7.7" class="anchored" data-anchor-id="sources-of-help"><span class="header-section-number">7.7</span> Sources of help</h2>
+<p>If you are being taught R by a formal instructor, or you have friends or colleagues who can help, they will probably be the first people that you go to for help.</p>
+<p>If this doesn’t work, or if you are the most proficient R user that you know, you might need another place to turn to. Fortunately, R has a large community of volunteers who will help you. Before you ask people online for help, it’s important to check that someone hasn’t already asked the same question and had it answered. Duplicate questions increase the workload of the volunteers who answer questions and slow everything down, so if your question has frequently been answered already it’s possible your question will just be ignored.</p>
+<p>To find out if there is an answer to your question, the easiest thing to do is to search the error message online. Google, or another search engine of your choice, is definitely your friend. If you search online for the error message that was produced by our reprex code, you will see that there are over 100 pages discussing this error message and how to fix it.</p>
+<section id="stack-overflow" class="level4" data-number="7.7.0.1">
+<h4 data-number="7.7.0.1" class="anchored" data-anchor-id="stack-overflow"><span class="header-section-number">7.7.0.1</span> Stack Overflow</h4>
+<p>Let’s imagine, though, that there were no relevant hits when we searched for the error message, or that none of the results was useful. In that case, we need to pose a new question to the R community. The place to find the largest slice of that community is probably the website <a href="https://stackoverflow.com/">Stack Overflow</a>. This is a website for people who are writing code in any programming language imaginable to get help. It is part of the larger <a href="https://stackexchange.com">Stack Exchange Network</a> of question-and-answer websites covering everything from <a href="https://travel.stackexchange.com">travel</a> to <a href="https://vegetarianism.stackexchange.com/">veganism</a>.</p>
+<p>To ask a new question on Stack Overflow, go to <a href="https://stackoverflow.com/questions/ask">stackoverflow.com/questions/ask</a> and create an account or log in. You will now be asked to complete a short form with your question. Questions are more likely to get an answer faster if you:</p>
+<ul>
+<li>Give the question a specific title. Over 20 million questions have been asked on Stack Overflow since it launched, so a generic title like ‘Help’, ‘R error’ or even ‘ggplot error’ will not help other people find your question. <a href="https://stackoverflow.com/questions/tagged/r">Look at some recent questions about R on Stack Overflow</a> to get some ideas on what title to give for your question.</li>
+<li>In the body of your question, <em>briefly</em> (2–3 lines should do it) explain what you were trying to do, then paste the reprex output that the <code>Reprex selection</code> addin copied to your clipboard into the question body box underneath your brief explanation. You will see that Stack Overflow recognises the format of your code and shows you a preview of it underneath the question box.</li>
+<li>Finally, add the tag <code>r</code> to the Tags box so that people know your question is about coding in R. This is crucial – if you do not tag your question as being about R, it is very unlikely that volunteers who know about R will be able to find your question.</li>
+</ul>
+<p>Submit your question and wait for an answer. As soon as someone answers your question, or comments on it to ask for more detail, you will get an email alert. Many questions are typically answered within a few hours. Hopefully this will final stage of the emotional roller coaster of debugging:</p>
+</section>
+</section>
+<section id="in-summary" class="level2" data-number="7.8">
+<h2 data-number="7.8" class="anchored" data-anchor-id="in-summary"><span class="header-section-number">7.8</span> In summary</h2>
+<section id="a-workflow-for-handling-errors-in-r" class="level4" data-number="7.8.0.1">
+<h4 data-number="7.8.0.1" class="anchored" data-anchor-id="a-workflow-for-handling-errors-in-r"><span class="header-section-number">7.8.0.1</span> A workflow for handling errors in R</h4>
+<div class="box notewell">
+<p><strong>When you run some code in R and it produces an error, follow the steps learned in this tutorial to identify and fix the problem.</strong></p>
+<ol type="1">
+<li>Read the error message and fix any obvious problems.</li>
+<li>Make sure your code follows the style guide introduced in the previous tutorials, which will make it easier to see where there might be problems, especially those caused by typos. In particular, make sure that each function is on a separate line so you can comment them out individually.</li>
+<li>Comment out all the lines of your code. Uncomment each line in turn (starting with the first line), re-running the code each time until you see the error you’re trying to understand. Now you know which line is likely to be causing the problem.</li>
+<li>If the error message is one of the <a href="www/common_errors.pdf">common errors</a> explained in this tutorial, follow the steps outlined in the previous section to fix it.</li>
+<li>If that does not fix the problem, read the manual page for the function that you think is causing the problem. Check that the values you have passed to each argument are what the function needs in order to work.</li>
+<li>If that does not fix the problem, create a reproducible example by removing all the parts of your code not needed to create the error. Often, the act of creating a reproducible example will help you fix the problem, but if not then you can use it to get help from others.</li>
+</ol>
+<p>You will be able to fix almost all the errors in your code by following the early steps in this list. Only quite rarely will you need to post a reprex online to get help.</p>
+</div>
+</section>
+<section id="what-caused-the-error-in-our-reproducible-example" class="level4" data-number="7.8.0.2">
+<h4 data-number="7.8.0.2" class="anchored" data-anchor-id="what-caused-the-error-in-our-reproducible-example"><span class="header-section-number">7.8.0.2</span> What caused the error in our reproducible example?</h4>
+<p>The error in our reproducible example was very simple, but quite difficult to spot. On line 7 of the code below, we try to add the <code>ggplot()</code> function to the <code>mpg</code> object using the <code>+</code> operator when what we wanted to do was pass the <code>mpg</code> object to the <code>ggplot()</code> function using the <code>|&gt;</code> operator. R does not know how to add a dataset to a function in this way so it produced an error message.</p>
+<p>If you replace <code>+</code> with <code>|&gt;</code> on line 6 of the code below, the code should now run normally. Since we have removed almost all of our original code to make a reproducible example, the resulting plot looks nothing like what we wanted. This does not matter – when we are producing a reprex we only care about reliably producing <em>the same</em> error. Now that we have fixed the error, we could go back and fix the original code to produce the chart we wanted.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load packages</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co"># make a time-series chart of two continuous variables, coloured by a </span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="co"># categorical variable</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>mpg <span class="sc">+</span> <span class="co"># &lt;---- THE `+` OPERATOR HERE SHOULD BE A `|&gt;` OPERATOR INSTEAD</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> hwy)) <span class="sc">+</span> </span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> trans))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The mistake in this code is a very easy one to make, because what <code>+</code> does inside a <code>ggplot()</code> stack is so similar to what <code>|&gt;</code> does in passing the result of one function to the next function in an data-wrangling pipeline. Remember that we only use <code>+</code> to combine functions inside a <code>ggplot()</code> stack, and use <code>|&gt;</code> to combine functions everywhere else.</p>
+</section>
+</section>
+<section id="summary" class="level2" data-number="7.9">
+<h2 data-number="7.9" class="anchored" data-anchor-id="summary"><span class="header-section-number">7.9</span> Summary</h2>
+<div class="box welldone">
+<p>In this tutorial we have learned how to handle messages, warnings and errors in R. We have learned to take time to understand error messages, to isolate errors so that we can better understand them, to use manual pages for functions to check that every argument is correct, and how to write reproducible examples so that we can get help online. This will help you become a more independent coder.</p>
+</div>
+<p class="full-width-image">
+<img src="images/debugging.jpg" alt="Cartoon showing 10 furry monsters showing different stages of learning to debug code. The monsters are marked '1. I got this', '2. Huh, really though that was it', '3. (...)', '4. Fine. Restarting.', '5. OH WTF', '6. Zombie meltdown', '7. [crying]', '8. A NEW HOPE!', '9. [insert awesome theme song]' and '10. I LOVE CODING!'">
+</p>
+<div class="box reading">
+<p>For more information on writing reproducible examples, see:</p>
+<ul>
+<li>Watch the webinar <a href="https://reprex.tidyverse.org/articles/articles/learn-reprex.html">Creating reproducible examples with reprex</a> by Jenny Bryan.</li>
+<li>Read the <a href="https://reprex.tidyverse.org/articles/reprex-dos-and-donts.html">Reprex do’s and don’ts</a> on the <code>reprex</code> package website.</li>
+</ul>
+</div>
+<p class="credits">
+<a href="https://github.com/allisonhorst/stats-illustrations">Stats Illustrations by Allison Horst</a> licensed under the <a href="https://github.com/allisonhorst/stats-illustrations/blob/master/license">Creative Commons Attribution licence</a>.
+</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../06_map_context/index.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Giving a map context</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
