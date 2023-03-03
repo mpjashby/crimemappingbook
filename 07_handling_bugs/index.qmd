@@ -1,10 +1,9 @@
 # Handling bugs in your code
 
 
-
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-
+knitr::opts_chunk$set(echo=TRUE, collapse=TRUE)
+  
 # Load packages
 library(tidyverse)
 
@@ -12,9 +11,7 @@ library(tidyverse)
 frauds <- read_csv("https://mpjashby.github.io/crimemappingdata/kansas_city_frauds.csv.gz")
 ```
 
-
-
-**Learn how to deal with error messages and other problems with the code that you write**
+**Learn how to deal with error messages and other problems with the code that you write.**
 
 
 ::: {.box .load-tutorial}
@@ -28,6 +25,7 @@ and press `Enter`.
 :::
 
 
+
 ## Introduction
 
 In this tutorial we will learn how to deal with bugs in the R code that we 
@@ -36,13 +34,22 @@ Everyone types the wrong command every now and again, just as everyone sometimes
 clicks the wrong button in other pieces of software. Learning how to identify 
 and fix bugs is part of the process of learning to code.
 
-Some errors are easy to identify and easy to fix. If you try to select the
-column name `offense_category` from a dataset when you should have typed 
-`offense_type` because you have mis-remembered the name of that column:
+Some errors are easy to identify and easy to fix. Imagine you are working on 
+this dataset of frauds in Kansas City:
 
-```{r intro-exercise1, error=TRUE}
+```{r, echo=FALSE}
+frauds |> 
+  knitr::kable()
+```
+
+If you try to run this code:
+
+```{r intro-exercise1, exercise=TRUE, error=TRUE}
 select(frauds, offense_category)
 ```
+
+
+::: {.tutorial}
 
 You will get an error message saying something like: 
 
@@ -50,21 +57,41 @@ You will get an error message saying something like:
 Error: Can't subset columns that don't exist. x Column `offense_category` doesn't exist
 ```
 
+:::
+
+
+::: {.book}
+
+It causes an error.
+
+:::
+
+
 In this case it is fairly easy to identify that one of the columns you have 
-tried to select does not exist. To find out what the correct column name is, 
-print the first few rows of the object (by typing the code `head0(frauds)` into 
-the R console) or use the `names()` function to print a list of column names 
-present in the data:
+tried to select does not exist. Maybe you mis-remembered the name of the column.
+To find out what the correct column name is, you can either print the first few 
+rows of the object (by typing the code `head(frauds)` into the R console) or use 
+the `names()` function to print a list of column names present in the data:
 
 ```{r intro-exercise2, exercise=TRUE}
 names(frauds)
 ```
 
-Now we know the correct column name, we can extract it using the correct name:
+
+::: {.tutorial}
+
+Change the following code to correct the mistaken column name:
+
+```{r intro-exercise3, exercise=TRUE, error=TRUE}
+select(frauds, offense_category)
+```
 
 ```{r intro-exercise3-solution}
 select(frauds, offense_type)
 ```
+
+:::
+
 
 Other errors will be harder to identify and fix. In this tutorial we will go
 through the process of debugging -- identifying, understanding and fixing errors 
@@ -95,7 +122,8 @@ you to take any action. For example, the function `get_crime_data()` from the
 does this because downloading data sometimes takes a few seconds and without a 
 message you might wonder if the code was working.
 
-By default, messages are displayed in RStudio in <span style="color: rgb(197, 6, 11); background-color: #FFFFFF; font-family: monospace; font-weight: normal;">dark red text</span>,
+By default, messages are displayed in RStudio in 
+<span style="color: rgb(197, 6, 11); background-color: #FFFFFF; font-family: monospace; font-weight: normal;">dark red text</span>,
 although this might vary if you have changed any settings in the Appearance
 tab of the RStudio Options dialogue. You can generate a message for yourself
 using the `message()` function. This is useful if you are writing code and you
@@ -104,14 +132,14 @@ if your code is likely to take a long time to run, you might want to record the
 time your code started running by generating a message on the first line of your
 code:
 
-```{r intro-exercise4}
+```{r intro-exercise4, exercise=TRUE}
 message(stringr::str_glue("Code started: {Sys.time()}"))
 ```
 
 When R prints a message about your code, any code underneath the code that
 generated the message will still run:
 
-```{r intro-exercise5}
+```{r intro-exercise5, exercise=TRUE}
 2 * 2
 
 message("This is a message. It might be important so make sure you understand it.")
@@ -160,7 +188,7 @@ Warnings are displayed in the same font as messages, but with the text
 `Warning message:` at the start. You can generate your own warning messages
 using the `warning()` function:
 
-```{r intro-exercise6}
+```{r intro-exercise6, exercise=TRUE}
 warning("Something might be wrong. Check to make sure.")
 ```
 
@@ -184,7 +212,7 @@ function, but this is one of those times when the function to do something in R
 has a different name from that you might be expecting. In fact, you can generate
 an error using the `stop()` function:
 
-```{r intro-exercise7, error=TRUE}
+```{r intro-exercise7, exercise=TRUE, error=TRUE}
 stop("Something is defintely wrong. Don't go any further until you've fixed it.")
 ```
 
@@ -193,7 +221,7 @@ Syntax errors happen when R cannot read your code because of a mistake in how it
 has been typed out. For example, if you forget to put a comma between the 
 arguments of a function, you will get this error:
 
-```{r intro-exercise8, error=TRUE}
+```{r intro-exercise8, exercise=TRUE, error=TRUE}
 message("A" "B")
 ```
 
@@ -231,7 +259,6 @@ Now we know what errors, warning and messages are, we need to find out how to
 deal with them when they happen.
 
 
-
 ## Finding problems
 
 If an error or warning has a simple cause, such as the example of the incorrect 
@@ -248,7 +275,7 @@ work out exactly which function or other piece of code has caused it. For
 example, take this data-wrangling code to reduce the size of a dataset and sort
 it in date order:
 
-```{r finding-exercise1, error=TRUE}
+```{r finding-exercise1, exercise=TRUE, error=TRUE}
 library(tidyverse)
 
 frauds |> 
@@ -277,17 +304,24 @@ The error message in this case has been caused by a typo -- the code
 `offence_type == "impersonation"` uses the British spelling of the word 
 'offence' but in the dataset the variable is spelled using the American English
 'offense' (you can see the US spelling in the line of code above the line that
-is causing the error). If you correct the spelling in the code above, it should 
+is causing the error). 
+
+
+::: {.tutorial}
+
+If you correct the spelling in the code above, it should 
 now run without a problem. 
+
+::::
+
 
 Sometimes it will not be as clear as this where to start in looking for the
 problem. For example, if you run this code:
 
-
-```{r finding-exercise2, error=TRUE}
+```{r finding-exercise2, exercise=TRUE, error=TRUE}
 frauds |> 
   select(offense_code, longitude, latitude) |> 
-  filter(offense_code == "26E") |> 
+  filter(offense_code == "26G") |> 
   arrange(date)
 ```
 
@@ -298,12 +332,55 @@ the problem must lie elsewhere. In cases like this, it can be helpful to comment
 out all the lines of code except the first one and then uncomment one line at a
 time until you find the one that causes the problem. 
 
-Have you found the problem? If you uncomment all but the last line and run the
-code, you will see that the line `filter(offense_code == "26G")` results in zero
-rows of data -- all the rows have been removed by the `filter()` function. This
-is because `26G` is not a valid offence code in this dataset. This means that
-no rows are kept in the dataset by `filter()` because there are no rows for 
-which `offense_code == "26G"`. In turn, this means there are no rows for 
+
+::: {.tutorial}
+
+With the following code,
+uncomment one line at a time starting on line 2, re-run the code and then 
+uncomment another line. After you run the code each time, look at the output
+produced until an error occurs or you find that the output is not what you 
+expected.
+
+```{r finding-exercise3, exercise=TRUE, exercise.lines=5, error=TRUE}
+frauds |> 
+#  select(offense_code, longitude, latitude) |> 
+#  filter(offense_code == "26G") |> 
+#  arrange(date)
+```
+
+:::
+
+
+<div class="box extra-detail">
+
+<h5 id="finding-box1-title" class="box-title">Did you get an error beginning
+`<text>:5:0: unexpected end of input 3`?</h5>
+
+<div id="finding-box1" class="box-content">
+
+When commenting out lines of code in a code pipeline, it is important to 
+remember to remove the pipe operator ` |> ` from the end of the last line
+of your code. Otherwise you will get an error that begins 
+`<text>:5:0: unexpected end of input 3` because R is expecting the final `|>` to
+have some code after it. Remember that R will ignore the lines that are 
+commented out, so make sure every line in your pipeline ends with a ` |> ` 
+*except* the last line that is not commented out.
+
+</div>
+
+</div>
+
+<script>
+$("#finding-box1-title").click(function () { $("#finding-box1").toggle("slow") })
+</script>
+
+
+If you uncommented all but the last line and run the code, you would see that 
+the line `filter(offense_code == "26G")` results in zero rows of data -- all the 
+rows have been removed by the `filter()` function. This is because `26G` is not 
+a valid offence code in this dataset. This means that no rows are kept in the 
+dataset by `filter()` because there are no rows for which 
+`offense_code == "26G"`. In turn, this means there are no rows for 
 `arrange()` to sort, so running `arrange(date)` produces an error.
 
 Uncommenting one line at a time until you find an error or output that is not 
@@ -313,7 +390,7 @@ should have been included but is missing from your code entirely. For example,
 if you try to run the function `st_transform()` on a tibble without first 
 changing it into an SF object:
 
-```{r finding-exercise4, error=TRUE}
+```{r finding-exercise4, exercise=TRUE, error=TRUE}
 library(sf)
 
 frauds |> 
@@ -429,7 +506,7 @@ function from the `stringr` package even if the `stringr` package is not loaded.
 </div>
 
 <script>
-$("#understanding-box1-title").click(function () { $("#section-understanding-box1").toggle("slow") })
+$("#understanding-box1-title").click(function () { $("#understanding-box1").toggle("slow") })
 </script>
 
 
@@ -487,7 +564,7 @@ need to. You can [download a PDF version of this table for future reference](www
 In these error messages, the code `blah` represents the function, object or 
 value that the error relates to. 
 
-```{r common-errors, message=FALSE, warning=FALSE}
+```{r common-errors, echo=FALSE, message=FALSE, warning=FALSE}
 common_errors <- tribble(
   ~`Error message`, ~`How to fix it`,
   "`there is no package called 'blah'`", "You have either mis-typed the package name or the package is not installed. Check the spelling or use `install.packages()` to install the package.",
@@ -499,7 +576,8 @@ common_errors <- tribble(
   "`no applicable method for 'blah' applied` `to an object of class \"blah\"`", "Some R functions (called generic functions) work in different ways depending on what type of object you use them on. But if you use a generic function on an object that it does not know how to handle, you will see this error. Check the object(s) that you provided to the function causing the error to make sure it is the type of object you are expecting it to be.",
   '`unexpected numeric constant in "blah"`, `unexpected string constant in "blah"` or `unexpected symbol in "blah"`', "You have a typo somewhere in your code. Check the line of code producing the error to make sure it is formatted correctly. The most common typos that cause this error are a missing comma or closing parenthesis, but there are [several other typos that can cause similar errors](https://stackoverflow.com/a/25889235/8222654).",
   '`unused argument (var = "blah")`', "You have used an argument name in a function that does not understand it. Check the manual page for that function.",
-  '`argument "blah" is missing,` `with no default`', "You have used a function without providing all the necessary arguments. Check the manual page for that function."
+  '`argument "blah" is missing,` `with no default`', "You have used a function without providing all the necessary arguments. Check the manual page for that function.",
+  "`The pipe operator requires` `a function call as RHS`", "There is a pipe operator at the end of the final line of a code pipeline (or what R thinks should be the final line)."
 )
 
 # If the PDF version of this table does not already exist, create it
@@ -576,6 +654,10 @@ To make a reprex, we have to do two things:
      available one, preferably one of the datasets that are built into R for
      exactly this purpose.
 
+Watch this video to see the process of making a reprex in RStudio:
+
+{{< video https://youtu.be/hlcftgeTAyY >}}
+
 
 ### Reproducible code
 
@@ -583,7 +665,7 @@ Our first step is to remove every line from our code that isn't necessary to
 produce the error. For example, run the following code to see what error it
 produces.
 
-```{r reprex-exercise1-setup, echo=FALSE, include=FALSE}
+```{r reprex-exercise1-setup, echo=FALSE}
 # This code wrangles the data and stores it in the temporary directory created
 # by learnr to run the following exercise, which allows us to mimic loading the
 # data from a local file (which is important in the narrative, since it makes
@@ -600,11 +682,10 @@ Seatbelts |>
   write_csv("road_deaths_data.csv")
 ```
 
-```{r reprex-exercise1, error=TRUE}
+```{r reprex-exercise1, exercise=TRUE, exercise.lines=39, error=TRUE}
 # Load packages
 library(dplyr)
 library(ggplot2)
-library(magrittr)
 library(readr)
 
 # Load a dataset from your computer and wrangle it
@@ -689,7 +770,7 @@ because what we are interested in is showing code that produces a specific
 error. If you run this code, you will see it produces the same error as the code 
 above.
 
-```{r reprex-exercise2, error=TRUE}
+```{r reprex-exercise2, exercise=TRUE, exercise.lines=13, exercise.setup="reprex-exercise1-setup", error=TRUE}
 # Load packages
 library(ggplot2)
 library(readr)
@@ -729,10 +810,10 @@ package, which contains fuel economy data for 38 models of car.
 
 The data in this dataset are on a completely different topic to the data we were 
 trying to use, but this does not matter as long as the data contains variables 
-of the same type (numeric, character, etc.) as the original data. We can see what
-variables are in the `mpg` dataset using the `head()` function as usual.
+of the same type (numeric, character, etc.) as the original data. We can see 
+what variables are in the `mpg` dataset using the `head()` function as usual.
 
-```{r reprex-example3}
+```{r reprex-example3, exercise=TRUE, exercise.setup="reprex-exercise1-setup", error=TRUE}
 library(ggplot2)
 
 head(mpg)
@@ -746,13 +827,43 @@ we can substitute for the `law` variable in our data. This means we can use this
 data instead of our own data, knowing that anyone on any computer with the
 `ggplot2` package installed can run the code and should get the same result.
 
-So we can change the code below so that it uses the `mpg` dataset rather than 
-loads data from the `road_deaths_data.csv` file:
 
-```{r error=TRUE}
+::: {.tutorial}
+
+Change the code below so that it uses the `mpg` dataset rather than loads data
+from the `road_deaths_data.csv` file. You will need to change the variable names
+in the stack of `ggplot()` functions.
+
+```{r reprex-exercise4, exercise=TRUE, exercise.lines=13, exercise.setup="reprex-exercise1-setup", error=TRUE}
 # Load packages
 library(ggplot2)
 library(readr)
+
+# Load a dataset from your computer and wrangle it
+road_deaths <- read_csv("road_deaths_data.csv")
+
+# Make a time-series chart of two continuous variables, coloured by a 
+# categorical variable
+road_deaths +
+  ggplot(aes(x = month_beginning, y = drivers)) + 
+  geom_point(aes(colour = law))
+```
+
+:::
+
+
+::: {.book}
+
+We can change our existing reprex code to use the `mpg` dataset rather than load
+data from the `road_deaths_data.csv` file by changing the variable names in 
+the `ggplot()` stack.
+
+:::
+
+
+```{r reprex-exercise4-solution, error=TRUE}
+# Load packages
+library(ggplot2)
 
 # Make a time-series chart of two continuous variables, coloured by a 
 # categorical variable
@@ -797,12 +908,12 @@ to your computer clipboard so that you can paste it into an email or web form
 when you are asking for help.
 
 If the error message that you see along with the code in the Viewer panel is not
-the error message you were expecting, you example is not yet reproducible. For 
+the error message you were expecting, your example is not yet reproducible. For 
 example if you tried to run the `Reprex selection` command on the original code
 that we started this section with, we would get an error message
 `'road_deaths_data.csv' does not exist in current working directory`.
 
-Once your reprex produces the same error as the code you originally had the
+Once your reprex produces _the same error_ as the code you originally had the
 issue with, you're ready to share it to get help.
 
 <p class="credits">
@@ -840,9 +951,9 @@ pose a new question to the R community. The place to find the largest slice of
 that community is probably the website 
 [Stack Overflow](https://stackoverflow.com/). This is a website for people who 
 are writing code in any programming language imaginable to get help. It is part 
-of the larger [Stack Exchange Network](https://stackexchange.com) of 
+of the larger [Stack Exchange Network](https://stackexchange.com/) of 
 question-and-answer websites covering everything from 
-[travel](https://travel.stackexchange.com) to 
+[travel](https://travel.stackexchange.com/) to 
 [veganism](https://vegetarianism.stackexchange.com/).
 
 To ask a new question on Stack Overflow, go to 
@@ -870,8 +981,13 @@ your question. Questions are more likely to get an answer faster if you:
 Submit your question and wait for an answer. As soon as someone answers your
 question, or comments on it to ask for more detail, you will get an email alert.
 Many questions are typically answered within a few hours. Hopefully this will
-final stage of the emotional roller coaster of debugging:
+help you get to the final stage of the emotional roller coaster of debugging:
 
+<p class="full-width-image"><img src="images/debugging.jpg" alt="Cartoon showing 10 furry monsters showing different stages of learning to debug code. The monsters are marked '1. I got this', '2. Huh, really though that was it', '3. (...)', '4. Fine. Restarting.', '5. OH WTF', '6. Zombie meltdown', '7. [crying]', '8. A NEW HOPE!', '9. [insert awesome theme song]' and '10. I LOVE CODING!'"></p>
+
+<p class="credits">
+[Stats Illustrations by Allison Horst](https://github.com/allisonhorst/stats-illustrations) licensed under the [Creative Commons Attribution licence](https://github.com/allisonhorst/stats-illustrations/blob/master/license).
+</p>
 
 
 ## In summary
@@ -919,7 +1035,7 @@ spot. On line 7 of the code below, we try to add the `ggplot()` function to the
 object to the `ggplot()` function using the `|>` operator. R does not know how
 to add a dataset to a function in this way so it produced an error message.
 
-If you replace `+` with `|>` on line 6 of the code below, the code should now
+If you replaced `+` with `|>` on line 6 of the code below, the code would now
 run normally. Since we have removed almost all of our original code to make a 
 reproducible example, the resulting plot looks nothing like what we wanted. This
 does not matter -- when we are producing a reprex we only care about reliably
@@ -943,10 +1059,6 @@ of one function to the next function in an data-wrangling pipeline. Remember
 that we only use `+` to combine functions inside a `ggplot()` stack, and use
 `|>` to combine functions everywhere else.
 
-
-
-## Summary
-
 ::: {.box .welldone}
 
 In  this tutorial we have learned how to handle messages, warnings and errors in
@@ -956,8 +1068,6 @@ check that every argument is correct, and how to write reproducible examples so
 that we can get help online. This will help you become a more independent coder.
 
 :::
-
-<p class="full-width-image"><img src="images/debugging.jpg" alt="Cartoon showing 10 furry monsters showing different stages of learning to debug code. The monsters are marked '1. I got this', '2. Huh, really though that was it', '3. (...)', '4. Fine. Restarting.', '5. OH WTF', '6. Zombie meltdown', '7. [crying]', '8. A NEW HOPE!', '9. [insert awesome theme song]' and '10. I LOVE CODING!'"></p>
 
 ::: {.box .reading}
 
@@ -969,8 +1079,4 @@ For more information on writing reproducible examples, see:
     on the `reprex` package website.
 
 :::
-
-<p class="credits">
-[Stats Illustrations by Allison Horst](https://github.com/allisonhorst/stats-illustrations) licensed under the [Creative Commons Attribution licence](https://github.com/allisonhorst/stats-illustrations/blob/master/license).
-</p>
 
