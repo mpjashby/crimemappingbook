@@ -1,0 +1,49 @@
+# Functions for reading data into R
+
+```{r setup}
+#| include: false
+library(gt)
+library(tidyverse)
+```
+
+R can read data in many different formats. Different functions (often from different packages) are needed to read files of different formats. These are some of the functions needed to read common types of file used in data analysis, including spatial data formats.
+
+```{r file-formats}
+#| echo: false
+tribble(
+  ~type, ~package, ~`function`, ~compressed, ~remote,
+  "Comma-separated values (`.csv`)", "[readr](https://readr.tidyverse.org/)", "[`read_csv()`](https://readr.tidyverse.org/reference/read_delim.html) (data from English-speaking countries) or [`read_csv2()`](https://readr.tidyverse.org/reference/read_delim.html) (data from elsewhere)", TRUE, TRUE, 
+  "Fixed-width files (usually `.txt`)", "[readr](https://readr.tidyverse.org/)", "[`read_fwf()`](https://readr.tidyverse.org/reference/read_fwf.html)", TRUE, TRUE, 
+  "GeoJSON (`.geojson`)", "[sf](https://r-spatial.github.io/sf/)", "[`read_sf()`](https://r-spatial.github.io/sf/reference/st_read.html)", FALSE, TRUE, 
+  "GeoPackage (`.gpkg`)", "[sf](https://r-spatial.github.io/sf/)", "[`read_sf()`](https://r-spatial.github.io/sf/reference/st_read.html)", FALSE, TRUE, 
+  "Google Sheets", "[googlesheets4](https://googlesheets4.tidyverse.org/)", "[`read_sheet()`](https://googlesheets4.tidyverse.org/reference/range_read.html)", NA, TRUE, 
+  "HTML (`.htm` or `.html`)", "[xml2](https://xml2.r-lib.org/)", "[`read_html()`](https://xml2.r-lib.org/reference/read_xml.html) (probably used with functions from the rvest package)", NA, TRUE, 
+  "JSON (`.json`)", "[jsonlite](https://github.com/jeroen/jsonlite#jsonlite)", "`read_json()`", TRUE, TRUE, 
+  "Microsoft Excel (`.xlsx` or `.xls`)", "[readxl](https://readxl.tidyverse.org/)", "[`read_excel()`](https://readxl.tidyverse.org/reference/read_excel.html)", FALSE, FALSE, 
+  "OpenDocument Spreadsheet (`.ods`)", "[readODS](https://github.com/ropensci/readODS/)", "`read_ods()`", FALSE, TRUE, 
+  "R Data (`.rds`)", "[readr](https://readr.tidyverse.org/)", "[`read_rds()`](https://readr.tidyverse.org/reference/read_rds.html)", NA, TRUE, 
+  "SAS (`.sas7bdat`)", "[haven](https://haven.tidyverse.org/)", "[`read_sas()`](https://haven.tidyverse.org/reference/read_sas.html)", TRUE, TRUE, 
+  "Shapefile (`.shp`)", "[sf](https://r-spatial.github.io/sf/)", "[`read_sf()`](https://r-spatial.github.io/sf/reference/st_read.html)", FALSE, FALSE, 
+  "SPSS Statistics (`.sav`)", "[haven](https://haven.tidyverse.org/)", "[`read_sav()`](https://haven.tidyverse.org/reference/read_spss.html)", TRUE, TRUE, 
+  "Stata (`.dta`)", "[haven](https://haven.tidyverse.org/)", "[`read_dta()`](https://haven.tidyverse.org/reference/read_dta.html)", TRUE, TRUE, 
+  "Tab-separated values (`.tsv` or `.tab`)", "[readr](https://readr.tidyverse.org/)", "[`read_tsv()`](https://readr.tidyverse.org/reference/read_delim.html)", TRUE, TRUE, 
+  "XML (usually `.xml`)", "[xml2](https://xml2.r-lib.org/)", "[`read_xml()`](https://xml2.r-lib.org/reference/read_xml.html)", TRUE, TRUE
+) |> 
+  mutate(
+    across(
+      c(compressed, remote), 
+      ~ recode(as.character(.), "TRUE" = "yes", "FALSE" = "no", .missing = "n/a")
+    )
+  ) |> 
+  gt(caption = "Functions for reading data into R") |> 
+  opt_row_striping(row_striping = TRUE) |> 
+  tab_style(style = cell_text(v_align = "top"), locations = cells_body()) |> 
+  fmt_markdown(columns = everything()) |> 
+  cols_label(
+    type = "Data file type",
+    package = "Package",
+    `function` = "Function",
+    compressed = "Can load compressed files?",
+    remote = "Can load files from URL?"
+  )
+```
