@@ -408,7 +408,7 @@ quarto book
 <p>By default, messages are displayed in RStudio in <span style="color: rgb(197, 6, 11); background-color: #FFFFFF; font-family: monospace; font-weight: normal;">dark red text</span>, although this might vary if you have changed any settings in the Appearance tab of the RStudio Options dialogue. You can generate a message for yourself using the <code>message()</code> function. This is useful if you are writing code and you want to remind yourself of something, or record a particular value. For example, if your code is likely to take a long time to run, you might want to record the time your code started running by generating a message on the first line of your code:</p>
 <div class="cell" data-exercise="true">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(stringr<span class="sc">::</span><span class="fu">str_glue</span>(<span class="st">"Code started: {Sys.time()}"</span>))</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Code started: 2023-03-05 00:24:38</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Code started: 2023-03-14 12:44:03</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>When R prints a message about your code, any code underneath the code that generated the message will still run:</p>
 <div class="cell" data-exercise="true">
@@ -484,27 +484,27 @@ quarto book
 <div class="tutorial">
 <p>If you correct the spelling in the code above, it should now run without a problem.</p>
 </div>
-<p>Sometimes it will not be as clear as this where to start in looking for the problem. For example, if you run this code:</p>
+<p>Sometimes it will not be as clear as this where to start in looking for the problem. In particular, some errors can be <em>caused</em> by a problem on one line of code, but only actually have a negative <em>effect</em> on a subsequent line of code. For example, if you run this code:</p>
 <div class="cell" data-exercise="true">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>frauds <span class="sc">|&gt;</span> </span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(offense_code, longitude, latitude) <span class="sc">|&gt;</span> </span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26G"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26E"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(date)</span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Error in `arrange()`:</span></span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="do">## ℹ In argument: `..1 = date`.</span></span>
 <span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Caused by error:</span></span>
 <span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="do">## ! `..1` must be a vector, not a function.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The error message produced suggests the problem is with the <code>arrange()</code> function, but everything is correct with that function since <code>arrange()</code> is a correct function name and <code>date</code> is a column in the tibble named <code>frauds</code>. So the problem must lie elsewhere. In cases like this, it can be helpful to comment out all the lines of code except the first one and then uncomment one line at a time until you find the one that causes the problem.</p>
+<p>The error message produced suggests the problem is with the <code>arrange()</code> function, but everything is correct with that function since <code>arrange()</code> is a correct function name and we already know that <code>date</code> is a column in the tibble named <code>frauds</code>. So the problem must lie elsewhere. In cases like this, it can be helpful to comment out all the lines of code except the first one and then uncomment one line at a time until you find the one that causes the problem.</p>
 <div class="tutorial">
 <p>With the following code, uncomment one line at a time starting on line 2, re-run the code and then uncomment another line. After you run the code each time, look at the output produced until an error occurs or you find that the output is not what you expected.</p>
 <div class="cell" data-exercise="true" data-exercise.lines="5">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>frauds <span class="sc">|&gt;</span> </span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  select(offense_code, longitude, latitude) |&gt; </span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  filter(offense_code == "26G") |&gt; </span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  filter(offense_code == "26E") |&gt; </span></span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  arrange(date)</span></span>
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Error: &lt;text&gt;:5:0: unexpected end of input</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 3: #  filter(offense_code == "26G") |&gt; </span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 3: #  filter(offense_code == "26E") |&gt; </span></span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 4: #  arrange(date)</span></span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="do">##   ^</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -518,9 +518,9 @@ Did you get an error beginning <code>&lt;text&gt;:5:0: unexpected end of input 3
 </div>
 </div>
 <script>
-$("#finding-box1-title").click(function () { $("#finding-box1").toggle("slow") })
+$("#finding-box1-title").click(function () { $("#section-finding-box1").toggle("slow") })
 </script>
-<p>If you uncommented all but the last line and run the code, you would see that the line <code>filter(offense_code == "26G")</code> results in zero rows of data – all the rows have been removed by the <code>filter()</code> function. This is because <code>26G</code> is not a valid offence code in this dataset. This means that no rows are kept in the dataset by <code>filter()</code> because there are no rows for which <code>offense_code == "26G"</code>. In turn, this means there are no rows for <code>arrange()</code> to sort, so running <code>arrange(date)</code> produces an error.</p>
+<p>If you uncommented all but the last line and run the code, you would see that the line <code>select(offense_code, longitude, latitude)</code> removes the column <code>date</code> from the dataset, so it’s not possible to use <code>date</code> as an argument to the <code>arrange()</code> function later on.</p>
 <p>Uncommenting one line at a time until you find an error or output that is not what you expected is a useful way to isolate problems, but it will not always work. In particular, it will not work if the problem is caused by some code that should have been included but is missing from your code entirely. For example, if you try to run the function <code>st_transform()</code> on a tibble without first changing it into an SF object:</p>
 <div class="cell" data-exercise="true">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
