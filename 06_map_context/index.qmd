@@ -8,6 +8,9 @@ library(sfhotspot)
 library(tidyverse)
 knitr::opts_chunk$set(echo = FALSE)
 
+quiz <- function(...) invisible(NULL)
+question <- function(...) invisible(NULL)
+
 # Prepare maps -----------------------------------------------------------------
 
 # Load shootings data
@@ -104,6 +107,8 @@ New York City in 2019. You'll see that unlike the maps we have made so far, this
 map includes contextual elements such as a title, a legend and a scale bar.
 
 ```{r final-map, out.width="100%"}
+#| echo: false
+
 shootings_map_final
 ```
 
@@ -117,7 +122,7 @@ Among the most important decisions you make when you are creating a map is what
 information to include and what to leave out. Watch this video to learn more 
 about why this is important and how you can make those decisions.
 
-{{< video (https://youtu.be/2_YOwOmodG0 >}}
+{{< video https://youtu.be/2_YOwOmodG0 >}}
 
 The most important thing to remember when designing a map is to keep in mind the
 purpose that the map will be used for. Research on how people use maps has 
@@ -176,6 +181,40 @@ map. This helped readers intuitively understand that they should focus most
 attention on the data.
 
 
+::: {.tutorial}
+
+```{r visual-hierarchy-quiz}
+#| echo: false
+
+quiz(
+  caption = "",
+  
+  question(
+    "Which one of these is not a visual element that we can use to establish the visual hierarchy of different elements on our map?",
+    answer("Font", correct = TRUE),
+    answer("Colour"),
+    answer("Location"),
+    answer("Isolation"),
+    correct = random_praise(),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  
+  question(
+    "Which types of shapes are more likely to move an element up the visual hierarchy?",
+    answer("Shapes that are simpler", correct = TRUE),
+    answer("Shapes that are more complicated"),
+    correct = random_praise(),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+  
+)
+```
+
+:::
+
+
 
 ## Supporting elements
 
@@ -195,6 +234,8 @@ hierarchy. In every map, the supporting elements should be designed so that they
 do not distract from the data.
 
 ```{r hierarchy-table}
+#| echo: false
+
 tribble(
   ~"place in hierarchy", ~"map element", ~"how often needed",
   "1st", "data layers", "always",
@@ -219,6 +260,43 @@ is important information for readers who need it to judge the reliability of a
 map, or to get in touch to ask questions, but should not distract from the data
 for those readers who do not need it.
 
+
+::: {.tutorial}
+
+```{r supporting-elements-quiz}
+#| echo: false
+
+quiz(
+  caption = "",
+  
+  question(
+    "Which of these elements should be lowest down the visual hierarchy on most maps?",
+    answer("North arrow", correct = TRUE),
+    answer("Author and date"),
+    answer("Title"),
+    answer("Data layers"),
+    correct = random_praise(),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  
+  question(
+    "How likely is it that our maps will need to include a base map?",
+    answer("Almost always", correct = TRUE),
+    answer("Usually"),
+    answer("Occasionally"),
+    answer("Never"),
+    correct = random_praise(),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+  
+)
+```
+
+:::
+
+
 Before we start learning the code needed to add titles and legends to our maps,
 watch this video walk-though of the main steps.
 
@@ -235,7 +313,7 @@ the `ggplot()` function can be saved as an object using the assignment operator
 the result will not be printed to the screen, but we can easily see the plot by
 simply typing the object name in the R console.
 
-```{r title-exercise1, echo=TRUE}
+```{r title-exercise1, exercise=TRUE, exercise.lines=46, out.width="100%"}
 # Load packages
 library(ggspatial)
 library(sf)
@@ -258,8 +336,7 @@ precincts <- st_read("https://mpjashby.github.io/crimemappingdata/nyc_precincts.
 shootings_kde <- shootings |> 
   hotspot_kde(
     grid = hotspot_grid(precincts, cell_size = 100), 
-    bandwidth_adjust = 0.33,
-    quiet = TRUE
+    bandwidth_adjust = 0.33
   ) |> 
   st_intersection(precincts)
 
@@ -322,6 +399,71 @@ different ways, including `comma()` to add thousands separators to numbers and
 `dollar()` to format numbers as values in dollars or other currencies. There is 
 a [full list of `scales` functions on the package website](https://scales.r-lib.org/reference/).
 
+
+<!--
+
+You might have noticed on the map above that the density layer does not cover
+the whole surface of the map. This is because there are some parts of the Bronx
+that did not have any shootings in 2019. Some of these areas are under water,
+for example. Since our map is about shootings, it would be better if we zoomed
+in to just the places where shootings occurred. We can restrict the map to just
+the area within the bounding box of the shootings data (i.e. the smallest
+rectangle that contains all the shooting locations) by adding the `coord_sf()`
+function to the stack of functions that we add to `ggplot()`. Since we have 
+already saved the map as an object, we will do this by adding the new function 
+to the existing object and then saving the result as a new object.
+
+```{r title-exercise2, exercise=TRUE, exercise.lines=17, warning=FALSE, message=FALSE, out.width="100%"}
+#| echo: false
+#| eval: false
+
+# Find the bounding box of shootings -- we have to convert the shootings data to
+# an SF object to do this
+shootings_bbox <- shootings |> 
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) |> 
+  st_bbox()
+
+# Use coord_sf() to crop our map to the bounding box of shootings
+shootings_map <- first_shootings_map +
+  coord_sf(
+    xlim = shootings_bbox[c(1, 3)], 
+    ylim = shootings_bbox[c(2, 4)], 
+    expand = FALSE
+  )
+
+# Display the map
+shootings_map
+```
+
+<div class="box extra-detail">
+
+<h5 id="title-box1-title" class="box-title">What does the code 
+`shootings_bbox[c(1, 3)]` do?</h5>
+
+<div id="title-box1" class="box-content">
+
+You might be wondering what the code `shootings_bbox[c(1, 3)]` does. When an R
+object contains a sequence of values (`shootings_bbox` contains four values), we
+can usually extract one value or more values by adding square brackets to the
+end of the object name and then giving the index number of the value we want 
+(the first value has the index 1, the second value has the index 2, etc.). This
+is called *subsetting*. To subset a single value, just give the index inside
+the square brackets, e.g. `shootings_bbox[1]`. To get subset multiple values,
+give a vector (created with `c()`) of index numbers for the values you want.
+R can subset values in lots of different ways for different types of values,
+but we will discuss it in further detail if we need to later on.
+
+</div>
+
+</div>
+
+<script>
+$("#title-box1-title").click(function () { $("#section-title-box1").toggle("slow") })
+</script>
+
+-->
+
+
 We now have a basic map of shootings in the Bronx. This map isn't good enough on
 its own, but we can use it to learn how to add supporting elements to a map.
 
@@ -350,7 +492,7 @@ from the `ggplot2` package. We can use `labs()` to add labels to various
 different parts of a map or plot, but for now we will just use the argument
 `title` to set the title. 
 
-```{r title-exercise3, echo=TRUE}
+```{r title-exercise3, exercise=TRUE, warning=FALSE, message=FALSE, out.width="100%"}
 shootings_map + 
   labs(title = "Shootings are focused in the South Bronx")
 ```
@@ -364,11 +506,28 @@ into lines of a given maximum length (specified using the `wrap` argument).
 
 When you use a declarative title for your map, it is often useful to provide a
 _subtitle_ containing descriptive information. Adding a subtitle is very easy 
-using the `subtitle` argument to the `labs()` function. Use the code above as a 
-template to add a subtitle to your map explaining that the map shows fatal and 
-non-fatal shootings in 2019. 
+using the `subtitle` argument to the `labs()` function. 
 
-```{r title-exercise4-hint-2, echo=TRUE}
+
+::: {.tutorial}
+
+Use the code above as a template to add a subtitle to your map explaining that 
+the map shows fatal and non-fatal shootings in 2019. 
+
+```{r title-exercise4, exercise=TRUE, warning=FALSE, message=FALSE, out.width="100%"}
+
+```
+
+```{r title-exercise4-hint-1}
+# Add a `subtitle` argument to the labs() function
+shootings_map + 
+  labs(title = "Shootings are focused in the South Bronx")
+```
+
+:::
+
+
+```{r title-exercise4-hint-2}
 shootings_map + 
   labs(
     title = "Shootings are focused in the South Bronx",
@@ -385,7 +544,7 @@ the author, date and source of the data to a map or chart. We can put any
 information we like into the caption, using `str_wrap()` or the new-line 
 character `\n` if necessary to stop the text overflowing the map.
 
-```{r title-exercise5, echo=TRUE}
+```{r title-exercise5, exercise=TRUE, warning=FALSE, message=FALSE, out.width="100%"}
 shootings_map + 
   labs(
     title = "Shootings are focused in the South Bronx",
@@ -412,6 +571,7 @@ library we could have just used the code `{today()}`, but since we do not need
 any other functions from `lubridate` for this analysis, we instead do not load
 the package but call the function by specifying which package it comes from 
 using the `::` operator as in the previous tutorial.
+
 
 ::: {.box .notewell}
 
@@ -469,7 +629,7 @@ the caption text to a lighter grey and makes the text smaller relative to the
 default using the helper function `rel()` (for relative sizing) -- `0.7` means
 the text will be 70% as big as it would have been by default.
 
-```{r title-exercise6, echo=TRUE}
+```{r title-exercise6, exercise=TRUE, warning=FALSE, message=FALSE, out.width="100%"}
 shootings_map +
   labs(
     title = "Shootings are focused in the South Bronx",
@@ -502,17 +662,78 @@ text in different ways. As well as `colour` (or `color`, either is fine) and
 The `margin` argument controls the space around the text. It is easiest to
 specify the value of `margin` using the helper function `margin()` designed for
 that purpose. You specify the top, right, bottom and left margin separately in
-that order -- to remember the order, think '**tr**ou**bl**e'.
+that order -- to remember the order, think '**tr**ou**bl**e'. The following code 
+changes the margin around the map subtitle. 
 
-The following code changes the margin around the map subtitle. Change this code
-so that it *also* makes the subtitle 80% of the default size *and* changes the
-caption so that it is left aligned.
+
+::: {.tutorial}
+
+Change this code so that it *also* makes the subtitle 80% of the default size 
+*and* changes the caption so that it is left aligned.
+
+```{r title-exercise7, exercise=TRUE, exercise.lines=17, warning=FALSE, message=FALSE, out.width="100%"}
+shootings_map +
+  labs(
+    title = "Shootings are focused in the South Bronx",
+    subtitle = "Fatal and non-fatal shootings recorded by NYC Police, 2019",
+    caption = str_glue(
+      "Author: Joe Bloggs, Date produced: {lubridate::today()},\n",
+      "Data: https://data.cityofnewyork.us/d/833y-fsy8\n",
+      "Map data from OpenStreetMap"
+    )
+  ) +
+  theme(
+    plot.subtitle = element_text(margin = margin(3, 0, 6, 0, unit = "pt")),
+    plot.caption = element_text(colour = "grey50", size = rel(0.7))
+  )
+```
+
+```{r title-exercise7-hint-1}
+# Change the line `plot.subtitle = element_text(margin = margin(3, 0, 6, 0)),`
+# so that it also specifies the text size
+```
+
+```{r title-exercise7-hint-2}
+# You can change the size relative to the default using the `rel()` function
+```
+
+```{r title-exercise7-hint-3}
+# Change the line `plot.caption = element_text(colour = "grey50", size = rel(0.7))`
+# so that it also specifies the horizontal alignment of the text
+```
+
+```{r title-exercise7-hint-4}
+# You can change the horizontal justification of the caption using the `hjust`
+# argument to the `element_text()` function
+```
+
+:::
+
+
+```{r title-exercise7-hint-5}
+shootings_map +
+  labs(
+    title = "Shootings are focused in the South Bronx",
+    subtitle = "Fatal and non-fatal shootings recorded by NYC Police, 2019",
+    caption = str_glue(
+      "Author: Joe Bloggs, Date produced: {lubridate::today()},\n",
+      "Data: https://data.cityofnewyork.us/d/833y-fsy8\n",
+      "Map data from OpenStreetMap"
+    )
+  ) +
+  theme(
+    # Make the plot subtitle smaller and adjust the margin around it
+    plot.subtitle = element_text(size = rel(0.8), margin = margin(3, 0, 6, 0)),
+    # Make the legend caption smaller, left-aligned and a lighter shade of grey
+    plot.caption = element_text(colour = "grey67", size = rel(0.7), hjust = 0)
+  )
+```
 
 Now that we have finished setting the text elements for our map, we can save it
 as a new object that we can use as the basis for the other objects we want to
 add.
 
-```{r title-exercise8, echo=TRUE}
+```{r title-exercise8, exercise=TRUE, exercise.lines=17, warning=FALSE, message=FALSE, out.width="100%"}
 shootings_map_titled <- shootings_map +
   labs(
     title = "Shootings are focused in the South Bronx",
@@ -562,7 +783,7 @@ right-hand side of the plot. We only need to do this because we previously
 suppressed the legend -- if we had not suppressed it, the legend would have
 appeared automatically.
 
-```{r legend-exercise1, echo=TRUE}
+```{r legend-exercise1, exercise=TRUE, warning=FALSE, message=FALSE, out.width="100%"}
 shootings_map_titled +
   theme(
     # Position the legend on the right-hand side of the plot
@@ -590,7 +811,7 @@ separate legends explaining each aesthetic. In this case, we've specified that
 the `kde` column in the data should control the fill aesthetic, so we can set 
 the title for that legend using `fill = "title we want"`.
 
-```{r legend-exercise2, echo=TRUE}
+```{r legend-exercise2, exercise=TRUE, warning=FALSE, message=FALSE, out.width="100%"}
 shootings_map_titled +
   labs(fill = "kernel density\nof shootings") +
   theme(
@@ -617,7 +838,7 @@ text (the numbers next to the colour bar), using the `legend.text` and
 In both cases, we will set the text size relative to the default text size using
 the `rel()` helper function.
 
-```{r legend-exercise3, echo=TRUE}
+```{r legend-exercise3, exercise=TRUE, warning=FALSE, message=FALSE, out.width="100%"}
 shootings_map_titled +
   labs(fill = "kernel density\nof shootings") +
   theme(
@@ -654,10 +875,31 @@ function to extract the `kde` column from the `shootings_kde` dataset and then
 use the `range()` function to find the minimum and maximum values. Putting this
 together, we get `breaks = range(pull(shootings_kde, "kde"))`.
 
+```{r legend-exercise4, exercise=TRUE, exercise.lines=19, out.width="100%"}
+shootings_map_titled +
+  scale_fill_distiller(
+    palette = "PuBu", 
+    direction = 1, 
+    # Specify label positions as the minimum and maximum KDE values
+    breaks = range(pull(shootings_kde, "kde")), 
+    labels = c("lower", "higher")
+  ) +
+  labs(fill = "kernel density\nof shootings") +
+  theme(
+    # Make the legend colour bar smaller
+    legend.key.width = unit(0.8, "lines"),
+    # Position the legend on the right-hand side of the plot
+    legend.position = "right",
+    # Make the legend text smaller
+    legend.text = element_text(size = rel(0.7)),
+    legend.title = element_text(size = rel(0.8))
+  )
+```
+
 Now that we have finished formatting the legend, we can again store the
 map as an object that we can build on further.
 
-```{r legend-exercise6, echo=TRUE}
+```{r legend-exercise6, exercise=TRUE, exercise.lines=19}
 shootings_map_legend <- shootings_map_titled +
   scale_fill_distiller(
     palette = "PuBu", 
@@ -691,7 +933,7 @@ which can both be added using functions from the `ggspatial` package.
 To add a scale bar, we can add a call to the `annotation_scale()` function to 
 our existing `ggplot()` object.
 
-```{r scales-exercise1, echo=TRUE}
+```{r scales-exercise1, exercise=TRUE, warning=FALSE, message=FALSE, out.width="100%"}
 shootings_map_legend +
   annotation_scale()
 ```
@@ -707,7 +949,7 @@ can change the scale bar using arguments to the `annotation_scale()` function:
     prominent line-and-tick-marks style, and
   * `location = "br"` moves the scale bar to the bottom-right corner of the map.
 
-```{r scales-exercise2, echo=TRUE}
+```{r scales-exercise2, exercise=TRUE, warning=FALSE, message=FALSE, out.width="100%"}
 shootings_map_legend +
   annotation_scale(width_hint = 1/5, style = "ticks", location = "br")
 ```
@@ -727,7 +969,7 @@ we will change its appearance using the arguments:
     arrow, at the same time reducing the font size (measured in points) of the N 
     symbol.
 
-```{r scales-exercise3, echo=TRUE}
+```{r scales-exercise3, exercise=TRUE, warning=FALSE, message=FALSE, out.width="100%"}
 shootings_map_legend +
   annotation_scale(width_hint = 1/5, style = "ticks", location = "br") +
   annotation_north_arrow(
@@ -764,7 +1006,7 @@ is easier to keep track of all the elements that way. In the code below all the
 elements have been combined into a single `ggplot()` stack.
 :::
 
-```{r save-exercise1, echo=TRUE}
+```{r save-exercise1, exercise=TRUE, exercise.lines=44, warning=FALSE, message=FALSE, out.width="100%"}
 shootings_map_final <- ggplot() +
   annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
   geom_sf(aes(fill = kde), data = shootings_kde, alpha = 0.75, colour = NA) +
@@ -822,7 +1064,7 @@ by default, but you can change this to either centimetres (using
 
 To share our map with others, lets save it as an A4-size PDF.
 
-```r
+```{r save-exercise2, exercise=TRUE, warning=FALSE, message=FALSE}
 ggsave(
   "bronx_shootings_2019.pdf", 
   plot = shootings_map_final, 

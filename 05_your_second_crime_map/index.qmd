@@ -6,11 +6,18 @@ library(patchwork)
 library(sf)
 library(sfhotspot)
 library(tidyverse)
-knitr::opts_chunk$set(echo = FALSE)
+
+quiz <- function(...) invisible(NULL)
+question <- function(...) invisible(NULL)
 
 # read data
 thefts <- janitor::clean_names(read_csv("https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"))
-thefts_sf <- st_as_sf(thefts, coords = c("x", "y"), crs = 32610, remove = FALSE)
+thefts_sf <- st_as_sf(
+  thefts, 
+  coords = c("x", "y"), 
+  crs = "EPSG:32610", 
+  remove = FALSE
+)
 bike_thefts <- filter(thefts_sf, type == "Theft of Bicycle")
 bike_theft_density <- hotspot_kde(bike_thefts, quiet = TRUE)
 bike_theft_density_bw_half <- hotspot_kde(
@@ -39,7 +46,6 @@ and press `Enter`.
 :::
 
 
-
 ## Introduction
 
 We've already produced a simple map of crime in a neighbourhood, but we skipped
@@ -50,12 +56,65 @@ In this tutorial we will make a map of bicycle thefts in Vancouver in 2020. At
 the end of this tutorial, the final map will look something like this. We will
 then improve it further in a future tutorial on what makes a good map.
 
-![](images/vancouver_bike_thefts.jpg){width=80%}
+```{r make-final-map, eval=FALSE, out.width="100%"}
+#| echo: false
+
+# THIS CODE DOES NOT RUN BY DEFAULT, SINCE LEARNR SOMETIMES RUNS THE CODE EVEN
+# WHEN THE FILE ALREADY EXISTS, AND THE FILE WILL ALWAYS EXIST WHEN THE TUTORIAL
+# IS DEPLOYED. THE CODE IS JUST HERE FOR FUTURE REFERENCE IF NEEDED. 
+# 
+# IF YOU NEED TO RE-CREATE THE FILE, RUN THE CODE MANUALLY.
+
+bike_theft_density_bw_half_clipped <- bike_thefts |> 
+  hotspot_kde(bandwidth_adjust = 0.5) |> 
+  st_transform("EPSG:4326") |> 
+  st_intersection(nbhds)
+
+vancouver_bike_thefts_map <- ggplot() +
+  annotation_map_tile(type = "cartolight", zoom = 13) +
+  geom_sf(
+    aes(fill = kde), 
+    data = bike_theft_density_bw_half_clipped, 
+    alpha = 0.67, 
+    colour = NA
+  ) +
+  geom_sf(data = nbhds, colour = "seagreen3", fill = NA) +
+  geom_sf_label(
+    aes(label = str_wrap(name, 10)), 
+    data = nbhds, 
+    alpha = 0.5,
+    colour = "seagreen", 
+    lineheight = 1, 
+    size = 2.5,
+    label.size = NA
+  ) +
+  scale_fill_distiller(direction = 1) +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    panel.border = element_rect(colour = "black", fill = NA, linewidth = 0.5)
+  )
+
+# Save the map
+ggsave(
+  here::here("inst/tutorials/05_your_second_crime_map/images/vancouver_bike_thefts.jpg"), 
+  vancouver_bike_thefts_map,
+  width = 800 / 150, 
+  dpi = 150
+)
+```
+
+```{r show-final-map, fig.align="center", out.width="80%"}
+#| echo: false
+
+knitr::include_graphics("images/vancouver_bike_thefts.jpg")
+```
+
 
 Before we get into the detail of how to make this map, watch this video that
 goes over the main points of the code we will use:
 
-{{< https://youtu.be/apKeAbHuNFo >}}
+{{< video https://youtu.be/apKeAbHuNFo >}}
 
 
 ## Handling spatial data
@@ -109,7 +168,7 @@ particular point (such as the location of a crime or the corner of a building)
 is located. Watch this video to find out about the different co-ordinate 
 systems we can use to do this.
 
-{{< video https://youtu.be/A6HH-zDl9a0 >}}
+{{< https://youtu.be/A6HH-zDl9a0 >}}
 
 
 ## Spatial data in R
@@ -157,11 +216,22 @@ The file is located at:
 https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz
 ```
 
-Thinking back to the tutorial on data wrangling, we can use the `read_csv()`
-function from the `readr` package to load this data into a tibble called 
-`thefts`
 
-```r
+::: {.tutorial}
+
+Thinking back to the tutorial on data wrangling, what R code is needed to load
+this data into a tibble called `thefts`? Type the R code into the box below and 
+click `Run Code` to see the result. If you need help, click the `Solution`
+button, but try to remember the code (or look up your notes from the 
+data-wrangling tutorial) before revealing the solution -- you'll learn a lot
+more that way. Remember to load any necessary packages using the `library()`
+function!
+
+```{r read-exercise1, exercise=TRUE}
+
+```
+
+```{r read-exercise1-solution}
 # Since the data are stored in a regular CSV file, we can use the `read_csv()`
 # function from the readr package to read the file, and the assignment operator
 # `<-` to store the data in the object `thefts`. `read_csv()` can read directly
@@ -171,12 +241,20 @@ library(tidyverse)
 thefts <- read_csv("https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz")
 ```
 
-Now that you have stored the data in the `thefts` object, we can use the 
-`head()` function to view the first few rows of data.
+Now that you have stored the data in the `thefts` object, what code is needed
+to view the first few rows of data? Type the code into the box and click 
+`Run Code` to check the result.
 
-```r
+```{r read-exercise2, exercise=TRUE}
+
+```
+
+```{r read-exercise2-solution}
 head(thefts)
 ```
+
+:::
+
 
 The data consists of `r scales::comma(nrow(thefts))` rows, each representing one
 theft. Before we can map this data, we will need to do some minor data wrangling
@@ -210,7 +288,7 @@ functions from the `janitor` package, so instead of loading the whole package we
 will use this one function directly. To do this, we write the function name with
 the package name added to the front, separated by two colons `::`.
 
-```r
+```{r read-exercise3, exercise=TRUE, exercise.setup="read-exercise1-solution"}
 thefts <- janitor::clean_names(thefts)
 
 head(thefts)
@@ -245,7 +323,9 @@ the British National Grid that we have already learned about, but for any part
 of the globe. The 'N' at the end of the zone name refers to the northern
 hemisphere.
 
+
 ::: {.box .notewell}
+
 In almost all cases, co-ordinate reference systems only work for the part of the
 world that they were designed for. So we should not use the UTM zone 10N 
 co-ordinate system to map data outside the area for which it was designed 
@@ -254,9 +334,92 @@ Vancouver, and the part of Canada directly north of Vancouver extending as far
 as the north pole). If we were to use the UTM zone 10N co-ordinate system for
 data from another part of the world, we would be very likely to get error 
 messages or strange results.
+
 :::
 
-![](images/utm_vancouver.jpg){width=80%}
+
+```{r make-utm-map, eval=FALSE}
+#| echo: false
+
+vancouver <- st_point(c(-123.1207, 49.2827), dim = "XY") |> 
+  st_sfc(crs = "EPSG:4326") |> 
+  st_as_sf() |> 
+  mutate(name = "Vancouver")
+
+land <- suppressMessages(rnaturalearth::ne_download(
+  scale = 50, type = "land", category = "physical", returnclass = "sf"
+)) |> 
+  filter(scalerank == 0)
+
+utm_zones <- st_read("https://opendata.arcgis.com/datasets/b294795270aa4fb3bd25286bf09edc51_0.geojson") |> 
+  janitor::clean_names() |> 
+  mutate(
+    hemisphere = ifelse(row %in% LETTERS[1:13], "southern", "northern")
+  ) |> 
+  select(zone, hemisphere, geometry) |> 
+  group_by(zone, hemisphere) |> 
+  summarise()
+
+bbox <- utm_zones |> 
+  filter(zone %in% 8:12, hemisphere == "northern") |> 
+  st_buffer(1) |> 
+  st_bbox()
+
+utm_centroids <- utm_zones |> 
+  st_centroid() |> 
+  mutate(
+    zone_label = str_glue("zone {zone}{str_to_upper(str_sub(hemisphere, 1, 1))}")
+  ) |> 
+  st_crop(bbox)
+
+utm_vancouver <- ggplot() +
+  geom_sf(data = st_crop(land, bbox), colour = NA) +
+  geom_sf(
+    data = st_crop(st_cast(utm_zones, "LINESTRING"), bbox), 
+    colour = "grey50", 
+    fill = NA, 
+    linetype = "24"
+  ) +
+  geom_sf(
+    data = st_crop(filter(utm_zones, zone == 10, hemisphere == "northern"), bbox),
+    colour = "black", 
+    fill = NA
+  ) +
+  geom_sf(data = vancouver) +
+  geom_sf_text(aes(label = zone_label), data = utm_centroids) +
+  geom_sf_label(
+    aes(label = name), 
+    data = vancouver, 
+    fill = "grey90", 
+    hjust = 0, 
+    nudge_x = 0.3, 
+    label.size = 0
+  ) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(limits = c(41, 51), expand = c(0, 0)) +
+  labs(
+    title = "Vancouver in UTM zone 10N", 
+    x = NULL, 
+    y = NULL,
+    caption = "Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com"
+  ) +
+  theme_minimal() +
+  theme(plot.caption = element_text(colour = "grey50"))
+
+ggsave(
+  "images/utm_vancouver.jpg", 
+  utm_vancouver, 
+  width = 800 / 150, 
+  height = 500 / 150, 
+  dpi = 150
+)
+```
+
+```{r utm-map, fig.align="center", out.width="80%"}
+#| echo: false
+
+knitr::include_graphics("images/utm_vancouver.jpg")
+```
 
 We can convert the `thefts` tibble to an SF object using the `st_as_sf()`
 function (remember, all functions in the `sf` package start with `st_`, which
@@ -271,7 +434,7 @@ reference number for a particular co-ordinate system that R can look up in a
 database to get the information needed to display the data on a map. The EPSG
 code for the UTM zone 10N is `EPSG:32610`.
 
-```{r echo=TRUE}
+```{r convert-exercise1, exercise=TRUE}
 library(sf)
 
 thefts_sf <- st_as_sf(thefts, coords = c("x", "y"), crs = "EPSG:32610")
@@ -285,9 +448,33 @@ This column contains the co-ordinates of each bike theft in a format that R
 recognises represent locations on the surface of the earth, which means they can
 be used to make maps.
 
+<!--
+<div class="box extra-detail">
+
+<h5 id="convert-box1-title" class="box-title">Why did we use the `remove = FALSE` argument?</h5>
+
+<div id="convert-box1" class="box-content">
+
+We need to specify `remove = FALSE` because by-default the `st_as_sf()` function
+removes the data columns containing map co-ordinates once it has converted them
+into a geometric object stored in the geometry column. This is useful for making
+very-large datasets smaller (by removing redundant columns), but in this case we
+will need the `x` and `y` columns later, so we want to keep them in the dataset.
+
+</div>
+
+</div>
+
+<script>
+$("#convert-box1-title").click(function () { $("#section-convert-box1").toggle("slow") })
+</script>
+-->
 
 
 ### Finding bike thefts in our data
+
+
+::: {.tutorial}
 
 If you look through the contents of the `thefts_sf` object, you will see that 
 not all of the rows relate to bicycle thefts. The `type` column shows that the
@@ -296,19 +483,74 @@ rows containing bicycle thefts, which function from the `dplyr` package
 would we used? If you need help, you can think back to the data-wrangling 
 tutorial or have a look at the [Data transformation with dplyr cheat sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf).
 
-Thinking back to the chapter on data wrangling, we can use the `filter()`
-function to choose only the rows of data that relate to bicycle
-thefts and store it in a new object called `bike_thefts`
 
-```r
+```{r filter-quiz}
+#| echo: false
+
+question(
+  "Which function from the `dplyr` package should we use to remove all the rows from our dataset except those for bicycle thefts?",
+  answer("`filter()`", correct = TRUE),
+  answer("`select()`", message = "Nearly right. The `select()` function allows us to choose particular *columns* from our dataset -- in this case, we want to choose particular *rows*."),
+  answer("`mutate()`", message = "Not quite. The `mutate()` function allows us to change the values in existing columns in our dataset, or add new columns."),
+  answer("`summarise()`", message = "Not quite. The `summarsise()` function allows us to create summaries of the values of columns, either for the whole dataset or groups of rows."),
+  correct = random_praise(),
+  incorrect = random_encouragement(),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+
+Type the code needed to choose only the rows of data that relate to bicycle
+thefts and store it in a new object called `bike_thefts`. If you get stuck, you 
+can click the `Hint` buttons to get help, but try to find the answer on your own 
+first!
+
+```{r filter-exercise1, exercise = TRUE}
+
+```
+
+```{r filter-exercise1-hint-1}
+# Use the `filter()` function to choose particular rows in a dataset. The syntax 
+# for `filter()` is `filter(dataset, column_name == "value")`
+```
+
+```{r filter-exercise1-hint-2}
+# In the code `filter(dataset, column_name == "value")`, replace `dataset` with
+# the name of the SF object you have already created from the `thefts` tibble,
+# `column_name` with the name of the column containing the offence type and
+# `value` with the offence type for bicycle theft.
+```
+
+```{r filter-exercise1-hint-3}
+# The correct code to store only bicycle thefts in a new object is:
 bike_thefts <- filter(thefts_sf, type == "Theft of Bicycle")
 ```
 
 Our data is now ready for us to make our crime map!
 
-::: {.credits}
-[Stats Illustrations by Allison Horst](https://github.com/allisonhorst/stats-illustrations) licensed under the [Creative Commons Attribution licence](https://github.com/allisonhorst/stats-illustrations/blob/master/license).
 :::
+
+
+::: {.book}
+
+If you look through the contents of the `thefts_sf` object, you will see that 
+not all of the rows relate to bicycle thefts. The `type` column shows that the
+dataset also includes thefts from vehicles, for example. To choose only those 
+rows containing bicycle thefts, we can use the `filter()` function from the
+`dplyr` package.
+
+```{r}
+bike_thefts <- filter(thefts_sf, type == "Theft of Bicycle")
+```
+
+
+:::
+
+
+<p class="credits">
+[Stats Illustrations by Allison Horst](https://github.com/allisonhorst/stats-illustrations) licensed under the [Creative Commons Attribution licence](https://github.com/allisonhorst/stats-illustrations/blob/master/license).
+</p>
 
 
 
@@ -316,9 +558,21 @@ Our data is now ready for us to make our crime map!
 
 Now that we have our data, we can use it to create a map of bicycle theft in
 Vancouver. Before we start, let's take another look at our dataset so that we
-know which columns contain which data.
+know which columns contain which data. 
 
-```{r echo=TRUE}
+
+::: {.tutorial}
+
+Type the code needed to view the first few rows of the `bike_thefts` dataset.
+
+```{r map-exercise1, exercise=TRUE}
+
+```
+
+:::
+
+
+```{r map-exercise1-solution}
 head(bike_thefts)
 ```
 
@@ -351,6 +605,8 @@ chart showing a scatter plot, you use the `geom_point()` function, while if you
 want to make a line chart you use `geom_line()`.
 
 ```{r example-charts, fig.align="center", out.width="80%"}
+#| echo: false
+
 ex_point <- tibble(x = rnorm(50, 10, 1), y = rnorm(50, 10, 1)) |> 
   ggplot(aes(x = x, y = y)) +
   geom_point() +
@@ -373,7 +629,7 @@ is designed to add spatial data (in the form of an SF object such as our
 `bike_thefts` data) to a chart, making it into a map. So to simply plot the
 points in our bicycle-theft data, we can use the code:
 
-```{r echo=TRUE}
+```{r map-exercise2, exercise=TRUE}
 library(ggplot2)
 
 ggplot() +
@@ -433,14 +689,44 @@ ggplot(data.frame(shape = 0:24), aes(0, 0, shape = shape)) +
   theme_void()
 ```
 
-We can change the code above so that the points on our map are red squares 
-instead of black circles (`red` is one of the 657 R colour names).
+
+::: {.tutorial}
+
+Change the code below so that the points on our map are red squares instead of
+black circles (`red` is one of the 657 R colour names) and click `Run Code` to
+see the result. Use the hints if you need help, but try to work it out on your
+own first.
 
 
-```{r echo=TRUE}
-# Add the arguments `shape = 15` and `colour = "red"` to the `geom_sf()`
+```{r map-exercise3, exercise=TRUE}
 ggplot() +
-  geom_sf(data = bike_thefts, shape = 15, colour = "red")
+  geom_sf(data = bike_thefts)
+```
+
+```{r map-exercise3-hint-1}
+# Use the `shape` aesthetic to change the points to squares and the `colour`
+# aesthetic to change the point colour to red
+```
+
+```{r map-exercise3-hint-2}
+# Add the arguments `shape = 15` and `colour = "red"` to the `geom_sf()`
+# function, remembering that arguments are separated by commas
+```
+
+:::
+
+
+::: {.book}
+
+We can change the black circles on the map above into red squares using the
+`colour` and `shape` arguments to the `geom_sf()` function.
+
+:::
+
+
+```{r map-exercise3-hint-3}
+ggplot() +
+  geom_sf(data = bike_thefts, colour = "red", shape = 15)
 ```
 
 As we have said, this basic map is not very useful. We can see that there seems 
@@ -453,12 +739,27 @@ see whether there is one crime at a particular location or 100.
 
 One way to deal with this problem is to make the points semi-transparent so that
 overlapping points appear darker. This often works better if we also make the 
-points slightly smaller at the same time. We can use the `alpha` and `size` 
+points slightly smaller at the same time. You can use the `alpha` and `size` 
 aesthetics to make the points smaller (relative to the default for points of 
-`size = 1`) and semi-transparent.
+`size = 1`) and semi-transparent. 
 
-```{r echo=TRUE}
-# Which values you chose will depend on your personal aesthetic preferences,
+
+::: {.tutorial}
+
+Keep changing the values of the two aesthetics until you are happy that the map 
+makes it as easy as possible to see the distribution of bike thefts in 
+Vancouver.
+
+```{r map-exercise4, exercise=TRUE}
+ggplot() +
+  geom_sf(data = bike_thefts)
+```
+
+:::
+
+
+```{r map-exercise4-solution}
+# Which values you've chosen will depend on your personal aesthetic preferences,
 # but these values produce a map that makes it easier to see the distribution of
 # points
 ggplot() +
@@ -475,6 +776,7 @@ location. To make our map useful, we need to use a different technique.
 ## Mapping crime density
 
 ::: {.box .notewell}
+
 Unless we want to produce a map of only a very small number of crimes (like the
 Atlanta downtown homicides map we produced in a previous tutorial), it is 
 unlikely that a point map will be very useful. 
@@ -482,7 +784,9 @@ unlikely that a point map will be very useful.
 In fact, **if you find yourself making map with each crime represented by a 
 separate point, you should probably stop and ask yourself if that is really the 
 best way to achieve your goal**.
+
 :::
+
 
 A better way to show where crime is concentrated on a map is to work out the
 *density* of crime in each area and then map that density. By *density* in this
@@ -505,7 +809,167 @@ technique called *kernel density estimation* (KDE). To do this, R must:
 This procedure has the effect of producing a smooth surface representing crime
 density. 
 
-![](images/kde_explanation.jpg){width=80%}
+```{r kde-explanation, eval=FALSE}
+#| echo: false
+
+random_points <- tibble(x = rnorm(50, sd = 50), y = rnorm(50, sd = 50)) |> 
+  filter(between(x, -40 * 3, 40 * 3), between(y, -40 * 3, 40 * 3)) |> 
+  # Choose any projected CRS
+  st_as_sf(coords = c("x", "y"), crs = "EPSG:27700")
+
+# Create the grid separately, so we can be sure what limits it will have
+random_points_grid <- tibble(
+  x = c(-40 * 3, 40 * 3, 40 * 3, -40 * 3), 
+  y = c(-40 * 3, 40 * 3, -40 * 3, 40 * 3)
+) |> 
+  st_as_sf(coords = c("x", "y"), crs = "EPSG:27700") |> 
+  hotspot_grid(cell_size = 40)
+
+random_points_kde <- random_points |> 
+  hotspot_kde(grid = random_points_grid) |> 
+  mutate(
+    label_n = if_else(n > 0, n, NA_real_),
+    label_kde = scales::number(kde, accuracy = 0.1)
+  )
+
+random_points_kde[, c("coord_x", "coord_y")] <- random_points_kde |> 
+  st_centroid() |> 
+  st_coordinates()
+
+kde_explanation <- list()
+
+kde_explanation[["1"]] <- ggplot(random_points_kde) +
+  geom_sf(data = random_points, colour = "grey50") +
+  geom_sf(fill = NA) +
+  labs(
+    title = str_wrap(
+      "1. Create a grid of cells covering the area covered by the points", 
+      width = 36
+    )
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(lineheight = 0.9, size = 10)
+  )
+
+kde_explanation[["2"]] <- ggplot(random_points_kde) +
+  geom_sf(data = random_points, colour = "grey75") +
+  geom_sf(fill = NA) +
+  geom_sf_label(
+    aes(label = label_n), 
+    na.rm = TRUE, 
+    fill = NA, 
+    label.size = NA,
+    size = 2.25
+  ) +
+  labs(
+    title = str_wrap(
+      "2. Count the number of points in each cell", 
+      width = 36
+    )
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(lineheight = 0.9, size = 10)
+  )
+
+kde_aw <- arrow(length = unit(1.5, "mm"), type = "closed")
+
+kde_explanation[["3"]] <- ggplot() +
+  geom_sf(data = random_points_kde, fill = NA) +
+  geom_sf(
+    data = filter(
+      random_points_kde, 
+      between(coord_x, -20, 20), 
+      between(coord_y, -20, 20)
+    ), 
+    colour = "darkred",
+    fill = NA,
+    linewidth = 1
+  ) +
+  geom_sf_label(
+    aes(label = n), 
+    data = filter(
+      random_points_kde, 
+      between(coord_x, -40, 40), 
+      between(coord_y, -40, 40)
+    ), 
+    na.rm = TRUE, 
+    fill = NA, 
+    label.size = NA,
+    size = 2.25
+  ) +
+  geom_circle(
+    aes(x0 = x, y0 = y, r = r), 
+    data = tibble(x = 0, y = 0, r = 40 * 1.5), 
+    colour = "darkred", 
+    fill = NA, 
+    linetype = "23", 
+    size = 1.5
+  ) +
+  # Right
+  annotate("segment", x = 12, y = 0, xend = 32, yend = 0, arrow = kde_aw, colour = "grey40") +
+  # Lower right
+  annotate("segment", x = 10, y = -10, xend = 30, yend = -30, arrow = kde_aw, colour = "grey40") +
+  # Bottom
+  annotate("segment", x = 0, y = -12, xend = 0, yend = -32, arrow = kde_aw, colour = "grey40") +
+  # Lower left
+  annotate("segment", x = -10, y = -10, xend = -30, yend = -30, arrow = kde_aw, colour = "grey40") +
+  # Left
+  annotate("segment", x = -12, y = 0, xend = -32, yend = 0, arrow = kde_aw, colour = "grey40") +
+  # Upper left
+  annotate("segment", x = -10, y = 10, xend = -30, yend = 30, arrow = kde_aw, colour = "grey40") +
+  # Top
+  annotate("segment", x = 0, y = 12, xend = 0, yend = 32, arrow = kde_aw, colour = "grey40") +
+  # Upper right
+  annotate("segment", x = 10, y = 10, xend = 30, yend = 30, arrow = kde_aw, colour = "grey40") +
+  labs(
+    title = str_wrap(
+      "3. Identify the counts in the cells surrounding each cell", 
+      width = 36
+    )
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(lineheight = 0.9, size = 10)
+  )
+
+kde_explanation[["4"]] <- ggplot(random_points_kde) +
+  geom_sf(fill = NA) +
+  geom_sf_label(
+    aes(label = label_kde), 
+    na.rm = TRUE, 
+    fill = NA, 
+    label.size = NA,
+    size = 2.25
+  ) +
+  labs(
+    title = str_wrap(
+      "4. Use those counts to estimate the underlying density", 
+      width = 36
+    )
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(lineheight = 0.9, size = 10)
+  )
+
+kde_explanation_plot <- wrap_plots(kde_explanation, ncol = 2)
+
+ggsave(
+  "inst/tutorials/05_your_second_crime_map/images/kde_explanation.jpg", 
+  kde_explanation_plot, 
+  width = 800 / 150, 
+  height = 800 / 150, 
+  dpi = 150
+)
+```
+
+```{r kde-explanation-map, fig.align="center", out.width="80%"}
+#| echo: false
+
+knitr::include_graphics("images/kde_explanation.jpg")
+```
 
 We don't need to worry at this point about the details of how the counts are 
 used to estimate the density of crimes -- we will return to this in a later
@@ -525,7 +989,7 @@ of offences for each cell in a grid. `hotspot_kde()` automatically chooses how
 big the cells in the grid should be (but we can set this ourselves if we want 
 to).
 
-```{r echo=TRUE, include=FALSE}
+```{r map-exercise5, exercise=TRUE, message=FALSE}
 library(sfhotspot)
 
 bike_theft_density <- hotspot_kde(bike_thefts)
@@ -543,7 +1007,7 @@ Since `hotspot_kde()` produces an SF object, we can add it to a map using the
 fill colour of each grid cell should be determined based on the values of the
 `kde` column in the `bike_theft_density` object.
 
-```{r echo=TRUE}
+```{r map-exercise6, exercise=TRUE}
 ggplot() +
   geom_sf(aes(fill = kde), data = bike_theft_density, colour = NA)
 ```
@@ -559,6 +1023,7 @@ called `type`, we could use `aes(colour = type)`.
 
 
 ::: {.box .notewell}
+
 When should you specify the values of aesthetics inside `aes()` and when should
 you do it outside `aes()`?
 
@@ -572,6 +1037,7 @@ you do it outside `aes()`?
     shapes in a layer according to values of the `month` column in the data.
 
 **`aes()` must be the _first_ argument in the `geom_*()` function.**
+
 :::
 
 
@@ -600,7 +1066,47 @@ automatically. The maps below show how changing these defaults changes the
 appearance of our map (with the legend and axes removed to make the small maps 
 clearer).
 
-![](images/bandwidth.jpg){width=100%}
+```{r make-kde-bandwidth-map, eval=FALSE}
+#| echo: false
+
+bw_plot <- tibble(
+  cell_size = rep(c(0.5, 1, 2), 5), 
+  bw = rep(c(4, 2, 1, 0.5, 0.25), each = 3)
+) |> 
+  pmap(function(cell_size, bw) {
+    bike_thefts |> 
+      hotspot_kde(
+        cell_size = sfhotspot:::set_cell_size(bike_thefts) * 4 * cell_size, 
+        bandwidth_adjust = bw, 
+        quiet = TRUE
+      ) |> 
+      ggplot() +
+      geom_sf(aes(fill = kde), colour = NA) +
+      labs(
+        subtitle = str_glue("{cell_size}x default cell size\n{bw}x default bandwidth")
+      ) +
+      theme_void() +
+      theme(
+        legend.position = "none",
+        plot.subtitle = element_text(size = 10)
+      )
+  }) |> 
+  wrap_plots(ncol = 3)
+
+ggsave(
+  "inst/tutorials/05_your_second_crime_map/images/bandwidth.jpg", 
+  bw_plot, 
+  width = 800 / 150, 
+  height = 1200 / 150, 
+  dpi = 150
+)
+```
+
+```{r kde-bandwidth-map, fig.align="center", out.width="100%"}
+#| echo: false
+
+knitr::include_graphics("images/bandwidth.jpg")
+```
 
 By looking at the maps on the right-hand side, you can see that reducing the
 number of grid cells leads to a map that looks blocky and lacks information.
@@ -619,26 +1125,31 @@ Although you can set the bandwidth manually using the `bandwidth` argument to
 `hotspot_kde()`, you will almost never want to do this. Instead, you can vary 
 the bandwidth relative to the automatically chosen default bandwidth by
 using the `bandwidth_adjust` argument. For example, if you wanted to see more 
-detail in your map by using a smaller bandwidth, you could use `adjust = 0.5` 
-or `adjust = 1/2` to set the bandwidth to be half of the default bandwidth.
+detail in your map by using a smaller bandwidth, you could use `adjust = 0.75` 
+or `adjust = 3/4` to set the bandwidth to be three-quarters of the default 
+bandwidth.
 
-```r
+
+::: {.tutorial}
+
+Change the code below so that the bandwidth is half of the default
+bandwidth.
+
+```{r map-exercise7, exercise=TRUE, exercise.lines=5}
+hotspot_kde(bike_thefts) |> 
+  ggplot() +
+  geom_sf(aes(fill = kde), colour = NA)
+```
+
+:::
+
+
+```{r map-exercise7-solution}
 # You can set either `bandwidth_adjust = 1/2` or `bandwidth_adjust = 0.5` to 
 # get the same result
-hotspot_kde(bike_thefts, bandwidth_adjust = 1/2) |> 
+hotspot_kde(bike_thefts, bandwidth_adjust = 2/3) |> 
   ggplot() +
   geom_sf(aes(fill = kde), colour = NA)
-```
-
-```{r include=FALSE}
-# SUPPRESS THE PROGRESS BAR OUTPUT FROM `hotspot_kde()`
-hotspot_kde_silent_1 <- hotspot_kde(bike_thefts, bandwidth_adjust = 1/2) |> 
-  ggplot() +
-  geom_sf(aes(fill = kde), colour = NA)
-```
-
-```{r}
-hotspot_kde_silent_1
 ```
 
 Comparing this map to the first density map we produced, we can see that the
@@ -679,6 +1190,8 @@ colour schemes (or palettes) available in `scales_fill_distiller()`, each with a
 name:
 
 ```{r kde-colours, out.width="100%"}
+#| echo: false
+
 RColorBrewer::brewer.pal.info |> 
   rownames_to_column(var = "name") |> 
   filter(colorblind, category == "seq") |> 
@@ -696,6 +1209,7 @@ RColorBrewer::brewer.pal.info |>
   }) |> 
   wrap_plots()
 ```
+
 
 ::: {.box .notewell}
 
@@ -721,11 +1235,14 @@ meaningful order.
 
 :::
 
+
 By default, `scale_fill_distiller()` sets the _lowest_ values to have the 
 darkest colour. This often does not work well, but we can change this by 
 setting the argument `direction = 1`. I recommend doing this in all cases.
 
 ```{r direction-map, fig.align='center', out.width="80%"}
+#| echo: false
+
 direction_map_neg <- ggplot() +
   geom_sf(aes(fill = kde), data = bike_theft_density_bw_half, colour = NA) +
   scale_fill_distiller(direction = -1) +
@@ -748,11 +1265,115 @@ stack of pancakes, with each new function being placed on the top of the stack.
 To change the colour of our map, we just add `scale_fill_distiller()` to the 
 existing stack. 
 
-```{r echo=TRUE}
+```{r map-exercise8, exercise=TRUE}
 ggplot() +
   geom_sf(aes(fill = kde), data = bike_theft_density, colour = NA) +
   scale_fill_distiller(palette = "Oranges", direction = 1)
 ```
+
+Try changing the code in this box to use one of the other Color Brewer palettes
+above. Which palette do you like best?
+
+
+::: {.tutorial}
+
+### Check your understanding
+
+Answer the following questions to check your understanding of what we've learned
+in this section of this tutorial. If you get a question wrong, you can keep 
+trying until you get the right answer.
+
+```{r map-quiz}
+#| echo: false
+
+quiz(
+  caption = "",
+  
+  question(
+    "What R package do we use to make density maps using the `hotspot_kde()` function?",
+    answer("`sfhotspot`", correct = TRUE),
+    answer(
+      "`ggplot2`",
+      message = "`hotspot_kde()` produces SF objects that can be plotted using `ggplot()`, but the `hotspot_kde()` function itself does not come from the `ggplot2` package."
+    ),
+    answer(
+      "`sf`",
+      message = "The `sf` package contains lots of functions for manipulating spatial data, but not for making maps."
+    ),
+    answer(
+      "`dplyr`",
+      message = "The `dplyr` package contains functions for data wrangling, which we learned about in a previous tutorial."
+    ),
+    correct = random_praise(),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  
+  question(
+    "What is the `bandwidth_adjust` argument of the function `hotspot_kde()` used for?",
+    answer(
+      "Adjusting the bandwidth of the density layer, relative to the default bandwidth.",
+      correct = TRUE
+    ),
+    answer(
+      "Adjusting the cell size of the density layer, relative to the default cell size.",
+      message = "We use the `cell_size` argument of `hotspot_kde()` to change the default cell size."
+    ),
+    answer(
+      "Adjusting the colour scheme used to represent density on the map.",
+      message = "We use the `scale_fill_distiller()` function to adjust the colour scheme used to represent density on the map."
+    ),
+    correct = random_praise(),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  
+  question(
+    "In what circumstances is it appropriate to use a diverging colour scale, e.g. one that goes from blue to white to red?",
+    answer("To represent variation in a variable above and below a meaningful mid-point.", correct = TRUE),
+    answer(
+      "To represent variation in a variable from low to high.",
+      message = "In this case, you should use a sequential scale unless there is a mid-point in the scale that is meaningful."
+    ),
+    answer(
+      "To represent variation in a variable from high to low.",
+      message = "In this case, you should use a sequential scale unless there is a mid-point in the scale that is meaningful."
+    ),
+    answer(
+      "To represent categories in a categorical variable.",
+      message = "In this case, you should use a categorical colour scheme if the categories have no natural order and a sequential colour scheme if the categories do have a natural order."
+    ),
+    correct = random_praise(),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+  
+)
+```
+
+You now have the skills to make a density map of bike theft in Vancouver. Using
+your notes and the code in this section, complete the code needed to 
+generate a map with: 
+
+  1. kernel density calculated using the default number of grid cells and *half* 
+     the default band width, and
+  2. the density shown using the Color Brewer 'Purples' colour scheme.
+
+Remember the data are stored in an object called `bike_thefts`.
+
+```{r basemap-exercise1, exercise=TRUE, exercise.lines=5}
+
+```
+
+```{r basemap-exercise1-solution}
+bike_theft_density_bw_half <- hotspot_kde(bike_thefts, bandwidth_adjust = 0.5)
+
+ggplot() +
+  geom_sf(aes(fill = kde), data = bike_theft_density_bw_half, colour = NA) +
+  scale_fill_distiller(palette = "Purples", direction = 1)
+```
+
+:::
 
 
 ## Clipping map layers
@@ -774,6 +1395,103 @@ Fortunately, we can easily deal with this problem by _clipping_ the KDE layer to
 the boundary of the area for which we have crime data. This means we will only
 show densities for cells for which we actually have data.
 
+```{r make-clipping-explanation-map, eval=FALSE}
+#| echo: false
+
+library(ggtext)
+
+bike_thefts_sample <- bike_thefts |> 
+  st_intersection(vancouver_boundary) |> 
+  sample_frac(0.2)
+bike_theft_hull <- bike_thefts_sample |> 
+  st_intersection(vancouver_boundary) |> 
+  st_union() |> 
+  st_convex_hull()
+bike_theft_sample_kde <- hotspot_kde(bike_thefts_sample, bandwidth_adjust = 0.5)
+
+
+# First map ----
+
+hull_map_1 <- ggplot() +
+  geom_sf(data = bike_theft_hull, colour = NA, fill = NA) +
+  geom_sf(data = vancouver_boundary, colour = NA, fill = NA) +
+  geom_sf(data = bike_thefts_sample, colour = "grey50", size = 0.1) +
+  geom_sf(data = vancouver_boundary, colour = "seagreen", fill = NA, linewidth = 0.75) +
+  theme_void()
+
+ggsave(
+  "inst/tutorials/05_your_second_crime_map/images/hull_clipping_1.jpg", 
+  hull_map_1, 
+  width = 400 / 150, 
+  height = 300 / 150, 
+  dpi = 150
+)
+
+
+# Second map ----
+
+hull_map_2 <- ggplot() +
+  geom_sf(data = bike_theft_hull, colour = NA, fill = NA) +
+  geom_sf(data = vancouver_boundary, colour = NA, fill = NA) +
+  geom_sf(data = bike_thefts_sample, colour = "grey50", size = 0.1) +
+  geom_sf(data = bike_theft_hull, colour = "seagreen", fill = NA, linetype = "33", linewidth = 0.75) +
+  theme_void()
+
+ggsave(
+  "inst/tutorials/05_your_second_crime_map/images/hull_clipping_2.jpg", 
+  hull_map_2, 
+  width = 400 / 150, 
+  height = 300 / 150, 
+  dpi = 150
+)
+
+
+# Third map ----
+
+hull_map_3 <- ggplot() +
+  geom_sf(data = bike_theft_hull, colour = NA, fill = NA) +
+  geom_sf(data = vancouver_boundary, colour = NA, fill = NA) +
+  geom_sf(data = st_difference(bike_theft_hull, vancouver_boundary), colour = NA, fill = "seagreen3") +
+  geom_sf(data = bike_thefts_sample, colour = "grey50", size = 0.1) +
+  geom_sf(data = vancouver_boundary, colour = "seagreen", fill = NA, linewidth = 0.75) +
+  geom_sf(data = bike_theft_hull, colour = "seagreen", fill = NA, linetype = "33", linewidth = 0.75) +
+  theme_void()
+
+ggsave(
+  "inst/tutorials/05_your_second_crime_map/images/hull_clipping_3.jpg", 
+  hull_map_3, 
+  width = 400 / 150, 
+  height = 300 / 150, 
+  dpi = 150
+)
+
+
+# Fourth map ----
+
+hull_map_4 <- ggplot() +
+  geom_sf(data = bike_theft_hull, colour = NA, fill = NA) +
+  geom_sf(data = vancouver_boundary, colour = NA, fill = NA) +
+  geom_sf(
+    aes(fill = kde),
+    data = st_intersection(bike_theft_sample_kde, vancouver_boundary),
+    colour = NA
+  ) +
+  geom_sf(data = vancouver_boundary, colour = "seagreen", fill = NA, linewidth = 0.75) +
+  geom_sf(data = bike_theft_hull, colour = "seagreen", fill = NA, linetype = "33", linewidth = 0.75) +
+  scale_fill_distiller(palette = "Greens", direction = 1) +
+  theme_void() +
+  theme(
+    legend.position = "none"
+  )
+
+ggsave(
+  "inst/tutorials/05_your_second_crime_map/images/hull_clipping_4.jpg", 
+  hull_map_4, 
+  width = 400 / 150, 
+  height = 300 / 150, 
+  dpi = 150
+)
+```
 
 :::: {style="display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 2em;"}
 
@@ -829,6 +1547,7 @@ which we have data.
 
 ::::
 
+
 We can clip the KDE layer produced by `hotspot_kde()` to the boundary of the
 City of Vancouver using the `st_intersection()` function from the `sf` package.
 `st_intersection()` removes any rows from the dataset provided as the first
@@ -839,7 +1558,7 @@ bike thefts stored in the `bike_theft_density` object, we can use
 `st_intersection()` to remove any cells in `bike_theft_density` that are 
 outside `vancouver_boundary`.
 
-```{r echo=TRUE}
+```{r clip-exercise1, exercise=TRUE}
 # Before clipping the KDE layer, we can use the `nrow()` function to check how
 # many cells there are in the KDE grid (each grid cell is one row in the data)
 nrow(bike_theft_density)
@@ -906,7 +1625,7 @@ We can add a base map using `annotation_map_tile()` function from the
 `annotation_map_tile()` to a `ggplot()` stack in the same way that we would
 add `geom_*()` functions.
 
-```{r echo=TRUE}
+```{r basemap-exercise2, exercise=TRUE, exercise.lines=19}
 ggplot() +
   # We add the base map to the `ggplot()` stack *before* the density layer 
   # because we want the base map to appear below the density layer
@@ -938,7 +1657,44 @@ using the `zoom` argument.
 For example, these maps show the same area around the UCL Jill Dando Institute
 with base maps at different zoom levels.
 
-![](images/zoom.jpg){width=100%}
+```{r make-zoom-map, eval=FALSE}
+#| echo: false
+
+jdi <- c(-0.12979747256628416, 51.52501948280652) |> 
+  st_point() |> 
+  st_sfc(crs = "EPSG:4326") |> 
+  st_transform("EPSG:27700") |> 
+  st_buffer(2000)
+
+zoom_map <- map(9:14, function(zoom_level) {
+  ggplot() + 
+    annotation_map_tile(zoom = zoom_level, progress = "none") +
+    geom_sf(data = jdi, colour = NA, fill = NA) +
+    labs(subtitle = str_glue("zoom level {zoom_level}")) +
+    theme_void() +
+    theme(
+      panel.border = element_rect(colour = "black", fill = NA, linewidth = 1),
+      plot.margin = unit(c(6, 6, 6, 6), "pt"),
+      plot.subtitle = element_text(size = 7)
+    )
+}) |> 
+  wrap_plots(ncol = 3)
+
+ggsave(
+  "inst/tutorials/05_your_second_crime_map/images/zoom.jpg", 
+  zoom_map, 
+  width = 1200, 
+  height = 900, 
+  units = "px",
+  dpi = "retina"
+)
+```
+
+```{r zoom-map, fig.align="center", out.width="100%"}
+#| echo: false
+
+knitr::include_graphics("images/zoom.jpg")
+```
 
 Choosing the right zoom level is a matter of balancing the level of detail in 
 the map and the clarity of the image. In the maps above, zoom levels less than 
@@ -955,7 +1711,46 @@ the default style used by Open Street Map, the organisation that provides the
 map data. We can specify which style of base map we want using the `type`
 argument to `annotation_map_tile()`.
 
-![](images/basemaps.jpg){width=100%}
+```{r make-basemaps-map, eval=FALSE}
+#| echo: false
+
+basemaps_map <- c(
+  "osm", "opencycle", "hotstyle",  "stamenbw", "osmtransport", 
+  "thunderforestlandscape", "thunderforestoutdoors", "cartodark", "cartolight"
+) |> 
+  map(function (x) {
+    ggplot() +
+      annotation_map_tile(type = x, zoom = 13) +
+      geom_sf(data = jdi, colour = NA, fill = NA) +
+      labs(subtitle = if_else(x == "osm", "osm (default)", x)) +
+      theme_void() +
+      theme(
+        panel.border = element_rect(colour = "black", fill = NA, size = 1),
+        plot.margin = unit(c(6, 6, 6, 6), "pt"),
+        plot.subtitle = element_text(size = 7)
+      )
+  }) |> 
+  wrap_plots(ncol = 3)
+
+ggsave(
+  "inst/tutorials/05_your_second_crime_map/images/basemaps.jpg", 
+  basemaps_map, 
+  width = 1200, 
+  height = 1200, 
+  units = "px",
+  dpi = "retina"
+)
+```
+
+```{r basemaps-map, fig.align="center", out.width="100%"}
+#| echo: false
+
+knitr::include_graphics("images/basemaps.jpg")
+```
+
+You may want to experiment with different base map styles by using the `type`
+argument to `annotation_map_tile()` in the map above, e.g. using 
+`annotation_map_tile(type = "cartolight", zoomin = 0)`.
 
 
 
@@ -981,7 +1776,7 @@ spatial data format, so it can be read by `st_read()`. We can then add the layer
 to our map using `geom_sf()` in the same way as for the point layer in our first
 map.
 
-```{r echo=TRUE}
+```{r layers-exercise1, exercise=TRUE}
 # This is a version of the data saved from the City of Vancouver website, so 
 # that this tutorial continues to work if the original data is ever removed
 nbhds <- st_read("https://mpjashby.github.io/crimemappingdata/vancouver_neighbourhoods.geojson")
@@ -1016,7 +1811,7 @@ control the appearance of the labels:
 
 Putting all this together, we get our final map:
 
-```r
+```{r layers-exercise2, exercise=TRUE, exercise.lines=52, message=FALSE, warning=FALSE, out.width="100%"}
 # Load packages
 library(ggspatial)
 library(sf)
@@ -1070,53 +1865,6 @@ ggplot() +
   theme_void()
 ```
 
-```{r include=FALSE}
-# SUPPRESS PROGRESS BAR PRODUCED BY `hotspot_kde()`
-
-# Create KDE layer
-bike_theft_density_clip <- bike_thefts |> 
-  # Calculate density
-  hotspot_kde(bandwidth_adjust = 0.5) |> 
-  # Transform the density data to use the same CRS as the neighbourhoods layer
-  st_transform("EPSG:4326") |> 
-  # Clip the density layer to the area for which we have data
-  st_intersection(nbhds)
-
-# Plot map
-hotspot_kde_silent_2 <- ggplot() +
-  # Add base map
-  annotation_map_tile(type = "cartolight", zoomin = 0) +
-  # Add density layer
-  geom_sf(
-    aes(fill = kde), 
-    data = bike_theft_density_clip, 
-    alpha = 0.75, 
-    colour = NA
-  ) +
-  # Add neighbourhood boundaries (note `fill = NA` stops the neighbourhood
-  # shapes being filled with a colour, which would obscure the density layer
-  # underneath)
-  geom_sf(data = nbhds, colour = "seagreen3", fill = NA) +
-  # Add neighbourhood names
-  geom_sf_label(
-    aes(label = str_wrap(name, 10)), 
-    data = nbhds, 
-    alpha = 0.5,
-    colour = "seagreen", 
-    lineheight = 1, 
-    size = 2.5,
-    label.size = NA
-  ) +
-  # Set the colour scale
-  scale_fill_distiller(direction = 1) +
-  # Remove the axes, legend and other elements from the map that we don't need
-  theme_void()
-```
-
-```{r}
-hotspot_kde_silent_2
-```
-
 Now we can see that bike theft in Vancouver is heavily concentrated in a handful
 of neighbourhoods, particularly the Downtown and West End neighbourhoods. This
 map is much more useful than the first map that we produced in this tutorial
@@ -1140,10 +1888,12 @@ educate people on how best to protect their bikes.
 
 :::
 
+
 In the next tutorial, we will learn how to improve this map further.
 
 
 ::: {.box .reading}
+
 You can find out more about some of the things we have covered in this tutorial
 using these resources:
 
@@ -1154,4 +1904,6 @@ using these resources:
     by Hadley Wickham and Garrett Grolemund.
   * Learn more about making maps using simple features in [Chapter 1 of *Spatial Data Science*](https://keen-swartz-3146c4.netlify.app/intro.html)
     by Edzer Pebesma and Roger Bivand.
+
 :::
+

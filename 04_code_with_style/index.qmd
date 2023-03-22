@@ -5,8 +5,8 @@
 library(lubridate)
 library(tidyverse)
 
-# set knitr options
-knitr::opts_chunk$set(echo = FALSE)
+quiz <- function(...) invisible(NULL)
+question <- function(...) invisible(NULL)
 ```
 
 **Learn how to format your code so that it is easier to read, both for you and for others.**
@@ -50,13 +50,11 @@ a condensed version of the [The tidyverse style guide](https://style.tidyverse.o
 which provides lots more detail. All the code you see in the tutorials in this
 course was written following this style guide.
 
-<p class="full-width-image"><img src="images/on_perl.png" alt="A three-panel cartoon. In the first panel a man says 'this is the worst code I've ever seen'. In the second panel, he says 'the comments are useless, there's variables that do nothing …' and 'what depraved madman wrote this?'. In the third panel, he says 'wait, I did this two weeks ago'."></p>
+<p class="full-width-image"><img src="https://github.com/mpjashby/crimemapping/raw/main/inst/tutorials/04_code_with_style/images/on_perl.png" alt="A three-panel cartoon. In the first panel a man says 'this is the worst code I've ever seen'. In the second panel, he says 'the comments are useless, there's variables that do nothing …' and 'what depraved madman wrote this?'. In the third panel, he says 'wait, I did this two weeks ago'."></p>
 
-::: {.credits}
+<p class="credits">
 [On Perl](http://www.threepanelsoul.com/comic/on-perl) from [Three Panel Soul](http://www.threepanelsoul.com/). Some content on this page contains public sector information licensed under the Open Government Licence v3.
-:::
-
-
+</p>
 
 
 
@@ -176,12 +174,43 @@ between headings by clicking on the Jump To menu at the bottom of the Source
 panel in RStudio:
 
 ```{r jump-to-menu, fig.align="center"}
+#| echo: false
+
 knitr::include_graphics("images/rstudio_code_sections.png")
 ```
 
 In general, writing code that is readable is more important than writing the
 shortest code possible, so don't be afraid to let your code breathe by using
 space to separate your code into meaningful chunks.
+
+```{r comments-quiz}
+#| echo: false
+
+quiz(
+  caption = "",
+  
+  question(
+    "How do you write a comment in R?",
+    answer("A `#` symbol followed by a space. Comments should start with a capital leter. e.g. `# Load data`", correct = TRUE),
+    answer(
+      "A `#` symbol, followed by no spaces. Comments should start with a capital letter. e.g. `#Load data`",
+      message = "Not quite right: comments should start with a capital letter but should also have a space after the initial `#` symbol."
+    ),
+    answer(
+      "A `#` symbol followed by a space. Comments should be in lower case unless the comment is long enough to contain more than one sentence. e.g. `# load data`",
+      message = "Not quite right: comments should start with a space after the initial `#` symbol, but the comment text should start with a capital letter."
+    ),
+    answer(
+      "A `#` symbol, followed by no spaces. Comments should be in lower case unless the comment is long enough to contain more than one sentence. e.g. `#load data`",
+      message = "Not quite right: comments should start with a space after the initial `#` symbol and the comment text should start with a capital letter."
+    ),
+    correct = random_praise(),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+  
+)
+```
 
 
 
@@ -201,6 +230,8 @@ you will find coding easier if you follow a few conventions.
     names makes reading your code more difficult.
 
 ```{r snake-case, fig.align="center", out.width="80%"}
+#| echo: false
+
 knitr::include_graphics("images/snake_case.jpeg")
 ```
 
@@ -211,9 +242,39 @@ don't just call it `data` (not least because there is a function named `data()`)
 but instead give it a name like `atlanta_crimes` if it contains (for example) 
 crime data from Atlanta.
 
-::: {.credits}
+```{r naming-quiz}
+#| echo: false
+
+quiz(
+  caption = "",
+  
+  question(
+    "Which of these would be a good name for an object containing data on homicides in Abu Dhabi?",
+    answer("`abu_dhabi_homicides`", correct = TRUE),
+    answer(
+      "`homicide_data`",
+      message = "Not quite right: this name is in the right case, but could better describe the data it contains."
+    ),
+    answer(
+      "`Abu_Dhabi_homicides`",
+      message = "Not quite right: it's best to only use lower-case characters in variables, so you don't need to remember whether you've used upper- or lower-case characters."
+    ),
+    answer(
+      "`abu-dhabi-homicides`",
+      message = "This will cause an error because the `-` indicates R should subtract one value from another."
+    ),
+    correct = random_praise(),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+  
+)
+```
+
+
+<p class="credits">
 [Stats Illustrations by Allison Horst](https://github.com/allisonhorst/stats-illustrations) licensed under the [Creative Commons Attribution licence](https://github.com/allisonhorst/stats-illustrations/blob/master/license).
-:::
+</p>
 
 
 
@@ -263,6 +324,22 @@ mean(x, na.rm=TRUE)
 
 Although there are some operators that shouldn't have spaces around them: `$`, 
 `@`, `[`, `[[`, `^`, `:` and `?`.
+
+```{r spacing-quiz}
+#| echo: false
+
+question(
+  "Which of these lines of code has the optimal spacing?",
+  answer('`burglary <- filter(crimes, type == "burglary")`', correct = TRUE),
+  answer('`burglary<-filter(crimes,type=="burglary")`'),
+  answer('`burglary <- filter(crimes, type=="burglary")`'),
+  answer('`burglary <- filter ( crimes , type == "burglary" )`'),
+  correct = random_praise(),
+  incorrect = random_encouragement(),
+  allow_retry = TRUE,
+  random_answer_order = FALSE
+)
+```
 
 
 
@@ -335,6 +412,32 @@ a_function() |>
 Once you learn about other types of R code you will need to know how best to 
 style it, but we will learn about those when we need to.
 
+```{r functions-quiz}
+#| echo: false
+
+quiz(
+  caption = "",
+  
+  question(
+    "If a function is written across several lines of code because it will not fit on one line, where should the closing parenthesis `)` at the end of the function be placed?",
+    answer("On a separate line, indented as much as the function name.", correct = TRUE),
+    answer(
+      "On a separate line, indented as much as the arguments on the lines above it.",
+      message = "Not quite right: the closing parenthesis should be a separate line, but indented as much as the function name so that you can easily see where the function begins and ends."
+    ),
+    answer("At the end of the final function argument, on the same line."),
+    answer(
+      "It doesn't matter where the closing parenthesis is placed as long as there is one.",
+      message = "While your code will wherever you place the closing parenthesis, the coding style guide introduced in this chapter is designed to make your code easier to read. This is important because if your code is easier to read that will make it easier to find and fix any mistakes in it."
+    ),
+    correct = random_praise(),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+  
+)
+```
+
 
 
 ## Styling your code automatically
@@ -349,6 +452,8 @@ your code by:
   3. clicking 'Style selection' in the 'Styler' section of the list of addins.
   
 ```{r styler-gif, fig.align="center"}
+#| echo: false
+
 knitr::include_graphics("images/styler.gif")
 ```
 
@@ -358,6 +463,7 @@ automatically indenting lines.
 
 
 ## In summary
+
 
 ::: {.box .welldone}
 
@@ -381,6 +487,7 @@ read some of these articles:
 :::
 
 
-::: {.credits}
+
+<p class="credits">
 [The tidyverse style guide](https://style.tidyverse.org/) licensed under the [Creative Commons Attribution-ShareAlike licence](https://github.com/tidyverse/style/blob/master/LICENSE.md).
-:::
+</p>

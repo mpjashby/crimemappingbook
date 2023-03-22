@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Learn crime mapping with R - 2&nbsp; Your first crime map</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../03_data_wrangling/index.html" rel="next">
+<link href="../01_getting_started/index.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script><!-- START OF INCLUDED HEADER --><!--
+This file contains code that will be included in the header of each page of the
+quarto book
+--><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script><!-- END OF INCLUDED HEADER --><link rel="stylesheet" href="../css/styles.css">
+<meta name="twitter:title" content="Learn crime mapping with R - 2&nbsp; Your first crime map">
+<meta name="twitter:description" content="Quickly walk (or jog) through the process of creating a complete crime map in R.">
+<meta name="twitter:card" content="summary">
+</head>
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }"><div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">
+<span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span>
+</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Learn crime mapping with R</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/mpjashby/crimemappingbook/" title="Source Code" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+    <a href="../learn_crime_mapping_with_r.epub" title="Download ePub" class="sidebar-tool px-1"><i class="bi bi-journal"></i></a>
+    <a href="" title="Share" id="sidebar-tool-dropdown-0" class="sidebar-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-share"></i></a>
+    <ul class="dropdown-menu" aria-labelledby="sidebar-tool-dropdown-0">
+<li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+            <i class="bi bi-bi-twitter pe-1"></i>
+          Twitter
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=%7Curl%7C">
+            <i class="bi bi-bi-facebook pe-1"></i>
+          Facebook
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+            <i class="bi bi-bi-linkedin pe-1"></i>
+          LinkedIn
+          </a>
+        </li>
+    </ul>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">Welcome!</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00_setup/index.html" class="sidebar-item-text sidebar-link">Install the software needed for this book</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_getting_started/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_your_first_crime_map/index.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_data_wrangling/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Wrangling data</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_code_with_style/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Code with style</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../05_your_second_crime_map/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Your second crime map</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../06_map_context/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Giving a map context</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../07_handling_bugs/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Appendices</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/read_functions.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Functions for reading data into R</span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+    <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">In this chapter</h2>
+   
+  <ul class="collapse">
+<li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="toc-section-number">2.1</span>  Introduction</a></li>
+  <li><a href="#loading-crime-data" id="toc-loading-crime-data" class="nav-link" data-scroll-target="#loading-crime-data"><span class="toc-section-number">2.2</span>  Loading crime data</a></li>
+  <li><a href="#processing-the-data" id="toc-processing-the-data" class="nav-link" data-scroll-target="#processing-the-data"><span class="toc-section-number">2.3</span>  Processing the data</a></li>
+  <li><a href="#draw-the-map" id="toc-draw-the-map" class="nav-link" data-scroll-target="#draw-the-map"><span class="toc-section-number">2.4</span>  Draw the map</a></li>
+  <li><a href="#putting-the-code-together" id="toc-putting-the-code-together" class="nav-link" data-scroll-target="#putting-the-code-together"><span class="toc-section-number">2.5</span>  Putting the code together</a></li>
+  <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="toc-section-number">2.6</span>  In summary</a></li>
+  </ul><div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+</nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title d-none d-lg-block">
+<span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span>
+</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header><p><strong>Quickly walk (or jog) through the process of creating a complete crime map in R.</strong></p>
+<div class="box load-tutorial">
+<p>To load the <a href="../#how-to-use-this-book">interactive tutorial</a> for this chapter, copy and paste the following code into the RStudio console:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>crimemapping<span class="sc">::</span><span class="fu">tutorial</span>(<span class="st">"02_your_first_crime_map"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>and press <code>Enter</code>.</p>
+</div>
+<section id="introduction" class="level2" data-number="2.1"><h2 data-number="2.1" class="anchored" data-anchor-id="introduction">
+<span class="header-section-number">2.1</span> Introduction</h2>
+<p>In this tutorial we will use R to produce a simple crime map. To do this we will skip over lots of the detail of how R works and what choices we should make in creating maps. We will return to all these details in future sessions, so for-now please don’t worry about understanding every single line of code. Everything will become clear as we work through the tutorials in this course.</p>
+<p>The map we’re going to create shows the locations of four homicides in downtown Atlanta in 2019:</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="images/atlanta_downtown_homicides.jpg" class="img-fluid figure-img" style="width:80.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>To start off with, watch this video that walks through the code needed to make this map. Don’t worry if there are things in the video that you don’t understand – the rest of this tutorial will explain each line of code in turn.</p>
+<div class="quarto-video ratio ratio-16x9"><iframe src="https://www.youtube.com/embed/ipyKc7-ReTs" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<section id="running-code-in-this-tutorial" class="level3 tutorial" data-number="2.1.1"><h3 data-number="2.1.1" class="anchored" data-anchor-id="running-code-in-this-tutorial">
+<span class="header-section-number">2.1.1</span> Running code in this tutorial</h3>
+<p>In the video above you saw code being run in RStudio, but to save switching between this tutorial and the RStudio console, the rest of this tutorial includes short chunks of R code that you can run directly in this window. We will use these chunks of code to walk through the code we need to produce a map. To run the code in each chunk, just click the <code>Run Code</code> button in the top-right corner of each chunk. If you want to re-run a chunk of code, you can click the <code>Start Over</code> button in the top-left corner of each chunk.</p>
+<p>When you click <code>Run Code</code>, the output of the chunk will appear below it (there may be a delay of a few seconds for more-complicated chunks).</p>
+<p>To try out using a code chunk, click <code>Run Code</code> below – you should see the message ‘Hello, world!’ printed below the box.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">message</span>(<span class="st">"Hello, world!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Hello, world!</code></pre>
+</div>
+</div>
+<p><code><a href="https://rdrr.io/r/base/message.html">message()</a></code> is a <em>function</em> – a piece of R code that does something. The thing that the <code>messages()</code> function does is simple: it prints a message on the screen.</p>
+<p>Now click <code>Continue</code> below to start this tutorial.</p>
+</section></section><section id="loading-crime-data" class="level2" data-number="2.2"><h2 data-number="2.2" class="anchored" data-anchor-id="loading-crime-data">
+<span class="header-section-number">2.2</span> Loading crime data</h2>
+<section id="loading-packages" class="level3" data-number="2.2.1"><h3 data-number="2.2.1" class="anchored" data-anchor-id="loading-packages">
+<span class="header-section-number">2.2.1</span> Loading packages</h3>
+<div class="tutorial">
+<p>Before we can work with our data, we first load packages of functions for use in the analysis. To load these packages, click <code>Run Code</code>. This will produce various messages, all of which you can safely ignore for now.</p>
+</div>
+<div class="book">
+<p>Before we can work with our data, we first load packages of functions for use in the analysis. Loading packages will produce various messages, all of which you can safely ignore for now.</p>
+</div>
+<div class="cell" data-exercise="true" data-exercise.lines="5">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Load the R packages we need to analyse this data</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">library</span>(ggspatial)</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="fu">library</span>(sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="box extra-detail">
+<h5 id="loading-box1-title" class="box-title anchored">
+What do these messages mean?
+</h5>
+<div id="loading-box1" class="box-content">
+<p>For now you don’t need to worry about these messages, but if you really want to know what they mean …</p>
+<!-- Some R packages make use of external services. For example, the `ggmap` package -->
+<!-- can make use of mapping services provided by Google. Google requires anyone -->
+<!-- using their service to comply with their terms of service, so the `ggmap` -->
+<!-- package prints a message when you load it to remind you of this. -->
+<p>Some R packages make use of other apps and utilities on your computer. For example, the <code>sf</code> package makes use of a piece of software call GDAL that is used for managing spatial data. So that you know which version of GDAL is being used, <code>sf</code> prints a message telling you.</p>
+<p>The <code>tidyverse</code> package itself loads several packages that are commonly used together for analysing data. When you load <code>tidyverse</code>, it will print a message telling you which packages it has loaded, along with the version number for each package. It also prints a message saying if any functions from the <code>tidyverse</code> packages have replaced (“masked”) any functions from packages that were previously loaded.</p>
+<p>In general, R packages use start-up messages to remind you of information that is not likely to be critical to your work, but which it might be useful to know at some point in the future.</p>
+</div>
+</div>
+<script>
+$("#loading-box1-title").click(function () { $("#section-loading-box1").toggle("slow") })
+</script></section><section id="loading-data" class="level3" data-number="2.2.2"><h3 data-number="2.2.2" class="anchored" data-anchor-id="loading-data">
+<span class="header-section-number">2.2.2</span> Loading data</h3>
+<p>The first task in creating any crime map is to obtain the crime and other data necessary. In many cases preparing the data for analysis and mapping will be a substantial task, but in this case we are going to use some pre-prepared crime data together with a pre-drawn street map (which we will ask R to download automatically when it draws the final map).</p>
+<p>The data we will use will be records of homicides in the Downtown neighbourhood of Atlanta, Georgia, in 2019. We can load the homicide data using the <code>read_csv()</code> function.</p>
+<div class="tutorial">
+<p>Click the <code>Run Code</code> button to load the data.</p>
+</div>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># Download the data directly from a URL and store it as an object</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>homicides <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 4 Columns: 4
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (1): label
+dbl (3): report_number, longitude, latitude
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<p>The <code>read_csv()</code> function loads data from a file and prints a message showing the name of each column in the data and the type of data (number, text etc.) in each column. Again, you can ignore this message for now.</p>
+<p>We have stored the results of the <code>read_csv()</code> function in an R <em>object</em> called <code>homicides</code>. An object in R is anything that stores any type of data. There are many types of objects, but for this tutorial we don’t need to explore these in any more detail. All you need to remember for now is that objects store data and functions do things.</p>
+</section><section id="viewing-the-data" class="level3" data-number="2.2.3"><h3 data-number="2.2.3" class="anchored" data-anchor-id="viewing-the-data">
+<span class="header-section-number">2.2.3</span> Viewing the data</h3>
+<p>To check the data has been loaded correctly, we can view the loaded data using the <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code> function. By default, <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code> prints the first six rows of the data stored in an object.</p>
+<div class="tutorial">
+<p>Click <code>Run Code</code> to view the data.</p>
+</div>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Display the data</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="fu">head</span>(homicides)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 4
+  report_number label                                            longi…¹ latit…²
+          &lt;dbl&gt; &lt;chr&gt;                                              &lt;dbl&gt;   &lt;dbl&gt;
+1     190191530 "400 W PEACHTREE ST NW\n19 January @ 15:00"        -84.4    33.8
+2     190570315 "171 AUBURN AVE NE @CITY WALK APARTMENTS\n26 Fe…   -84.4    33.8
+3     192160018 "241 FORSYTH ST SW\n 4 August @ 00:00"             -84.4    33.7
+4     193302338 "80 JESSE HILL JR DR SE @GRADY\n26 November @ 2…   -84.4    33.8
+# … with abbreviated variable names ¹​longitude, ²​latitude</code></pre>
+</div>
+</div>
+<p>The data contain four columns: a unique identifier for a homicide, a label describing when and where that homicide occurred, and the longitude and latitude of the homicide location. Depending on the width of your screen, you may need to click on the ‘▸’ symbol to view all the columns in the data. We can use this data to plot the homicides on a map.</p>
+<div class="box notewell">
+<p><strong>In the code <code>head(homicides)</code>, there are no quote marks around the word <code>homicides</code>.</strong></p>
+<p>Almost all programming languages will interpret words differently depending on whether they have quotes around them or not. In this case, if you type the code <code>head(homicides)</code> then R will print the first few rows of the data stored in the <code>homicides</code> object.</p>
+<p>On the other hand, if you type the code <code>head("homicides")</code> or <code>head('homicides')</code>, R will interpret this as an instruction to print the first few elements of the literal text ‘homicides’. Since the text ‘homicides’ contains only one element (more about that later), <code>head("homicides")</code> will just print the word ‘homicides’.</p>
+</div>
+</section></section><section id="processing-the-data" class="level2" data-number="2.3"><h2 data-number="2.3" class="anchored" data-anchor-id="processing-the-data">
+<span class="header-section-number">2.3</span> Processing the data</h2>
+<p>Before we can plot the data on a map, we have to complete some pre-processing steps. Having to process data before being able to analyse or visualise it is common in all types of data analysis, but spatial analysis often involves additional processing that takes account of the special features of spatial data.</p>
+<section id="converting-the-data-into-a-spatial-format" class="level3" data-number="2.3.1"><h3 data-number="2.3.1" class="anchored" data-anchor-id="converting-the-data-into-a-spatial-format">
+<span class="header-section-number">2.3.1</span> Converting the data into a spatial format</h3>
+<p>Two data-processing tasks are needed to produce this map. The first is to convert the data into a <em>simple features</em> or SF object, which is a special type of R object that can be used by functions that process spatial data. We will cover the details of the <code>st_as_sf()</code> function that converts our data into into an SF object later on.</p>
+<div class="tutorial">
+<p>Click <code>Run Code</code> to convert the data into SF format.</p>
+</div>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># Convert the data to a simple features object, which we can use in functions </span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="co"># that work on spatial data</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>homicides_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb11-4"><a href="#cb11-4"></a>  homicides, </span>
+<span id="cb11-5"><a href="#cb11-5"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), </span>
+<span id="cb11-6"><a href="#cb11-6"></a>  <span class="at">crs =</span> <span class="st">"EPSG:4326"</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="tutorial">
+<p>When you clicked <code>Run Code</code> above, it looked like nothing happened. This is because the results of the code are stored in the <code>homicides_sf</code> object. Do you remember what R code to use to view the first few rows of this object?</p>
+<p>Type that code into the box below and click <code>Run Code</code> to view the data.</p>
+</div>
+<div class="book">
+<p>When you run this code, it looks like nothing happens. This is because the results of the code are stored in the <code>homicides_sf</code> object. Do you remember what R code to use to view the first few rows of this object?</p>
+</div>
+<div class="box notewell">
+<p><strong>If you cannot remember how to view the contents of an object, you can click on the <code>Solution</code> button to get help.</strong></p>
+<p>As you go through these tutorials, try to avoid using the <code>Solution</code> button unless you have tried to input the correct code yourself. You will learn much more if you try to work out the answer by referring back to an earlier page in the tutorial or to your own notes.</p>
+<p>Don’t worry about getting the answer wrong – nothing bad will happen if you run the wrong code in this tutorial and you can have as many attempts as you like to get the answer right.</p>
+</div>
+<div class="cell" data-exercise="true">
+
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co"># To view an object in R, use the `head()` function. To view the contents of the</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="co"># homicides object, copy the next line into the box below and click Run Code.</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="fu">head</span>(homicides_sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 4 features and 2 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: -84.39732 ymin: 33.74827 xmax: -84.38185 ymax: 33.76614
+Geodetic CRS:  WGS 84
+# A tibble: 4 × 3
+  report_number label                                              geometry
+          &lt;dbl&gt; &lt;chr&gt;                                           &lt;POINT [°]&gt;
+1     190191530 "400 W PEACHTREE ST NW\n19 January @ …  (-84.3876 33.76614)
+2     190570315 "171 AUBURN AVE NE @CITY WALK APARTME… (-84.38185 33.75546)
+3     192160018 "241 FORSYTH ST SW\n 4 August @ 00:00" (-84.39732 33.74827)
+4     193302338 "80 JESSE HILL JR DR SE @GRADY\n26 No… (-84.38198 33.75168)</code></pre>
+</div>
+</div>
+<p>The data looks identical to before running the function <code>st_as_sf()</code>, except that the two columns called <code>longitude</code> and <code>latitude</code> have disappeared and there is now an extra column called <code>geometry</code>. The <code>geometry</code> column is important because lots of functions in R can recognise that the <code>geometry</code> column represents a location on the surface of the earth that can be used to analyse and map data in space.</p>
+</section><section id="changing-the-data-projection" class="level3" data-number="2.3.2"><h3 data-number="2.3.2" class="anchored" data-anchor-id="changing-the-data-projection">
+<span class="header-section-number">2.3.2</span> Changing the data projection</h3>
+<p>The <code>geometry</code> column in the <code>homicides_sf</code> object represents locations on the surface of the earth using <em>co-ordinates</em> (pairs of numbers). In this case, the co-ordinates are expressed as longitudes and latitudes, but there are lots of other types of co-ordinates (known as <em>co-ordinate reference systems</em>).</p>
+<p>We’ll learn more about co-ordinate reference systems in a future tutorial, but for now it’s enough to know that each different system has advantages and disadvantages. To make the homicide locations easier to add to a map, we are going to first <em>transform</em> the co-ordinates from longitudes and latitudes to a co-ordinate reference system that is specifically designed for mapping data for the US state of Georgia.</p>
+<p>To do this, we will use the <code>st_transform()</code> function, together with a code representing the co-ordinate reference system we want to use (you don’t need to understand this code at this stage).</p>
+<div class="cell" data-exercise="true" data-exercise.setup="exercise5-setup">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>homicides_sf_trans <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(homicides_sf, <span class="st">"EPSG:26967"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2"></a></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="fu">head</span>(homicides_sf_trans)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 4 features and 2 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 678630.6 ymin: 415608.5 xmax: 680065.5 ymax: 417588.4
+Projected CRS: NAD83 / Georgia West
+# A tibble: 4 × 3
+  report_number label                                             geometry
+          &lt;dbl&gt; &lt;chr&gt;                                          &lt;POINT [m]&gt;
+1     190191530 "400 W PEACHTREE ST NW\n19 January @ … (679535.4 417588.4)
+2     190570315 "171 AUBURN AVE NE @CITY WALK APARTME… (680065.5 416402.8)
+3     192160018 "241 FORSYTH ST SW\n 4 August @ 00:00" (678630.6 415608.5)
+4     193302338 "80 JESSE HILL JR DR SE @GRADY\n26 No… (680052.6 415983.6)</code></pre>
+</div>
+</div>
+<p>Again, the data looks almost identical, except that the values in the <code>geometry</code> column have changed (you don’t need to understand yet the details of how these numbers are different). Now that we’ve completed the data processing, we can go on to produce the map itself.</p>
+</section></section><section id="draw-the-map" class="level2" data-number="2.4"><h2 data-number="2.4" class="anchored" data-anchor-id="draw-the-map">
+<span class="header-section-number">2.4</span> Draw the map</h2>
+<p>We are now ready to produce our map of homicides in downtown Atlanta. So that people viewing the map will understand where the homicides occurred, we will plot the homicides on top of a base layer showing streets, parks and other geographic features obtained from an online web mapping service.</p>
+<div class="tutorial">
+<p>Click <code>Run Code</code> to create the map.</p>
+</div>
+<div class="cell" data-exercise="true" data-exercise.lines="15" data-fig.asp="1">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">ggplot</span>(homicides_sf_trans) <span class="sc">+</span> </span>
+<span id="cb16-2"><a href="#cb16-2"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"osm"</span>, <span class="at">zoom =</span> <span class="dv">15</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span> </span>
+<span id="cb16-3"><a href="#cb16-3"></a>  <span class="fu">geom_sf_label</span>(</span>
+<span id="cb16-4"><a href="#cb16-4"></a>    <span class="fu">aes</span>(<span class="at">label =</span> label), </span>
+<span id="cb16-5"><a href="#cb16-5"></a>    <span class="at">lineheight =</span> <span class="dv">1</span>, </span>
+<span id="cb16-6"><a href="#cb16-6"></a>    <span class="at">size =</span> <span class="fl">2.5</span>, </span>
+<span id="cb16-7"><a href="#cb16-7"></a>    <span class="at">hjust =</span> <span class="dv">1</span>, </span>
+<span id="cb16-8"><a href="#cb16-8"></a>    <span class="at">vjust =</span> <span class="dv">0</span></span>
+<span id="cb16-9"><a href="#cb16-9"></a>  ) <span class="sc">+</span> </span>
+<span id="cb16-10"><a href="#cb16-10"></a>  <span class="fu">geom_sf</span>(<span class="at">colour =</span> <span class="st">"white"</span>, <span class="at">fill =</span> <span class="st">"orangered1"</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span> </span>
+<span id="cb16-11"><a href="#cb16-11"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.5</span>)) <span class="sc">+</span> </span>
+<span id="cb16-12"><a href="#cb16-12"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.2</span>)) <span class="sc">+</span> </span>
+<span id="cb16-13"><a href="#cb16-13"></a>  <span class="fu">labs</span>(</span>
+<span id="cb16-14"><a href="#cb16-14"></a>    <span class="at">title =</span> <span class="st">"Homicides in Downtown Atlanta, 2019"</span>,</span>
+<span id="cb16-15"><a href="#cb16-15"></a>    <span class="at">caption =</span> <span class="st">"Background map by OpenStreetMap"</span></span>
+<span id="cb16-16"><a href="#cb16-16"></a>  ) <span class="sc">+</span></span>
+<span id="cb16-17"><a href="#cb16-17"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/exercise7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>You can change the appearance of the map by changing various parts of the code above. For example, you could change the colour of the points that mark the homicides by changing the code <code>fill = "orangered1"</code> to <code>fill = "mediumblue"</code>, or change the base map to a different style by changing the code <code>type = "osm"</code> to <code>type = "cartolight"</code>.</p>
+<div class="tutorial">
+<p>Each time you change part of the code, click <code>Run Code</code> to see what changes on the map.</p>
+<p>Once you have finished experimenting with changing the appearance of the map, click <code>Next Topic</code> below.</p>
+</div>
+</section><section id="putting-the-code-together" class="level2" data-number="2.5"><h2 data-number="2.5" class="anchored" data-anchor-id="putting-the-code-together">
+<span class="header-section-number">2.5</span> Putting the code together</h2>
+<p>Now we have walked through the different parts of the code, we can create a map from scratch in a single block of code. In this example, we will map homicides from in Glenrose Heights neighbourhood of Atlanta, and a different style of base map. Since the area covered by the map is derived from the data itself, the extent of the map will update automatically.</p>
+<div class="cell" data-exercise="true" data-exercise.lines="35" data-fig.asp="1">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="co"># Load the R packages we need to analyse this data</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="fu">library</span>(ggspatial)</span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="fu">library</span>(sf)</span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb17-5"><a href="#cb17-5"></a></span>
+<span id="cb17-6"><a href="#cb17-6"></a><span class="co"># Download the data directly from a URL and store it as an object</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a>homicides <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/glenrose_heights_homicides.csv"</span>)</span>
+<span id="cb17-8"><a href="#cb17-8"></a></span>
+<span id="cb17-9"><a href="#cb17-9"></a><span class="co"># Convert the data to a simple features object, which we can use in functions </span></span>
+<span id="cb17-10"><a href="#cb17-10"></a><span class="co"># that work on spatial data</span></span>
+<span id="cb17-11"><a href="#cb17-11"></a>homicides_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb17-12"><a href="#cb17-12"></a>  homicides, </span>
+<span id="cb17-13"><a href="#cb17-13"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), </span>
+<span id="cb17-14"><a href="#cb17-14"></a>  <span class="at">crs =</span> <span class="st">"EPSG:4326"</span></span>
+<span id="cb17-15"><a href="#cb17-15"></a>)</span>
+<span id="cb17-16"><a href="#cb17-16"></a></span>
+<span id="cb17-17"><a href="#cb17-17"></a><span class="co"># Transform the data to a co-ordinate reference system for the state of Georgia</span></span>
+<span id="cb17-18"><a href="#cb17-18"></a>homicides_sf_trans <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(homicides_sf, <span class="st">"EPSG:26967"</span>)</span>
+<span id="cb17-19"><a href="#cb17-19"></a></span>
+<span id="cb17-20"><a href="#cb17-20"></a><span class="co"># Plot the map</span></span>
+<span id="cb17-21"><a href="#cb17-21"></a><span class="fu">ggplot</span>(homicides_sf_trans) <span class="sc">+</span> </span>
+<span id="cb17-22"><a href="#cb17-22"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"osm"</span>, <span class="at">zoom =</span> <span class="dv">15</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span> </span>
+<span id="cb17-23"><a href="#cb17-23"></a>  <span class="fu">geom_sf_label</span>(</span>
+<span id="cb17-24"><a href="#cb17-24"></a>    <span class="fu">aes</span>(<span class="at">label =</span> label), </span>
+<span id="cb17-25"><a href="#cb17-25"></a>    <span class="at">lineheight =</span> <span class="dv">1</span>, </span>
+<span id="cb17-26"><a href="#cb17-26"></a>    <span class="at">size =</span> <span class="fl">2.5</span>, </span>
+<span id="cb17-27"><a href="#cb17-27"></a>    <span class="at">hjust =</span> <span class="dv">1</span>, </span>
+<span id="cb17-28"><a href="#cb17-28"></a>    <span class="at">vjust =</span> <span class="dv">0</span></span>
+<span id="cb17-29"><a href="#cb17-29"></a>  ) <span class="sc">+</span> </span>
+<span id="cb17-30"><a href="#cb17-30"></a>  <span class="fu">geom_sf</span>(<span class="at">colour =</span> <span class="st">"white"</span>, <span class="at">fill =</span> <span class="st">"mediumblue"</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span> </span>
+<span id="cb17-31"><a href="#cb17-31"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">1.5</span>)) <span class="sc">+</span> </span>
+<span id="cb17-32"><a href="#cb17-32"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.2</span>)) <span class="sc">+</span> </span>
+<span id="cb17-33"><a href="#cb17-33"></a>  <span class="fu">labs</span>(</span>
+<span id="cb17-34"><a href="#cb17-34"></a>    <span class="at">title =</span> <span class="st">"Homicides in Glenrose Heights, 2019"</span>,</span>
+<span id="cb17-35"><a href="#cb17-35"></a>    <span class="at">caption =</span> <span class="st">"Background map by OpenStreetMap"</span></span>
+<span id="cb17-36"><a href="#cb17-36"></a>  ) <span class="sc">+</span></span>
+<span id="cb17-37"><a href="#cb17-37"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/exercise8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section><section id="in-summary" class="level2" data-number="2.6"><h2 data-number="2.6" class="anchored" data-anchor-id="in-summary">
+<span class="header-section-number">2.6</span> In summary</h2>
+<div class="box welldone">
+<p><strong>Well done – you have finished your first mapping tutorial.</strong> You may not have understood every line of code in this tutorial, but we will cover them all in more detail over the rest of this course. By the end of the tutorials, you will be able to write code like this to create many different types of crime map.</p>
+</div>
+<p>In this tutorial you have learned how to load data into R, prepare it for use in making a map and then used it to make your first crime map of this course.</p>
+<p>The map we have produced in this tutorial is effective for showing the locations of just a few crimes, but is too limited to show more complicated patterns or larger datasets. In the following tutorials, we will learn how to produce more sophisticated maps and spatial analysis. We will also learn how each of the functions that we have used in this tutorial work.</p>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../01_getting_started/index.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting started</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../03_data_wrangling/index.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Wrangling data</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
