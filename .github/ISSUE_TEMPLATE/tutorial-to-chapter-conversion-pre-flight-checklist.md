@@ -11,10 +11,32 @@ assignees: ''
 - [ ] Copy over `images/` directory.
 - [ ] Add tutorial title as level-1 heading.
 - [ ] Add tutorial description as bold-face text after title.
-- [ ] Add instructions for opening corresponding tutorial.
-- [ ] Remove code from `setup` chunk that copies CSS files.
-- [ ] Remove quizzes.
-- [ ] Add `knitr::opts_chunk$set(echo=TRUE, collapse=TRUE)`.
+- [ ] Add instructions for opening corresponding tutorial:
+
+````
+::: {.box .load-tutorial}
+To load the [interactive tutorial](../#how-to-use-this-book) for this chapter, copy and paste the following code into the RStudio console:
+
+```r
+crimemapping::tutorial("01_getting_started")
+```
+
+and press `Enter`.
+:::
+````
+
+- [ ] Remove YAML header.
+- [ ] Replace `setup` chunk with:
+
+````r
+```{r setup}
+#| echo: false
+
+quiz <- function(...) invisible(NULL)
+question <- function(...) invisible(NULL)
+```
+````
+
 - [ ] Set `echo=FALSE` for any chunks with `-setup` in the chunk name.
 - [ ] Remove `section-` prefix from jquery code for extra-detail boxes.
 - [ ] Check for any references to `Run Code` button.
