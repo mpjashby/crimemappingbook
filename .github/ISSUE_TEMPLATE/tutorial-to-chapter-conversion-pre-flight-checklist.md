@@ -26,20 +26,21 @@ and press `Enter`.
 ````
 
 - [ ] Remove YAML header.
-- [ ] Replace `setup` chunk with:
+- [ ] Replace start of `setup` chunk with:
 
 ````r
 ```{r setup}
 #| echo: false
+#| include: false
 
-quiz <- function(...) invisible(NULL)
-question <- function(...) invisible(NULL)
+source(here::here("mask_learnr_functions.R"))
 ```
 ````
 
+- [ ] Remove `library(learnr)` from `setup` chunk
 - [ ] Set `echo=FALSE` for any chunks with `-setup` in the chunk name.
 - [ ] Remove `section-` prefix from jquery code for extra-detail boxes.
-- [ ] Check for any references to `Run Code` button.
+- [ ] Cmd+F for any references to `Run Code` button.
 - [ ] Convert video URLs to use the quarto shortcode `{{< video https://example.com/ab1sc >}}`.
 - [ ] Add reference to chapter file in top-level `_quarto.yml` file.
 - [ ] Run `Build > Render Book`.
