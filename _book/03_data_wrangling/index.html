@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.269">
+<meta name="generator" content="quarto-1.4.489">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Learn crime mapping with R - 3&nbsp; Wrangling data</title>
 <style>
@@ -14,11 +14,12 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -43,43 +44,13 @@ pre.numberSource code > span > a:first-child::before
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em;
-    color: #aaaaaa;
   }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
 div.sourceCode
   {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -105,7 +76,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -115,122 +92,157 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script><!-- START OF INCLUDED HEADER --><!--
 This file contains code that will be included in the header of each page of the
 quarto book
 --><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script><!-- END OF INCLUDED HEADER --><link rel="stylesheet" href="../css/styles.css">
 <meta name="twitter:title" content="Learn crime mapping with R - 3&nbsp; Wrangling data">
-<meta name="twitter:description" content="Learn the building blocks of data analysis: loading, filtering, manipulating and saving data for crime mapping.">
+<meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
 <body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }"><div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">
-<span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Wrangling data</span>
-</h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_data_wrangling/index.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Wrangling data</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
       </button>
     </div>
   </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Learn crime mapping with R</a> 
         <div class="sidebar-tools-main tools-wide">
-    <a href="https://github.com/mpjashby/crimemappingbook/" title="Source Code" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
-    <a href="../learn_crime_mapping_with_r.epub" title="Download ePub" class="sidebar-tool px-1"><i class="bi bi-journal"></i></a>
-    <a href="" title="Share" id="sidebar-tool-dropdown-0" class="sidebar-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-share"></i></a>
-    <ul class="dropdown-menu" aria-labelledby="sidebar-tool-dropdown-0">
+    <a href="https://github.com/mpjashby/crimemappingbook/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <a href="../learn_crime_mapping_with_r.epub" title="Download ePub" class="quarto-navigation-tool px-1" aria-label="Download ePub"><i class="bi bi-journal"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
 <li>
-          <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
-            <i class="bi bi-bi-twitter pe-1"></i>
-          Twitter
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=%7Curl%7C">
-            <i class="bi bi-bi-facebook pe-1"></i>
-          Facebook
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
-            <i class="bi bi-bi-linkedin pe-1"></i>
-          LinkedIn
-          </a>
-        </li>
-    </ul>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=%7Curl%7C">
+              <i class="bi bi-bi-facebook pe-1"></i>
+            Facebook
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+</div>
 </div>
     </div>
       </div>
-      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
         </div>
-      </div>
+        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">Welcome!</a>
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome!</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00_setup/index.html" class="sidebar-item-text sidebar-link">Install the software needed for this book</a>
+  <a href="../00_setup/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Install the software needed for this book</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../01_getting_started/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting started</span></a>
+  <a href="../01_getting_started/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting started</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../02_your_first_crime_map/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span></a>
+  <a href="../02_your_first_crime_map/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../03_data_wrangling/index.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Wrangling data</span></a>
+  <a href="../03_data_wrangling/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Wrangling data</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../04_code_with_style/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Code with style</span></a>
+  <a href="../04_code_with_style/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Code with style</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../05_your_second_crime_map/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Your second crime map</span></a>
+  <a href="../05_your_second_crime_map/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Your second crime map</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../06_map_context/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Giving a map context</span></a>
+  <a href="../06_map_context/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Giving a map context</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../07_handling_bugs/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></a>
+  <a href="../07_handling_bugs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../08_projects/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Don’t get lost in data analysis</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../09_mapping_areas/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Mapping area data</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Appendices</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../appendices/read_functions.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Functions for reading data into R</span></a>
+  <a href="../appendices/read_functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Functions for reading data into R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/common_errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Common R errors and how to fix them</span></span></a>
   </div>
 </li>
       </ul>
@@ -240,22 +252,24 @@ quarto book
     <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">In this chapter</h2>
    
   <ul class="collapse">
-<li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="toc-section-number">3.1</span>  Introduction</a></li>
-  <li><a href="#loading-data" id="toc-loading-data" class="nav-link" data-scroll-target="#loading-data"><span class="toc-section-number">3.2</span>  Loading data</a></li>
-  <li><a href="#selecting-columns" id="toc-selecting-columns" class="nav-link" data-scroll-target="#selecting-columns"><span class="toc-section-number">3.3</span>  Selecting columns</a></li>
-  <li><a href="#filtering-rows" id="toc-filtering-rows" class="nav-link" data-scroll-target="#filtering-rows"><span class="toc-section-number">3.4</span>  Filtering rows</a></li>
-  <li><a href="#transforming-values" id="toc-transforming-values" class="nav-link" data-scroll-target="#transforming-values"><span class="toc-section-number">3.5</span>  Transforming values</a></li>
-  <li><a href="#summarising-rows" id="toc-summarising-rows" class="nav-link" data-scroll-target="#summarising-rows"><span class="toc-section-number">3.6</span>  Summarising rows</a></li>
-  <li><a href="#arranging-rows" id="toc-arranging-rows" class="nav-link" data-scroll-target="#arranging-rows"><span class="toc-section-number">3.7</span>  Arranging rows</a></li>
-  <li><a href="#saving-data" id="toc-saving-data" class="nav-link" data-scroll-target="#saving-data"><span class="toc-section-number">3.8</span>  Saving data</a></li>
-  <li><a href="#stringing-functions-together" id="toc-stringing-functions-together" class="nav-link" data-scroll-target="#stringing-functions-together"><span class="toc-section-number">3.9</span>  Stringing functions together</a></li>
-  <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="toc-section-number">3.10</span>  In summary</a></li>
-  </ul><div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
-</nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">3.1</span> Introduction</a></li>
+  <li><a href="#loading-data" id="toc-loading-data" class="nav-link" data-scroll-target="#loading-data"><span class="header-section-number">3.2</span> Loading data</a></li>
+  <li><a href="#selecting-columns" id="toc-selecting-columns" class="nav-link" data-scroll-target="#selecting-columns"><span class="header-section-number">3.3</span> Selecting columns</a></li>
+  <li><a href="#filtering-rows" id="toc-filtering-rows" class="nav-link" data-scroll-target="#filtering-rows"><span class="header-section-number">3.4</span> Filtering rows</a></li>
+  <li><a href="#transforming-values" id="toc-transforming-values" class="nav-link" data-scroll-target="#transforming-values"><span class="header-section-number">3.5</span> Transforming values</a></li>
+  <li><a href="#summarising-rows" id="toc-summarising-rows" class="nav-link" data-scroll-target="#summarising-rows"><span class="header-section-number">3.6</span> Summarising rows</a></li>
+  <li><a href="#arranging-rows" id="toc-arranging-rows" class="nav-link" data-scroll-target="#arranging-rows"><span class="header-section-number">3.7</span> Arranging rows</a></li>
+  <li><a href="#saving-data" id="toc-saving-data" class="nav-link" data-scroll-target="#saving-data"><span class="header-section-number">3.8</span> Saving data</a></li>
+  <li><a href="#stringing-functions-together" id="toc-stringing-functions-together" class="nav-link" data-scroll-target="#stringing-functions-together"><span class="header-section-number">3.9</span> Stringing functions together</a></li>
+  <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="header-section-number">3.10</span> In summary</a></li>
+  </ul><div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title d-none d-lg-block">
+<h1 class="title">
 <span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Wrangling data</span>
 </h1>
 </div>
@@ -270,6 +284,7 @@ quarto book
   </div>
   
 
+
 </header><p><strong>Learn the building blocks of data analysis: loading, filtering, manipulating and saving data for crime mapping.</strong></p>
 <div class="box load-tutorial">
 <p>To load the <a href="../#how-to-use-this-book">interactive tutorial</a> for this chapter, copy and paste the following code into the RStudio console:</p>
@@ -282,16 +297,13 @@ quarto book
 <p class="full-width-image">
 <img src="https://github.com/mpjashby/crimemapping/raw/main/inst/tutorials/03_data_wrangling/images/datawrangling.jpg" alt="Cartoon of furry monsters putting boxes onto a conveyor belt with machines marked 'wrangle', 'vizualise' and 'model' adjusting the boxes as they move along the belt"></p>
 <p>Start off by watching this video that walks through the different steps in wrangling a dataset. We will cover all the steps in the video in more detail during the rest of this tutorial.</p>
-<div class="quarto-video ratio ratio-16x9"><iframe src="https://www.youtube.com/embed/pQeJKt6O9dU" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/pQeJKt6O9dU" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
 <section id="functions" class="level3" data-number="3.1.1"><h3 data-number="3.1.1" class="anchored" data-anchor-id="functions">
 <span class="header-section-number">3.1.1</span> Functions</h3>
 <p>In this tutorial we will learn how to wrangle data in R using <em>functions</em> – specialised pieces of code that do something to the data we give it. The code to use a function (sometimes called <em>calling</em> the function) has two parts: the function name followed by a pair of parentheses, inside which are zero or more <em>arguments</em> separated by commas. Arguments are a way of providing input that a function works on, or to fine-tune the way the function works (we will see many examples of this later). Remember that you can identify a function in R because the name will always have parentheses after it.</p>
 <p>One basic R function is <code><a href="https://rdrr.io/r/base/MathFun.html">sqrt()</a></code>, which calculates the square root of a number. The <code><a href="https://rdrr.io/r/base/MathFun.html">sqrt()</a></code> function has only one argument: the number that we want to find the square root of.</p>
 <div class="tutorial">
 <p>Type <code>sqrt(2)</code> in the box below and click <code>Run Code</code> to calculate the square root of 2.</p>
-<div class="cell" data-exercise="true">
-
-</div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">sqrt</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -302,9 +314,6 @@ quarto book
 <p>When you run code in R, by default R prints the output of your code – in this case, just the number <code>1.414214</code> (for now, you can ignore the number <code>[1]</code> in square brackets).</p>
 </section><section id="packages" class="level3" data-number="3.1.2"><h3 data-number="3.1.2" class="anchored" data-anchor-id="packages">
 <span class="header-section-number">3.1.2</span> Packages</h3>
-<div class="cell">
-
-</div>
 <p>R contains thousands of different functions that do different things. A few functions are contained in the default installation of R that you have already installed (this is sometimes referred to as <em>base R</em>). But most functions are contained in <em>packages</em>, which are extensions to base R. Most packages focus on a particular type of data analysis, so that there are packages devoted to time-series analysis, testing whether events are clustered in particular places, network analysis and thousands of other tasks. Packages are often developed by experts in the field, and are typically updated to introduce new features.</p>
 <p>To use a package in R, we must do two things:</p>
 <ul>
@@ -313,23 +322,20 @@ quarto book
 <li>
 <em>load</em> the package, which we have to do each time we restart R (which happens when we open RStudio or switch between projects).</li>
 </ul>
-<p>The <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages()</a></code> function downloads and installs packages from the <a href="https://cran.r-project.org/">Comprehensive R Archive Network</a> (universally known as CRAN), which contains about 19,300 different packages. Some packages that are still in the early stages of development are not available on CRAN, but all the packages we will use are there.</p>
+<p>The <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages()</a></code> function downloads and installs packages from the <a href="https://cran.r-project.org/">Comprehensive R Archive Network</a> (universally known as CRAN), which contains about 20,300 different packages. Some packages that are still in the early stages of development are not available on CRAN, but all the packages we will use are there.</p>
 <p><a href="https://tidyverse.org/" title="tidyverse website"><img src="images/tidyverse.png" class="right-side-image"></a></p>
 <p>So to install (for example) the package called <code>tidyverse</code>, which we will use extensively in this tutorial, we would run the R code:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">install.packages</span>(<span class="st">"tidyverse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>We only have to <em>install</em> a package once for each computer that we will use to run R, although we would have to do it again if we updated to a new version of R. Once a package is installed on our computer, we have to <em>load</em> it so that we can use it in our code. We load packages using the <code><a href="https://rdrr.io/r/base/library.html">library()</a></code> function, which should probably have been called <code>load_package()</code> but isn’t. So to load the <code>tidyverse</code> package, we run the code:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Many packages are focused on specialist tasks and so are only used occasionally, but a few packages are likely to be useful in almost all the code we write. Fortunately, packages can themselves load other packages, and all the main packages we need are themselves loaded by the <code>tidyverse</code> package. That is why you will often see <code><a href="https://tidyverse.tidyverse.org">library(tidyverse)</a></code> at the top of R code in subsequent tutorials – that short line of code loads several packages containing hundreds of functions that we can use in data analysis.</p>
-<p class="credits">
-<a href="https://github.com/allisonhorst/stats-illustrations">Stats Illustrations by Allison Horst</a> licensed under the <a href="https://github.com/allisonhorst/stats-illustrations/blob/master/license">Creative Commons Attribution licence</a>.
-</p>
 </section></section><section id="loading-data" class="level2" data-number="3.2"><h2 data-number="3.2" class="anchored" data-anchor-id="loading-data">
 <span class="header-section-number">3.2</span> Loading data</h2>
 <p>Before we can do anything with any data, we have to load it into R. In this course we will read tabular data in comma-separated values (CSV) and Excel formats, as well as spatial data in different formats (because there are lots of ways to store spatial data). We will learn how to read CSV and Excel data now, but leave loading spatial data until later.</p>
 <p>Tabular data contains multiple columns where every column has the same number of rows. For example, crime data might have columns for the type of crime, date and address at which the crime occurred.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table table-sm table-striped">
+<table class="table table-sm table-striped small">
 <caption>Crime data in rectangular format</caption>
 <thead><tr class="header">
 <th style="text-align: left;">type</th>
@@ -339,17 +345,17 @@ quarto book
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">homicide</td>
-<td style="text-align: left;">01 Apr 2022</td>
+<td style="text-align: left;">11 Feb 2023</td>
 <td style="text-align: left;">274 Main St</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">non-residential burglary</td>
-<td style="text-align: left;">11 Nov 2022</td>
+<td style="text-align: left;">21 Sep 2023</td>
 <td style="text-align: left;">541 Station Rd</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">personal robbery</td>
-<td style="text-align: left;">14 Mar 2023</td>
+<td style="text-align: left;">24 Jan 2024</td>
 <td style="text-align: left;">10 North Av</td>
 </tr>
 </tbody>
@@ -384,9 +390,6 @@ quarto book
 <p>We can use <code>read_csv()</code> to load data from <code>https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv</code> and store it in an object called <code>san_fran_rob</code>.</p>
 <div class="tutorial">
 <p>Use the code above to help you, or click the <code>Solution</code> button to reveal the answer.</p>
-<div class="cell" data-exercise="true">
-
-</div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>san_fran_rob <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -418,13 +421,10 @@ What do the messages produced by <code>read_csv()</code> mean?
 </div>
 </div>
 <script>
-$("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow") })
+$("#read-box1-title").click(function () { $("#read-box1").toggle("slow") })
 </script><p>To see the first few rows of data currently stored in an object, we can use the <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code> function.</p>
 <div class="tutorial">
 <p>Type the code needed to view the first few rows of the <code>san_fran_rob</code> object and click the <code>Run Code</code> button.</p>
-<div class="cell" data-exercise="true" data-exercise.setup="read-load-robbery-data">
-
-</div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">head</span>(san_fran_rob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -470,9 +470,6 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
 </div>
 <p>The <code><a href="https://rdrr.io/r/utils/download.file.html">download.file()</a></code> function does not produce any output if the file has been successfully downloaded, so you will not see any output when you run this code.</p>
 <p>Now we have downloaded our data, we can load it into R. Since Excel files can contain multiple sheets, we need to specify which sheet we would like to load into a tibble. We can use the <code>excel_sheets()</code> function to get a list of sheets in an Excel file:</p>
-<div class="cell">
-
-</div>
 <div class="cell" data-exercise="true">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="co"># Load the readxl package</span></span>
 <span id="cb14-2"><a href="#cb14-2"></a><span class="fu">library</span>(readxl)</span>
@@ -502,18 +499,15 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
 </div>
 <p>Now we have learned how to load our data into an object, we can use other R functions to work with that data in many different ways.</p>
 <div class="box notewell">
-<p>Different types of data are loaded into R with different functions, e.g.&nbsp;CSV files are loaded with the <code>read_csv()</code> function from the <code>readr</code> package and Microsoft Excel files are loaded with the <code>read_excel()</code> function from the <code>readxl</code> package. You can download a <a href="www/data_reading_functions.html">table of functions for reading data into R</a> to remind you of which function to use to load each type of file.</p>
+<p>Different types of data are loaded into R with different functions, e.g.&nbsp;CSV files are loaded with the <code>read_csv()</code> function from the <code>readr</code> package and Microsoft Excel files are loaded with the <code>read_excel()</code> function from the <code>readxl</code> package. You can download a <a href="http://books.lesscrime.info/learncrimemapping/appendices/read_functions.html">table of functions for reading data into R</a> to remind you of which function to use to load each type of file.</p>
 </div>
 <div class="box reading">
 <p><a href="https://r4ds.had.co.nz/data-import.html">Learn more about how to read data into R</a> by reading this chapter of the free online book <a href="https://r4ds.had.co.nz/">R for Data Science</a>.</p>
 <p>Excel data can often be messy and the <code>readxl</code> package contains various other functions that can be used to deal with this. You can <a href="http://lesscrime.info/post/cleaning-ons-data/">learn more about how to handle messy Excel data in this online tutorial</a>.</p>
 </div>
-</section><section id="check-your-understanding" class="level3" data-number="3.2.3"><h3 data-number="3.2.3" class="anchored" data-anchor-id="check-your-understanding">
+</section><section id="check-your-understanding" class="level3 tutorial" data-number="3.2.3"><h3 data-number="3.2.3" class="anchored" data-anchor-id="check-your-understanding">
 <span class="header-section-number">3.2.3</span> Check your understanding</h3>
 <p>Answer the following questions to check your understanding of what we’ve learned so far in this tutorial. If you get a question wrong, you can keep trying until you get the right answer.</p>
-<div class="cell">
-
-</div>
 </section></section><section id="selecting-columns" class="level2" data-number="3.3"><h2 data-number="3.3" class="anchored" data-anchor-id="selecting-columns">
 <span class="header-section-number">3.3</span> Selecting columns</h2>
 <p>In this section we will learn how to reduce the size of our data by selecting only the columns we need and discarding the rest. This can be particularly useful if we are working with a very-large dataset, or if we want to produce a table containing only some columns.</p>
@@ -537,7 +531,7 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
  8 2019-01-01 01:00:00 residence    
  9 2019-01-01 01:00:00 &lt;NA&gt;         
 10 2019-01-01 01:12:00 residence    
-# … with 8,686 more rows</code></pre>
+# ℹ 8,686 more rows</code></pre>
 </div>
 </div>
 <p><a href="https://dplyr.tidyverse.org/" title="dplyr website"><img src="images/dplyr.png" class="right-side-image"></a></p>
@@ -545,9 +539,6 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
 <p>We can select as many columns as we want, by just adding the names of the columns separated by commas.</p>
 <div class="tutorial">
 <p>Write the code necessary to select the <code>longitude</code> and <code>latitude</code> columns from the <code>agg_assault_data</code> object:</p>
-<div class="cell" data-exercise="true">
-
-</div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">select</span>(agg_assault_data, longitude, latitude)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -565,7 +556,7 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
  8     -97.7     30.4
  9     -97.7     30.3
 10     -97.7     30.3
-# … with 8,686 more rows</code></pre>
+# ℹ 8,686 more rows</code></pre>
 </div>
 </div>
 <p>The columns in our new dataset will appear in the order in which we specify them in the <code>select()</code> function.</p>
@@ -586,7 +577,7 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
  8 2019-01-01 01:00:00 residence
  9 2019-01-01 01:00:00 &lt;NA&gt;     
 10 2019-01-01 01:12:00 residence
-# … with 8,686 more rows</code></pre>
+# ℹ 8,686 more rows</code></pre>
 </div>
 </div>
 <p>If we want to rename a column while keeping <em>all</em> the columns in the data, we can instead use the <code>rename()</code> function (also from the <code>dplyr</code> package):</p>
@@ -606,7 +597,7 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
  8 2019-01-01 01:00:00     -97.7     30.4 residence residence        
  9 2019-01-01 01:00:00     -97.7     30.3 &lt;NA&gt;      &lt;NA&gt;             
 10 2019-01-01 01:12:00     -97.7     30.3 residence residence        
-# … with 8,686 more rows</code></pre>
+# ℹ 8,686 more rows</code></pre>
 </div>
 </div>
 <p>Remember that functions in R generally do not change existing objects, but instead produce (or <em>return</em>) new ones. This means if we want to store the result of this function so we can use it later, we have to assign the value returned by the function to a new object (or overwrite the existing object):</p>
@@ -629,14 +620,8 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
 <div class="box reading">
 <p>You can learn more about selecting, filtering and arranging data using the functions in the <code>dplyr</code> package by reading this <a href="https://dplyr.tidyverse.org/articles/dplyr.html">Introduction to <code>dplyr</code> tutorial</a>.</p>
 </div>
-<section id="check-your-understanding-1" class="level3 tutorial" data-number="3.3.1"><h3 class="tutorial anchored" data-number="3.3.1" data-anchor-id="check-your-understanding-1">
+<section id="check-your-understanding-1" class="level3 tutorial" data-number="3.3.1"><h3 data-number="3.3.1" class="anchored" data-anchor-id="check-your-understanding-1">
 <span class="header-section-number">3.3.1</span> Check your understanding</h3>
-<div class="cell">
-
-</div>
-<p class="credits">
-<a href="https://github.com/allisonhorst/stats-illustrations">Stats Illustrations by Allison Horst</a> licensed under the <a href="https://github.com/allisonhorst/stats-illustrations/blob/master/license">Creative Commons Attribution licence</a>.
-</p>
 </section></section><section id="filtering-rows" class="level2" data-number="3.4"><h2 data-number="3.4" class="anchored" data-anchor-id="filtering-rows">
 <span class="header-section-number">3.4</span> Filtering rows</h2>
 <p>Often in crime mapping we will only be interested in part of a particular dataset. In the same way that we can <em>select</em> particular <em>columns</em> in our data, we can <em>filter</em> particular <em>rows</em> using the <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> function from the <code>dplyr</code> package.</p>
@@ -659,7 +644,7 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
  8 2019-01-01 02:21:00     -97.8     30.2 residence     residence        
  9 2019-01-01 02:26:00     -97.8     30.2 residence     residence        
 10 2019-01-01 02:35:00     -97.7     30.4 residence     residence        
-# … with 4,375 more rows</code></pre>
+# ℹ 4,375 more rows</code></pre>
 </div>
 </div>
 <p>Note that:</p>
@@ -667,17 +652,28 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
 <li>the column <em>name</em> <code>location_type</code> is not surrounded by quotes but the column <em>value</em> <code>"residence"</code> is, and</li>
 <li>the <code>==</code> (equal to) operator is used, since a single equals sign <code>=</code> has another meaning in R.</li>
 </ul>
-<p>We can filter using the values of more than one column simultaneously. To filter offences in which the <code>location_category</code> is ‘leisure’ and the <code>location_type</code> is ‘bar/club’:</p>
+<p>We can filter using the values of more than one column simultaneously. To filter offences in which the <code>location_category</code> is ‘retail’ and the <code>location_type</code> is ‘convenience store’:</p>
 <div class="cell" data-exercise="true">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="fu">filter</span>(</span>
 <span id="cb30-2"><a href="#cb30-2"></a>  agg_assault_data, </span>
-<span id="cb30-3"><a href="#cb30-3"></a>  location_category <span class="sc">==</span> <span class="st">"leisure"</span>, </span>
-<span id="cb30-4"><a href="#cb30-4"></a>  location_type <span class="sc">==</span> <span class="st">"bar/club"</span></span>
+<span id="cb30-3"><a href="#cb30-3"></a>  location_category <span class="sc">==</span> <span class="st">"retail"</span>, </span>
+<span id="cb30-4"><a href="#cb30-4"></a>  location_type <span class="sc">==</span> <span class="st">"convenience store"</span></span>
 <span id="cb30-5"><a href="#cb30-5"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 0 × 5
-# … with 5 variables: date &lt;dttm&gt;, longitude &lt;dbl&gt;, latitude &lt;dbl&gt;,
-#   location_type &lt;chr&gt;, location_category &lt;chr&gt;</code></pre>
+<pre><code># A tibble: 90 × 5
+   date                longitude latitude location_type     location_category
+   &lt;dttm&gt;                  &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;             &lt;chr&gt;            
+ 1 2019-01-06 16:58:00     -97.8     30.5 convenience store retail           
+ 2 2019-01-08 17:56:00     -97.7     30.3 convenience store retail           
+ 3 2019-01-10 01:25:00     -97.7     30.4 convenience store retail           
+ 4 2019-01-12 00:49:00     -97.6     30.4 convenience store retail           
+ 5 2019-01-12 05:53:00     -97.7     30.4 convenience store retail           
+ 6 2019-01-12 17:01:00     -97.7     30.4 convenience store retail           
+ 7 2019-01-12 19:12:00     -97.8     30.3 convenience store retail           
+ 8 2019-01-12 19:14:00     -97.7     30.4 convenience store retail           
+ 9 2019-01-13 04:10:00     -97.8     30.2 convenience store retail           
+10 2019-01-22 22:01:00     -97.7     30.3 convenience store retail           
+# ℹ 80 more rows</code></pre>
 </div>
 </div>
 <p>As well as filtering using the <code>==</code> operator, we can filter using the greater-than (<code>&gt;</code>), less-than (<code>&lt;</code>), greater-than-or-equal-to (<code>&gt;=</code>) and less-than-or-equal-to (<code>&lt;=</code>) operators. For example, we can choose offences that occurred in residences on or after 1 July 2019:</p>
@@ -701,7 +697,7 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
  8 2019-07-01 17:41:00     -97.8     30.2 residence     residence        
  9 2019-07-01 18:03:00     -97.8     30.2 residence     residence        
 10 2019-07-01 18:16:00     -97.8     30.1 residence     residence        
-# … with 2,276 more rows</code></pre>
+# ℹ 2,276 more rows</code></pre>
 </div>
 </div>
 <p>Sometimes we will want to filter rows that are one thing <em>or</em> another. We can do this with the <code>|</code> (or) operator. For example, we can filter offences that occurred either in leisure facilities or shopping malls on or after 1 July 2019:</p>
@@ -744,7 +740,7 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
  8 2019-01-17 00:00:00     -97.7     30.4 green space   open space       
  9 2019-01-22 22:00:00     -97.7     30.2 green space   open space       
 10 2019-01-29 01:40:00     -97.7     30.2 green space   open space       
-# … with 155 more rows</code></pre>
+# ℹ 155 more rows</code></pre>
 </div>
 </div>
 <p>The code <code>c("open space", "street")</code> produces what is referred to in R as a <em>vector</em> (sometimes referred to as an <em>atomic vector</em>, especially in error messages). A vector is a one-dimensional sequence of values of the same type (i.e.&nbsp;all numbers, all character strings etc.). For example, a vector might hold several strings of text (as in the vector <code>c("open space", "street")</code>) or a series of numbers such as <code>c(1, 2, 3)</code>. There is lots we could learn about vectors, but for now it’s only necessary to know that we can create vectors with the <code><a href="https://rdrr.io/r/base/c.html">c()</a></code> or <em>combine</em> function.</p>
@@ -769,7 +765,7 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
  8 2019-01-17 00:00:00     -97.7     30.4 green space   open space       
  9 2019-01-22 22:00:00     -97.7     30.2 green space   open space       
 10 2019-01-29 01:40:00     -97.7     30.2 green space   open space       
-# … with 155 more rows</code></pre>
+# ℹ 155 more rows</code></pre>
 </div>
 </div>
 <p>Finally, you can filter based on the output of any R function that returns <code>TRUE</code> or <code>FALSE</code>. For example, missing values are represented in R as <code>NA</code>. We can test whether a value is missing using the <code><a href="https://rdrr.io/r/base/NA.html">is.na()</a></code> function. If we wanted to remove rows from our data that had missing location types, we would filter for those rows that are <em>not</em> <code>NA</code>. We can do this by combining the <code><a href="https://rdrr.io/r/base/NA.html">is.na()</a></code> function with the <code>!</code> (not) operator:</p>
@@ -789,18 +785,12 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
  8 2019-01-01 01:50:00     -97.7     30.3 residence     residence        
  9 2019-01-01 02:21:00     -97.8     30.2 residence     residence        
 10 2019-01-01 02:26:00     -97.8     30.2 residence     residence        
-# … with 5,334 more rows</code></pre>
+# ℹ 5,334 more rows</code></pre>
 </div>
 </div>
 <p>We will see lots more examples of how to use <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> in future tutorials.</p>
-<section id="check-your-understanding-2" class="level3" data-number="3.4.1"><h3 data-number="3.4.1" class="anchored" data-anchor-id="check-your-understanding-2">
+<section id="check-your-understanding-2" class="level3 tutorial" data-number="3.4.1"><h3 data-number="3.4.1" class="anchored" data-anchor-id="check-your-understanding-2">
 <span class="header-section-number">3.4.1</span> Check your understanding</h3>
-<div class="cell">
-
-</div>
-<p class="credits">
-<a href="https://github.com/allisonhorst/stats-illustrations">Stats Illustrations by Allison Horst</a> licensed under the <a href="https://github.com/allisonhorst/stats-illustrations/blob/master/license">Creative Commons Attribution licence</a>.
-</p>
 </section></section><section id="transforming-values" class="level2" data-number="3.5"><h2 data-number="3.5" class="anchored" data-anchor-id="transforming-values">
 <span class="header-section-number">3.5</span> Transforming values</h2>
 <p>It is often useful to create new columns in our data, or change the values of existing columns. The <code>mutate()</code> function in the <code>dplyr</code> package gives us a way to transform existing columns in our dataset using almost any R function.</p>
@@ -814,19 +804,20 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
 <span id="cb42-3"><a href="#cb42-3"></a><span class="fu">mutate</span>(agg_assault_data, <span class="at">weekday =</span> <span class="fu">wday</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8,696 × 6
-   date                longitude latitude location_type location_categ…¹ weekday
-   &lt;dttm&gt;                  &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt;            &lt;ord&gt;  
- 1 2019-01-01 00:00:00     -97.7     30.3 residence     residence        Tue    
- 2 2019-01-01 00:00:00     -97.8     30.2 residence     residence        Tue    
- 3 2019-01-01 00:01:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;             Tue    
- 4 2019-01-01 00:15:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;             Tue    
- 5 2019-01-01 00:27:00     -97.8     30.2 residence     residence        Tue    
- 6 2019-01-01 00:30:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;             Tue    
- 7 2019-01-01 00:51:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;             Tue    
- 8 2019-01-01 01:00:00     -97.7     30.4 residence     residence        Tue    
- 9 2019-01-01 01:00:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;             Tue    
-10 2019-01-01 01:12:00     -97.7     30.3 residence     residence        Tue    
-# … with 8,686 more rows, and abbreviated variable name ¹​location_category</code></pre>
+   date                longitude latitude location_type location_category
+   &lt;dttm&gt;                  &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt;            
+ 1 2019-01-01 00:00:00     -97.7     30.3 residence     residence        
+ 2 2019-01-01 00:00:00     -97.8     30.2 residence     residence        
+ 3 2019-01-01 00:01:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;             
+ 4 2019-01-01 00:15:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;             
+ 5 2019-01-01 00:27:00     -97.8     30.2 residence     residence        
+ 6 2019-01-01 00:30:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;             
+ 7 2019-01-01 00:51:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;             
+ 8 2019-01-01 01:00:00     -97.7     30.4 residence     residence        
+ 9 2019-01-01 01:00:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;             
+10 2019-01-01 01:12:00     -97.7     30.3 residence     residence        
+# ℹ 8,686 more rows
+# ℹ 1 more variable: weekday &lt;ord&gt;</code></pre>
 </div>
 </div>
 <p>Depending on the width of your screen, you might need to click the <code>▸</code> button to see the new variable.</p>
@@ -850,13 +841,10 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
  8 2019-01-01 01:00:00     -97.7     30.4 residence     residence         north…
  9 2019-01-01 01:00:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;              north…
 10 2019-01-01 01:12:00     -97.7     30.3 residence     residence         north…
-# … with 8,686 more rows</code></pre>
+# ℹ 8,686 more rows</code></pre>
 </div>
 </div>
 <p>We can change existing columns, although (as with objects) there is no way to undo this so you should only replace columns if you are sure you will not need them. For example, if we wanted to remove the time portion of the <code>date</code> variable (which may sometimes be useful, as shown in the next section) using the <code>as_date()</code> function (also from the <code>lubridate</code> package) and at the same time create the weekday variable:</p>
-<div class="cell">
-
-</div>
 <div class="cell" data-exercise="true">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="fu">mutate</span>(</span>
 <span id="cb46-2"><a href="#cb46-2"></a>  agg_assault_data, </span>
@@ -877,7 +865,7 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
  8 2019-01-01     -97.7     30.4 residence     residence         Tue    
  9 2019-01-01     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;              Tue    
 10 2019-01-01     -97.7     30.3 residence     residence         Tue    
-# … with 8,686 more rows</code></pre>
+# ℹ 8,686 more rows</code></pre>
 </div>
 </div>
 <p>You may sometimes want to change only some values in a column. We can do this in various ways, depending on which values we want to change:</p>
@@ -910,14 +898,11 @@ $("#read-box1-title").click(function () { $("#section-read-box1").toggle("slow")
  8 2019-01-01 01:00:00     -97.7     30.4 residence     residence        
  9 2019-01-01 01:00:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;             
 10 2019-01-01 01:12:00     -97.7     30.3 residence     residence        
-# … with 8,686 more rows</code></pre>
+# ℹ 8,686 more rows</code></pre>
 </div>
 </div>
 <p>We could also make changes based on more-complicated sets of criteria using the <code>case_when()</code> function, but we will return to that in a future tutorial.</p>
 <p>The R functions that you use inside <code>mutate()</code> must return the same number of values as there are rows in the dataset. This is true for most R functions (which are referred to as <em>vectorised</em> functions), but there are some – such as <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> and <code><a href="https://rdrr.io/r/base/Extremes.html">max()</a></code> – that return a single value. These summarising functions cannot be used inside <code>mutate()</code> (you will see an error message if you try) but are instead used with the next data-wrangling function we will learn about: <code>summarise()</code>.</p>
-<p class="credits">
-<a href="https://github.com/allisonhorst/stats-illustrations">Stats Illustrations by Allison Horst</a> licensed under the <a href="https://github.com/allisonhorst/stats-illustrations/blob/master/license">Creative Commons Attribution licence</a>.
-</p>
 </section><section id="summarising-rows" class="level2" data-number="3.6"><h2 data-number="3.6" class="anchored" data-anchor-id="summarising-rows">
 <span class="header-section-number">3.6</span> Summarising rows</h2>
 <p>Summarising data is often useful in crime analysis. We can use the <code>summarise()</code> function from the <code>dplyr</code> package to produce summaries of different columns in our data. There is an identical function called <code>summarize()</code> so that you do not have to remember whether to use the US or British spelling.</p>
@@ -946,101 +931,107 @@ What does the argument <code>na.rm = TRUE</code> do?
 </div>
 </div>
 <script>
-$("#summarise-box1-title").click(function () { $("#section-summarise-box1").toggle("slow") })
-</script><p><code>summarise()</code> becomes more useful if we first divide our data into groups, since we then get a summary for each group separately. We can use the <code>group_by()</code> function to specify which columns denote which group each row is in. So if we wanted to repeat the calculation above, but separately for each value of <code>location_category</code>:</p>
+$("#summarise-box1-title").click(function () { $("#summarise-box1").toggle("slow") })
+</script><p><code>summarise()</code> becomes more useful if we first divide our data into groups, since we then get a summary for each group separately. We can use the <code>.by</code> argument of the <code>summarise()</code> function to specify that we want separate summaries for each unique value of one or more columns in the data. For example, to produce a separate summary for each unique value of <code>location_category</code>, we can use this code:</p>
 <div class="cell" data-exercise="true">
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="fu">summarise</span>(</span>
-<span id="cb52-2"><a href="#cb52-2"></a>  <span class="fu">group_by</span>(agg_assault_data, location_category),</span>
+<span id="cb52-2"><a href="#cb52-2"></a>  agg_assault_data,</span>
 <span id="cb52-3"><a href="#cb52-3"></a>  <span class="at">mean_lng =</span> <span class="fu">mean</span>(longitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb52-4"><a href="#cb52-4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb52-5"><a href="#cb52-5"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb52-4"><a href="#cb52-4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb52-5"><a href="#cb52-5"></a>  <span class="at">.by =</span> location_category</span>
+<span id="cb52-6"><a href="#cb52-6"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 12 × 3
    location_category mean_lng mean_lat
    &lt;chr&gt;                &lt;dbl&gt;    &lt;dbl&gt;
- 1 commercial           -97.7     30.3
- 2 education            -97.7     30.3
- 3 government           -97.7     30.3
- 4 healthcare           -97.7     30.3
- 5 hotel                -97.7     30.3
- 6 leisure              -97.7     30.4
+ 1 residence            -97.7     30.3
+ 2 &lt;NA&gt;                 -97.7     30.3
+ 3 hotel                -97.7     30.3
+ 4 other                -97.7     30.3
+ 5 retail               -97.7     30.3
+ 6 healthcare           -97.7     30.3
  7 open space           -97.7     30.3
- 8 other                -97.7     30.3
- 9 residence            -97.7     30.3
-10 retail               -97.7     30.3
-11 transportation       -97.7     30.2
-12 &lt;NA&gt;                 -97.7     30.3</code></pre>
+ 8 commercial           -97.7     30.3
+ 9 education            -97.7     30.3
+10 government           -97.7     30.3
+11 leisure              -97.7     30.4
+12 transportation       -97.7     30.2</code></pre>
 </div>
 </div>
-<p>This code might be slightly difficult to read, since the <code>group_by()</code> function is called inside <code>summarise()</code>, but we will learn a way of writing this code that might be easier to read in the final section of this tutorial.</p>
-<p>You can add multiple grouping variables if you want to generate summary values for groups within groups:</p>
+<p>You can add multiple grouping variables using the <code><a href="https://rdrr.io/r/base/c.html">c()</a></code> (<em>combine</em>) function if you want to generate summary values for groups within groups:</p>
 <div class="cell" data-exercise="true">
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a><span class="fu">summarise</span>(</span>
-<span id="cb54-2"><a href="#cb54-2"></a>  <span class="fu">group_by</span>(agg_assault_data, location_category, location_type),</span>
+<span id="cb54-2"><a href="#cb54-2"></a>  agg_assault_data,</span>
 <span id="cb54-3"><a href="#cb54-3"></a>  <span class="at">mean_lng =</span> <span class="fu">mean</span>(longitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb54-4"><a href="#cb54-4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb54-5"><a href="#cb54-5"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>`summarise()` has grouped output by 'location_category'. You can override using
-the `.groups` argument.</code></pre>
-</div>
+<span id="cb54-4"><a href="#cb54-4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb54-5"><a href="#cb54-5"></a>  <span class="at">.by =</span> <span class="fu">c</span>(location_category, location_type)</span>
+<span id="cb54-6"><a href="#cb54-6"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 24 × 4
-# Groups:   location_category [12]
    location_category location_type     mean_lng mean_lat
    &lt;chr&gt;             &lt;chr&gt;                &lt;dbl&gt;    &lt;dbl&gt;
- 1 commercial        construction         -97.7     30.3
- 2 commercial        factory/warehouse    -97.7     30.3
- 3 commercial        finance              -97.7     30.2
- 4 commercial        office               -97.7     30.3
- 5 commercial        storage              -97.7     30.2
- 6 education         child care           -97.7     30.4
- 7 education         college              -97.8     30.3
- 8 education         school               -97.7     30.3
- 9 government        government           -97.7     30.3
-10 healthcare        healthcare           -97.7     30.3
-# … with 14 more rows</code></pre>
+ 1 residence         residence            -97.7     30.3
+ 2 &lt;NA&gt;              &lt;NA&gt;                 -97.7     30.3
+ 3 hotel             hotel                -97.7     30.3
+ 4 other             other                -97.7     30.3
+ 5 retail            other retail         -97.7     30.3
+ 6 healthcare        healthcare           -97.7     30.3
+ 7 retail            mall                 -97.8     30.3
+ 8 retail            convenience store    -97.7     30.3
+ 9 open space        green space          -97.7     30.3
+10 commercial        office               -97.7     30.3
+# ℹ 14 more rows</code></pre>
 </div>
 </div>
-<div class="box extra-detail">
-<h5 id="summarise-box2-title" class="box-title anchored">
-Did you see a message saying <code>`summarise()` has grouped output by 'location_category'</code>?
-</h5>
-<div id="summarise-box2" class="box-content">
-<p>You might have noticed the that code above produced a message specifying how groups have been handled by <code>summarise()</code>. This message reminds you that by default the <code>summarise()</code> functions strips the final level of grouping added by <code>group_by()</code>. This allows us to summarise data using a detailed set of groups and then summarise those summaries using more-general groups. In practice, this ability has been a source of some confusion, so R now prints a message to remind you that the data are still grouped after you run <code>summarise()</code>. If you want to hide this message then you can add <code>.groups = "drop"</code> to the <code>summarise()</code> function to remove all the groups in the data.</p>
-</div>
-</div>
-<script>
-$("#summarise-box2-title").click(function () { $("#section-summarise-box2").toggle("slow") })
-</script><section id="counting-rows" class="level3" data-number="3.6.1"><h3 data-number="3.6.1" class="anchored" data-anchor-id="counting-rows">
+<section id="counting-rows" class="level3" data-number="3.6.1"><h3 data-number="3.6.1" class="anchored" data-anchor-id="counting-rows">
 <span class="header-section-number">3.6.1</span> Counting rows</h3>
-<p>One form of summarising grouped data is so common that it gets its own function: <code>count()</code>. This simply counts the number of rows of data in each group. So if you wanted to know how many aggravated assaults had occurred in each location category and type:</p>
+<p>One very common way of summarising data is to count the number of rows in a dataset that have each unique value of one or more columns. For example, if we have a dataset of crimes in which each row represents a single crime, we might want to count how many crimes happened on each day of the week, or how many crimes of each type are in the dataset. We can use <code>summarise()</code> to do that, together with the <code>n()</code> function (from the same <code>dplyr</code> package as <code>summarise()</code>). For example, if we wanted to count how many rows in the <code>agg_assault_data</code> dataset had each unique combination of <code>location_category</code> and <code>location_type</code>:</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">count</span>(<span class="fu">group_by</span>(agg_assault_data, location_category, location_type), <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a><span class="fu">summarise</span>(agg_assault_data, <span class="at">n =</span> <span class="fu">n</span>(), <span class="at">.by =</span> <span class="fu">c</span>(location_category, location_type))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 24 × 3
-# Groups:   location_category, location_type [24]
    location_category location_type         n
    &lt;chr&gt;             &lt;chr&gt;             &lt;int&gt;
  1 residence         residence          4385
  2 &lt;NA&gt;              &lt;NA&gt;               3352
  3 hotel             hotel               248
  4 other             other               205
- 5 open space        green space         165
- 6 retail            convenience store    90
- 7 healthcare        healthcare           36
- 8 retail            supermarket          32
- 9 retail            other retail         30
+ 5 retail            other retail         30
+ 6 healthcare        healthcare           36
+ 7 retail            mall                 11
+ 8 retail            convenience store    90
+ 9 open space        green space         165
 10 commercial        office               28
-# … with 14 more rows</code></pre>
+# ℹ 14 more rows</code></pre>
 </div>
 </div>
-<p>The <code>sort = TRUE</code> argument sorts the counts in descending order. You can do more-sophisticated sorting using the <code>arrange()</code> function, which we will learn about in the next section.</p>
+<p>In this code, the <code>n()</code> function simply returns the number of rows of data in each group, i.e.&nbsp;the number of rows with each unique combination of values of <code>location_category</code> and <code>location_type</code>.</p>
+<p>Since counting the number of rows in each group a dataset is a very common task, <code>dplyr</code> includes another function called <code>count()</code> that allows you to do the same thing as in the code above, but with slightly less typing:</p>
+<p>So if you wanted to know how many aggravated assaults had occurred in each location category and type:</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a><span class="fu">count</span>(agg_assault_data, location_category, location_type)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 24 × 3
+   location_category location_type         n
+   &lt;chr&gt;             &lt;chr&gt;             &lt;int&gt;
+ 1 commercial        construction         11
+ 2 commercial        factory/warehouse     2
+ 3 commercial        finance               1
+ 4 commercial        office               28
+ 5 commercial        storage               4
+ 6 education         child care           11
+ 7 education         college               5
+ 8 education         school               25
+ 9 government        government           18
+10 healthcare        healthcare           36
+# ℹ 14 more rows</code></pre>
+</div>
+</div>
 </section></section><section id="arranging-rows" class="level2" data-number="3.7"><h2 data-number="3.7" class="anchored" data-anchor-id="arranging-rows">
 <span class="header-section-number">3.7</span> Arranging rows</h2>
 <p>It is sometimes useful to be able to place rows in a dataset into a particular order. We can do this using the <code>arrange()</code> function from the <code>dplyr</code> package. For example, we can sort the aggravated-assault data by date:</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a><span class="fu">arrange</span>(agg_assault_data, date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a><span class="fu">arrange</span>(agg_assault_data, date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8,696 × 5
    date                longitude latitude location_type location_category
@@ -1055,12 +1046,12 @@ $("#summarise-box2-title").click(function () { $("#section-summarise-box2").togg
  8 2019-01-01 01:00:00     -97.7     30.4 residence     residence        
  9 2019-01-01 01:00:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;             
 10 2019-01-01 01:12:00     -97.7     30.3 residence     residence        
-# … with 8,686 more rows</code></pre>
+# ℹ 8,686 more rows</code></pre>
 </div>
 </div>
 <p>By default, <code>arrange()</code> sorts rows in ascending order, i.e.&nbsp;it sorts numeric values from the smallest to the largest, dates from earliest to latest and character values alphabetically. We can instead sort values in descending order by wrapping the name of a column in the <code>desc()</code> function:</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a><span class="fu">arrange</span>(agg_assault_data, <span class="fu">desc</span>(date))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a><span class="fu">arrange</span>(agg_assault_data, <span class="fu">desc</span>(date))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8,696 × 5
    date                longitude latitude location_type location_category
@@ -1075,12 +1066,12 @@ $("#summarise-box2-title").click(function () { $("#section-summarise-box2").togg
  8 2019-12-31 20:52:00     -97.7     30.3 residence     residence        
  9 2019-12-31 20:44:00     -97.7     30.3 residence     residence        
 10 2019-12-31 20:19:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;             
-# … with 8,686 more rows</code></pre>
+# ℹ 8,686 more rows</code></pre>
 </div>
 </div>
 <p>We can also sort the data based on multiple columns – the data are sorted first on the first column that you specify, with tied rows then sorted on the subsequent columns in order.</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a><span class="fu">arrange</span>(agg_assault_data, date, <span class="fu">desc</span>(location_type), location_category)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a><span class="fu">arrange</span>(agg_assault_data, date, <span class="fu">desc</span>(location_type), location_category)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8,696 × 5
    date                longitude latitude location_type location_category
@@ -1095,18 +1086,15 @@ $("#summarise-box2-title").click(function () { $("#section-summarise-box2").togg
  8 2019-01-01 01:00:00     -97.7     30.4 residence     residence        
  9 2019-01-01 01:00:00     -97.7     30.3 &lt;NA&gt;          &lt;NA&gt;             
 10 2019-01-01 01:12:00     -97.7     30.3 residence     residence        
-# … with 8,686 more rows</code></pre>
+# ℹ 8,686 more rows</code></pre>
 </div>
 </div>
 <section id="check-your-understanding-3" class="level3 tutorial" data-number="3.7.1"><h3 data-number="3.7.1" class="anchored" data-anchor-id="check-your-understanding-3">
 <span class="header-section-number">3.7.1</span> Check your understanding</h3>
 <p><strong>Type the code necessary to arrange <code>agg_assault_data</code> in order of latitude, in descending order (from largest to smallest)</strong></p>
 <p>Run your code using the <code>Run Code</code> button, then (if necessary) correct your code and run it again. Once you are happy that your code does what it is intended to do, click the <code>Solution</code> button to check.</p>
-<div class="cell" data-exercise="true">
-
-</div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1"></a><span class="fu">arrange</span>(agg_assault_data, <span class="fu">desc</span>(latitude))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a><span class="fu">arrange</span>(agg_assault_data, <span class="fu">desc</span>(latitude))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8,696 × 5
    date                longitude latitude location_type location_category
@@ -1121,21 +1109,21 @@ $("#summarise-box2-title").click(function () { $("#section-summarise-box2").togg
  8 2019-01-28 21:14:00     -97.8     30.5 residence     residence        
  9 2019-02-03 00:53:00     -97.8     30.5 residence     residence        
 10 2019-07-31 01:37:00     -97.8     30.5 residence     residence        
-# … with 8,686 more rows</code></pre>
+# ℹ 8,686 more rows</code></pre>
 </div>
 </div>
 </section></section><section id="saving-data" class="level2" data-number="3.8"><h2 data-number="3.8" class="anchored" data-anchor-id="saving-data">
 <span class="header-section-number">3.8</span> Saving data</h2>
 <p>Once we have finished wrangling a particular dataset, it is often useful to save it to a file so that we can use it again in future without going through all the steps of data wrangling again.</p>
 <p>Most R functions that begin with <code>read_</code> (like <code>read_csv()</code> and <code>read_excel()</code>) have equivalent functions that begin <code>write_</code> and which save data into a particular file format. In this example, we will use the <code>write_csv()</code> function from the <code>readr</code> package, which is loaded when we load the <code>tidyverse</code> package.</p>
-<div class="sourceCode" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a><span class="co"># We can write data to a file in the same folder as our R script</span></span>
-<span id="cb67-2"><a href="#cb67-2"></a><span class="fu">write_csv</span>(agg_assault_data, <span class="st">"fort_worth_agg_assault.csv"</span>)</span>
-<span id="cb67-3"><a href="#cb67-3"></a></span>
-<span id="cb67-4"><a href="#cb67-4"></a><span class="co"># Or another folder on your computer ('../../' is short for the parent folder of</span></span>
-<span id="cb67-5"><a href="#cb67-5"></a><span class="co"># the parent folder of the current folder)</span></span>
-<span id="cb67-6"><a href="#cb67-6"></a><span class="fu">write_csv</span>(agg_assault_data, <span class="st">"../../fort_worth_agg_assault.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb68"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1"></a><span class="co"># We can write data to a file in the same folder as our R script</span></span>
+<span id="cb68-2"><a href="#cb68-2"></a><span class="fu">write_csv</span>(agg_assault_data, <span class="st">"fort_worth_agg_assault.csv"</span>)</span>
+<span id="cb68-3"><a href="#cb68-3"></a></span>
+<span id="cb68-4"><a href="#cb68-4"></a><span class="co"># Or another folder on your computer ('../../' is short for the parent folder of</span></span>
+<span id="cb68-5"><a href="#cb68-5"></a><span class="co"># the parent folder of the current folder)</span></span>
+<span id="cb68-6"><a href="#cb68-6"></a><span class="fu">write_csv</span>(agg_assault_data, <span class="st">"../../fort_worth_agg_assault.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>For very large datasets, we can save a compressed version of the file by adding <code>.gz</code> (for gzip) to the end of the file name, which tells R to compress the file after creating it.</p>
-<div class="sourceCode" id="cb68"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1"></a><span class="fu">write_csv</span>(agg_assault_data, <span class="st">"fort_worth_agg_assault.csv.gz"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a><span class="fu">write_csv</span>(agg_assault_data, <span class="st">"fort_worth_agg_assault.csv.gz"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><code>read_csv()</code> can read gzipped CSV files, but some other programs (such as Excel) cannot, so only use this option if you are sure you will only need to open the file in software that can handle it.</p>
 <p>There are corresponding write functions for other types of data (which we will come back to when we learn how to handle spatial data), but in this course we will store all non-spatial data in CSV format because it can be read by many different programs.</p>
 </section><section id="stringing-functions-together" class="level2" data-number="3.9"><h2 data-number="3.9" class="anchored" data-anchor-id="stringing-functions-together">
@@ -1143,11 +1131,11 @@ $("#summarise-box2-title").click(function () { $("#section-summarise-box2").togg
 <p>In this tutorial we have learned how to use the <code>dplyr</code> functions <code>select()</code>, <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code>, <code>mutate()</code>, <code>summarise()</code> and <code>arrange()</code> to wrangle data from one format to another. Data wrangling is part of almost all data analysis, so these are skills we will use frequently.</p>
 <p>Data wrangling often involves multiple steps. For example, we might want to load some data, select certain columns, filter some rows, mutate some of the variables, summarise the dataset and save the result. We can do each of these steps separately, assigning the result of each step to a new object.</p>
 <div class="cell" data-exercise="true" data-exercise.lines="25">
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a><span class="co"># Load the lubridate package, since we will need it below</span></span>
-<span id="cb69-2"><a href="#cb69-2"></a><span class="fu">library</span>(lubridate)</span>
-<span id="cb69-3"><a href="#cb69-3"></a></span>
-<span id="cb69-4"><a href="#cb69-4"></a><span class="co"># Read San Francisco robbery data</span></span>
-<span id="cb69-5"><a href="#cb69-5"></a>robbery1 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1"></a><span class="co"># Load the lubridate package, since we will need it below</span></span>
+<span id="cb70-2"><a href="#cb70-2"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb70-3"><a href="#cb70-3"></a></span>
+<span id="cb70-4"><a href="#cb70-4"></a><span class="co"># Read San Francisco robbery data</span></span>
+<span id="cb70-5"><a href="#cb70-5"></a>robbery1 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 951 Columns: 5
 ── Column specification ────────────────────────────────────────────────────────
@@ -1159,20 +1147,20 @@ dttm (1): date_time
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a><span class="co"># Select only the columns we need</span></span>
-<span id="cb71-2"><a href="#cb71-2"></a>robbery2 <span class="ot">&lt;-</span> <span class="fu">select</span>(robbery1, date_time)</span>
-<span id="cb71-3"><a href="#cb71-3"></a></span>
-<span id="cb71-4"><a href="#cb71-4"></a><span class="co"># Filter only those offences that occurred in the first quarter of 2019</span></span>
-<span id="cb71-5"><a href="#cb71-5"></a>robbery3 <span class="ot">&lt;-</span> <span class="fu">filter</span>(robbery2, <span class="fu">as.Date</span>(date_time) <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">"2019-03-31"</span>))</span>
-<span id="cb71-6"><a href="#cb71-6"></a></span>
-<span id="cb71-7"><a href="#cb71-7"></a><span class="co"># Create a new weekday variable</span></span>
-<span id="cb71-8"><a href="#cb71-8"></a>robbery4 <span class="ot">&lt;-</span> <span class="fu">mutate</span>(robbery3, <span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb71-9"><a href="#cb71-9"></a></span>
-<span id="cb71-10"><a href="#cb71-10"></a><span class="co"># Count how many offences occurred on each weekday</span></span>
-<span id="cb71-11"><a href="#cb71-11"></a>q1_weekday_counts <span class="ot">&lt;-</span> <span class="fu">count</span>(robbery4, weekday)</span>
-<span id="cb71-12"><a href="#cb71-12"></a></span>
-<span id="cb71-13"><a href="#cb71-13"></a><span class="co"># Print the first few rows of the result</span></span>
-<span id="cb71-14"><a href="#cb71-14"></a><span class="fu">head</span>(q1_weekday_counts, <span class="at">n =</span> <span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1"></a><span class="co"># Select only the columns we need</span></span>
+<span id="cb72-2"><a href="#cb72-2"></a>robbery2 <span class="ot">&lt;-</span> <span class="fu">select</span>(robbery1, date_time)</span>
+<span id="cb72-3"><a href="#cb72-3"></a></span>
+<span id="cb72-4"><a href="#cb72-4"></a><span class="co"># Filter only those offences that occurred in the first quarter of 2019</span></span>
+<span id="cb72-5"><a href="#cb72-5"></a>robbery3 <span class="ot">&lt;-</span> <span class="fu">filter</span>(robbery2, <span class="fu">as.Date</span>(date_time) <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">"2019-03-31"</span>))</span>
+<span id="cb72-6"><a href="#cb72-6"></a></span>
+<span id="cb72-7"><a href="#cb72-7"></a><span class="co"># Create a new weekday variable</span></span>
+<span id="cb72-8"><a href="#cb72-8"></a>robbery4 <span class="ot">&lt;-</span> <span class="fu">mutate</span>(robbery3, <span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb72-9"><a href="#cb72-9"></a></span>
+<span id="cb72-10"><a href="#cb72-10"></a><span class="co"># Count how many offences occurred on each weekday</span></span>
+<span id="cb72-11"><a href="#cb72-11"></a>q1_weekday_counts <span class="ot">&lt;-</span> <span class="fu">count</span>(robbery4, weekday)</span>
+<span id="cb72-12"><a href="#cb72-12"></a></span>
+<span id="cb72-13"><a href="#cb72-13"></a><span class="co"># Print the first few rows of the result</span></span>
+<span id="cb72-14"><a href="#cb72-14"></a><span class="fu">head</span>(q1_weekday_counts, <span class="at">n =</span> <span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 7 × 2
   weekday     n
@@ -1188,19 +1176,19 @@ dttm (1): date_time
 </div>
 <p>This code works, but involves creating six new objects, even though we only need the final object for our analysis. You may notice that the first argument expected by <code>select()</code>, <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code>, <code>mutate()</code> and <code>count()</code> is always the data tibble produced by the previous step. This means we can skip saving the result of each step as a new object, and just run the previous function inside the first function. This approach produces the following code, which produces exactly the same result as the code above.</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1"></a>q1_weekday_counts <span class="ot">&lt;-</span> <span class="fu">count</span>(</span>
-<span id="cb73-2"><a href="#cb73-2"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb73-3"><a href="#cb73-3"></a>    <span class="fu">filter</span>(</span>
-<span id="cb73-4"><a href="#cb73-4"></a>      <span class="fu">select</span>(</span>
-<span id="cb73-5"><a href="#cb73-5"></a>        <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"</span>),</span>
-<span id="cb73-6"><a href="#cb73-6"></a>        <span class="sc">-</span>offense_type</span>
-<span id="cb73-7"><a href="#cb73-7"></a>      ), </span>
-<span id="cb73-8"><a href="#cb73-8"></a>      <span class="fu">as.Date</span>(date_time) <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">"2019-03-31"</span>)</span>
-<span id="cb73-9"><a href="#cb73-9"></a>    ),</span>
-<span id="cb73-10"><a href="#cb73-10"></a>    <span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb73-11"><a href="#cb73-11"></a>  ),</span>
-<span id="cb73-12"><a href="#cb73-12"></a>  weekday</span>
-<span id="cb73-13"><a href="#cb73-13"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a>q1_weekday_counts <span class="ot">&lt;-</span> <span class="fu">count</span>(</span>
+<span id="cb74-2"><a href="#cb74-2"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb74-3"><a href="#cb74-3"></a>    <span class="fu">filter</span>(</span>
+<span id="cb74-4"><a href="#cb74-4"></a>      <span class="fu">select</span>(</span>
+<span id="cb74-5"><a href="#cb74-5"></a>        <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"</span>),</span>
+<span id="cb74-6"><a href="#cb74-6"></a>        <span class="sc">-</span>offense_type</span>
+<span id="cb74-7"><a href="#cb74-7"></a>      ), </span>
+<span id="cb74-8"><a href="#cb74-8"></a>      <span class="fu">as.Date</span>(date_time) <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">"2019-03-31"</span>)</span>
+<span id="cb74-9"><a href="#cb74-9"></a>    ),</span>
+<span id="cb74-10"><a href="#cb74-10"></a>    <span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb74-11"><a href="#cb74-11"></a>  ),</span>
+<span id="cb74-12"><a href="#cb74-12"></a>  weekday</span>
+<span id="cb74-13"><a href="#cb74-13"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 951 Columns: 5
 ── Column specification ────────────────────────────────────────────────────────
@@ -1212,7 +1200,7 @@ dttm (1): date_time
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1"></a><span class="fu">head</span>(q1_weekday_counts, <span class="at">n =</span> <span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a><span class="fu">head</span>(q1_weekday_counts, <span class="at">n =</span> <span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 7 × 2
   weekday     n
@@ -1226,11 +1214,11 @@ dttm (1): date_time
 7 Sat        26</code></pre>
 </div>
 </div>
-<p>This code works and takes up less space, but it’s quite difficult to read – which can be a problem for finding and fixing problems with your code. For example, it’s quite hard (without counting pairs of parentheses) to work out that the reference to the column <code>weekday</code> on line 13 of this code belongs to the <code>group_by()</code> function on line 2.</p>
-<p>It’s possible to write this code so that it is readable and does not require us to create multiple different objects to store the result of each step in our code. This method uses the <code>|&gt;</code> (or <em>pipe</em>) operator. The pipe operator works by using the result of the code on the left-hand side of the pipe as the first argument to a function on the right-hand side. So the code <code>x  |&gt; fun1()  |&gt; fun2(y)</code> is the same as the code <code>fun2(fun1(x), y)</code>, but it is much easier to see that <code>fun1()</code> is run before <code>fun2()</code>. It may be useful to read the pipe operator as ‘and then’, since piped code does the first thing <em>and then</em> the second thing with the result <em>and then</em> the third thing with the result of that, and so on. Piped code (sometimes called a <em>pipeline</em>) is a lot like the series of steps in a recipe.</p>
+<p>This code works and takes up less space, but it’s quite difficult to read – which can be a problem for finding and fixing problems with your code. For example, it’s quite hard (without counting pairs of parentheses) to work out that the reference to the column <code>weekday</code> on line 12 of this code belongs to the <code>count()</code> function on line 1.</p>
+<p>It’s possible to write this code so that it is readable and does not require us to create multiple different objects to store the result of each step in our code. This method uses the <code>|&gt;</code> (or <em>pipe</em>) operator. The pipe operator works by using the result of the code on the left-hand side of the pipe as the first argument to a function on the right-hand side. So the code <code>x  |&gt; fun1() |&gt; fun2(y)</code> is the same as the code <code>fun2(fun1(x), y)</code>, but it is much easier to see that <code>fun1()</code> is run before <code>fun2()</code>. It may be useful to read the pipe operator as ‘and then’, since piped code does the first thing <em>and then</em> the second thing with the result <em>and then</em> the third thing with the result of that, and so on. Piped code (sometimes called a <em>pipeline</em>) is a lot like the series of steps in a recipe.</p>
 <p>Since each function we are using returns the new data, and the first argument to all of those functions is the name of the input data object, the pipe means we can just omit the first argument to all except the first function.</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1"></a>san_fran_rob <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1"></a>san_fran_rob <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 951 Columns: 5
 ── Column specification ────────────────────────────────────────────────────────
@@ -1242,13 +1230,13 @@ dttm (1): date_time
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1"></a>q1_weekday_counts <span class="ot">&lt;-</span> san_fran_rob <span class="sc">|&gt;</span> </span>
-<span id="cb79-2"><a href="#cb79-2"></a>  <span class="fu">select</span>(<span class="sc">-</span>offense_type) <span class="sc">|&gt;</span> </span>
-<span id="cb79-3"><a href="#cb79-3"></a>  <span class="fu">filter</span>(<span class="fu">as.Date</span>(date_time) <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">"2019-03-31"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb79-4"><a href="#cb79-4"></a>  <span class="fu">mutate</span>(<span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb79-5"><a href="#cb79-5"></a>  <span class="fu">count</span>(weekday)</span>
-<span id="cb79-6"><a href="#cb79-6"></a></span>
-<span id="cb79-7"><a href="#cb79-7"></a><span class="fu">head</span>(q1_weekday_counts, <span class="at">n =</span> <span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1"></a>q1_weekday_counts <span class="ot">&lt;-</span> san_fran_rob <span class="sc">|&gt;</span> </span>
+<span id="cb80-2"><a href="#cb80-2"></a>  <span class="fu">select</span>(<span class="sc">-</span>offense_type) <span class="sc">|&gt;</span> </span>
+<span id="cb80-3"><a href="#cb80-3"></a>  <span class="fu">filter</span>(<span class="fu">as.Date</span>(date_time) <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">"2019-03-31"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb80-4"><a href="#cb80-4"></a>  <span class="fu">mutate</span>(<span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb80-5"><a href="#cb80-5"></a>  <span class="fu">count</span>(weekday)</span>
+<span id="cb80-6"><a href="#cb80-6"></a></span>
+<span id="cb80-7"><a href="#cb80-7"></a><span class="fu">head</span>(q1_weekday_counts, <span class="at">n =</span> <span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 7 × 2
   weekday     n
@@ -1273,7 +1261,7 @@ What about the <code>%&gt;%</code> pipe operator?
 </div>
 </div>
 <script>
-$("#pipe-box1-title").click(function () { $("#section-pipe-box1").toggle("slow") })
+$("#pipe-box1-title").click(function () { $("#pipe-box1").toggle("slow") })
 </script><div class="box reading">
 <p>You can find out more about how to use the pipe operator in the <a href="https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html">Introducing <code>magrittr</code></a> online tutorial.</p>
 </div>
@@ -1295,6 +1283,9 @@ $("#pipe-box1-title").click(function () { $("#section-pipe-box1").toggle("slow")
 <a href="https://r4ds.had.co.nz/">R for Data Science</a> by Hadley Wickham and Garrett Grolemund, a free online book that is the bible for wrangling data in R.</li>
 </ul>
 </div>
+<p class="credits">
+<a href="https://twitter.com/allison_horst">Artwork by <span class="citation" data-cites="allison_horst">@allison_horst</span></a>
+</p>
 
 
 </section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
@@ -1324,9 +1315,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -1362,10 +1367,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1375,8 +1379,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1391,6 +1404,241 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    const typesetMath = (el) => {
+      if (window.MathJax) {
+        // MathJax Typeset
+        window.MathJax.typeset([el]);
+      } else if (window.katex) {
+        // KaTeX Render
+        var mathElements = el.getElementsByClassName("math");
+        var macros = [];
+        for (var i = 0; i < mathElements.length; i++) {
+          var texText = mathElements[i].firstChild;
+          if (mathElements[i].tagName == "SPAN") {
+            window.katex.render(texText.data, mathElements[i], {
+              displayMode: mathElements[i].classList.contains('display'),
+              throwOnError: false,
+              macros: macros,
+              fleqn: false
+            });
+          }
+        }
+      }
+    }
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        for (let i = 0; i < 2; i++) {
+          container.appendChild(note.children[i].cloneNode(true));
+        }
+        typesetMath(container);
+        return container.innerHTML
+      } else {
+        typesetMath(note);
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      typesetMath(note);
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
@@ -1430,12 +1678,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="../02_your_first_crime_map/index.html" class="pagination-link">
+      <a href="../02_your_first_crime_map/index.html" class="pagination-link  aria-label=" first="" crime="" map="">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../04_code_with_style/index.html" class="pagination-link">
+      <a href="../04_code_with_style/index.html" class="pagination-link" aria-label="<span class='chapter-number'>4</span>&nbsp; <span class='chapter-title'>Code with style</span>">
         <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Code with style</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>

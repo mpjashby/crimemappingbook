@@ -16,6 +16,11 @@ and press `Enter`.
 
 
 ```{r setup, include=FALSE}
+#| echo: false
+#| include: false
+
+source(here::here("mask_learnr_functions.R"))
+
 library(tidyverse)
 
 # {ggspatial} uses {rosm} to download OSM map tiles and {rosm} needs {raster} to
@@ -25,10 +30,6 @@ library(tidyverse)
 # By loading {raster} explicitly (even though we don't need it directly), we 
 # force {learnr} to install it if it is not present.
 library(raster)
-
-quiz <- function(...) invisible(NULL)
-question <- function(...) invisible(NULL)
-
 ```
 
 
@@ -101,7 +102,6 @@ knitr::include_graphics("images/atlanta_downtown_homicides.jpg")
 To start off with, watch this video that walks through the code needed to make
 this map. Don't worry if there are things in the video that you don't understand 
 -- the rest of this tutorial will explain each line of code in turn.
-
 
 {{< video https://youtu.be/ipyKc7-ReTs >}}
 
@@ -202,7 +202,7 @@ at some point in the future.
 </div>
 
 <script>
-$("#loading-box1-title").click(function () { $("#section-loading-box1").toggle("slow") })
+$("#loading-box1-title").click(function () { $("#loading-box1").toggle("slow") })
 </script>
 
 
@@ -228,6 +228,8 @@ Click the `Run Code` button to load the data.
 
 
 ```{r exercise2-setup, include=FALSE}
+#| echo: false
+
 # Load the R packages we need to analyse this data
 suppressPackageStartupMessages(library("tidyverse"))
 ```
@@ -240,6 +242,20 @@ homicides <- read_csv("https://mpjashby.github.io/crimemappingdata/downtown_homi
 The `read_csv()` function loads data from a file and prints a message showing 
 the name of each column in the data and the type of data (number, text etc.) in 
 each column. Again, you can ignore this message for now.
+
+
+::: {.box .notewell}
+
+Sometimes R has several functions that have similar names but do different 
+things. That means it is very important to pay attention to which function you
+need in any particular set of circumstances. In this case we are using the
+`read_csv()` function, which does a slightly different thing from the similarly
+named `read.csv()` function (note the `.` instead of the `_`). Since 
+`read.csv()` has several limitations that `read_csv()` does not have, we will
+always use `read_csv()` in this course.
+
+:::
+
 
 We have stored the results of the `read_csv()` function in an R *object* called
 `homicides`. An object in R is anything that stores any type of data. There are
@@ -264,6 +280,8 @@ Click `Run Code` to view the data.
 
 
 ```{r exercise3-setup, message=FALSE, warning=FALSE, include=FALSE}
+#| echo: false
+
 # Load the R packages we need to analyse this data
 suppressPackageStartupMessages(library("tidyverse"))
 
@@ -338,6 +356,8 @@ Click `Run Code` to convert the data into SF format.
 
 
 ```{r exercise4-setup, message=FALSE, warning=FALSE, include=FALSE}
+#| echo: false
+
 # Load the R packages we need to analyse this data
 suppressPackageStartupMessages(library("sf"))
 suppressPackageStartupMessages(library("tidyverse"))
@@ -365,23 +385,14 @@ homicides_sf <- st_as_sf(
 )
 ```
 
+When you run this code, it looks like nothing happened. This is because the 
+results of the code are stored in the `homicides_sf` object. Do you remember 
+what R code to use to view the first few rows of this object?
+
 
 ::: {.tutorial}
 
-When you clicked `Run Code` above, it looked like nothing happened. This is
-because the results of the code are stored in the `homicides_sf` object. Do you 
-remember what R code to use to view the first few rows of this object?
-
 Type that code into the box below and click `Run Code` to view the data.
-
-:::
-
-
-::: {.book}
-
-When you run this code, it looks like nothing happens. This is because the 
-results of the code are stored in the `homicides_sf` object. Do you remember 
-what R code to use to view the first few rows of this object?
 
 :::
 
@@ -404,6 +415,8 @@ get the answer right.
 
 
 ```{r exercise5-setup, message=FALSE, warning=FALSE, include=FALSE}
+#| echo: false
+
 # Load the R packages we need to analyse this data
 suppressPackageStartupMessages(library("sf"))
 suppressPackageStartupMessages(library("tidyverse"))
@@ -434,7 +447,7 @@ homicides_sf <- st_as_sf(
 
 ```{r exercise5-solution}
 # To view an object in R, use the `head()` function. To view the contents of the
-# homicides object, copy the next line into the box below and click Run Code.
+# homicides object, use this code:
 head(homicides_sf)
 ```
 
@@ -494,7 +507,9 @@ Click `Run Code` to create the map.
 :::
 
 
-```{r exercise7-setup, message=FALSE, warning=FALSE, include=FALSE}
+```{r exercise7-setup, exercise.lines=18, message=FALSE, warning=FALSE, include=FALSE}
+#| echo: false
+
 # Load the R packages we need to analyse this data
 suppressPackageStartupMessages(library("ggspatial"))
 suppressPackageStartupMessages(library("sf"))
@@ -566,7 +581,7 @@ map. Since the area covered by the map is derived from the data itself, the
 extent of the map will update automatically.
 
 
-```{r exercise8, exercise=TRUE, exercise.lines=35, message=FALSE, fig.width=7, fig.asp=1}
+```{r exercise8, exercise=TRUE, exercise.lines=38, message=FALSE, fig.width=7, fig.asp=1}
 # Load the R packages we need to analyse this data
 library(ggspatial)
 library(sf)

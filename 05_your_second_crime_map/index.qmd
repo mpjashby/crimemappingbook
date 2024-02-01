@@ -1,23 +1,35 @@
 # Your second crime map
 
+
+**Walk through each stage in the process of creating a map showing the density of crime.**
+
+
+::: {.box .load-tutorial}
+To load the [interactive tutorial](../#how-to-use-this-book) for this chapter, copy and paste the following code into the RStudio console:
+
+```r
+crimemapping::tutorial("05_your_second_crime_map")
+```
+
+and press `Enter`.
+:::
+
+
 ```{r setup, include=FALSE}
+#| echo: false
+#| include: false
+
+source(here::here("mask_learnr_functions.R"))
+
 library(ggspatial)
 library(patchwork)
 library(sf)
 library(sfhotspot)
 library(tidyverse)
 
-quiz <- function(...) invisible(NULL)
-question <- function(...) invisible(NULL)
-
 # read data
 thefts <- janitor::clean_names(read_csv("https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"))
-thefts_sf <- st_as_sf(
-  thefts, 
-  coords = c("x", "y"), 
-  crs = "EPSG:32610", 
-  remove = FALSE
-)
+thefts_sf <- st_as_sf(thefts, coords = c("x", "y"), crs = 32610, remove = FALSE)
 bike_thefts <- filter(thefts_sf, type == "Theft of Bicycle")
 bike_theft_density <- hotspot_kde(bike_thefts, quiet = TRUE)
 bike_theft_density_bw_half <- hotspot_kde(
@@ -32,18 +44,6 @@ vancouver_boundary <- nbhds |>
   st_buffer(dist = 10)
 ```
 
-
-**Walk through each stage in the process of creating a map showing the density of crime.**
-
-::: {.box .load-tutorial}
-To load the [interactive tutorial](../#how-to-use-this-book) for this chapter, copy and paste the following code into the RStudio console:
-
-```r
-crimemapping::tutorial("05_your_second_crime_map")
-```
-
-and press `Enter`.
-:::
 
 
 ## Introduction
@@ -66,12 +66,12 @@ then improve it further in a future tutorial on what makes a good map.
 # IF YOU NEED TO RE-CREATE THE FILE, RUN THE CODE MANUALLY.
 
 bike_theft_density_bw_half_clipped <- bike_thefts |> 
-  hotspot_kde(bandwidth_adjust = 0.5) |> 
+  hotspot_kde(bandwidth_adjust = 0.5, quiet = TRUE) |> 
   st_transform("EPSG:4326") |> 
   st_intersection(nbhds)
 
 vancouver_bike_thefts_map <- ggplot() +
-  annotation_map_tile(type = "cartolight", zoom = 13) +
+  annotation_map_tile(type = "cartolight", zoom = 13, progress = "none") +
   geom_sf(
     aes(fill = kde), 
     data = bike_theft_density_bw_half_clipped, 
@@ -124,51 +124,26 @@ each row in the data is associated with some geographic feature such as a
 building, a street or the boundary of a neighbourhood. This adds some quirks 
 that we have to understand to work with spatial data successfully.
 
-
-### Vectors and rasters
-
-Spatial data can be represented in two general formats: vectors and rasters. 
-Watch this video from the UK mapping agency Ordnance Survey to find out more
-about the advantages and disadvantages of using each type of data.
-
-{{< video https://youtu.be/hbOGp51nYGI >}}
-
-As you saw in the video, generally vector data gives you more control over the
-appearance of a map, but at the cost of your having to put together each part of
-the data yourself, choose the styles etc. In contrast, raster data (such as the
-base map of Atlanta we used in the first map we made for this course) gives you
-less control but allows you to add pre-formatted data to your map quickly.
-
-
-### Spatial layers
-
 Maps are made up of multiple layers of spatial data that are styled to represent
 features of interest and then stacked on top of one another to make the finished
-map. Watch this video to learn more about spatial layers and the three different
-types of vector data that we can use in maps.
+map. Watch this video to learn more about spatial layers and the different types 
+of data that we can use in maps.
 
-{{< video https://youtu.be/inJk4BEUm7A >}}
+{{< video https://youtu.be/fr0CPO9Ot9Q >}}
 
 Points, lines and polygons in spatial data are known as *geometric objects* or
-simply *geometries*. Spatial data is data that has a geometric object associated
-with each row.
+simply *geometries*. Spatial data is data that has a geometric object (e.g. a 
+pair of co-ordinates representing a crime location) associated with each row.
 
 
 ### Representing places on the earth
-
-Since maps are two-dimensional representations of the curved surface of the 
-earth, map-makers must make choices about how to translate that curved surface 
-onto a flat screen or piece of paper. This video introduces these choices, and 
-explains why they are relevant to crime mapping.
-
-{{< video https://youtu.be/G5vxLucllr4 >}}
 
 With any spatial data, we need a way of describing where on the earth a 
 particular point (such as the location of a crime or the corner of a building)
 is located. Watch this video to find out about the different co-ordinate 
 systems we can use to do this.
 
-{{< https://youtu.be/A6HH-zDl9a0 >}}
+{{< video https://youtu.be/8L6EXiuckLo >}}
 
 
 ## Spatial data in R
@@ -208,14 +183,13 @@ learn a different function for each spatial-data format.
 While datasets with line or polygon geometries must almost always be stored in
 specific spatial-data formats, point data can also be stored in common data
 formats such as Excel and <abbr title="comma-separated values">CSV</abbr> files. 
-The [data for this tutorial](https://geodash.vpd.ca/opendata/)  is provided by 
+The [data for this tutorial](https://geodash.vpd.ca/opendata/) is provided by 
 the Vancouver Police Department in a CSV file (gzipped to reduce the file size). 
 The file is located at:
 
 ```r
 https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz
 ```
-
 
 ::: {.tutorial}
 
@@ -259,6 +233,118 @@ head(thefts)
 The data consists of `r scales::comma(nrow(thefts))` rows, each representing one
 theft. Before we can map this data, we will need to do some minor data wrangling
 to get it into the format we want.
+
+
+### Reading data files from your computer
+
+So far we have created datasets by loading data directly from URLs, such as the
+URL for the Vancouver thefts data we loaded in the previous section. But we can
+also load datasets that are already stored on our own computers. To do this, we
+need to know the _file path_ that specifies where a particular file is stored.
+
+You might have encountered file paths before, but you may not. A typical file
+path looks like this on a Mac or Linux computer:
+
+```
+/Users/john_smith/Documents/Crime Mapping/vancouver_thefts.csv
+```
+
+or like this on Windows:
+
+```
+C:\Users\john_smith\Documents\Crime Mapping\vancouver_thefts.csv
+```
+
+The important thing to note here is that computers store files such as
+`vancouver_thefts.R` in folders (also called directories), which are themselves
+often stored inside larger folders, etc. A file path tells a computer where
+to find a particular file. The file paths above can be read as telling the 
+computer to open the `Users` directory, then the `matt_ashby` directory, then 
+the `Documents` directory, then the `Crime Mapping` directory, and finally the
+file `vancouver_thefts.csv`.
+
+You can find the file path of a particular file by typing `file.choose()` in the
+R console. This will open a new window that allows you to search or browse for a
+particular file. When you choose the file, R will print the file path in the
+console.
+
+The two file paths shown above are called _absolute_ file paths, because they
+show the full location of a particular file on the computer. But there are two
+problems with absolute paths: they can be very long so they clutter up your 
+code, and (more importantly) they are only correct for a specific computer. If
+you write an R script that includes either of the file paths above, then you
+give that file for me to run, the code will immediately produce an error because
+there is no directory `/Users/john_smith` on my computer.
+
+We can deal with that problem in a few ways. The first is to use a _relative 
+path_. This specifies the location of a file not on the computer as a whole, but
+relative to the directory we are currently working in. This _working directory_
+will depend on how your version of RStudio is configured, but you can find out
+the working directory by typing `getwd()` in the R console. This will print the
+absolute path of the working directory for whatever you are currently working on
+in RStudio. 
+
+Imagine our working directory is `/Users/john_smith/Documents/Crime Mapping/`.
+If we wanted to open the file `/Users/john_smith/Documents/Crime Mapping/vancouver_thefts.csv`,
+we could use the absolute file path:
+
+```r
+read_csv("/Users/john_smith/Documents/Crime Mapping/vancouver_thefts.csv")
+```
+
+However, since the file is stored in our current working directory, we could 
+also open the file like this:
+
+
+```r
+read_csv("vancouver_thefts.csv")
+```
+
+This works because when we provide a relative path (e.g. one that does not begin
+with `\` on Mac or `C:\` on Windows), R treats the path as being relative to the
+current working directory. Since the file `vancouver_thefts.csv` is in the
+working directory, we don't need to specify anything other than the file name.
+
+If we wanted to read from a file that was in a directory _within_ the working 
+directory – e.g. `/Users/john_smith/Documents/Crime Mapping/original_data/canada/vancouver_crime.gpkg` –
+then we just need to specify where the file is relative to the working 
+directory:
+
+```r
+read_sf("original_data/canada/vancouver_crime.gpkg")
+```
+
+
+::: {.box .notewell}
+
+File paths in your code can make it harder to make sure your code is _portable_,
+i.e. that it can be used by other people. This is because the file structure on 
+someone else's computer is likely to be different from the file structure on 
+your computer.
+
+You might think code portability doesn't matter, because you are not planning to
+share your code with anyone. But it's quite possible that you will want to:
+
+  * Re-use code yourself on a different computer, e.g. if you replace your 
+    current computer with a new one.
+  * Send the code to someone else to get help with a problem.
+  * Send the code to someone else who has asked for help from you.
+
+To help keep your code portable:
+
+  * Where possible, include in your code any code needed to download the
+    necessary data from the internet. This is what we most-often do in this
+    course.
+  * If the data is not available online, you will need to distribute the data
+    along with your code. In that case, tell anyone you send you code to that 
+    they should keep the code file and data files in the same directory, then 
+    you can just refer to each data file by its name (e.g. 
+    `read_csv("vancouver_thefts.csv")`).
+  * Avoid using absolute file paths in your code, since these will almost 
+    certainly produce an error if anyone tries to run your code on another
+    computer.
+
+:::
 
 
 ### Cleaning column names
@@ -323,7 +409,6 @@ the British National Grid that we have already learned about, but for any part
 of the globe. The 'N' at the end of the zone name refers to the northern
 hemisphere.
 
-
 ::: {.box .notewell}
 
 In almost all cases, co-ordinate reference systems only work for the part of the
@@ -342,7 +427,7 @@ messages or strange results.
 #| echo: false
 
 vancouver <- st_point(c(-123.1207, 49.2827), dim = "XY") |> 
-  st_sfc(crs = "EPSG:4326") |> 
+  st_sfc(crs = 4326) |> 
   st_as_sf() |> 
   mutate(name = "Vancouver")
 
@@ -448,6 +533,24 @@ This column contains the co-ordinates of each bike theft in a format that R
 recognises represent locations on the surface of the earth, which means they can
 be used to make maps.
 
+
+::: {.box .notewell}
+
+It is important to remember that we should only use `st_as_sf()` to convert a
+*non-spatial* dataset (such as a tibble) into a spatial dataset (an SF object). 
+If we use `st_as_sf()` on an object that is already an SF object, this can have
+unexpected results and lead to errors in your code.
+
+The easy way to think about this is that if you have loaded a dataset with
+`read_sf()` or `st_read()` then you have already created an SF object, so you 
+don't need `st_as_sf()`. If you have loaded a dataset with any other function
+that reads data (such as `read_csv()` or `read_excel()`) then you will need to
+use `st_as_sf()` if you want to plot the data on a map. Most importantly, do not
+use `st_as_sf()` if you loaded a dataset with `read_sf()` or `st_read()`.
+
+:::
+
+
 <!--
 <div class="box extra-detail">
 
@@ -483,10 +586,7 @@ rows containing bicycle thefts, which function from the `dplyr` package
 would we used? If you need help, you can think back to the data-wrangling 
 tutorial or have a look at the [Data transformation with dplyr cheat sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf).
 
-
 ```{r filter-quiz}
-#| echo: false
-
 question(
   "Which function from the `dplyr` package should we use to remove all the rows from our dataset except those for bicycle thefts?",
   answer("`filter()`", correct = TRUE),
@@ -499,7 +599,6 @@ question(
   random_answer_order = TRUE
 )
 ```
-
 
 Type the code needed to choose only the rows of data that relate to bicycle
 thefts and store it in a new object called `bike_thefts`. If you get stuck, you 
@@ -532,25 +631,32 @@ Our data is now ready for us to make our crime map!
 :::
 
 
+
 ::: {.book}
 
-If you look through the contents of the `thefts_sf` object, you will see that 
-not all of the rows relate to bicycle thefts. The `type` column shows that the
-dataset also includes thefts from vehicles, for example. To choose only those 
-rows containing bicycle thefts, we can use the `filter()` function from the
-`dplyr` package.
+If you look through the contents of the `thefts_sf` object, you will see that not all of the rows relate to bicycle thefts. The `type` column shows that the dataset also includes thefts from vehicles, for example. To choose only those rows containing bicycle thefts, we can use the `filter()` function from the `dplyr` package.
 
-```{r}
+```r
 bike_thefts <- filter(thefts_sf, type == "Theft of Bicycle")
 ```
-
 
 :::
 
 
-<p class="credits">
-[Stats Illustrations by Allison Horst](https://github.com/allisonhorst/stats-illustrations) licensed under the [Creative Commons Attribution licence](https://github.com/allisonhorst/stats-illustrations/blob/master/license).
-</p>
+So far in this tutorial we have used several functions -- `read_csv()`, 
+`clean_names()`, `st_as_sf()` and `filter()` to produce an SF object 
+representing the locations of bike thefts. Since we have done this step by step,
+we have created a different object to store the result produced by each 
+function. But since we only need the final dataset, our code would be a lot
+easier to read if we used the pipe operator (`|>`) to run all these functions in
+one go:
+
+```r
+bike_thefts <- read_csv("https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz") |>
+  janitor::clean_names() |> 
+  st_as_sf(coords = c("x", "y"), crs = "EPSG:32610") |> 
+  filter(type == "Theft of Bicycle")
+```
 
 
 
@@ -569,12 +675,20 @@ Type the code needed to view the first few rows of the `bike_thefts` dataset.
 
 ```
 
-:::
-
-
 ```{r map-exercise1-solution}
 head(bike_thefts)
 ```
+
+:::
+
+
+::: {.book}
+
+```{r}
+head(bike_thefts)
+```
+
+:::
 
 
 ### Introduction to ggplot2
@@ -636,6 +750,17 @@ ggplot() +
   geom_sf(data = bike_thefts)
 ```
 
+
+::: {.box .notewell}
+
+`geom_sf()` only works on SF objects, which is why we needed to convert the
+original tibble of data to an SF object using `st_as_sf()`. If you try to use
+`geom_sf()` on a dataset that is not stored as an SF object, R will produce an
+error.
+
+:::
+
+
 By convention, each function that we add to `ggplot()` to change the appearance
 of our map goes on a new line (this makes the code easier to read) and all but
 the first line is indented by two spaces. RStudio does this indenting 
@@ -647,13 +772,27 @@ Fortunately, we can use the features of the `ggplot2` package to build on this
 basic map.
 
 
+::: {.box .notewell}
+
+Unless we want to produce a map of only a very small number of crimes (like the
+Atlanta downtown homicides map we produced in a previous tutorial), it is 
+unlikely that a point map will be very useful. 
+
+In fact, **if you find yourself making map with each crime represented by a 
+separate point, you should probably stop and ask yourself if that is really the 
+best way to achieve your goal** -- it will almost always be better to map the
+data in another way.
+
+:::
+
+
 ### Controlling aesthetics
 
 We can change the appearance of the points by specifying various arguments to
 the `geom_sf()` function. These arguments are called *aesthetics*, because they
 control the aesthetic appearance of the geometric objects (points, lines etc.)
-produced by a `geom_` function. There are lots of aesthetics, but some of the
-most common are:
+that are produced by a `geom_` function. There are lots of aesthetics, but some 
+of the most common are:
 
   * `colour` controls the colour of points and lines (for polygons, it controls
     the colour of the border around the polygon edge) – you can also use the
@@ -677,6 +816,8 @@ so it's easiest to set the size of points and text by trial and error.
 There are 25 built-in shapes for points in R (shape 16 is the default):
 
 ```{r ggplot-shapes, fig.align="center", out.width="80%"}
+#| echo: false
+
 ggplot(data.frame(shape = 0:24), aes(0, 0, shape = shape)) +
   geom_point(aes(colour = "darkblue", fill = "lightblue", shape = shape), size = 5) +
   scale_colour_identity(aesthetics = c("colour", "fill")) +
@@ -713,21 +854,26 @@ ggplot() +
 # function, remembering that arguments are separated by commas
 ```
 
+```{r map-exercise3-hint-3}
+ggplot() +
+  geom_sf(data = bike_thefts, shape = 15, colour = "red")
+```
+
 :::
 
 
 ::: {.book}
 
-We can change the black circles on the map above into red squares using the
-`colour` and `shape` arguments to the `geom_sf()` function.
+For example, we could change the points on our map to be red squares rather than
+the default black circles:
+
+```r
+ggplot() +
+  geom_sf(data = bike_thefts, shape = 15, colour = "red")
+```
 
 :::
 
-
-```{r map-exercise3-hint-3}
-ggplot() +
-  geom_sf(data = bike_thefts, colour = "red", shape = 15)
-```
 
 As we have said, this basic map is not very useful. We can see that there seems 
 to be a cluster of bike thefts towards the top (north) of the map, but it is 
@@ -737,26 +883,21 @@ are multiple crimes at the same location then the points representing those
 crimes will be exactly on top of one another and it will be impossible to 
 see whether there is one crime at a particular location or 100.
 
-One way to deal with this problem is to make the points semi-transparent so that
-overlapping points appear darker. This often works better if we also make the 
-points slightly smaller at the same time. You can use the `alpha` and `size` 
-aesthetics to make the points smaller (relative to the default for points of 
-`size = 1`) and semi-transparent. 
-
 
 ::: {.tutorial}
 
-Keep changing the values of the two aesthetics until you are happy that the map 
-makes it as easy as possible to see the distribution of bike thefts in 
-Vancouver.
+One way to deal with this problem is to make the points semi-transparent so that
+overlapping points appear darker. This often works better if we also make the 
+points slightly smaller at the same time. Use the `alpha` and `size` aesthetics 
+to make the points smaller (relative to the default for points of `size = 1`) 
+and semi-transparent. Keep changing the values of the two aesthetics until you 
+are happy that the map makes it as easy as possible to see the distribution of 
+bike thefts in Vancouver.
 
 ```{r map-exercise4, exercise=TRUE}
 ggplot() +
   geom_sf(data = bike_thefts)
 ```
-
-:::
-
 
 ```{r map-exercise4-solution}
 # Which values you've chosen will depend on your personal aesthetic preferences,
@@ -766,6 +907,25 @@ ggplot() +
   geom_sf(data = bike_thefts, size = 0.75, alpha = 0.1)
 ```
 
+:::
+
+
+::: {.book}
+
+One way to deal with this problem is to make the points semi-transparent so that
+overlapping points appear darker. This often works better if we also make the 
+points slightly smaller at the same time. We can use the `alpha` and `size` 
+aesthetics to make the points smaller (relative to the default for points of 
+`size = 1`) and semi-transparent.
+
+```r
+ggplot() +
+  geom_sf(data = bike_thefts, size = 0.75, alpha = 0.1)
+```
+
+:::
+
+
 Making the points semi-transparent goes some way to making it easier to see 
 where bike theft is most common in Vancouver, but the pattern is not clear and
 it is not possible to tell which darker points represent a handful of crimes
@@ -774,19 +934,6 @@ location. To make our map useful, we need to use a different technique.
 
 
 ## Mapping crime density
-
-::: {.box .notewell}
-
-Unless we want to produce a map of only a very small number of crimes (like the
-Atlanta downtown homicides map we produced in a previous tutorial), it is 
-unlikely that a point map will be very useful. 
-
-In fact, **if you find yourself making map with each crime represented by a 
-separate point, you should probably stop and ask yourself if that is really the 
-best way to achieve your goal**.
-
-:::
-
 
 A better way to show where crime is concentrated on a map is to work out the
 *density* of crime in each area and then map that density. By *density* in this
@@ -809,6 +956,13 @@ technique called *kernel density estimation* (KDE). To do this, R must:
 This procedure has the effect of producing a smooth surface representing crime
 density. 
 
+You might recognise this procedure as another example of simplifying a 
+complicated spatial dataset by converting it from individual points to a raster
+that summarises those points as values associated with a grid of cells. In this
+case, the value associated with each grid cell represents the relative density 
+of points in that cell.
+
+
 ```{r kde-explanation, eval=FALSE}
 #| echo: false
 
@@ -826,7 +980,7 @@ random_points_grid <- tibble(
   hotspot_grid(cell_size = 40)
 
 random_points_kde <- random_points |> 
-  hotspot_kde(grid = random_points_grid) |> 
+  hotspot_kde(grid = random_points_grid, quiet = TRUE) |> 
   mutate(
     label_n = if_else(n > 0, n, NA_real_),
     label_kde = scales::number(kde, accuracy = 0.1)
@@ -979,9 +1133,9 @@ tutorial.
 
 There are several ways we can make density maps in R. In this course we will use 
 the [`sfhotspot` package](http://pkgs.lesscrime.info/sfhotspot/) because it 
-makes reasonable decisions about how or density maps should look, while still 
-giving us control over their appearance if we want it. `sfhotspot` also has 
-other useful functions that we will use in future tutorials.
+makes reasonable default decisions about how or density maps should look, while 
+still giving us control over their appearance if we want it. `sfhotspot` also 
+has other useful functions that we will use in future tutorials.
 
 To create a density map using `sfhotspot`, we first use the `hotspot_kde()` 
 function to convert a dataset of offence locations to an estimate of the density 
@@ -992,7 +1146,7 @@ to).
 ```{r map-exercise5, exercise=TRUE, message=FALSE}
 library(sfhotspot)
 
-bike_theft_density <- hotspot_kde(bike_thefts)
+bike_theft_density <- hotspot_kde(bike_thefts, quiet = TRUE)
 
 head(bike_theft_density)
 ```
@@ -1036,6 +1190,13 @@ you do it outside `aes()`?
     could use `geom_sf(aes(colour = month), bike_thefts)` to vary the colour of
     shapes in a layer according to values of the `month` column in the data.
 
+If you specify a constant value for an aesthetic (e.g. `colour = "mediumblue"`)
+this will over-ride any mapping for that aesthetic provided by the `aes()`
+function (e.g. `aes(colour = month)`). If you have used `aes()` to specify that 
+an aesthetic should be controlled based on a column in the data but find that
+the aesthetic is not changing based on the data, check you have not also
+specified a constant value for that aesthetic.
+
 **`aes()` must be the _first_ argument in the `geom_*()` function.**
 
 :::
@@ -1049,7 +1210,8 @@ makes the areas with the highest frequency of thefts easier to identify.
 You can also see that our map now has a legend, showing that higher densities of
 bike thefts are shown on the map in dark blue and lower densities are shown in 
 light blue. The exact values shown in the legend are not particularly 
-meaningful, so we can ignore these for now.
+meaningful, so we can ignore these for now (we will come back to this in a 
+future tutorial).
 
 
 ### Fine-tuning density maps
@@ -1125,29 +1287,27 @@ Although you can set the bandwidth manually using the `bandwidth` argument to
 `hotspot_kde()`, you will almost never want to do this. Instead, you can vary 
 the bandwidth relative to the automatically chosen default bandwidth by
 using the `bandwidth_adjust` argument. For example, if you wanted to see more 
-detail in your map by using a smaller bandwidth, you could use `adjust = 0.75` 
-or `adjust = 3/4` to set the bandwidth to be three-quarters of the default 
-bandwidth.
+detail in your map by using a smaller bandwidth, you could use 
+`bandwidth_adjust = 0.75` or `bandwidth_adjust = 3/4` to set the bandwidth to be
+three-quarters of the default bandwidth.
 
 
 ::: {.tutorial}
+
 
 Change the code below so that the bandwidth is half of the default
 bandwidth.
 
 ```{r map-exercise7, exercise=TRUE, exercise.lines=5}
-hotspot_kde(bike_thefts) |> 
+hotspot_kde(bike_thefts, quiet = TRUE) |> 
   ggplot() +
   geom_sf(aes(fill = kde), colour = NA)
 ```
 
-:::
-
-
 ```{r map-exercise7-solution}
 # You can set either `bandwidth_adjust = 1/2` or `bandwidth_adjust = 0.5` to 
 # get the same result
-hotspot_kde(bike_thefts, bandwidth_adjust = 2/3) |> 
+hotspot_kde(bike_thefts, quiet = TRUE, bandwidth_adjust = 2/3) |> 
   ggplot() +
   geom_sf(aes(fill = kde), colour = NA)
 ```
@@ -1155,6 +1315,8 @@ hotspot_kde(bike_thefts, bandwidth_adjust = 2/3) |>
 Comparing this map to the first density map we produced, we can see that the
 slightly smaller bandwidth means we can see slightly more detail in the patterns
 of bike thefts.
+
+:::
 
 
 ::: {.box .notewell}
@@ -1165,7 +1327,6 @@ produce a density layer using `hotspot_kde()`, but remember to look at the map
 to see if you are happy with the result.
 
 :::
-
 
 
 The final way we can control the appearance of our density layer is to change
@@ -1271,11 +1432,12 @@ ggplot() +
   scale_fill_distiller(palette = "Oranges", direction = 1)
 ```
 
+
+::: {.tutorial}
+
 Try changing the code in this box to use one of the other Color Brewer palettes
 above. Which palette do you like best?
 
-
-::: {.tutorial}
 
 ### Check your understanding
 
@@ -1284,8 +1446,6 @@ in this section of this tutorial. If you get a question wrong, you can keep
 trying until you get the right answer.
 
 ```{r map-quiz}
-#| echo: false
-
 quiz(
   caption = "",
   
@@ -1366,7 +1526,11 @@ Remember the data are stored in an object called `bike_thefts`.
 ```
 
 ```{r basemap-exercise1-solution}
-bike_theft_density_bw_half <- hotspot_kde(bike_thefts, bandwidth_adjust = 0.5)
+bike_theft_density_bw_half <- hotspot_kde(
+  bike_thefts, 
+  quiet = TRUE,
+  bandwidth_adjust = 0.5
+)
 
 ggplot() +
   geom_sf(aes(fill = kde), data = bike_theft_density_bw_half, colour = NA) +
@@ -1407,7 +1571,11 @@ bike_theft_hull <- bike_thefts_sample |>
   st_intersection(vancouver_boundary) |> 
   st_union() |> 
   st_convex_hull()
-bike_theft_sample_kde <- hotspot_kde(bike_thefts_sample, bandwidth_adjust = 0.5)
+bike_theft_sample_kde <- hotspot_kde(
+  bike_thefts_sample, 
+  bandwidth_adjust = 0.5, 
+  quiet = TRUE
+)
 
 
 # First map ----
@@ -1547,7 +1715,6 @@ which we have data.
 
 ::::
 
-
 We can clip the KDE layer produced by `hotspot_kde()` to the boundary of the
 City of Vancouver using the `st_intersection()` function from the `sf` package.
 `st_intersection()` removes any rows from the dataset provided as the first
@@ -1589,7 +1756,7 @@ produce it with `hotspot_kde()`:
 
 ```r
 bike_theft_density_clip <- bike_thefts |> 
-  hotspot_kde(bandwidth_adjust = 0.5) |> 
+  hotspot_kde(bandwidth_adjust = 0.5, quiet = TRUE) |> 
   st_intersection(vancouver_boundary)
 ```
 
@@ -1629,7 +1796,7 @@ add `geom_*()` functions.
 ggplot() +
   # We add the base map to the `ggplot()` stack *before* the density layer 
   # because we want the base map to appear below the density layer
-  annotation_map_tile(zoomin = 0) +
+  annotation_map_tile(zoomin = 0, progress = "none") +
   # When adding a base map, it is useful to make any filled layers (such as the
   # density layer) semi-transparent so that readers can see the base map
   geom_sf(
@@ -1666,16 +1833,16 @@ jdi <- c(-0.12979747256628416, 51.52501948280652) |>
   st_transform("EPSG:27700") |> 
   st_buffer(2000)
 
-zoom_map <- map(9:14, function(zoom_level) {
+zoom_map <- map(8:16, function(zoom_level) {
   ggplot() + 
     annotation_map_tile(zoom = zoom_level, progress = "none") +
     geom_sf(data = jdi, colour = NA, fill = NA) +
     labs(subtitle = str_glue("zoom level {zoom_level}")) +
     theme_void() +
     theme(
-      panel.border = element_rect(colour = "black", fill = NA, linewidth = 1),
+      panel.border = element_rect(colour = "black", fill = NA, size = 1),
       plot.margin = unit(c(6, 6, 6, 6), "pt"),
-      plot.subtitle = element_text(size = 7)
+      plot.subtitle = element_text(size = 10)
     )
 }) |> 
   wrap_plots(ncol = 3)
@@ -1683,10 +1850,9 @@ zoom_map <- map(9:14, function(zoom_level) {
 ggsave(
   "inst/tutorials/05_your_second_crime_map/images/zoom.jpg", 
   zoom_map, 
-  width = 1200, 
-  height = 900, 
-  units = "px",
-  dpi = "retina"
+  width = 800 / 150, 
+  height = 800 / 150, 
+  dpi = 150
 )
 ```
 
@@ -1715,19 +1881,20 @@ argument to `annotation_map_tile()`.
 #| echo: false
 
 basemaps_map <- c(
-  "osm", "opencycle", "hotstyle",  "stamenbw", "osmtransport", 
-  "thunderforestlandscape", "thunderforestoutdoors", "cartodark", "cartolight"
+  "osm", "opencycle", "hotstyle",  "stamenbw", "stamenwatercolor", 
+  "osmtransport", "thunderforestlandscape", "thunderforestoutdoors", 
+  "cartodark", "cartolight"
 ) |> 
   map(function (x) {
     ggplot() +
-      annotation_map_tile(type = x, zoom = 13) +
+      annotation_map_tile(type = x, zoom = 12, progress = "none") +
       geom_sf(data = jdi, colour = NA, fill = NA) +
       labs(subtitle = if_else(x == "osm", "osm (default)", x)) +
       theme_void() +
       theme(
         panel.border = element_rect(colour = "black", fill = NA, size = 1),
         plot.margin = unit(c(6, 6, 6, 6), "pt"),
-        plot.subtitle = element_text(size = 7)
+        plot.subtitle = element_text(size = 10)
       )
   }) |> 
   wrap_plots(ncol = 3)
@@ -1735,10 +1902,9 @@ basemaps_map <- c(
 ggsave(
   "inst/tutorials/05_your_second_crime_map/images/basemaps.jpg", 
   basemaps_map, 
-  width = 1200, 
-  height = 1200, 
-  units = "px",
-  dpi = "retina"
+  width = 800 / 150, 
+  height = 1200 / 150, 
+  dpi = 150
 )
 ```
 
@@ -1750,7 +1916,16 @@ knitr::include_graphics("images/basemaps.jpg")
 
 You may want to experiment with different base map styles by using the `type`
 argument to `annotation_map_tile()` in the map above, e.g. using 
-`annotation_map_tile(type = "cartolight", zoomin = 0)`.
+`annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none")`.
+
+One final note about the `annotation_map_tile()` function: you might have 
+noticed that when we have used it above we have always set the argument 
+`progress = "none"`. This stops the function from printing a progress bar while
+it is downloading the map tiles. The progress bar can sometimes be useful, but
+when you include the output from an R function in a report (as you will learn to
+do in a future tutorial), the output from the progress bar is likely to 
+interfere with the formatting of the report. To prevent that, we use the
+`progress = "none"` argument.
 
 
 
@@ -1828,7 +2003,7 @@ nbhds <- st_read("https://mpjashby.github.io/crimemappingdata/vancouver_neighbou
 # Create KDE layer
 bike_theft_density_clip <- bike_thefts |> 
   # Calculate density
-  hotspot_kde(bandwidth_adjust = 0.5) |> 
+  hotspot_kde(bandwidth_adjust = 0.5, quiet = TRUE) |> 
   # Transform the density data to use the same CRS as the neighbourhoods layer
   st_transform("EPSG:4326") |> 
   # Clip the density layer to the area for which we have data
@@ -1837,7 +2012,7 @@ bike_theft_density_clip <- bike_thefts |>
 # Plot map
 ggplot() +
   # Add base map
-  annotation_map_tile(type = "cartolight", zoomin = 0) +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
   # Add density layer
   geom_sf(
     aes(fill = kde), 
@@ -1892,6 +2067,41 @@ educate people on how best to protect their bikes.
 In the next tutorial, we will learn how to improve this map further.
 
 
+::: {.box .tips}
+
+#### Tips for producing effective density maps
+
+* Density layers on maps (e.g. a layer added using `geom_sf()` to display the
+  result produced by `hotspot_kde()`) should be made semi-transparent so that
+  readers can see the base map underneath. If a density layer is not 
+  semi-transparent then it is likely to be very difficult for readers to see
+  exactly where areas of high density are in the real world. Try setting
+  the argument `alpha = 0.7` in the call to the `geom_sf()` function, then 
+  change that value until you are happy with the visibility of both the density
+  layer and the base map underneath.
+* Density layers should almost always only show a single type of crime -- avoid
+  calculating a single KDE layer based on data that includes more than one type
+  of crime. There are two problems with combining data for multiple crime types 
+  to produce a single density layer. First, different crimes often concentrate
+  in different places, so a combined map might end up showing concentrations
+  inaccurately. Second, since the KDE process is based on the number of points,
+  a density layer produced by combining data for multiple crimes will inevitably
+  be more influenced by whichever crime type is more numerous. Since more minor
+  crimes tend to be more common, this could mean that your density map points
+  people towards areas with lots of minor crimes and away from places where 
+  more-serious crimes happen.
+* Avoid mapping 'intangible' crimes. These are crimes that are only ever 
+  recorded by police when officers happen to identify a crime while on patrol,
+  rather than the crime usually being reported by the victim or a third-party.
+  You should avoid mapping these types of crime because they generally reflect
+  geographic concentrations of police patrol more than geographic concentrations 
+  of the crimes themselves. The most common intangible offences are drugs 
+  possession and weapons possession, which are detected incidentally by officers
+  on patrol much more than they are reported to the police by the public.
+
+:::
+
+
 ::: {.box .reading}
 
 You can find out more about some of the things we have covered in this tutorial
@@ -1900,9 +2110,9 @@ using these resources:
   * Understand more about the history of trying to develop accurate map 
     projections in this short video: [Why all world maps are wrong](https://youtu.be/kIID5FDi2JQ).
   * Find out more about making all sorts of charts (not just maps) with the 
-    `ggplot2` package in the [Data Visualisation chapter of *R for Data Science*](https://r4ds.had.co.nz/data-visualisation.html)
+    `ggplot2` package in the [Data Visualisation chapter of *R for Data Science*](https://r4ds.hadley.nz/data-visualize.html)
     by Hadley Wickham and Garrett Grolemund.
-  * Learn more about making maps using simple features in [Chapter 1 of *Spatial Data Science*](https://keen-swartz-3146c4.netlify.app/intro.html)
+  * Learn more about making maps using simple features in [Chapter 1 of *Spatial Data Science*](https://r-spatial.org/book/01-hello.html)
     by Edzer Pebesma and Roger Bivand.
 
 :::

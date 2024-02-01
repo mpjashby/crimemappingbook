@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.269">
+<meta name="generator" content="quarto-1.4.489">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Learn crime mapping with R - 7&nbsp; Handling bugs in your code</title>
 <style>
@@ -14,11 +14,12 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -43,43 +44,13 @@ pre.numberSource code > span > a:first-child::before
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em;
-    color: #aaaaaa;
   }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
 div.sourceCode
   {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -89,7 +60,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../appendices/read_functions.html" rel="next">
+<link href="../08_projects/index.html" rel="next">
 <link href="../06_map_context/index.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -105,7 +76,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -115,122 +92,157 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script><!-- START OF INCLUDED HEADER --><!--
 This file contains code that will be included in the header of each page of the
 quarto book
 --><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script><!-- END OF INCLUDED HEADER --><link rel="stylesheet" href="../css/styles.css">
 <meta name="twitter:title" content="Learn crime mapping with R - 7&nbsp; Handling bugs in your code">
-<meta name="twitter:description" content="Learn how to deal with error messages and other problems with the code that you write.">
+<meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
 <body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }"><div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">
-<span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span>
-</h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../07_handling_bugs/index.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
       </button>
     </div>
   </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Learn crime mapping with R</a> 
         <div class="sidebar-tools-main tools-wide">
-    <a href="https://github.com/mpjashby/crimemappingbook/" title="Source Code" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
-    <a href="../learn_crime_mapping_with_r.epub" title="Download ePub" class="sidebar-tool px-1"><i class="bi bi-journal"></i></a>
-    <a href="" title="Share" id="sidebar-tool-dropdown-0" class="sidebar-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-share"></i></a>
-    <ul class="dropdown-menu" aria-labelledby="sidebar-tool-dropdown-0">
+    <a href="https://github.com/mpjashby/crimemappingbook/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <a href="../learn_crime_mapping_with_r.epub" title="Download ePub" class="quarto-navigation-tool px-1" aria-label="Download ePub"><i class="bi bi-journal"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
 <li>
-          <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
-            <i class="bi bi-bi-twitter pe-1"></i>
-          Twitter
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=%7Curl%7C">
-            <i class="bi bi-bi-facebook pe-1"></i>
-          Facebook
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
-            <i class="bi bi-bi-linkedin pe-1"></i>
-          LinkedIn
-          </a>
-        </li>
-    </ul>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=%7Curl%7C">
+              <i class="bi bi-bi-facebook pe-1"></i>
+            Facebook
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+</div>
 </div>
     </div>
       </div>
-      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
         </div>
-      </div>
+        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">Welcome!</a>
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome!</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00_setup/index.html" class="sidebar-item-text sidebar-link">Install the software needed for this book</a>
+  <a href="../00_setup/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Install the software needed for this book</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../01_getting_started/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting started</span></a>
+  <a href="../01_getting_started/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting started</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../02_your_first_crime_map/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span></a>
+  <a href="../02_your_first_crime_map/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../03_data_wrangling/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Wrangling data</span></a>
+  <a href="../03_data_wrangling/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Wrangling data</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../04_code_with_style/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Code with style</span></a>
+  <a href="../04_code_with_style/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Code with style</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../05_your_second_crime_map/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Your second crime map</span></a>
+  <a href="../05_your_second_crime_map/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Your second crime map</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../06_map_context/index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Giving a map context</span></a>
+  <a href="../06_map_context/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Giving a map context</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../07_handling_bugs/index.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></a>
+  <a href="../07_handling_bugs/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../08_projects/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Don’t get lost in data analysis</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../09_mapping_areas/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Mapping area data</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Appendices</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../appendices/read_functions.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Functions for reading data into R</span></a>
+  <a href="../appendices/read_functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Functions for reading data into R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/common_errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Common R errors and how to fix them</span></span></a>
   </div>
 </li>
       </ul>
@@ -240,20 +252,23 @@ quarto book
     <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">In this chapter</h2>
    
   <ul class="collapse">
-<li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="toc-section-number">7.1</span>  Introduction</a></li>
-  <li><a href="#errors-warnings-and-messages" id="toc-errors-warnings-and-messages" class="nav-link" data-scroll-target="#errors-warnings-and-messages"><span class="toc-section-number">7.2</span>  Errors, warnings and messages</a></li>
-  <li><a href="#finding-problems" id="toc-finding-problems" class="nav-link" data-scroll-target="#finding-problems"><span class="toc-section-number">7.3</span>  Finding problems</a></li>
-  <li><a href="#understanding-problems" id="toc-understanding-problems" class="nav-link" data-scroll-target="#understanding-problems"><span class="toc-section-number">7.4</span>  Understanding problems</a></li>
-  <li><a href="#how-to-fix-some-common-errors" id="toc-how-to-fix-some-common-errors" class="nav-link" data-scroll-target="#how-to-fix-some-common-errors"><span class="toc-section-number">7.5</span>  How to fix some common errors</a></li>
-  <li><a href="#getting-external-help" id="toc-getting-external-help" class="nav-link" data-scroll-target="#getting-external-help"><span class="toc-section-number">7.6</span>  Getting external help</a></li>
-  <li><a href="#sources-of-help" id="toc-sources-of-help" class="nav-link" data-scroll-target="#sources-of-help"><span class="toc-section-number">7.7</span>  Sources of help</a></li>
-  <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="toc-section-number">7.8</span>  In summary</a></li>
-  </ul><div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
-</nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">7.1</span> Introduction</a></li>
+  <li><a href="#errors-warnings-and-messages" id="toc-errors-warnings-and-messages" class="nav-link" data-scroll-target="#errors-warnings-and-messages"><span class="header-section-number">7.2</span> Errors, warnings and messages</a></li>
+  <li><a href="#finding-problems" id="toc-finding-problems" class="nav-link" data-scroll-target="#finding-problems"><span class="header-section-number">7.3</span> Finding problems</a></li>
+  <li><a href="#understanding-problems" id="toc-understanding-problems" class="nav-link" data-scroll-target="#understanding-problems"><span class="header-section-number">7.4</span> Understanding problems</a></li>
+  <li><a href="#how-to-fix-some-common-errors" id="toc-how-to-fix-some-common-errors" class="nav-link" data-scroll-target="#how-to-fix-some-common-errors"><span class="header-section-number">7.5</span> How to fix some common errors</a></li>
+  <li><a href="#getting-external-help" id="toc-getting-external-help" class="nav-link" data-scroll-target="#getting-external-help"><span class="header-section-number">7.6</span> Getting external help</a></li>
+  <li><a href="#sources-of-help" id="toc-sources-of-help" class="nav-link" data-scroll-target="#sources-of-help"><span class="header-section-number">7.7</span> Sources of help</a></li>
+  <li><a href="#coding-with-ai" id="toc-coding-with-ai" class="nav-link" data-scroll-target="#coding-with-ai"><span class="header-section-number">7.8</span> Coding with AI</a></li>
+  <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="header-section-number">7.9</span> In summary</a></li>
+  </ul><div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title d-none d-lg-block">
+<h1 class="title">
 <span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span>
 </h1>
 </div>
@@ -268,6 +283,7 @@ quarto book
   </div>
   
 
+
 </header><p><strong>Learn how to deal with error messages and other problems with the code that you write.</strong></p>
 <div class="box load-tutorial">
 <p>To load the <a href="../#how-to-use-this-book">interactive tutorial</a> for this chapter, copy and paste the following code into the RStudio console:</p>
@@ -280,7 +296,7 @@ quarto book
 <p>Some errors are easy to identify and easy to fix. Imagine you are working on this dataset of frauds in Kansas City:</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table table-sm table-striped">
+<table class="table table-sm table-striped small">
 <colgroup>
 <col style="width: 7%">
 <col style="width: 12%">
@@ -352,10 +368,12 @@ quarto book
 </div>
 <p>If you try to run this code:</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">select</span>(frauds, offense_category)</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="do">## Error in `select()`:</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="do">## ! Can't subset columns that don't exist.</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="do">## ✖ Column `offense_category` doesn't exist.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">select</span>(frauds, offense_category)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `select()`:
+! Can't subset columns that don't exist.
+✖ Column `offense_category` doesn't exist.</code></pre>
+</div>
 </div>
 <div class="tutorial">
 <p>You will get an error message saying something like:</p>
@@ -366,37 +384,40 @@ quarto book
 </div>
 <p>In this case it is fairly easy to identify that one of the columns you have tried to select does not exist. Maybe you mis-remembered the name of the column. To find out what the correct column name is, you can either print the first few rows of the object (by typing the code <code>head(frauds)</code> into the R console) or use the <code><a href="https://rdrr.io/r/base/names.html">names()</a></code> function to print a list of column names present in the data:</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">names</span>(frauds)</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="do">## [1] "uid"          "offense_code" "offense_type" "date"         "longitude"   </span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="do">## [6] "latitude"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">names</span>(frauds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "uid"          "offense_code" "offense_type" "date"         "longitude"   
+[6] "latitude"    </code></pre>
+</div>
 </div>
 <div class="tutorial">
 <p>Change the following code to correct the mistaken column name:</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">select</span>(frauds, offense_category)</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="do">## Error in `select()`:</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="do">## ! Can't subset columns that don't exist.</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="do">## ✖ Column `offense_category` doesn't exist.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">select</span>(frauds, offense_category)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `select()`:
+! Can't subset columns that don't exist.
+✖ Column `offense_category` doesn't exist.</code></pre>
+</div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">select</span>(frauds, offense_type)</span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="do">## # A tibble: 6 × 1</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="do">##   offense_type                              </span></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="do">##   &lt;chr&gt;                                     </span></span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="do">## 1 credit card/automated teller machine fraud</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a><span class="do">## 2 credit card/automated teller machine fraud</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="do">## 3 false pretenses/swindle/confidence game   </span></span>
-<span id="cb6-8"><a href="#cb6-8"></a><span class="do">## 4 false pretenses/swindle/confidence game   </span></span>
-<span id="cb6-9"><a href="#cb6-9"></a><span class="do">## 5 impersonation                             </span></span>
-<span id="cb6-10"><a href="#cb6-10"></a><span class="do">## 6 impersonation</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">select</span>(frauds, offense_type)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 1
+  offense_type                              
+  &lt;chr&gt;                                     
+1 credit card/automated teller machine fraud
+2 credit card/automated teller machine fraud
+3 false pretenses/swindle/confidence game   
+4 false pretenses/swindle/confidence game   
+5 impersonation                             
+6 impersonation                             </code></pre>
+</div>
 </div>
 </div>
 <p>Other errors will be harder to identify and fix. In this tutorial we will go through the process of debugging – identifying, understanding and fixing errors in your code. Sometimes fixing issues with your code can feel like a bit of a roller coaster, but (like most things) it becomes much easier with practice, and if you approach errors in a systematic way.</p>
 <p class="full-width-image">
 <img src="images/debugging.jpg" alt="Cartoon showing 10 furry monsters showing different stages of learning to debug code. The monsters are marked '1. I got this', '2. Huh, really though that was it', '3. (...)', '4. Fine. Restarting.', '5. OH WTF', '6. Zombie meltdown', '7. [crying]', '8. A NEW HOPE!', '9. [insert awesome theme song]' and '10. I LOVE CODING!'"></p>
-<p class="credits">
-<a href="https://github.com/allisonhorst/stats-illustrations">Stats Illustrations by Allison Horst</a> licensed under the <a href="https://github.com/allisonhorst/stats-illustrations/blob/master/license">Creative Commons Attribution licence</a>.
-</p>
 </section><section id="errors-warnings-and-messages" class="level2" data-number="7.2"><h2 data-number="7.2" class="anchored" data-anchor-id="errors-warnings-and-messages">
 <span class="header-section-number">7.2</span> Errors, warnings and messages</h2>
 <p>When something is not quite right, or just when there is an issue in your code that you should be aware of, R has three ways of communicating with you: messages, warnings and errors.</p>
@@ -405,19 +426,25 @@ quarto book
 <p><em>Messages</em> are usually for information only and typically don’t require you to take any action. For example, the function <code>get_crime_data()</code> from the <code>crimedata</code> package issues a message to tell you what data it is downloading. It does this because downloading data sometimes takes a few seconds and without a message you might wonder if the code was working.</p>
 <p>By default, messages are displayed in RStudio in <span style="color: rgb(197, 6, 11); background-color: #FFFFFF; font-family: monospace; font-weight: normal;">dark red text</span>, although this might vary if you have changed any settings in the Appearance tab of the RStudio Options dialogue. You can generate a message for yourself using the <code><a href="https://rdrr.io/r/base/message.html">message()</a></code> function. This is useful if you are writing code and you want to remind yourself of something, or record a particular value. For example, if your code is likely to take a long time to run, you might want to record the time your code started running by generating a message on the first line of your code:</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">message</span>(stringr<span class="sc">::</span><span class="fu">str_glue</span>(<span class="st">"Code started: {Sys.time()}"</span>))</span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="do">## Code started: 2023-03-22 16:40:45</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">message</span>(stringr<span class="sc">::</span><span class="fu">str_glue</span>(<span class="st">"Code started: {Sys.time()}"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Code started: 2024-02-01 13:29:43.308724</code></pre>
+</div>
 </div>
 <p>When R prints a message about your code, any code underneath the code that generated the message will still run:</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="dv">2</span> <span class="sc">*</span> <span class="dv">2</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="do">## [1] 4</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="fu">message</span>(<span class="st">"This is a message. It might be important so make sure you understand it."</span>)</span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="do">## This is a message. It might be important so make sure you understand it.</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a></span>
-<span id="cb8-7"><a href="#cb8-7"></a><span class="dv">2</span> <span class="sc">/</span> <span class="dv">2</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="do">## [1] 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="dv">2</span> <span class="sc">*</span> <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">message</span>(<span class="st">"This is a message. It might be important so make sure you understand it."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is a message. It might be important so make sure you understand it.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="dv">2</span> <span class="sc">/</span> <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
 </div>
 </section><section id="warnings" class="level4" data-number="7.2.0.2"><h4 data-number="7.2.0.2" class="anchored" data-anchor-id="warnings">
 <span class="header-section-number">7.2.0.2</span> Warnings</h4>
@@ -427,10 +454,12 @@ quarto book
 <p><strong>It is not safe to ignore warnings</strong> unless you are sure why they occurred and certain that you don’t need to take any action.</p>
 <p>One particularly dangerous scenario is where your code produces warnings but still produces what looks like a reasonable result. In these circumstances it can be tempting to ignore the warnings and assume that everything is fine, since the code still produced roughly what you were expecting. However, it’s possible that the plausible answer is nevertheless wrong because of whatever problem is generating the warning in R. Do not assume that warnings are safe to ignore just because they don’t stop your code running.</p>
 </div>
-<p>Warnings are displayed in the same font as messages, but with the text <code>Warning message:</code> at the start. You can generate your own warning messages using the <code><a href="https://rdrr.io/r/base/warning.html">warning()</a></code> function:</p>
+<p>Warnings are displayed in the same font as messages, but with the text <code>Warning:</code> at the start. You can generate your own warning messages using the <code><a href="https://rdrr.io/r/base/warning.html">warning()</a></code> function:</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">warning</span>(<span class="st">"Something might be wrong. Check to make sure."</span>)</span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="do">## Warning: Something might be wrong. Check to make sure.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">warning</span>(<span class="st">"Something might be wrong. Check to make sure."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Something might be wrong. Check to make sure.</code></pre>
+</div>
 </div>
 <p>As with messages, warnings will not stop your code running. This means that if the warning signalled a genuine problem with your code, the results of the lines underneath the warning might not be reliable. That is why it is important to understand warnings when you see them.</p>
 </section><section id="errors" class="level4" data-number="7.2.0.3"><h4 data-number="7.2.0.3" class="anchored" data-anchor-id="errors">
@@ -438,37 +467,68 @@ quarto book
 <p><em>Errors</em> are generated when there is something wrong with your code or the results it produces that means the code cannot continue running any further. An error might occur, for example, because the function <code>read_csv()</code> could not open the requested file (maybe because the file does not exist). In this case, it would make no sense for the rest of the code to run because it probably depends on the data that <code>read_csv()</code> was supposed to load but could not.</p>
 <p>It would make sense to be able to generate your own errors using the <code>error()</code> function, but this is one of those times when the function to do something in R has a different name from that you might be expecting. In fact, you can generate an error using the <code><a href="https://rdrr.io/r/base/stop.html">stop()</a></code> function:</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">stop</span>(<span class="st">"Something is defintely wrong. Don't go any further until you've fixed it."</span>)</span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="do">## Error in eval(expr, envir, enclos): Something is defintely wrong. Don't go any further until you've fixed it.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">stop</span>(<span class="st">"Something is defintely wrong. Don't go any further until you've fixed it."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in eval(expr, envir, enclos): Something is defintely wrong. Don't go any further until you've fixed it.</code></pre>
+</div>
 </div>
 <p>There are two types of errors in R: <em>syntax</em> errors and <em>logical</em> errors. Syntax errors happen when R cannot read your code because of a mistake in how it has been typed out. For example, if you forget to put a comma between the arguments of a function, you will get this error:</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">message</span>(<span class="st">"A"</span> <span class="st">"B"</span>)</span>
-<span id="cb11-2"><a href="#cb11-2"></a><span class="do">## Error: &lt;text&gt;:1:13: unexpected string constant</span></span>
-<span id="cb11-3"><a href="#cb11-3"></a><span class="do">## 1: message("A" "B"</span></span>
-<span id="cb11-4"><a href="#cb11-4"></a><span class="do">##                 ^</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="fu">message</span>(<span class="st">"A"</span> <span class="st">"B"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error: &lt;text&gt;:1:13: unexpected string constant
+1: message("A" "B"
+                ^</code></pre>
+</div>
 </div>
 <p>When you run R code, R reads all the code and checks if it can be interpreted as valid R code. If not, R will produce a syntax error. Because all of your code is checked for syntax errors before any code is actually run, a syntax error anywhere in your code will stop all of your code running. Syntax errors are typically fairly easy to fix, because they are usually caused by typos.</p>
-<p>The second type of error is a logical error. This happens when R is able to interpret what you have written, but something is wrong with what you have asked it to do. These are called logical errors because there is usually some problem with the logic of what you are asking R to do. Like syntax errors, logical errors can be caused by typos, but logical errors can also have many other causes.</p>
-<p>There is a saying in programming that a computer will do exactly what you tell it to do, which may not be the same thing as what you <em>wanted</em> it do. Logical errors happen when you have told R to do something that it cannot do. For example, you might be asking R to multiply together a numeric value and a character value, which is illogical.</p>
+<p>The second type of error that can happen is a logical error. This happens when R is able to interpret what you have written, but something is wrong with what you have asked it to do. These are called logical errors because there is usually some problem with the logic of what you are asking R to do. Like syntax errors, logical errors can be caused by typos, but logical errors can also have many other causes.</p>
+<p>There is a saying in programming that a computer will do exactly what you tell it to do, which may not be the same thing as what you <em>wanted</em> it do. Logical errors happen when you have told R to do something that it cannot do. For example, you might be asking R to multiply together a numeric value and a character value (e.g.&nbsp;<code>3 * "A"</code>), which is illogical.</p>
 <p>Since every step in your code depends on the steps that went before it, it is only possible to identify a logical error during the process of running the code. This means that a lot of your code might run successfully before an error occurs.</p>
 <p>Logical errors are typically harder to fix than syntax errors are, because fixing a logical error involves understanding (a) what you have asked R to do and (b) the current state of everything in your code at the moment when the error occurs. Fortunately, there are lots of ways to identify and fix logical errors.</p>
 <p>Now we know what errors, warning and messages are, we need to find out how to deal with them when they happen.</p>
+</section><section id="check-your-understanding" class="level3 tutorial" data-number="7.2.1"><h3 data-number="7.2.1" class="anchored" data-anchor-id="check-your-understanding">
+<span class="header-section-number">7.2.1</span> Check your understanding</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="fu">quiz</span>(</span>
+<span id="cb25-2"><a href="#cb25-2"></a>  <span class="at">caption =</span> <span class="st">""</span>,</span>
+<span id="cb25-3"><a href="#cb25-3"></a>  </span>
+<span id="cb25-4"><a href="#cb25-4"></a>  <span class="fu">question</span>(</span>
+<span id="cb25-5"><a href="#cb25-5"></a>    <span class="st">"Which of the following terms is used in R to describe the way of communicating something for information only"</span>,</span>
+<span id="cb25-6"><a href="#cb25-6"></a>    <span class="fu">answer</span>(<span class="st">"A message"</span>, <span class="at">correct =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb25-7"><a href="#cb25-7"></a>    <span class="fu">answer</span>(</span>
+<span id="cb25-8"><a href="#cb25-8"></a>      <span class="st">"A warning"</span>,</span>
+<span id="cb25-9"><a href="#cb25-9"></a>      <span class="at">message =</span> <span class="st">"Not quite right: warnings in R communicate information that you need to investigate so you can decide what action to take."</span></span>
+<span id="cb25-10"><a href="#cb25-10"></a>    ),</span>
+<span id="cb25-11"><a href="#cb25-11"></a>    <span class="fu">answer</span>(</span>
+<span id="cb25-12"><a href="#cb25-12"></a>      <span class="st">"An error"</span>,</span>
+<span id="cb25-13"><a href="#cb25-13"></a>      <span class="at">message =</span> <span class="st">"Not quite right: errors in R communicate problems that prevent your code from running."</span></span>
+<span id="cb25-14"><a href="#cb25-14"></a>    ),</span>
+<span id="cb25-15"><a href="#cb25-15"></a>    <span class="fu">answer</span>(<span class="st">"A condition"</span>),</span>
+<span id="cb25-16"><a href="#cb25-16"></a>    <span class="at">correct =</span> <span class="fu">random_praise</span>(),</span>
+<span id="cb25-17"><a href="#cb25-17"></a>    <span class="at">allow_retry =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb25-18"><a href="#cb25-18"></a>    <span class="at">random_answer_order =</span> <span class="cn">TRUE</span></span>
+<span id="cb25-19"><a href="#cb25-19"></a>  )</span>
+<span id="cb25-20"><a href="#cb25-20"></a>  </span>
+<span id="cb25-21"><a href="#cb25-21"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section></section><section id="finding-problems" class="level2" data-number="7.3"><h2 data-number="7.3" class="anchored" data-anchor-id="finding-problems">
 <span class="header-section-number">7.3</span> Finding problems</h2>
 <p>If an error or warning has a simple cause, such as the example of the incorrect column name in the previous section, you can just fix the problem and re-run the code. For problems that are more difficult to handle, you will need to follow a step-by-step process to find and fix them. Think of this as like being a mechanic fixing a car – first you work out what the problem is, then you fix it.</p>
 <p>If you code only has one line, it will probably be obvious where any problem lies. But most of your code does several things to achieve a particular goal, such as making a map. The first task in dealing with a problem is therefore to work out exactly which function or other piece of code has caused it. For example, take this data-wrangling code to reduce the size of a dataset and sort it in date order:</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb12-2"><a href="#cb12-2"></a></span>
-<span id="cb12-3"><a href="#cb12-3"></a>frauds <span class="sc">|&gt;</span> </span>
-<span id="cb12-4"><a href="#cb12-4"></a>  <span class="fu">select</span>(offense_type, date, longitude, latitude) <span class="sc">|&gt;</span> </span>
-<span id="cb12-5"><a href="#cb12-5"></a>  <span class="fu">filter</span>(offence_type <span class="sc">==</span> <span class="st">"impersonation"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb12-6"><a href="#cb12-6"></a>  <span class="fu">arrange</span>(date)</span>
-<span id="cb12-7"><a href="#cb12-7"></a><span class="do">## Error in `filter()`:</span></span>
-<span id="cb12-8"><a href="#cb12-8"></a><span class="do">## ℹ In argument: `offence_type == "impersonation"`.</span></span>
-<span id="cb12-9"><a href="#cb12-9"></a><span class="do">## Caused by error:</span></span>
-<span id="cb12-10"><a href="#cb12-10"></a><span class="do">## ! object 'offence_type' not found</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb26-2"><a href="#cb26-2"></a></span>
+<span id="cb26-3"><a href="#cb26-3"></a>frauds <span class="sc">|&gt;</span> </span>
+<span id="cb26-4"><a href="#cb26-4"></a>  <span class="fu">select</span>(offense_type, date, longitude, latitude) <span class="sc">|&gt;</span> </span>
+<span id="cb26-5"><a href="#cb26-5"></a>  <span class="fu">filter</span>(offence_type <span class="sc">==</span> <span class="st">"impersonation"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb26-6"><a href="#cb26-6"></a>  <span class="fu">arrange</span>(date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `filter()`:
+ℹ In argument: `offence_type == "impersonation"`.
+Caused by error:
+! object 'offence_type' not found</code></pre>
+</div>
 </div>
 <p>This code produces a fairly complicated error message. As is often the case, the most useful part of the error message is the last part:</p>
 <pre><code>Input `..1` is `offence_type == "impersonation"`</code></pre>
@@ -480,27 +540,31 @@ quarto book
 </div>
 <p>Sometimes it will not be as clear as this where to start in looking for the problem. In particular, some errors can be <em>caused</em> by a problem on one line of code, but only actually have a negative <em>effect</em> on a subsequent line of code. For example, if you run this code:</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>frauds <span class="sc">|&gt;</span> </span>
-<span id="cb14-2"><a href="#cb14-2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude) <span class="sc">|&gt;</span> </span>
-<span id="cb14-3"><a href="#cb14-3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26E"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb14-4"><a href="#cb14-4"></a>  <span class="fu">arrange</span>(date)</span>
-<span id="cb14-5"><a href="#cb14-5"></a><span class="do">## Error in `arrange()`:</span></span>
-<span id="cb14-6"><a href="#cb14-6"></a><span class="do">## ℹ In argument: `..1 = date`.</span></span>
-<span id="cb14-7"><a href="#cb14-7"></a><span class="do">## Caused by error:</span></span>
-<span id="cb14-8"><a href="#cb14-8"></a><span class="do">## ! `..1` must be a vector, not a function.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>frauds <span class="sc">|&gt;</span> </span>
+<span id="cb29-2"><a href="#cb29-2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude) <span class="sc">|&gt;</span> </span>
+<span id="cb29-3"><a href="#cb29-3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26E"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb29-4"><a href="#cb29-4"></a>  <span class="fu">arrange</span>(date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `arrange()`:
+ℹ In argument: `..1 = date`.
+Caused by error:
+! `..1` must be a vector, not a function.</code></pre>
+</div>
 </div>
 <p>The error message produced suggests the problem is with the <code>arrange()</code> function, but everything is correct with that function since <code>arrange()</code> is a correct function name and we already know that <code>date</code> is a column in the tibble named <code>frauds</code>. So the problem must lie elsewhere. In cases like this, it can be helpful to comment out all the lines of code except the first one and then uncomment one line at a time until you find the one that causes the problem.</p>
 <div class="tutorial">
 <p>With the following code, uncomment one line at a time starting on line 2, re-run the code and then uncomment another line. After you run the code each time, look at the output produced until an error occurs or you find that the output is not what you expected.</p>
 <div class="cell" data-exercise="true" data-exercise.lines="5">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>frauds <span class="sc">|&gt;</span> </span>
-<span id="cb15-2"><a href="#cb15-2"></a><span class="co">#  select(offense_code, longitude, latitude) |&gt; </span></span>
-<span id="cb15-3"><a href="#cb15-3"></a><span class="co">#  filter(offense_code == "26E") |&gt; </span></span>
-<span id="cb15-4"><a href="#cb15-4"></a><span class="co">#  arrange(date)</span></span>
-<span id="cb15-5"><a href="#cb15-5"></a><span class="do">## Error: &lt;text&gt;:5:0: unexpected end of input</span></span>
-<span id="cb15-6"><a href="#cb15-6"></a><span class="do">## 3: #  filter(offense_code == "26E") |&gt; </span></span>
-<span id="cb15-7"><a href="#cb15-7"></a><span class="do">## 4: #  arrange(date)</span></span>
-<span id="cb15-8"><a href="#cb15-8"></a><span class="do">##   ^</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>frauds <span class="sc">|&gt;</span> </span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="co">#  select(offense_code, longitude, latitude) |&gt; </span></span>
+<span id="cb31-3"><a href="#cb31-3"></a><span class="co">#  filter(offense_code == "26E") |&gt; </span></span>
+<span id="cb31-4"><a href="#cb31-4"></a><span class="co">#  arrange(date)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error: &lt;text&gt;:5:0: unexpected end of input
+3: #  filter(offense_code == "26E") |&gt; 
+4: #  arrange(date)
+  ^</code></pre>
+</div>
 </div>
 </div>
 <div class="box extra-detail">
@@ -512,18 +576,21 @@ Did you get an error beginning <code>&lt;text&gt;:5:0: unexpected end of input 3
 </div>
 </div>
 <script>
-$("#finding-box1-title").click(function () { $("#section-finding-box1").toggle("slow") })
+$("#finding-box1-title").click(function () { $("#finding-box1").toggle("slow") })
 </script><p>If you uncommented all but the last line and run the code, you would see that the line <code>select(offense_code, longitude, latitude)</code> removes the column <code>date</code> from the dataset, so it’s not possible to use <code>date</code> as an argument to the <code>arrange()</code> function later on.</p>
 <p>Uncommenting one line at a time until you find an error or output that is not what you expected is a useful way to isolate problems, but it will not always work. In particular, it will not work if the problem is caused by some code that should have been included but is missing from your code entirely. For example, if you try to run the function <code>st_transform()</code> on a tibble without first changing it into an SF object:</p>
 <div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb16-2"><a href="#cb16-2"></a><span class="do">## Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE</span></span>
-<span id="cb16-3"><a href="#cb16-3"></a></span>
-<span id="cb16-4"><a href="#cb16-4"></a>frauds <span class="sc">|&gt;</span> </span>
-<span id="cb16-5"><a href="#cb16-5"></a>  <span class="fu">select</span>(offense_code, longitude, latitude) <span class="sc">|&gt;</span> </span>
-<span id="cb16-6"><a href="#cb16-6"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26A"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb16-7"><a href="#cb16-7"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:3603"</span>)</span>
-<span id="cb16-8"><a href="#cb16-8"></a><span class="do">## Error in UseMethod("st_transform"): no applicable method for 'st_transform' applied to an object of class "c('tbl_df', 'tbl', 'data.frame')"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="fu">library</span>(sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>frauds <span class="sc">|&gt;</span> </span>
+<span id="cb35-2"><a href="#cb35-2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude) <span class="sc">|&gt;</span> </span>
+<span id="cb35-3"><a href="#cb35-3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26A"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb35-4"><a href="#cb35-4"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:3603"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in UseMethod("st_transform"): no applicable method for 'st_transform' applied to an object of class "c('tbl_df', 'tbl', 'data.frame')"</code></pre>
+</div>
 </div>
 <p>In these cases it is particularly useful to check every argument that you have used in a function to track down the error. We will look at this later in this tutorial.</p>
 <section id="errors-caused-by-data-problems" class="level3" data-number="7.3.1"><h3 data-number="7.3.1" class="anchored" data-anchor-id="errors-caused-by-data-problems">
@@ -583,77 +650,38 @@ $("#understanding-box1-title").click(function () { $("#understanding-box1").togg
 <p>By reading the error message, isolating the error by commenting out and then reading the manual page, you will be able to fix almost all the errors you will come across in writing R code. Occasionally, however, you will find an error that you just can’t understand. In that case, you will need to get some help from others.</p>
 </section><section id="how-to-fix-some-common-errors" class="level2" data-number="7.5"><h2 data-number="7.5" class="anchored" data-anchor-id="how-to-fix-some-common-errors">
 <span class="header-section-number">7.5</span> How to fix some common errors</h2>
-<p>There are some mistakes that it is common for people to make when writing code. The table on this page gives some common error messages and how to fix them. Read through this list now but you can also refer back to it later on if you need to. You can <a href="www/common_errors.pdf">download a PDF version of this table for future reference</a>.</p>
-<p>In these error messages, the code <code>blah</code> represents the function, object or value that the error relates to.</p>
+<p>There are some mistakes that it is common for people to make when writing code. As you get more experience in writing R code and dealing with error messages, you are likely to start to recognise some simple errors (especially those caused by typos) and know how to fix them quickly. One useful way to quickly find help on common errors is to check if the error (and the corresponding solution) appears on this <a href="http://books.lesscrime.info/learncrimemapping/appendices/common_errors.html">list of common R errors and how to fix them</a>.</p>
+<section id="check-your-understanding-1" class="level3 tutorial" data-number="7.5.1"><h3 data-number="7.5.1" class="anchored" data-anchor-id="check-your-understanding-1">
+<span class="header-section-number">7.5.1</span> Check your understanding</h3>
 <div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped">
-<thead><tr class="header">
-<th style="text-align: left;">Error message</th>
-<th style="text-align: left;">How to fix it</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><code>there is no package called 'blah'</code></td>
-<td style="text-align: left;">You have either mis-typed the package name or the package is not installed. Check the spelling or use <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages()</a></code> to install the package.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><code>could not find function "blah"</code></td>
-<td style="text-align: left;">You have either mis-typed the function name or the package containing that function is not loaded. Check the spelling or use <code><a href="https://rdrr.io/r/base/library.html">library()</a></code> to load the package.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>object 'blah' not found</code></td>
-<td style="text-align: left;">You have either mis-typed the name of the object or the object does not exist. Check the spelling and make sure you have run the code that creates the object. This error can also occur when you have forgotten to put quotes around a character value in an argument, since R treats words without quotes around them as the names of objects. In this case, check that you have used quote marks around any character values in your code.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">
-<code>'blah' does not exist</code> <code>in current working directory</code>
-</td>
-<td style="text-align: left;">You have either mis-typed the name of a file that R is trying to access or the file does not exist in the location you have specified. Check the spelling and make sure the file exists.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>non-numeric argument to binary operator</code></td>
-<td style="text-align: left;">You have tried to use a mathematical operator such as <code>+</code> or <code>-</code> with a non-numeric value. For example, you might have written the code <code>1 + blah</code> thinking that <code>blah</code> holds a numeric value, but if <code>blah</code> actually holds a character value then trying to add it to <code>1</code> makes no sense. Check that any objects in your code have the values you expect them to.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">
-<code>object of type 'closure'</code> <code>is not subsettable</code>
-</td>
-<td style="text-align: left;">You have tried to use a function as if it is an object, which can happen when you store data in an object that has the same name as an R function (most commonly, when you store some data in an object called <code>data</code>, since there is a function called <code><a href="https://rdrr.io/r/utils/data.html">data()</a></code>). The circumstances that produce this error are often not simple to understand, so the best way to handle this error is to avoid it by not naming objects using the names of functions.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">
-<code>no applicable method for 'blah' applied</code> <code>to an object of class "blah"</code>
-</td>
-<td style="text-align: left;">Some R functions (called generic functions) work in different ways depending on what type of object you use them on. But if you use a generic function on an object that it does not know how to handle, you will see this error. Check the object(s) that you provided to the function causing the error to make sure it is the type of object you are expecting it to be.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">
-<code>unexpected numeric constant in "blah"</code>, <code>unexpected string constant in "blah"</code> or <code>unexpected symbol in "blah"</code>
-</td>
-<td style="text-align: left;">You have a typo somewhere in your code. Check the line of code producing the error to make sure it is formatted correctly. The most common typos that cause this error are a missing comma or closing parenthesis, but there are <a href="https://stackoverflow.com/a/25889235/8222654">several other typos that can cause similar errors</a>.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><code>unused argument (var = "blah")</code></td>
-<td style="text-align: left;">You have used an argument name in a function that does not understand it. Check the manual page for that function.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">
-<code>argument "blah" is missing,</code> <code>with no default</code>
-</td>
-<td style="text-align: left;">You have used a function without providing all the necessary arguments. Check the manual page for that function.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">
-<code>The pipe operator requires</code> <code>a function call as RHS</code>
-</td>
-<td style="text-align: left;">There is a pipe operator at the end of the final line of a code pipeline (or what R thinks should be the final line).</td>
-</tr>
-</tbody>
-</table>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="fu">quiz</span>(</span>
+<span id="cb37-2"><a href="#cb37-2"></a>  <span class="at">caption =</span> <span class="st">""</span>,</span>
+<span id="cb37-3"><a href="#cb37-3"></a>  </span>
+<span id="cb37-4"><a href="#cb37-4"></a>  <span class="fu">question</span>(</span>
+<span id="cb37-5"><a href="#cb37-5"></a>    <span class="st">'What might cause the error message `could not find function "blah"`?'</span>,</span>
+<span id="cb37-6"><a href="#cb37-6"></a>    <span class="fu">answer</span>(</span>
+<span id="cb37-7"><a href="#cb37-7"></a>      <span class="st">"You have not loaded the package that contains the `blah()` function"</span>, </span>
+<span id="cb37-8"><a href="#cb37-8"></a>      <span class="at">correct =</span> <span class="cn">TRUE</span></span>
+<span id="cb37-9"><a href="#cb37-9"></a>    ),</span>
+<span id="cb37-10"><a href="#cb37-10"></a>    <span class="fu">answer</span>(</span>
+<span id="cb37-11"><a href="#cb37-11"></a>      <span class="st">"You have mis-typed the name of the `blah()` function"</span>,</span>
+<span id="cb37-12"><a href="#cb37-12"></a>      <span class="at">correct =</span> <span class="cn">TRUE</span></span>
+<span id="cb37-13"><a href="#cb37-13"></a>    ),</span>
+<span id="cb37-14"><a href="#cb37-14"></a>    <span class="fu">answer</span>(</span>
+<span id="cb37-15"><a href="#cb37-15"></a>      <span class="st">"You have mis-typed the name of the `blah` object"</span>,</span>
+<span id="cb37-16"><a href="#cb37-16"></a>      <span class="at">message =</span> <span class="st">"Not quite. This error message relates to a function called `blah`, not an object."</span></span>
+<span id="cb37-17"><a href="#cb37-17"></a>    ),</span>
+<span id="cb37-18"><a href="#cb37-18"></a>    <span class="fu">answer</span>(</span>
+<span id="cb37-19"><a href="#cb37-19"></a>      <span class="st">"You have tried to use a generic function with a type of object the function does not know how to use"</span></span>
+<span id="cb37-20"><a href="#cb37-20"></a>    ),</span>
+<span id="cb37-21"><a href="#cb37-21"></a>    <span class="at">correct =</span> <span class="fu">random_praise</span>(),</span>
+<span id="cb37-22"><a href="#cb37-22"></a>    <span class="at">allow_retry =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb37-23"><a href="#cb37-23"></a>    <span class="at">random_answer_order =</span> <span class="cn">TRUE</span></span>
+<span id="cb37-24"><a href="#cb37-24"></a>  )</span>
+<span id="cb37-25"><a href="#cb37-25"></a>  </span>
+<span id="cb37-26"><a href="#cb37-26"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</div>
-</section><section id="getting-external-help" class="level2" data-number="7.6"><h2 data-number="7.6" class="anchored" data-anchor-id="getting-external-help">
+</section></section><section id="getting-external-help" class="level2" data-number="7.6"><h2 data-number="7.6" class="anchored" data-anchor-id="getting-external-help">
 <span class="header-section-number">7.6</span> Getting external help</h2>
 <p>If you cannot fix an error using any of the techniques we have already covered, it is probably time to get some help from others. Fortunately, one of the big benefits of using R is that there is a friendly, welcoming community of R coders online who are willing to help fix problems. Almost everyone in this community will remember when they were knew to using R and so will be gentle with people who are asking their first question.</p>
 <section id="reproducible-examples" class="level3" data-number="7.6.1"><h3 data-number="7.6.1" class="anchored" data-anchor-id="reproducible-examples">
@@ -671,103 +699,106 @@ $("#understanding-box1-title").click(function () { $("#understanding-box1").togg
 <li>Make sure that someone trying to help us can reproduce the issue on their own computer even if they don’t have access to the particular dataset we are using. We do this by replacing our own dataset with a publicly available one, preferably one of the datasets that are built into R for exactly this purpose.</li>
 </ol>
 <p>Watch this video to see the process of making a reprex in RStudio:</p>
-<div class="quarto-video ratio ratio-16x9"><iframe src="https://www.youtube.com/embed/hlcftgeTAyY" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/hlcftgeTAyY" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
 </section><section id="reproducible-code" class="level3" data-number="7.6.2"><h3 data-number="7.6.2" class="anchored" data-anchor-id="reproducible-code">
 <span class="header-section-number">7.6.2</span> Reproducible code</h3>
 <p>Our first step is to remove every line from our code that isn’t necessary to produce the error. For example, run the following code to see what error it produces.</p>
-<div class="cell">
-
-</div>
 <div class="cell" data-exercise="true" data-exercise.lines="39">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="co"># Load packages</span></span>
-<span id="cb17-2"><a href="#cb17-2"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb17-3"><a href="#cb17-3"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb17-4"><a href="#cb17-4"></a><span class="fu">library</span>(readr)</span>
-<span id="cb17-5"><a href="#cb17-5"></a></span>
-<span id="cb17-6"><a href="#cb17-6"></a><span class="co"># Load a dataset from your computer and wrangle it</span></span>
-<span id="cb17-7"><a href="#cb17-7"></a>road_deaths <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"road_deaths_data.csv"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb17-8"><a href="#cb17-8"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb17-9"><a href="#cb17-9"></a>  <span class="fu">rename</span>(<span class="at">ksi_drivers =</span> drivers, <span class="at">ksi_pass_front =</span> front, <span class="at">ksi_pass_rear =</span> rear) <span class="sc">|&gt;</span> </span>
-<span id="cb17-10"><a href="#cb17-10"></a>  <span class="fu">select</span>(<span class="sc">-</span>petrol_price, <span class="sc">-</span>van_killed) <span class="sc">|&gt;</span> </span>
-<span id="cb17-11"><a href="#cb17-11"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb17-12"><a href="#cb17-12"></a>    <span class="at">law =</span> <span class="fu">as.logical</span>(law),</span>
-<span id="cb17-13"><a href="#cb17-13"></a>    <span class="at">ksi_driver_rate =</span> ksi_drivers <span class="sc">/</span> (kms <span class="sc">/</span> <span class="dv">1000</span>)</span>
-<span id="cb17-14"><a href="#cb17-14"></a>  )</span>
-<span id="cb17-15"><a href="#cb17-15"></a><span class="do">## Rows: 192 Columns: 9</span></span>
-<span id="cb17-16"><a href="#cb17-16"></a><span class="do">## ── Column specification ────────────────────────────────────────────────────────</span></span>
-<span id="cb17-17"><a href="#cb17-17"></a><span class="do">## Delimiter: ","</span></span>
-<span id="cb17-18"><a href="#cb17-18"></a><span class="do">## dbl  (8): DriversKilled, drivers, front, rear, kms, PetrolPrice, VanKilled, law</span></span>
-<span id="cb17-19"><a href="#cb17-19"></a><span class="do">## date (1): month_beginning</span></span>
-<span id="cb17-20"><a href="#cb17-20"></a><span class="do">## </span></span>
-<span id="cb17-21"><a href="#cb17-21"></a><span class="do">## ℹ Use `spec()` to retrieve the full column specification for this data.</span></span>
-<span id="cb17-22"><a href="#cb17-22"></a><span class="do">## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</span></span>
-<span id="cb17-23"><a href="#cb17-23"></a></span>
-<span id="cb17-24"><a href="#cb17-24"></a><span class="co"># Make a time-series chart of two continuous variables, coloured by a </span></span>
-<span id="cb17-25"><a href="#cb17-25"></a><span class="co"># categorical variable, then add a trend line</span></span>
-<span id="cb17-26"><a href="#cb17-26"></a>road_deaths <span class="sc">+</span> </span>
-<span id="cb17-27"><a href="#cb17-27"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month_beginning, <span class="at">y =</span> ksi_driver_rate)) <span class="sc">+</span> </span>
-<span id="cb17-28"><a href="#cb17-28"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> law)) <span class="sc">+</span> </span>
-<span id="cb17-29"><a href="#cb17-29"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
-<span id="cb17-30"><a href="#cb17-30"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 years"</span>, <span class="at">date_labels =</span> <span class="st">"%Y"</span>) <span class="sc">+</span></span>
-<span id="cb17-31"><a href="#cb17-31"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">comma_format</span>(), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
-<span id="cb17-32"><a href="#cb17-32"></a>  <span class="fu">scale_colour_brewer</span>(<span class="at">type =</span> <span class="st">"qual"</span>) <span class="sc">+</span></span>
-<span id="cb17-33"><a href="#cb17-33"></a>  <span class="fu">labs</span>(</span>
-<span id="cb17-34"><a href="#cb17-34"></a>    <span class="at">x =</span> <span class="cn">NULL</span>, </span>
-<span id="cb17-35"><a href="#cb17-35"></a>    <span class="at">y =</span> <span class="st">"drivers killed or seriously injured per 1,000km travelled"</span>, </span>
-<span id="cb17-36"><a href="#cb17-36"></a>    <span class="at">colour =</span> <span class="st">"after seat belts made mandatory"</span></span>
-<span id="cb17-37"><a href="#cb17-37"></a>  ) <span class="sc">+</span></span>
-<span id="cb17-38"><a href="#cb17-38"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb17-39"><a href="#cb17-39"></a>  <span class="fu">theme</span>(</span>
-<span id="cb17-40"><a href="#cb17-40"></a>    <span class="at">axis.line.x =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
-<span id="cb17-41"><a href="#cb17-41"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
-<span id="cb17-42"><a href="#cb17-42"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb17-43"><a href="#cb17-43"></a>    <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb17-44"><a href="#cb17-44"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span></span>
-<span id="cb17-45"><a href="#cb17-45"></a>  )</span>
-<span id="cb17-46"><a href="#cb17-46"></a><span class="do">## Error in `fortify()`:</span></span>
-<span id="cb17-47"><a href="#cb17-47"></a><span class="do">## ! `data` must be a &lt;data.frame&gt;, or an object coercible by `fortify()`,</span></span>
-<span id="cb17-48"><a href="#cb17-48"></a><span class="do">##   not an S3 object with class &lt;uneval&gt;.</span></span>
-<span id="cb17-49"><a href="#cb17-49"></a><span class="do">## ℹ Did you accidentally pass `aes()` to the `data` argument?</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a><span class="co"># Load packages</span></span>
+<span id="cb38-2"><a href="#cb38-2"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb38-3"><a href="#cb38-3"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb38-4"><a href="#cb38-4"></a><span class="fu">library</span>(readr)</span>
+<span id="cb38-5"><a href="#cb38-5"></a></span>
+<span id="cb38-6"><a href="#cb38-6"></a><span class="co"># Load a dataset from your computer and wrangle it</span></span>
+<span id="cb38-7"><a href="#cb38-7"></a>road_deaths <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"road_deaths_data.csv"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb38-8"><a href="#cb38-8"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb38-9"><a href="#cb38-9"></a>  <span class="fu">rename</span>(<span class="at">ksi_drivers =</span> drivers, <span class="at">ksi_pass_front =</span> front, <span class="at">ksi_pass_rear =</span> rear) <span class="sc">|&gt;</span> </span>
+<span id="cb38-10"><a href="#cb38-10"></a>  <span class="fu">select</span>(<span class="sc">-</span>petrol_price, <span class="sc">-</span>van_killed) <span class="sc">|&gt;</span> </span>
+<span id="cb38-11"><a href="#cb38-11"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb38-12"><a href="#cb38-12"></a>    <span class="at">law =</span> <span class="fu">as.logical</span>(law),</span>
+<span id="cb38-13"><a href="#cb38-13"></a>    <span class="at">ksi_driver_rate =</span> ksi_drivers <span class="sc">/</span> (kms <span class="sc">/</span> <span class="dv">1000</span>)</span>
+<span id="cb38-14"><a href="#cb38-14"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 192 Columns: 9
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl  (8): DriversKilled, drivers, front, rear, kms, PetrolPrice, VanKilled, law
+date (1): month_beginning
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a><span class="co"># Make a time-series chart of two continuous variables, coloured by a </span></span>
+<span id="cb40-2"><a href="#cb40-2"></a><span class="co"># categorical variable, then add a trend line</span></span>
+<span id="cb40-3"><a href="#cb40-3"></a>road_deaths <span class="sc">+</span> </span>
+<span id="cb40-4"><a href="#cb40-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month_beginning, <span class="at">y =</span> ksi_driver_rate)) <span class="sc">+</span> </span>
+<span id="cb40-5"><a href="#cb40-5"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> law)) <span class="sc">+</span> </span>
+<span id="cb40-6"><a href="#cb40-6"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
+<span id="cb40-7"><a href="#cb40-7"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 years"</span>, <span class="at">date_labels =</span> <span class="st">"%Y"</span>) <span class="sc">+</span></span>
+<span id="cb40-8"><a href="#cb40-8"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">comma_format</span>(), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
+<span id="cb40-9"><a href="#cb40-9"></a>  <span class="fu">scale_colour_brewer</span>(<span class="at">type =</span> <span class="st">"qual"</span>) <span class="sc">+</span></span>
+<span id="cb40-10"><a href="#cb40-10"></a>  <span class="fu">labs</span>(</span>
+<span id="cb40-11"><a href="#cb40-11"></a>    <span class="at">x =</span> <span class="cn">NULL</span>, </span>
+<span id="cb40-12"><a href="#cb40-12"></a>    <span class="at">y =</span> <span class="st">"drivers killed or seriously injured per 1,000km travelled"</span>, </span>
+<span id="cb40-13"><a href="#cb40-13"></a>    <span class="at">colour =</span> <span class="st">"after seat belts made mandatory"</span></span>
+<span id="cb40-14"><a href="#cb40-14"></a>  ) <span class="sc">+</span></span>
+<span id="cb40-15"><a href="#cb40-15"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb40-16"><a href="#cb40-16"></a>  <span class="fu">theme</span>(</span>
+<span id="cb40-17"><a href="#cb40-17"></a>    <span class="at">axis.line.x =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
+<span id="cb40-18"><a href="#cb40-18"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
+<span id="cb40-19"><a href="#cb40-19"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb40-20"><a href="#cb40-20"></a>    <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb40-21"><a href="#cb40-21"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span></span>
+<span id="cb40-22"><a href="#cb40-22"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `fortify()`:
+! `data` must be a &lt;data.frame&gt;, or an object coercible by `fortify()`,
+  not a &lt;uneval&gt; object.
+ℹ Did you accidentally pass `aes()` to the `data` argument?</code></pre>
+</div>
 </div>
 <p>As you can see, this code produces an error message that is not easy to decipher, so we might need help to deal with it. As the first stage to making a reprex, remove all the lines of the code above that it is possible to remove while still producing the same error. If the error disappears and the chart is produced successfully, you have probably found the line that contains the error. If you remove a line and the code starts to produce a different error, you have removed a line that is needed to produce the original error and should put that line back into the code.</p>
 <p>It is actually possible to remove a lot of the original code and still produce the same error. You can remove:</p>
 <ol type="1">
-<li>All the lines of code that fine-tune the appearance of the chart (lines 23–38 above).</li>
-<li>The line creating the trend line (line 22).</li>
-<li>The code that wrangles our data in ways that don’t affect the error (lines 9–15).</li>
+<li>All the lines of code that fine-tune the appearance of the chart (lines 22–37 above).</li>
+<li>The line creating the trend line (line 21).</li>
+<li>The code that wrangles our data in ways that don’t affect the error (lines 8–14).</li>
 <li>The line that loads the <code>dplyr</code> package (line 2), since we are no-longer using the data wrangling functions from that package.</li>
 </ol>
-<p>We cannot remove the code that loads necessary packages (lines 3 and 5), loads the data (line 8) or produces the basic unformatted chart (lines 19–21), because if we remove any of those then the error message changes or disappears.</p>
-<p>This leaves us with the following code, which produces the same error message but is much easier for someone to check for errors because it is much shorter. Because we have removed the data-wrangling code, we have had to change the name of the argument on line 20 of the code above from <code>y = ksi_driver_rate</code> to <code>y = drivers</code>, since the column <code>ksi_driver_rate</code> is no longer in the data.</p>
+<p>We cannot remove the code that loads necessary packages (lines 3 and 4), loads the data (line 7) or produces the basic unformatted chart (lines 18–20), because if we remove any of those then the error message either changes or disappears.</p>
+<p>This leaves us with the following code, which produces the same error message but is much easier for someone to check for errors because it is much shorter. Because we have removed the data-wrangling code, we have had to change the name of the argument on line 19 of the code above from <code>y = ksi_driver_rate</code> to <code>y = drivers</code>, since the column <code>ksi_driver_rate</code> is no longer in the data.</p>
 <div class="box notewell">
 <p>If we forgot to change <code>y = ksi_driver_rate</code> to <code>y = drivers</code> then the code would still produce an error, <em>but it would be a different error</em>. The purpose of producing a reprex is to find the minimum code that still produces <em>the same error</em> we are interested in. If you remove a line of code and the error message you see changes, put that line of code back.</p>
 </div>
 <p>If this shortened code were to run successfully then the resulting chart would look quite different to the original chart we wanted, but that does not matter because what we are interested in is showing code that produces a specific error. If you run this code, you will see it produces the same error as the code above.</p>
 <div class="cell" data-exercise="true" data-exercise.lines="13" data-exercise.setup="reprex-exercise1-setup">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="co"># Load packages</span></span>
-<span id="cb18-2"><a href="#cb18-2"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb18-3"><a href="#cb18-3"></a><span class="fu">library</span>(readr)</span>
-<span id="cb18-4"><a href="#cb18-4"></a></span>
-<span id="cb18-5"><a href="#cb18-5"></a><span class="co"># Load a dataset from your computer and wrangle it</span></span>
-<span id="cb18-6"><a href="#cb18-6"></a>road_deaths <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"road_deaths_data.csv"</span>)</span>
-<span id="cb18-7"><a href="#cb18-7"></a><span class="do">## Rows: 192 Columns: 9</span></span>
-<span id="cb18-8"><a href="#cb18-8"></a><span class="do">## ── Column specification ────────────────────────────────────────────────────────</span></span>
-<span id="cb18-9"><a href="#cb18-9"></a><span class="do">## Delimiter: ","</span></span>
-<span id="cb18-10"><a href="#cb18-10"></a><span class="do">## dbl  (8): DriversKilled, drivers, front, rear, kms, PetrolPrice, VanKilled, law</span></span>
-<span id="cb18-11"><a href="#cb18-11"></a><span class="do">## date (1): month_beginning</span></span>
-<span id="cb18-12"><a href="#cb18-12"></a><span class="do">## </span></span>
-<span id="cb18-13"><a href="#cb18-13"></a><span class="do">## ℹ Use `spec()` to retrieve the full column specification for this data.</span></span>
-<span id="cb18-14"><a href="#cb18-14"></a><span class="do">## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</span></span>
-<span id="cb18-15"><a href="#cb18-15"></a></span>
-<span id="cb18-16"><a href="#cb18-16"></a><span class="co"># Make a time-series chart of two continuous variables, coloured by a </span></span>
-<span id="cb18-17"><a href="#cb18-17"></a><span class="co"># categorical variable, then add a trend line</span></span>
-<span id="cb18-18"><a href="#cb18-18"></a>road_deaths <span class="sc">+</span></span>
-<span id="cb18-19"><a href="#cb18-19"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month_beginning, <span class="at">y =</span> drivers)) <span class="sc">+</span> </span>
-<span id="cb18-20"><a href="#cb18-20"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> law))</span>
-<span id="cb18-21"><a href="#cb18-21"></a><span class="do">## Error in `fortify()`:</span></span>
-<span id="cb18-22"><a href="#cb18-22"></a><span class="do">## ! `data` must be a &lt;data.frame&gt;, or an object coercible by `fortify()`,</span></span>
-<span id="cb18-23"><a href="#cb18-23"></a><span class="do">##   not an S3 object with class &lt;uneval&gt;.</span></span>
-<span id="cb18-24"><a href="#cb18-24"></a><span class="do">## ℹ Did you accidentally pass `aes()` to the `data` argument?</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="co"># Load packages</span></span>
+<span id="cb42-2"><a href="#cb42-2"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb42-3"><a href="#cb42-3"></a><span class="fu">library</span>(readr)</span>
+<span id="cb42-4"><a href="#cb42-4"></a></span>
+<span id="cb42-5"><a href="#cb42-5"></a><span class="co"># Load a dataset from your computer and wrangle it</span></span>
+<span id="cb42-6"><a href="#cb42-6"></a>road_deaths <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"road_deaths_data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 192 Columns: 9
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl  (8): DriversKilled, drivers, front, rear, kms, PetrolPrice, VanKilled, law
+date (1): month_beginning
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="co"># Make a time-series chart of two continuous variables, coloured by a </span></span>
+<span id="cb44-2"><a href="#cb44-2"></a><span class="co"># categorical variable, then add a trend line</span></span>
+<span id="cb44-3"><a href="#cb44-3"></a>road_deaths <span class="sc">+</span></span>
+<span id="cb44-4"><a href="#cb44-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month_beginning, <span class="at">y =</span> drivers)) <span class="sc">+</span> </span>
+<span id="cb44-5"><a href="#cb44-5"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> law))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `fortify()`:
+! `data` must be a &lt;data.frame&gt;, or an object coercible by `fortify()`,
+  not a &lt;uneval&gt; object.
+ℹ Did you accidentally pass `aes()` to the `data` argument?</code></pre>
+</div>
 </div>
 </section><section id="reproducible-data" class="level3" data-number="7.6.3"><h3 data-number="7.6.3" class="anchored" data-anchor-id="reproducible-data">
 <span class="header-section-number">7.6.3</span> Reproducible data</h3>
@@ -776,65 +807,72 @@ $("#understanding-box1-title").click(function () { $("#understanding-box1").togg
 <p>To use one of these toy datasets, you just use the the name of the dataset as you would use any other R object (like the <code>road_deaths</code> object we created above). One commonly used toy dataset is the <code>mpg</code> dataset from the <code>ggplot2</code> package, which contains fuel economy data for 38 models of car.</p>
 <p>The data in this dataset are on a completely different topic to the data we were trying to use, but this does not matter as long as the data contains variables of the same type (numeric, character, etc.) as the original data. We can see what variables are in the <code>mpg</code> dataset using the <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code> function as usual.</p>
 <div class="cell" data-exercise="true" data-exercise.setup="reprex-exercise1-setup">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb19-2"><a href="#cb19-2"></a></span>
-<span id="cb19-3"><a href="#cb19-3"></a><span class="fu">head</span>(mpg)</span>
-<span id="cb19-4"><a href="#cb19-4"></a><span class="do">## # A tibble: 6 × 11</span></span>
-<span id="cb19-5"><a href="#cb19-5"></a><span class="do">##   manufacturer model displ  year   cyl trans      drv     cty   hwy fl    class </span></span>
-<span id="cb19-6"><a href="#cb19-6"></a><span class="do">##   &lt;chr&gt;        &lt;chr&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;      &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt; </span></span>
-<span id="cb19-7"><a href="#cb19-7"></a><span class="do">## 1 audi         a4      1.8  1999     4 auto(l5)   f        18    29 p     compa…</span></span>
-<span id="cb19-8"><a href="#cb19-8"></a><span class="do">## 2 audi         a4      1.8  1999     4 manual(m5) f        21    29 p     compa…</span></span>
-<span id="cb19-9"><a href="#cb19-9"></a><span class="do">## 3 audi         a4      2    2008     4 manual(m6) f        20    31 p     compa…</span></span>
-<span id="cb19-10"><a href="#cb19-10"></a><span class="do">## 4 audi         a4      2    2008     4 auto(av)   f        21    30 p     compa…</span></span>
-<span id="cb19-11"><a href="#cb19-11"></a><span class="do">## 5 audi         a4      2.8  1999     6 auto(l5)   f        16    26 p     compa…</span></span>
-<span id="cb19-12"><a href="#cb19-12"></a><span class="do">## 6 audi         a4      2.8  1999     6 manual(m5) f        18    26 p     compa…</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb46-2"><a href="#cb46-2"></a></span>
+<span id="cb46-3"><a href="#cb46-3"></a><span class="fu">head</span>(mpg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 11
+  manufacturer model displ  year   cyl trans      drv     cty   hwy fl    class 
+  &lt;chr&gt;        &lt;chr&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;      &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt; 
+1 audi         a4      1.8  1999     4 auto(l5)   f        18    29 p     compa…
+2 audi         a4      1.8  1999     4 manual(m5) f        21    29 p     compa…
+3 audi         a4      2    2008     4 manual(m6) f        20    31 p     compa…
+4 audi         a4      2    2008     4 auto(av)   f        21    30 p     compa…
+5 audi         a4      2.8  1999     6 auto(l5)   f        16    26 p     compa…
+6 audi         a4      2.8  1999     6 manual(m5) f        18    26 p     compa…</code></pre>
+</div>
 </div>
 <p>From this, we can see that there is a <code>year</code> variable that we can use as a substitute for the <code>month_beginning</code> variable in our original code, a variable called <code>hwy</code> that is numeric and so can be substituted for the <code>drivers</code> variable in our code, and a categorical variable called <code>trans</code> that we can substitute for the <code>law</code> variable in our data. This means we can use this data instead of our own data, knowing that anyone on any computer with the <code>ggplot2</code> package installed can run the code and should get the same result.</p>
 <div class="tutorial">
 <p>Change the code below so that it uses the <code>mpg</code> dataset rather than loads data from the <code>road_deaths_data.csv</code> file. You will need to change the variable names in the stack of <code>ggplot()</code> functions.</p>
 <div class="cell" data-exercise="true" data-exercise.lines="13" data-exercise.setup="reprex-exercise1-setup">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="co"># Load packages</span></span>
-<span id="cb20-2"><a href="#cb20-2"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb20-3"><a href="#cb20-3"></a><span class="fu">library</span>(readr)</span>
-<span id="cb20-4"><a href="#cb20-4"></a></span>
-<span id="cb20-5"><a href="#cb20-5"></a><span class="co"># Load a dataset from your computer and wrangle it</span></span>
-<span id="cb20-6"><a href="#cb20-6"></a>road_deaths <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"road_deaths_data.csv"</span>)</span>
-<span id="cb20-7"><a href="#cb20-7"></a><span class="do">## Rows: 192 Columns: 9</span></span>
-<span id="cb20-8"><a href="#cb20-8"></a><span class="do">## ── Column specification ────────────────────────────────────────────────────────</span></span>
-<span id="cb20-9"><a href="#cb20-9"></a><span class="do">## Delimiter: ","</span></span>
-<span id="cb20-10"><a href="#cb20-10"></a><span class="do">## dbl  (8): DriversKilled, drivers, front, rear, kms, PetrolPrice, VanKilled, law</span></span>
-<span id="cb20-11"><a href="#cb20-11"></a><span class="do">## date (1): month_beginning</span></span>
-<span id="cb20-12"><a href="#cb20-12"></a><span class="do">## </span></span>
-<span id="cb20-13"><a href="#cb20-13"></a><span class="do">## ℹ Use `spec()` to retrieve the full column specification for this data.</span></span>
-<span id="cb20-14"><a href="#cb20-14"></a><span class="do">## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</span></span>
-<span id="cb20-15"><a href="#cb20-15"></a></span>
-<span id="cb20-16"><a href="#cb20-16"></a><span class="co"># Make a time-series chart of two continuous variables, coloured by a </span></span>
-<span id="cb20-17"><a href="#cb20-17"></a><span class="co"># categorical variable</span></span>
-<span id="cb20-18"><a href="#cb20-18"></a>road_deaths <span class="sc">+</span></span>
-<span id="cb20-19"><a href="#cb20-19"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month_beginning, <span class="at">y =</span> drivers)) <span class="sc">+</span> </span>
-<span id="cb20-20"><a href="#cb20-20"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> law))</span>
-<span id="cb20-21"><a href="#cb20-21"></a><span class="do">## Error in `fortify()`:</span></span>
-<span id="cb20-22"><a href="#cb20-22"></a><span class="do">## ! `data` must be a &lt;data.frame&gt;, or an object coercible by `fortify()`,</span></span>
-<span id="cb20-23"><a href="#cb20-23"></a><span class="do">##   not an S3 object with class &lt;uneval&gt;.</span></span>
-<span id="cb20-24"><a href="#cb20-24"></a><span class="do">## ℹ Did you accidentally pass `aes()` to the `data` argument?</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a><span class="co"># Load packages</span></span>
+<span id="cb48-2"><a href="#cb48-2"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb48-3"><a href="#cb48-3"></a><span class="fu">library</span>(readr)</span>
+<span id="cb48-4"><a href="#cb48-4"></a></span>
+<span id="cb48-5"><a href="#cb48-5"></a><span class="co"># Load a dataset from your computer and wrangle it</span></span>
+<span id="cb48-6"><a href="#cb48-6"></a>road_deaths <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"road_deaths_data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 192 Columns: 9
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl  (8): DriversKilled, drivers, front, rear, kms, PetrolPrice, VanKilled, law
+date (1): month_beginning
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a><span class="co"># Make a time-series chart of two continuous variables, coloured by a </span></span>
+<span id="cb50-2"><a href="#cb50-2"></a><span class="co"># categorical variable</span></span>
+<span id="cb50-3"><a href="#cb50-3"></a>road_deaths <span class="sc">+</span></span>
+<span id="cb50-4"><a href="#cb50-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month_beginning, <span class="at">y =</span> drivers)) <span class="sc">+</span> </span>
+<span id="cb50-5"><a href="#cb50-5"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> law))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `fortify()`:
+! `data` must be a &lt;data.frame&gt;, or an object coercible by `fortify()`,
+  not a &lt;uneval&gt; object.
+ℹ Did you accidentally pass `aes()` to the `data` argument?</code></pre>
+</div>
 </div>
 </div>
 <div class="book">
 <p>We can change our existing reprex code to use the <code>mpg</code> dataset rather than load data from the <code>road_deaths_data.csv</code> file by changing the variable names in the <code>ggplot()</code> stack.</p>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="co"># Load packages</span></span>
-<span id="cb21-2"><a href="#cb21-2"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb21-3"><a href="#cb21-3"></a></span>
-<span id="cb21-4"><a href="#cb21-4"></a><span class="co"># Make a time-series chart of two continuous variables, coloured by a </span></span>
-<span id="cb21-5"><a href="#cb21-5"></a><span class="co"># categorical variable</span></span>
-<span id="cb21-6"><a href="#cb21-6"></a>mpg <span class="sc">+</span></span>
-<span id="cb21-7"><a href="#cb21-7"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> hwy)) <span class="sc">+</span> </span>
-<span id="cb21-8"><a href="#cb21-8"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> trans))</span>
-<span id="cb21-9"><a href="#cb21-9"></a><span class="do">## Error in `fortify()`:</span></span>
-<span id="cb21-10"><a href="#cb21-10"></a><span class="do">## ! `data` must be a &lt;data.frame&gt;, or an object coercible by `fortify()`,</span></span>
-<span id="cb21-11"><a href="#cb21-11"></a><span class="do">##   not an S3 object with class &lt;uneval&gt;.</span></span>
-<span id="cb21-12"><a href="#cb21-12"></a><span class="do">## ℹ Did you accidentally pass `aes()` to the `data` argument?</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="co"># Load packages</span></span>
+<span id="cb52-2"><a href="#cb52-2"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb52-3"><a href="#cb52-3"></a></span>
+<span id="cb52-4"><a href="#cb52-4"></a><span class="co"># Make a time-series chart of two continuous variables, coloured by a </span></span>
+<span id="cb52-5"><a href="#cb52-5"></a><span class="co"># categorical variable</span></span>
+<span id="cb52-6"><a href="#cb52-6"></a>mpg <span class="sc">+</span></span>
+<span id="cb52-7"><a href="#cb52-7"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> hwy)) <span class="sc">+</span> </span>
+<span id="cb52-8"><a href="#cb52-8"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> trans))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `fortify()`:
+! `data` must be a &lt;data.frame&gt;, or an object coercible by `fortify()`,
+  not a &lt;uneval&gt; object.
+ℹ Did you accidentally pass `aes()` to the `data` argument?</code></pre>
+</div>
 </div>
 <p>We have now managed to reduce our original 37 lines of code down to 8 lines, as well as making the example reproducible by using a widely available toy dataset. The shorter code still produces the same error while being much easier to read, so we are much more likely to get help quickly than if we had just sent someone our original code.</p>
 <p>Most of the time, the act of producing a reprex will be enough for us to find and fix the error without any external help. Can you see the problem with our code that is making this error happen? If not, we will reveal it at the end of this tutorial.</p>
@@ -848,9 +886,6 @@ $("#understanding-box1-title").click(function () { $("#understanding-box1").togg
 <p>After a few seconds, some code should appear in the RStudio Viewer panel showing your code and the error message that it produces. This code has also been copied to your computer clipboard so that you can paste it into an email or web form when you are asking for help.</p>
 <p>If the error message that you see along with the code in the Viewer panel is not the error message you were expecting, your example is not yet reproducible. For example if you tried to run the <code>Reprex selection</code> command on the original code that we started this section with, we would get an error message <code>'road_deaths_data.csv' does not exist in current working directory</code>.</p>
 <p>Once your reprex produces <em>the same error</em> as the code you originally had the issue with, you’re ready to share it to get help.</p>
-<p class="credits">
-<a href="https://github.com/allisonhorst/stats-illustrations">Stats Illustrations by Allison Horst</a> licensed under the <a href="https://github.com/allisonhorst/stats-illustrations/blob/master/license">Creative Commons Attribution licence</a>.
-</p>
 </section></section><section id="sources-of-help" class="level2" data-number="7.7"><h2 data-number="7.7" class="anchored" data-anchor-id="sources-of-help">
 <span class="header-section-number">7.7</span> Sources of help</h2>
 <p>If you are being taught R by a formal instructor, or you have friends or colleagues who can help, they will probably be the first people that you go to for help.</p>
@@ -868,13 +903,81 @@ $("#understanding-box1-title").click(function () { $("#understanding-box1").togg
 <p>Submit your question and wait for an answer. As soon as someone answers your question, or comments on it to ask for more detail, you will get an email alert. Many questions are typically answered within a few hours. Hopefully this will help you get to the final stage of the emotional roller coaster of debugging:</p>
 <p class="full-width-image">
 <img src="images/debugging.jpg" alt="Cartoon showing 10 furry monsters showing different stages of learning to debug code. The monsters are marked '1. I got this', '2. Huh, really though that was it', '3. (...)', '4. Fine. Restarting.', '5. OH WTF', '6. Zombie meltdown', '7. [crying]', '8. A NEW HOPE!', '9. [insert awesome theme song]' and '10. I LOVE CODING!'"></p>
-<p class="credits">
-<a href="https://github.com/allisonhorst/stats-illustrations">Stats Illustrations by Allison Horst</a> licensed under the <a href="https://github.com/allisonhorst/stats-illustrations/blob/master/license">Creative Commons Attribution licence</a>.
-</p>
-</section></section><section id="in-summary" class="level2" data-number="7.8"><h2 data-number="7.8" class="anchored" data-anchor-id="in-summary">
-<span class="header-section-number">7.8</span> In summary</h2>
-<section id="a-workflow-for-handling-errors-in-r" class="level4" data-number="7.8.0.1"><h4 data-number="7.8.0.1" class="anchored" data-anchor-id="a-workflow-for-handling-errors-in-r">
-<span class="header-section-number">7.8.0.1</span> A workflow for handling errors in R</h4>
+</section></section><section id="coding-with-ai" class="level2" data-number="7.8"><h2 data-number="7.8" class="anchored" data-anchor-id="coding-with-ai">
+<span class="header-section-number">7.8</span> Coding with AI</h2>
+<p>One topic that we haven’t covered yet is using artificial intelligence (AI) to help us produce R code. The type of AI that can be used to help produce code is called a <em>large language model</em> (LLM), sometimes known as a <em>generative AI</em> model. The best known of these among the public is probably <a href="https://chat.openai.com/">ChatGPT</a>, but there are lots of similar services available (and new ones being released all the time).</p>
+<section id="coding-with-ai-an-example" class="level4" data-number="7.8.0.1"><h4 data-number="7.8.0.1" class="anchored" data-anchor-id="coding-with-ai-an-example">
+<span class="header-section-number">7.8.0.1</span> Coding with AI: an example</h4>
+<p>Generative AI services can help you to write code, especially code that does very common tasks like loading data. For example, say that I want to load the Vancouver thefts dataset that we used in a previous tutorial and convert the column names in the data to <code>snake_case</code>. As a reminder, the code we previously used to do that looked like this:</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb54-2"><a href="#cb54-2"></a></span>
+<span id="cb54-3"><a href="#cb54-3"></a>vancouver_thefts <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb54-4"><a href="#cb54-4"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>I can ask ChatGPT (version 3.5) to write code for me that will do this task. If I ask ChatGPT “Show me the R code needed to load the CSV dataset at https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz and make the column names into snake case”, it will produce some R code that looks roughly like this:</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="co"># Install and load the required packages if not already installed</span></span>
+<span id="cb55-2"><a href="#cb55-2"></a><span class="co"># install.packages("readr")</span></span>
+<span id="cb55-3"><a href="#cb55-3"></a><span class="co"># install.packages("snakecase")</span></span>
+<span id="cb55-4"><a href="#cb55-4"></a><span class="fu">library</span>(readr)</span>
+<span id="cb55-5"><a href="#cb55-5"></a><span class="fu">library</span>(snakecase)</span>
+<span id="cb55-6"><a href="#cb55-6"></a></span>
+<span id="cb55-7"><a href="#cb55-7"></a><span class="co"># URL of the CSV file</span></span>
+<span id="cb55-8"><a href="#cb55-8"></a>url <span class="ot">&lt;-</span> <span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"</span></span>
+<span id="cb55-9"><a href="#cb55-9"></a></span>
+<span id="cb55-10"><a href="#cb55-10"></a><span class="co"># Read the CSV file and convert column names to snake case</span></span>
+<span id="cb55-11"><a href="#cb55-11"></a>data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(url, <span class="at">col_names =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb55-12"><a href="#cb55-12"></a>  snakecase<span class="sc">::</span><span class="fu">to_snake_case</span>()</span>
+<span id="cb55-13"><a href="#cb55-13"></a></span>
+<span id="cb55-14"><a href="#cb55-14"></a><span class="co"># Display the first few rows of the dataset</span></span>
+<span id="cb55-15"><a href="#cb55-15"></a><span class="fu">head</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>ChatGPT also produces a short explanation of what the code does:</p>
+<blockquote class="blockquote">
+<p>This code uses the <code>read_csv()</code> function from the <code>readr</code> package to read the CSV file from the specified URL. The <code>col_names = TRUE</code> argument ensures that column names are read from the first row of the CSV file. The <code><a href="https://rdrr.io/pkg/snakecase/man/caseconverter.html">snakecase::to_snake_case()</a></code> part applies the transformation to snake case for all column names.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>Make sure to install the <code>readr</code> and <code>snakecase</code> packages before running this code if you haven’t done so already. You can uncomment the <code>install.packages("readr")</code> and <code>install.packages("snakecase")</code> lines for installation.</p>
+</blockquote>
+<p>Unfortunately, if you try to run the code above you will find it produces two errors:</p>
+<ul>
+<li>
+<code>could not find function "%&gt;%"</code>. The code generated by ChatGPT uses the <code>%&gt;%</code> operator, which is an older version of the <code>|&gt;</code> pipe operator we use in this course. But the <code>%&gt;%</code> operator is part of the <code>magrittr</code> package, so to use it the code needs to load the <code>magrittr</code> package first.</li>
+<li>
+<code>argument is not a character vector</code>. The code produced by ChatGPT passes the tibble loaded by <code>read_csv()</code> to the <code>to_snake_case()</code> function from the <code>snakecase</code> package. But <code>to_snake_case()</code> expects a vector of character values (e.g.&nbsp;<code>c("aCharacterValue", "ANOTHERCHR")</code>), not a tibble. This is in contrast to <code><a href="https://sfirke.github.io/janitor/reference/clean_names.html">janitor::clean_names()</a></code>, which performs the same function and <em>does</em> accept a tibble as input.</li>
+</ul>
+<p>There are also a few of more-minor issues that won’t produce errors, but might make your code harder to work with:</p>
+<ul>
+<li>The code creates an object called <code>url</code>. Storing the URL in a separate object is unnecessary (since we only need the URL once) and creates a risk that we could end up loading the wrong dataset if we later accidentally over-wrote the value of the <code>url</code> object with a different URL.</li>
+<li>The code creates an object with the generic name <code>data</code>, which might make it harder to remember later on what data is stored in that object. This is especially likely to be an issue if we come back to the code after a break, or if we need to use multiple datasets as part of our analysis.</li>
+<li>The code loads the <code>snakecase</code> package, but then also refers to the package using the <code>::</code> notation when using the function <code>to_snake_case()</code>. This is not a big deal, but makes the code slightly longer and therefore marginally harder to read.</li>
+</ul>
+<div class="box extra-detail">
+<h5 id="ai-box1-title" class="box-title anchored">
+Why did I get a different result when I put the same prompt into ChatGPT?
+</h5>
+<div id="ai-box1" class="box-content">
+<p>If you put the text “Show me the R code needed to load the CSV dataset at https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz and make the column names into snake case” into ChatGPT 3.5, it is possible that you will get a slightly different response to the one shown above. This is because large language models are <em>stochastic</em> or <em>non-deterministic</em> models, which means that there is some element of chance involved in exactly what response the model will produce for a particular input. In fact, if you provide exactly the same input to ChatGPT multiple times, it is likely you will get a slightly different answer each time.</p>
+</div>
+</div>
+<script>
+$("#ai-box1-title").click(function () { $("#ai-box1").toggle("slow") })
+</script></section><section id="why-did-chatgpt-produce-code-that-doesnt-work" class="level4" data-number="7.8.0.2"><h4 data-number="7.8.0.2" class="anchored" data-anchor-id="why-did-chatgpt-produce-code-that-doesnt-work">
+<span class="header-section-number">7.8.0.2</span> Why did ChatGPT produce code that doesn’t work?</h4>
+<p>Why do these problems happen? To understand that, we need to know just a little bit about how large language models such as ChatGPT work. LLMs work by looking for patterns in very large datasets (e.g.&nbsp;all the pages on the world wide web) and then using those patterns to predict what the most likely answer is to questions or requests that include particular words and phrases. To give a very simple example, an LLM might be able to identify that if the first few words in a sentence are ‘Today was Sunday, which meant that tomorrow …’ then it is likely (but – crucially – not certain!) that the next words would be ‘is Monday’.</p>
+<p>Because they are trained on very large samples of data, LLMs can produce answers that are sophisticated enough that they almost look like magic. But behind the scenes, what models like ChatGPT are doing is predicting what the most likely combination of words a response will contain, based on the input that it is given. It is important to remember that models such as ChatGPT do not know the <em>correct</em> answer to a question, since they do not actually understand the question in the way that humans do. This means that ChatGPT cannot give you any indication of how confident it is about the answer it has given: it will be equally confident in its answer whether it is right or wrong.</p>
+<p class="full-width-image">
+<img src="images/need_a_minute.png" alt="A frustrated little monster sits on the ground with his hat next to him, saying 'I just need a minute.' Looking on empathetically is the R logo, with the word 'Error' in many different styles behind it."></p>
+</section><section id="should-i-use-ai-to-help-me-code" class="level4" data-number="7.8.0.3"><h4 data-number="7.8.0.3" class="anchored" data-anchor-id="should-i-use-ai-to-help-me-code">
+<span class="header-section-number">7.8.0.3</span> Should I use AI to help me code?</h4>
+<p>So given these issues, does that mean that we shouldn’t use LLMs to help us write code? Not necessarily. Lots of programmers find LLMs useful for helping them write code. However, LLMs like ChatGPT are useful for <em>supporting</em> humans to write effective code, not for replacing humans writing code. Even if you asked an LLM to write every part of your code for you, it is likely you would need to make some changes to the code it produced to make it work.</p>
+<p>That means that to use an LLM effectively to help you write code, you need to understand the code that the LLM produces. That’s why this course teaches you to understand how to write code to produce crime maps in R, rather than just how to use an LLM to write the code for you.</p>
+<p>Whether to use an LLM to help you write code is up to you. Some people find it saves them time and helps them get started on how to produce a particular bit of code, while others find that they spend just as much time fixing the code produced by an LLM as it would take them to write the code themselves. You might want to experiment with getting help from an LLM so you can see what works for you.</p>
+</section><section id="using-ai-to-help-map-crime" class="level4" data-number="7.8.0.4"><h4 data-number="7.8.0.4" class="anchored" data-anchor-id="using-ai-to-help-map-crime">
+<span class="header-section-number">7.8.0.4</span> Using AI to help map crime</h4>
+<p>There are two further important points to make about using LLMs in the context of crime mapping. First, it is vital that you do not upload any sensitive data to an LLM that is hosted online, since it is likely that the company that runs the LLM will have reserved the right to use any data you submit to improve the model in future. You must make sure that sensitive data such as victim details are not posted online or shared unlawfully.</p>
+<p>The second important point is that the analysis that we use crime mapping for is usually done to answer important questions such as where crime-prevention initiatives should be focused or where a serial offender might live. It is vital that the answers we produce to these questions are accurate. Part of making sure the results of our analysis are accurate is to make sure that we understand exactly how our code produces a particular result. If you use an LLM to support your coding, it is vital that you still understand what the code does.</p>
+</section></section><section id="in-summary" class="level2" data-number="7.9"><h2 data-number="7.9" class="anchored" data-anchor-id="in-summary">
+<span class="header-section-number">7.9</span> In summary</h2>
+<section id="a-workflow-for-handling-errors-in-r" class="level4" data-number="7.9.0.1"><h4 data-number="7.9.0.1" class="anchored" data-anchor-id="a-workflow-for-handling-errors-in-r">
+<span class="header-section-number">7.9.0.1</span> A workflow for handling errors in R</h4>
 <div class="box notewell">
 <p><strong>When you run some code in R and it produces an error, follow the steps learned in this tutorial to identify and fix the problem.</strong></p>
 <ol type="1">
@@ -887,18 +990,18 @@ $("#understanding-box1-title").click(function () { $("#understanding-box1").togg
 </ol>
 <p>You will be able to fix almost all the errors in your code by following the early steps in this list. Only quite rarely will you need to post a reprex online to get help.</p>
 </div>
-</section><section id="what-caused-the-error-in-our-reproducible-example" class="level4" data-number="7.8.0.2"><h4 data-number="7.8.0.2" class="anchored" data-anchor-id="what-caused-the-error-in-our-reproducible-example">
-<span class="header-section-number">7.8.0.2</span> What caused the error in our reproducible example?</h4>
+</section><section id="what-caused-the-error-in-our-reproducible-example" class="level4" data-number="7.9.0.2"><h4 data-number="7.9.0.2" class="anchored" data-anchor-id="what-caused-the-error-in-our-reproducible-example">
+<span class="header-section-number">7.9.0.2</span> What caused the error in our reproducible example?</h4>
 <p>The error in our reproducible example was very simple, but quite difficult to spot. On line 7 of the code below, we try to add the <code>ggplot()</code> function to the <code>mpg</code> object using the <code>+</code> operator when what we wanted to do was pass the <code>mpg</code> object to the <code>ggplot()</code> function using the <code>|&gt;</code> operator. R does not know how to add a dataset to a function in this way so it produced an error message.</p>
 <p>If you replaced <code>+</code> with <code>|&gt;</code> on line 6 of the code below, the code would now run normally. Since we have removed almost all of our original code to make a reproducible example, the resulting plot looks nothing like what we wanted. This does not matter – when we are producing a reprex we only care about reliably producing <em>the same</em> error. Now that we have fixed the error, we could go back and fix the original code to produce the chart we wanted.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="co"># load packages</span></span>
-<span id="cb22-2"><a href="#cb22-2"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb22-3"><a href="#cb22-3"></a></span>
-<span id="cb22-4"><a href="#cb22-4"></a><span class="co"># make a time-series chart of two continuous variables, coloured by a </span></span>
-<span id="cb22-5"><a href="#cb22-5"></a><span class="co"># categorical variable</span></span>
-<span id="cb22-6"><a href="#cb22-6"></a>mpg <span class="sc">+</span> <span class="co"># &lt;---- THE `+` OPERATOR HERE SHOULD BE A `|&gt;` OPERATOR INSTEAD</span></span>
-<span id="cb22-7"><a href="#cb22-7"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> hwy)) <span class="sc">+</span> </span>
-<span id="cb22-8"><a href="#cb22-8"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> trans))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a><span class="co"># load packages</span></span>
+<span id="cb56-2"><a href="#cb56-2"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb56-3"><a href="#cb56-3"></a></span>
+<span id="cb56-4"><a href="#cb56-4"></a><span class="co"># make a time-series chart of two continuous variables, coloured by a </span></span>
+<span id="cb56-5"><a href="#cb56-5"></a><span class="co"># categorical variable</span></span>
+<span id="cb56-6"><a href="#cb56-6"></a>mpg <span class="sc">+</span> <span class="co"># &lt;---- THE `+` OPERATOR HERE SHOULD BE A `|&gt;` OPERATOR INSTEAD</span></span>
+<span id="cb56-7"><a href="#cb56-7"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> hwy)) <span class="sc">+</span> </span>
+<span id="cb56-8"><a href="#cb56-8"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> trans))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The mistake in this code is a very easy one to make, because what <code>+</code> does inside a <code>ggplot()</code> stack is so similar to what <code>|&gt;</code> does in passing the result of one function to the next function in an data-wrangling pipeline. Remember that we only use <code>+</code> to combine functions inside a <code>ggplot()</code> stack, and use <code>|&gt;</code> to combine functions everywhere else.</p>
 <div class="box welldone">
 <p>In this tutorial we have learned how to handle messages, warnings and errors in R. We have learned to take time to understand error messages, to isolate errors so that we can better understand them, to use manual pages for functions to check that every argument is correct, and how to write reproducible examples so that we can get help online. This will help you become a more independent coder.</p>
@@ -908,8 +1011,13 @@ $("#understanding-box1-title").click(function () { $("#understanding-box1").togg
 <ul>
 <li>Watch the webinar <a href="https://reprex.tidyverse.org/articles/articles/learn-reprex.html">Creating reproducible examples with reprex</a> by Jenny Bryan.</li>
 <li>Read the <a href="https://reprex.tidyverse.org/articles/reprex-dos-and-donts.html">Reprex do’s and don’ts</a> on the <code>reprex</code> package website.</li>
+<li>Learn more about how to use <a href="https://doi.org/10.1038/d41586-023-01833-0">Six tips for better coding with ChatGPT</a>
+</li>
 </ul>
 </div>
+<p class="credits">
+<a href="https://twitter.com/allison_horst">Artwork by <span class="citation" data-cites="allison_horst">@allison_horst</span></a>
+</p>
 
 
 </section></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
@@ -939,9 +1047,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -977,10 +1099,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -990,8 +1111,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1006,6 +1136,241 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    const typesetMath = (el) => {
+      if (window.MathJax) {
+        // MathJax Typeset
+        window.MathJax.typeset([el]);
+      } else if (window.katex) {
+        // KaTeX Render
+        var mathElements = el.getElementsByClassName("math");
+        var macros = [];
+        for (var i = 0; i < mathElements.length; i++) {
+          var texText = mathElements[i].firstChild;
+          if (mathElements[i].tagName == "SPAN") {
+            window.katex.render(texText.data, mathElements[i], {
+              displayMode: mathElements[i].classList.contains('display'),
+              throwOnError: false,
+              macros: macros,
+              fleqn: false
+            });
+          }
+        }
+      }
+    }
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        for (let i = 0; i < 2; i++) {
+          container.appendChild(note.children[i].cloneNode(true));
+        }
+        typesetMath(container);
+        return container.innerHTML
+      } else {
+        typesetMath(note);
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      typesetMath(note);
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
@@ -1045,13 +1410,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="../06_map_context/index.html" class="pagination-link">
+      <a href="../06_map_context/index.html" class="pagination-link  aria-label=" a="" map="" context="">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Giving a map context</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../appendices/read_functions.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Functions for reading data into R</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../08_projects/index.html" class="pagination-link" aria-label="<span class='chapter-number'>8</span>&nbsp; <span class='chapter-title'>Don't get lost in data analysis</span>">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Don’t get lost in data analysis</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

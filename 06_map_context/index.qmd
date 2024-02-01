@@ -1,15 +1,31 @@
 # Giving a map context
 
 
+**Add titles, sources, legends, scale bars and other contextual information to your maps.**
+
+
+::: {.box .load-tutorial}
+To load the [interactive tutorial](../#how-to-use-this-book) for this chapter, copy and paste the following code into the RStudio console:
+
+```r
+crimemapping::tutorial("06_map_context")
+```
+
+and press `Enter`.
+:::
+
+
 ```{r setup, include=FALSE}
+#| echo: false
+#| include: false
+
+source(here::here("mask_learnr_functions.R"))
+
 library(ggspatial)
 library(sf)
 library(sfhotspot)
 library(tidyverse)
-knitr::opts_chunk$set(echo = FALSE)
 
-quiz <- function(...) invisible(NULL)
-question <- function(...) invisible(NULL)
 
 # Prepare maps -----------------------------------------------------------------
 
@@ -19,7 +35,7 @@ shootings <- read_csv("https://mpjashby.github.io/crimemappingdata/bronx_shootin
   st_transform("EPSG:6538")
 
 # Load NYC police precincts data
-precincts <- st_read("https://mpjashby.github.io/crimemappingdata/nyc_precincts.gpkg") |> 
+precincts <- read_sf("https://mpjashby.github.io/crimemappingdata/nyc_precincts.gpkg") |> 
   janitor::clean_names() |> 
   # Filter just those precincts that are in the Bronx (40th to 52nd)
   filter(precinct %in% 40:52) |> 
@@ -86,19 +102,6 @@ shootings_map_final <- shootings_map_legend +
 ```
 
 
-**Add titles, sources, legends, scale bars and other contextual information to your maps**
-
-
-::: {.box .load-tutorial}
-To load the [interactive tutorial](../#how-to-use-this-book) for this chapter, copy and paste the following code into the RStudio console:
-
-```r
-crimemapping::tutorial("06_map_context")
-```
-
-and press `Enter`.
-:::
-
 
 ## Introduction
 
@@ -107,8 +110,6 @@ New York City in 2019. You'll see that unlike the maps we have made so far, this
 map includes contextual elements such as a title, a legend and a scale bar.
 
 ```{r final-map, out.width="100%"}
-#| echo: false
-
 shootings_map_final
 ```
 
@@ -130,20 +131,11 @@ repeatedly shown that "[the nature of the task or function to be performed by th
 
 As explained in the video, when you create a crime map you should ask yourself:
 
-  * *How much does my audience know about this topic?* so that you know how much
-    information you should provide to help them understand it.
-  * *How well does my audience know this geographic area?* so that you know what
-    information to include to help people orient themselves, e.g. landmarks,
-    main roads of natural features such as rivers.
-  * *What will my audience use this map for?* so that you can make sure 
-    everything on your map is relevant to that goal.
-  * *In what context will they be using this map?* so that you can make the
-    format of the map suitable to that context (e.g. if the map is going to be
-    viewed by a large audience in a lecture hall, or by a police officer on 
-    their phone at night).
-  * *What biases or opinions about this topic might my audience have?* so that
-    you can consider how the information (and your presentation of it) might
-    influence those opinions or biases one way or another.
+  * *What will readers be using this map for?* .
+  * *What information do readers need?*
+  * *What do readers already know?*
+  * *In what context are people going to use this map?*
+  * *How could this map lead the audience to a wrong conclusion?*
     
 Maps are powerful communication tools, which can sometimes knowingly or 
 unknowingly mislead the reader. Watch this video to learn more about how maps
@@ -156,7 +148,7 @@ topic likely to influence the results of your analysis? One way to test your
 own assumptions about a topic is to test them against other potential
 assumptions using an approach to crime analysis called hypothesis testing. To
 find out more about the hypothesis testing approach, read the paper 
-[*Improving the explanatory content of analysis products using hypothesis testing*](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.1012.6309&rep=rep1&type=pdf)
+[*Improving the explanatory content of analysis products using hypothesis testing*](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.1012.6309&rep=rep1&type=pdf).
 
 
 
@@ -184,16 +176,14 @@ attention on the data.
 ::: {.tutorial}
 
 ```{r visual-hierarchy-quiz}
-#| echo: false
-
 quiz(
   caption = "",
   
   question(
     "Which one of these is not a visual element that we can use to establish the visual hierarchy of different elements on our map?",
-    answer("Font", correct = TRUE),
+    answer("Brand", correct = TRUE),
     answer("Colour"),
-    answer("Location"),
+    answer("Size"),
     answer("Isolation"),
     correct = random_praise(),
     allow_retry = TRUE,
@@ -201,9 +191,9 @@ quiz(
   ),
   
   question(
-    "Which types of shapes are more likely to move an element up the visual hierarchy?",
-    answer("Shapes that are simpler", correct = TRUE),
-    answer("Shapes that are more complicated"),
+    "Which types of colour are more likely to move an element up the visual hierarchy?",
+    answer("Colours that are more saturated", correct = TRUE),
+    answer("Colours that are less saturated"),
     correct = random_praise(),
     allow_retry = TRUE,
     random_answer_order = TRUE
@@ -264,8 +254,6 @@ for those readers who do not need it.
 ::: {.tutorial}
 
 ```{r supporting-elements-quiz}
-#| echo: false
-
 quiz(
   caption = "",
   
@@ -313,6 +301,12 @@ the `ggplot()` function can be saved as an object using the assignment operator
 the result will not be printed to the screen, but we can easily see the plot by
 simply typing the object name in the R console.
 
+<!-- We will use a map of shootings in the Bronx borough of New York City in 2019 as -->
+<!-- the map to which we will add the supporting map elements. This map does not  -->
+<!-- include a base map, but this is only to slightly speed up how this tutorial runs -->
+<!-- on computers with slower internet connections -- all the code in this tutorial -->
+<!-- is compatible with maps that include a base map. -->
+
 ```{r title-exercise1, exercise=TRUE, exercise.lines=46, out.width="100%"}
 # Load packages
 library(ggspatial)
@@ -321,12 +315,15 @@ library(sfhotspot)
 library(tidyverse)
 
 # Load shootings data
-shootings <- read_csv("https://mpjashby.github.io/crimemappingdata/bronx_shootings.csv") |> 
+shootings <- read_csv(
+  "https://mpjashby.github.io/crimemappingdata/bronx_shootings.csv", 
+  show_col_types = FALSE
+) |> 
   st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326") |> 
   st_transform("EPSG:6538")
 
 # Load NYC police precincts data
-precincts <- st_read("https://mpjashby.github.io/crimemappingdata/nyc_precincts.gpkg") |> 
+precincts <- read_sf("https://mpjashby.github.io/crimemappingdata/nyc_precincts.gpkg") |> 
   janitor::clean_names() |> 
   # Filter just those precincts that are in the Bronx (40th to 52nd)
   filter(precinct %in% 40:52) |> 
@@ -336,7 +333,8 @@ precincts <- st_read("https://mpjashby.github.io/crimemappingdata/nyc_precincts.
 shootings_kde <- shootings |> 
   hotspot_kde(
     grid = hotspot_grid(precincts, cell_size = 100), 
-    bandwidth_adjust = 0.33
+    bandwidth_adjust = 0.33,
+    quiet = TRUE
   ) |> 
   st_intersection(precincts)
 
@@ -399,71 +397,6 @@ different ways, including `comma()` to add thousands separators to numbers and
 `dollar()` to format numbers as values in dollars or other currencies. There is 
 a [full list of `scales` functions on the package website](https://scales.r-lib.org/reference/).
 
-
-<!--
-
-You might have noticed on the map above that the density layer does not cover
-the whole surface of the map. This is because there are some parts of the Bronx
-that did not have any shootings in 2019. Some of these areas are under water,
-for example. Since our map is about shootings, it would be better if we zoomed
-in to just the places where shootings occurred. We can restrict the map to just
-the area within the bounding box of the shootings data (i.e. the smallest
-rectangle that contains all the shooting locations) by adding the `coord_sf()`
-function to the stack of functions that we add to `ggplot()`. Since we have 
-already saved the map as an object, we will do this by adding the new function 
-to the existing object and then saving the result as a new object.
-
-```{r title-exercise2, exercise=TRUE, exercise.lines=17, warning=FALSE, message=FALSE, out.width="100%"}
-#| echo: false
-#| eval: false
-
-# Find the bounding box of shootings -- we have to convert the shootings data to
-# an SF object to do this
-shootings_bbox <- shootings |> 
-  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) |> 
-  st_bbox()
-
-# Use coord_sf() to crop our map to the bounding box of shootings
-shootings_map <- first_shootings_map +
-  coord_sf(
-    xlim = shootings_bbox[c(1, 3)], 
-    ylim = shootings_bbox[c(2, 4)], 
-    expand = FALSE
-  )
-
-# Display the map
-shootings_map
-```
-
-<div class="box extra-detail">
-
-<h5 id="title-box1-title" class="box-title">What does the code 
-`shootings_bbox[c(1, 3)]` do?</h5>
-
-<div id="title-box1" class="box-content">
-
-You might be wondering what the code `shootings_bbox[c(1, 3)]` does. When an R
-object contains a sequence of values (`shootings_bbox` contains four values), we
-can usually extract one value or more values by adding square brackets to the
-end of the object name and then giving the index number of the value we want 
-(the first value has the index 1, the second value has the index 2, etc.). This
-is called *subsetting*. To subset a single value, just give the index inside
-the square brackets, e.g. `shootings_bbox[1]`. To get subset multiple values,
-give a vector (created with `c()`) of index numbers for the values you want.
-R can subset values in lots of different ways for different types of values,
-but we will discuss it in further detail if we need to later on.
-
-</div>
-
-</div>
-
-<script>
-$("#title-box1-title").click(function () { $("#section-title-box1").toggle("slow") })
-</script>
-
--->
-
-
 We now have a basic map of shootings in the Bronx. This map isn't good enough on
 its own, but we can use it to learn how to add supporting elements to a map.
 
@@ -506,13 +439,9 @@ into lines of a given maximum length (specified using the `wrap` argument).
 
 When you use a declarative title for your map, it is often useful to provide a
 _subtitle_ containing descriptive information. Adding a subtitle is very easy 
-using the `subtitle` argument to the `labs()` function. 
-
-
-::: {.tutorial}
-
-Use the code above as a template to add a subtitle to your map explaining that 
-the map shows fatal and non-fatal shootings in 2019. 
+using the `subtitle` argument to the `labs()` function. Use the code above as a 
+template to add a subtitle to your map explaining that the map shows fatal and 
+non-fatal shootings in 2019. 
 
 ```{r title-exercise4, exercise=TRUE, warning=FALSE, message=FALSE, out.width="100%"}
 
@@ -523,9 +452,6 @@ the map shows fatal and non-fatal shootings in 2019.
 shootings_map + 
   labs(title = "Shootings are focused in the South Bronx")
 ```
-
-:::
-
 
 ```{r title-exercise4-hint-2}
 shootings_map + 
@@ -571,7 +497,6 @@ library we could have just used the code `{today()}`, but since we do not need
 any other functions from `lubridate` for this analysis, we instead do not load
 the package but call the function by specifying which package it comes from 
 using the `::` operator as in the previous tutorial.
-
 
 ::: {.box .notewell}
 
@@ -662,14 +587,14 @@ text in different ways. As well as `colour` (or `color`, either is fine) and
 The `margin` argument controls the space around the text. It is easiest to
 specify the value of `margin` using the helper function `margin()` designed for
 that purpose. You specify the top, right, bottom and left margin separately in
-that order -- to remember the order, think '**tr**ou**bl**e'. The following code 
-changes the margin around the map subtitle. 
+that order -- to remember the order, think '**tr**ou**bl**e'.
 
 
 ::: {.tutorial}
 
-Change this code so that it *also* makes the subtitle 80% of the default size 
-*and* changes the caption so that it is left aligned.
+The following code changes the margin around the map subtitle. Change this code
+so that it *also* makes the subtitle 80% of the default size *and* changes the
+caption so that it is left aligned.
 
 ```{r title-exercise7, exercise=TRUE, exercise.lines=17, warning=FALSE, message=FALSE, out.width="100%"}
 shootings_map +
@@ -751,6 +676,19 @@ shootings_map_titled <- shootings_map +
     plot.caption = element_text(colour = "grey67", size = rel(0.7), hjust = 0)
   )
 ```
+
+
+::: {.box .notewell}
+
+In this tutorial we will store the map we are creating in an object several 
+times as we go through the process of explaining how to add context to a map.
+When you write your own code, you should not do this. Instead, you should create
+the map from start to finish in a single block of code. Doing that will make 
+sure your code is easy to read and that you don't have to keep track of more
+objects than necessary. For an example of this, see the final page of this
+tutorial.
+
+:::
 
 
 
@@ -1097,7 +1035,7 @@ legends and scale bars to maps in R.
 You can find out more about the topics we have covered in this tutorial:
 
   * For a short summary of research into how people read maps and what that 
-    tells us about how to design a map, see [Cartography, visual perception and cognitive psychology](https://doi.org/10.4324/9781315736822.ch3)
+    tells us about how to design a map, see [Cartography, visual perception and cognitive psychology](https://doi.org/10.4324/9781315736822-5)
     by Amy Griffin.
   * For a more-detailed explanation of how visual hierarchy can be applied to
     maps, see [Visual Hierarchy and Layout](https://gistbok.ucgis.org/bok-topics/visual-hierarchy-and-layout).
@@ -1111,3 +1049,4 @@ You can find out more about the topics we have covered in this tutorial:
 <p class="credits">
 [XKCD.com comic 'Geography'](https://xkcd.com/1459/) licensed under the [Creative Commons Attribution-NonCommercial license](https://xkcd.com/license.html).
 </p>
+

@@ -1,15 +1,7 @@
 # Code with style
 
-```{r setup, include=FALSE}
-# load packages
-library(lubridate)
-library(tidyverse)
-
-quiz <- function(...) invisible(NULL)
-question <- function(...) invisible(NULL)
-```
-
 **Learn how to format your code so that it is easier to read, both for you and for others.**
+
 
 ::: {.box .load-tutorial}
 To load the [interactive tutorial](../#how-to-use-this-book) for this chapter, copy and paste the following code into the RStudio console:
@@ -21,6 +13,13 @@ crimemapping::tutorial("04_code_with_style")
 and press `Enter`.
 :::
 
+
+```{r setup}
+#| echo: false
+#| include: false
+
+source(here::here("mask_learnr_functions.R"))
+```
 
 
 ## Introduction
@@ -55,6 +54,8 @@ course was written following this style guide.
 <p class="credits">
 [On Perl](http://www.threepanelsoul.com/comic/on-perl) from [Three Panel Soul](http://www.threepanelsoul.com/). Some content on this page contains public sector information licensed under the Open Government Licence v3.
 </p>
+
+
 
 
 
@@ -119,7 +120,7 @@ crimes <- janitor::clean_names(crimes)
 burglaries <- filter(crimes, type == "burglary")
 burglaries <- mutate(burglaries, month = month(date_time))
 
-ggplot() + 
+ggplot(burglaries) + 
   geom_point(aes(x = lon, y = lat, colour = month)) +
   theme_void()
 ```
@@ -139,7 +140,7 @@ burglaries <- crimes |>
   filter(type == "burglary") |> 
   mutate(month = month(date_time))
 
-ggplot() + 
+ggplot(burglaries) + 
   geom_point(aes(x = lon, y = lat, colour = month)) +
   theme_void()
 ```
@@ -183,9 +184,10 @@ In general, writing code that is readable is more important than writing the
 shortest code possible, so don't be afraid to let your code breathe by using
 space to separate your code into meaningful chunks.
 
-```{r comments-quiz}
-#| echo: false
 
+::: {.tutorial}
+
+```{r comments-quiz}
 quiz(
   caption = "",
   
@@ -211,6 +213,8 @@ quiz(
   
 )
 ```
+
+:::
 
 
 
@@ -242,9 +246,10 @@ don't just call it `data` (not least because there is a function named `data()`)
 but instead give it a name like `atlanta_crimes` if it contains (for example) 
 crime data from Atlanta.
 
-```{r naming-quiz}
-#| echo: false
 
+::: {.tutorial}
+
+```{r naming-quiz}
 quiz(
   caption = "",
   
@@ -271,10 +276,7 @@ quiz(
 )
 ```
 
-
-<p class="credits">
-[Stats Illustrations by Allison Horst](https://github.com/allisonhorst/stats-illustrations) licensed under the [Creative Commons Attribution licence](https://github.com/allisonhorst/stats-illustrations/blob/master/license).
-</p>
+:::
 
 
 
@@ -325,9 +327,10 @@ mean(x, na.rm=TRUE)
 Although there are some operators that shouldn't have spaces around them: `$`, 
 `@`, `[`, `[[`, `^`, `:` and `?`.
 
-```{r spacing-quiz}
-#| echo: false
 
+::: {.tutorial}
+
+```{r spacing-quiz}
 question(
   "Which of these lines of code has the optimal spacing?",
   answer('`burglary <- filter(crimes, type == "burglary")`', correct = TRUE),
@@ -340,6 +343,8 @@ question(
   random_answer_order = FALSE
 )
 ```
+
+:::
 
 
 
@@ -394,11 +399,40 @@ do_something_very_complicated(
 do_something_very_complicated("that", requires, many, arguments,
                               "some of which may be long"
                               )
+```
+
+
+::: {.box .notewell}
+
+One mistake that people often make when splitting a function across multiple
+lines is to leave the closing parenthesis `)` at the end of the last line of the
+function, like this:
+
+```r
+# Bad
 do_something_very_complicated(
   something = "that",
   requires = many,
   arguments = "some of which may be long")
 ```
+
+The problem with this is that it makes it harder to see where a particular
+function ends. Instead, put the closing parenthesis on a line on its own, 
+indented with the same number of spaces as the first line of the function:
+
+```r
+# Good
+do_something_very_complicated(
+  something = "that",
+  requires = many,
+  arguments = "some of which may be long"
+)
+```
+
+This makes it much easier to see where a function call starts and ends.
+
+:::
+
 
 When combining multiple functions using the pipe operator (`|>`), put each 
 function on a single line, with all but the first line indented by two spaces:
@@ -412,9 +446,10 @@ a_function() |>
 Once you learn about other types of R code you will need to know how best to 
 style it, but we will learn about those when we need to.
 
-```{r functions-quiz}
-#| echo: false
 
+::: {.tutorial}
+
+```{r functions-quiz}
 quiz(
   caption = "",
   
@@ -437,6 +472,8 @@ quiz(
   
 )
 ```
+
+:::
 
 
 
@@ -464,7 +501,6 @@ automatically indenting lines.
 
 ## In summary
 
-
 ::: {.box .welldone}
 
 You now know how to write your R code so that it is easy to read, which makes it
@@ -487,7 +523,5 @@ read some of these articles:
 :::
 
 
-
 <p class="credits">
-[The tidyverse style guide](https://style.tidyverse.org/) licensed under the [Creative Commons Attribution-ShareAlike licence](https://github.com/tidyverse/style/blob/master/LICENSE.md).
-</p>
+[The tidyverse style guide](https://style.tidyverse.org/) licensed under the [Creative Commons Attribution-ShareAlike licence](https://github.com/tidyverse/style/blob/master/LICENSE.md). <a href="https://twitter.com/allison_horst">Artwork by @allison_horst</a></p>
