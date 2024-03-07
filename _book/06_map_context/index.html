@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.489">
+<meta name="generator" content="quarto-1.4.551">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Learn crime mapping with R - 6&nbsp; Giving a map context</title>
 <style>
@@ -91,6 +91,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
@@ -236,6 +237,30 @@ quarto book
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Crime Mapping: Mapping hotspots</span></span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../12_messy_data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Handling messy data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../13_crime_series/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Mapping crime series</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../14_writing_reports/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Writing reports in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../15_no_maps/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Presenting spatial data without maps</span></span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
@@ -309,7 +334,10 @@ quarto book
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>shootings_map_final</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/final-map-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/final-map-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>In this tutorial we will learn to add important context to our maps using these elements.</p>
@@ -518,7 +546,10 @@ all geometries</code></pre>
 <span id="cb7-18"><a href="#cb7-18"></a><span class="co"># Display map</span></span>
 <span id="cb7-19"><a href="#cb7-19"></a>shootings_map</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/title-exercise1-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/title-exercise1-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>The code used to create this map is very similar to the code we used in one of the previous tutorials to make a map of bike theft in Vancouver, although there are a few differences.</p>
@@ -537,7 +568,10 @@ all geometries</code></pre>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>shootings_map <span class="sc">+</span> </span>
 <span id="cb8-2"><a href="#cb8-2"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Shootings are focused in the South Bronx"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/title-exercise3-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/title-exercise3-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Sometimes our preferred title might be too long to fit on a map. In this case, we can break the title across two or more lines. We can do this manually by adding the characters <code>\n</code> (the character code for a new line) at the point where we want the text to start a new line. Alternatively, we can use the <code>str_wrap()</code> function from the <code>stringr</code> package to wrap the text automatically into lines of a given maximum length (specified using the <code>wrap</code> argument).</p>
@@ -547,7 +581,10 @@ all geometries</code></pre>
 <span id="cb9-2"><a href="#cb9-2"></a>shootings_map <span class="sc">+</span> </span>
 <span id="cb9-3"><a href="#cb9-3"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Shootings are focused in the South Bronx"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/title-exercise4-hint-1-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/title-exercise4-hint-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <div class="cell">
@@ -557,7 +594,10 @@ all geometries</code></pre>
 <span id="cb10-4"><a href="#cb10-4"></a>    <span class="at">subtitle =</span> <span class="st">"Fatal and non-fatal shootings recorded by NYC Police, 2019"</span></span>
 <span id="cb10-5"><a href="#cb10-5"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/title-exercise4-hint-2-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/title-exercise4-hint-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <section id="using-captions-to-add-author-and-other-information" class="level3" data-number="6.6.1"><h3 data-number="6.6.1" class="anchored" data-anchor-id="using-captions-to-add-author-and-other-information">
@@ -575,7 +615,10 @@ all geometries</code></pre>
 <span id="cb11-9"><a href="#cb11-9"></a>    )</span>
 <span id="cb11-10"><a href="#cb11-10"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/title-exercise5-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/title-exercise5-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>This code uses the <code>str_glue()</code> function from the <code>stringr</code> package to incorporate some automatically updated information (in this case, the current date) into the caption. <code>str_glue()</code> glues together any number of character strings separated by commas – in this case, the code includes two strings so that the lines of code do not become too long to easily read.</p>
@@ -611,7 +654,10 @@ all geometries</code></pre>
 <span id="cb12-12"><a href="#cb12-12"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey67"</span>, <span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.7</span>))</span>
 <span id="cb12-13"><a href="#cb12-13"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/title-exercise6-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/title-exercise6-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>The helper function <code>element_text()</code> has arguments to control the appearance of text in different ways. As well as <code>colour</code> (or <code>color</code>, either is fine) and <code>size</code>, there are:</p>
@@ -648,7 +694,10 @@ all geometries</code></pre>
 <span id="cb13-13"><a href="#cb13-13"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey50"</span>, <span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.7</span>))</span>
 <span id="cb13-14"><a href="#cb13-14"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/title-exercise7-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/title-exercise7-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <div class="cell">
@@ -685,7 +734,10 @@ all geometries</code></pre>
 <span id="cb18-15"><a href="#cb18-15"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey67"</span>, <span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.7</span>), <span class="at">hjust =</span> <span class="dv">0</span>)</span>
 <span id="cb18-16"><a href="#cb18-16"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/title-exercise7-hint-5-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/title-exercise7-hint-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Now that we have finished setting the text elements for our map, we can save it as a new object that we can use as the basis for the other objects we want to add.</p>
@@ -723,7 +775,10 @@ all geometries</code></pre>
 <span id="cb20-4"><a href="#cb20-4"></a>    <span class="at">legend.position =</span> <span class="st">"right"</span></span>
 <span id="cb20-5"><a href="#cb20-5"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/legend-exercise1-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/legend-exercise1-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Our map now has a legend, but we may want to adjust its appearance by:</p>
@@ -741,7 +796,10 @@ all geometries</code></pre>
 <span id="cb21-5"><a href="#cb21-5"></a>    <span class="at">legend.position =</span> <span class="st">"right"</span></span>
 <span id="cb21-6"><a href="#cb21-6"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/legend-exercise2-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/legend-exercise2-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>To make the legend smaller, we can use <code>theme()</code> in the same way as we did to change the appearance of the caption. We use the <code>legend.title</code> argument to format the legend title and the <code>legend.text</code> argument to format the labels for each value in the legend.</p>
@@ -760,7 +818,10 @@ all geometries</code></pre>
 <span id="cb22-10"><a href="#cb22-10"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.8</span>))</span>
 <span id="cb22-11"><a href="#cb22-11"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/legend-exercise3-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/legend-exercise3-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Finally, we want to remove the raw density values, since these are difficult to interpret and might distract readers from the key message that darker colours on the map represent higher densities of shootings.</p>
@@ -791,7 +852,10 @@ all geometries</code></pre>
 Adding another scale for fill, which will replace the existing scale.</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/legend-exercise4-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/legend-exercise4-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Now that we have finished formatting the legend, we can again store the map as an object that we can build on further.</p>
@@ -829,7 +893,10 @@ Adding another scale for fill, which will replace the existing scale.</code></pr
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>shootings_map_legend <span class="sc">+</span></span>
 <span id="cb27-2"><a href="#cb27-2"></a>  <span class="fu">annotation_scale</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/scales-exercise1-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/scales-exercise1-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>The default scale bar is a little too visually dominant for the low place it should have in the visual hierarchy of our map, and the default placement in the bottom-left corner happens to overlap with the highest density of shootings. We can change the scale bar using arguments to the <code>annotation_scale()</code> function:</p>
@@ -845,7 +912,10 @@ Adding another scale for fill, which will replace the existing scale.</code></pr
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>shootings_map_legend <span class="sc">+</span></span>
 <span id="cb28-2"><a href="#cb28-2"></a>  <span class="fu">annotation_scale</span>(<span class="at">width_hint =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">5</span>, <span class="at">style =</span> <span class="st">"ticks"</span>, <span class="at">location =</span> <span class="st">"br"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/scales-exercise2-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/scales-exercise2-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 </section><section id="north-arrows" class="level3" data-number="6.8.2"><h3 data-number="6.8.2" class="anchored" data-anchor-id="north-arrows">
@@ -868,7 +938,10 @@ Adding another scale for fill, which will replace the existing scale.</code></pr
 <span id="cb29-6"><a href="#cb29-6"></a>    <span class="at">style =</span> <span class="fu">north_arrow_minimal</span>(<span class="at">text_size =</span> <span class="dv">8</span>)</span>
 <span id="cb29-7"><a href="#cb29-7"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/scales-exercise3-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/scales-exercise3-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 </section></section><section id="saving-maps" class="level2" data-number="6.9"><h2 data-number="6.9" class="anchored" data-anchor-id="saving-maps">
@@ -921,7 +994,10 @@ Adding another scale for fill, which will replace the existing scale.</code></pr
 <span id="cb30-39"><a href="#cb30-39"></a><span class="co"># Display map</span></span>
 <span id="cb30-40"><a href="#cb30-40"></a>shootings_map_final</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/save-exercise1-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/save-exercise1-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p><code>ggsave()</code> can create image files in many different formats, including PNG, JPEG and PDF. <code>ggsave()</code> will determine which type of file to create according to the file extension of the file name that you specify. So <code>ggsave("bronx_shootings_2019.pdf", plot = shootings_map_legend)</code> produces a PDF file, while <code>ggsave("bronx_shootings_2019.jpg", plot = shootings_map_legend)</code> produces a JPEG image file.</p>
@@ -1037,6 +1113,24 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
   function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
@@ -1071,7 +1165,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
   const xrefs = window.document.querySelectorAll('a.quarto-xref');
@@ -1086,38 +1184,28 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
     }
     stripColumnClz(note)
-    const typesetMath = (el) => {
-      if (window.MathJax) {
-        // MathJax Typeset
-        window.MathJax.typeset([el]);
-      } else if (window.katex) {
-        // KaTeX Render
-        var mathElements = el.getElementsByClassName("math");
-        var macros = [];
-        for (var i = 0; i < mathElements.length; i++) {
-          var texText = mathElements[i].firstChild;
-          if (mathElements[i].tagName == "SPAN") {
-            window.katex.render(texText.data, mathElements[i], {
-              displayMode: mathElements[i].classList.contains('display'),
-              throwOnError: false,
-              macros: macros,
-              fleqn: false
-            });
-          }
-        }
-      }
-    }
     if (id === null || id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
       if (note.children && note.children.length > 2) {
-        for (let i = 0; i < 2; i++) {
-          container.appendChild(note.children[i].cloneNode(true));
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
         }
-        typesetMath(container);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
         return container.innerHTML
       } else {
-        typesetMath(note);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
         return note.innerHTML;
       }
     } else {
@@ -1126,8 +1214,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (anchorLink) {
         anchorLink.remove();
       }
-      typesetMath(note);
-      return note.innerHTML;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
     }
   }
   for (var i=0; i<xrefs.length; i++) {
@@ -1348,12 +1443,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="../05_your_second_crime_map/index.html" class="pagination-link  aria-label=" second="" crime="" map="">
+      <a href="../05_your_second_crime_map/index.html" class="pagination-link" aria-label="Your second crime map">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Your second crime map</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../07_handling_bugs/index.html" class="pagination-link" aria-label="<span class='chapter-number'>7</span>&nbsp; <span class='chapter-title'>Handling bugs in your code</span>">
+      <a href="../07_handling_bugs/index.html" class="pagination-link" aria-label="Handling bugs in your code">
         <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
@@ -1362,4 +1457,4 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-</body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

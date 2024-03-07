@@ -1,0 +1,2267 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.551">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Learn crime mapping with R - 12&nbsp; Handling messy data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../13_crime_series/index.html" rel="next">
+<link href="../11_mapping_hotspots/index.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><!-- START OF INCLUDED HEADER --><!--
+This file contains code that will be included in the header of each page of the
+quarto book
+--><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script><!-- END OF INCLUDED HEADER --><script src="../site_libs/kePrint-0.0.1/kePrint.js"></script><link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+<meta name="twitter:title" content="Learn crime mapping with R - 12&nbsp; Handling messy data">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+</head>
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../12_messy_data/index.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Handling messy data</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Learn crime mapping with R</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/mpjashby/crimemappingbook/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <a href="../learn_crime_mapping_with_r.epub" title="Download ePub" class="quarto-navigation-tool px-1" aria-label="Download ePub"><i class="bi bi-journal"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+<li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=%7Curl%7C">
+              <i class="bi bi-bi-facebook pe-1"></i>
+            Facebook
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+</div>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome!</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00_setup/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Install the software needed for this book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_getting_started/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting started</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_your_first_crime_map/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_data_wrangling/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Wrangling data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_code_with_style/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Code with style</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../05_your_second_crime_map/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Your second crime map</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../06_map_context/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Giving a map context</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../07_handling_bugs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../08_projects/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Don’t get lost in data analysis</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../09_mapping_areas/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Mapping area data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../10_place_data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Crime Mapping: Using data about places</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../11_mapping_hotspots/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Crime Mapping: Mapping hotspots</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../12_messy_data/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Handling messy data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../13_crime_series/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Mapping crime series</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../14_writing_reports/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Writing reports in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../15_no_maps/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Presenting spatial data without maps</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/read_functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Functions for reading data into R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/common_errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Common R errors and how to fix them</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+    <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">In this chapter</h2>
+   
+  <ul class="collapse">
+<li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">12.1</span> Introduction</a></li>
+  <li><a href="#tidying-the-structure-of-data" id="toc-tidying-the-structure-of-data" class="nav-link" data-scroll-target="#tidying-the-structure-of-data"><span class="header-section-number">12.2</span> Tidying the structure of data</a></li>
+  <li><a href="#tidying-the-content-of-cells" id="toc-tidying-the-content-of-cells" class="nav-link" data-scroll-target="#tidying-the-content-of-cells"><span class="header-section-number">12.3</span> Tidying the content of cells</a></li>
+  <li><a href="#geocoding-locations" id="toc-geocoding-locations" class="nav-link" data-scroll-target="#geocoding-locations"><span class="header-section-number">12.4</span> Geocoding locations</a></li>
+  <li><a href="#conflicts-between-function-names" id="toc-conflicts-between-function-names" class="nav-link" data-scroll-target="#conflicts-between-function-names"><span class="header-section-number">12.5</span> Conflicts between function names</a></li>
+  <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="header-section-number">12.6</span> In summary</a></li>
+  </ul><div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">
+<span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Handling messy data</span>
+</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><p><strong>Learn how to tidy messy data so that it is easier to use for data analysis.</strong></p>
+<div class="box load-tutorial">
+<p>To load the <a href="../#how-to-use-this-book">interactive tutorial</a> for this chapter, copy and paste the following code into the RStudio console:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>crimemapping<span class="sc">::</span><span class="fu">tutorial</span>(<span class="st">"12_messy_data"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>and press <code>Enter</code>.</p>
+</div>
+<section id="introduction" class="level2" data-number="12.1"><h2 data-number="12.1" class="anchored" data-anchor-id="introduction">
+<span class="header-section-number">12.1</span> Introduction</h2>
+<p>Data is the foundation of everything we do in crime mapping. To make a crime map needs data on the locations and types of crimes; data on roads, buildings and natural features to make up a base map, and data on other features (such as particular types of facility) that might be relevant to why crime happens in particular place.</p>
+<p class="full-width-image">
+<img src="images/tidydata_1.jpg" alt="Cartoon explaining that tidy data is a standard way of mapping the meaning of a dataset to its structure. In tidy data each variable forms a column, each observation forms a row and each cell is a single measurement."></p>
+<p>Until now, all the data we have used has been <em>tidy data</em>. Data is tidy if it comes in a particular format where every <em>variable</em> (e.g.&nbsp;the date on which a crime occurred) is stored in a separate <em>column</em> and data for every <em>observation</em> (e.g.&nbsp;all the data about a particular crime, a particular offender etc.) is stored in a separate <em>row</em>. For typical crime data, that means each crime is represented by one row in the data and each thing that we know about that crime is stored in a separate column.</p>
+<p>Unfortunately, not all the data we might like to use in crime mapping is available in a tidy format. The people, organisations and systems and produce data store it in many formats, which are often not tidy and not easy to analyse. Messy data is more difficult to work with because every messy dataset has a unique structure, which we have to remember every time we want to work with it.</p>
+<p>Tidy data, on the other hand, is easier to work with because its format is familiar and consistent. Many R functions are also designed to work with tidy data, so tidying our datasets often makes analysis quicker, too.</p>
+<p>The first step to analysing messy data is therefore to wrangle it into a tidy format. We have already seen this principle at work when we use the <code>clean_names()</code> function from the <code>janitor</code> package to convert column names into a consistent format so that we don’t have to keep remembering which unique format the column names are in.</p>
+<p>In this tutorial we will learn how to tidy messy data to make it easier to work with.</p>
+<p class="credits">
+<a href="https://github.com/allisonhorst/stats-illustrations">Stats Illustrations by Allison Horst</a> licensed under the <a href="https://github.com/allisonhorst/stats-illustrations/blob/master/license">Creative Commons Attribution licence</a>.
+</p>
+</section><section id="tidying-the-structure-of-data" class="level2" data-number="12.2"><h2 data-number="12.2" class="anchored" data-anchor-id="tidying-the-structure-of-data">
+<span class="header-section-number">12.2</span> Tidying the structure of data</h2>
+<p class="full-width-image">
+<img src="images/tidydata_2.jpg" alt="Cartoon explaining that the standard structure of tidy data means that all tidy datasets are alike but every messy dataset is messy in its own way."></p>
+<p>Every messy dataset is messy in its own unique way, but often messiness comes from the structure of data not being tidy. Tabular data can come in two general formats: <em>long</em> and <em>wide</em>. For example, imagine a dataset showing counts of several different types of crime in several different areas. We could store this data in wide format, where there is a column for the name of the area and then a column for each type of crime.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<table class="table table-sm table-striped small" data-quarto-postprocess="true">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">area</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">assault</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">robbery</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">burglary</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Northville</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Middletown</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Southam</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">10</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Wide-format data are often useful for presentation – you might often see a table like this in a report or article. But wide data are less useful for analysis because one of the variables – ‘type of crime’ – is being stored not as a variable but in the various column names. One sign that your data has this problem is if several of the columns form a group of columns, separate from the others. In this case, there is a group of columns that show crime counts that is different from the other column that shows the area name.</p>
+<p>Fortunately, we can easily convert this data (which is stored in the object <code>crime_counts</code>) into long format using the <code>pivot_longer()</code> function from the <code>tidyr</code> package. To use <code>pivot_longer()</code>, we have to specify in the <code>cols</code> argument which columns we want to ‘gather’ together into one column to store the category names and one column to store the values. We can specify the columns we want to gather as a vector, i.e.&nbsp;<code>c(assault, burglary, robbery)</code>.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="fu">pivot_longer</span>(crime_counts, <span class="at">cols =</span> <span class="fu">c</span>(assault, burglary, robbery))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 3
+  area       name     value
+  &lt;chr&gt;      &lt;chr&gt;    &lt;dbl&gt;
+1 Northville assault      4
+2 Northville burglary    10
+3 Northville robbery      2
+4 Middletown assault      6
+5 Middletown burglary    20
+6 Middletown robbery      5
+7 Southam    assault     10
+8 Southam    burglary    10
+9 Southam    robbery      0</code></pre>
+</div>
+</div>
+<p>By default, <code>pivot_longer()</code> calls the new column of category names <code>name</code> and the new column of values <code>value</code>. We can specify more-descriptive names using the <code>names_to</code> and <code>values_to</code> arguments.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">pivot_longer</span>(</span>
+<span id="cb4-2"><a href="#cb4-2"></a>  crime_counts, </span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="at">cols =</span> <span class="fu">c</span>(assault, burglary, robbery), </span>
+<span id="cb4-4"><a href="#cb4-4"></a>  <span class="at">names_to =</span> <span class="st">"type"</span>, </span>
+<span id="cb4-5"><a href="#cb4-5"></a>  <span class="at">values_to =</span> <span class="st">"count"</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 3
+  area       type     count
+  &lt;chr&gt;      &lt;chr&gt;    &lt;dbl&gt;
+1 Northville assault      4
+2 Northville burglary    10
+3 Northville robbery      2
+4 Middletown assault      6
+5 Middletown burglary    20
+6 Middletown robbery      5
+7 Southam    assault     10
+8 Southam    burglary    10
+9 Southam    robbery      0</code></pre>
+</div>
+</div>
+<p>It is better to have the names of different categories stored as a single variable rather than as the names of several variables because they are easier to work with that way. For example, if the data are in long format you could sort the categories alphabetically using <code>arrange(crime_counts, type)</code>, or you could transform the names to title case using <code>mutate(crime_counts, type = str_to_title(type))</code>. Both these operations would be harder to do if the data were in wide format.</p>
+<p>A common reason for data to be stored in wide format is where repeated observations are made of some value over time. For example, we might have monthly counts of crimes for different areas.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<table class="table table-sm table-striped small" data-quarto-postprocess="true">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">area</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">jan_2020</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">feb_2020</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">mar_2020</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">apr_2020</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">may_2020</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Northville</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Middletown</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Southam</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">14</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Storing data in this way is particularly awkward because variable names can only contain text, so R does not know that the column names represent dates. This means, for example, that we could not filter the dataset to only include data from after a certain date.</p>
+<p>When we want to gather a large number of columns together, it can get tedious to type all the column names for the <code>cols</code> argument to <code>pivot_longer()</code>. Instead, since we want to gather all the columns except one, we can just specify that we should <em>not</em> gather the <code>area</code> column, which implicitly tells <code>pivot_longer()</code> to gather all the other columns. We tell <code>pivot_longer()</code> not to gather the area column by specifying <code>cols = -area</code> (note the minus sign in front of the column name).</p>
+<div class="tutorial">
+<p>Run the code needed to gather a dataset called <code>monthly_counts</code> so that the names of the monthly counts are stored in a variable called <code>month</code> and the monthly counts themselves are stored in a variable called <code>count</code>.</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">pivot_longer</span>(</span>
+<span id="cb6-2"><a href="#cb6-2"></a>  monthly_counts, </span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="at">cols =</span> <span class="sc">-</span>area, </span>
+<span id="cb6-4"><a href="#cb6-4"></a>  <span class="at">names_to =</span> <span class="st">"month"</span>, </span>
+<span id="cb6-5"><a href="#cb6-5"></a>  <span class="at">values_to =</span> <span class="st">"count"</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 15 × 3
+   area       month    count
+   &lt;chr&gt;      &lt;chr&gt;    &lt;dbl&gt;
+ 1 Northville jan_2020    13
+ 2 Northville feb_2020    10
+ 3 Northville mar_2020    12
+ 4 Northville apr_2020     9
+ 5 Northville may_2020    10
+ 6 Middletown jan_2020    21
+ 7 Middletown feb_2020    19
+ 8 Middletown mar_2020    22
+ 9 Middletown apr_2020    19
+10 Middletown may_2020    20
+11 Southam    jan_2020    15
+12 Southam    feb_2020    13
+13 Southam    mar_2020    16
+14 Southam    apr_2020    15
+15 Southam    may_2020    14</code></pre>
+</div>
+</div>
+<p>There is still a problem with this data, which is that the <code>month</code> variable contains not date values but instead the month and year stored as text. We will learn how to deal with this issue in a future tutorial.</p>
+<section id="skipping-unwanted-rows-in-imported-data" class="level3" data-number="12.2.1"><h3 data-number="12.2.1" class="anchored" data-anchor-id="skipping-unwanted-rows-in-imported-data">
+<span class="header-section-number">12.2.1</span> Skipping unwanted rows in imported data</h3>
+<p>Data released by government organisations are often designed to be viewed by humans rather than processed by statistical software. We can see this in this screen shot of a <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/crimeandjustice/datasets/crimeinenglandandwalesexperimentaltables">dataset produced by the UK Office for National Statistics on cybercrime in the UK</a> based on responses to the Crime Survey for England and Wales.</p>
+<p class="full-width-image">
+<img src="images/ons_data1.png" alt="Screen shot of an Excel sheet of data from the UK Office for National Statistics, showing that there are multiple header rows above the data and blank rows within the data."></p>
+<p>Looking at the row numbers on the left-hand side, we can see that the that the first row is taken up not with the column names (as in a tidy dataset) but with the title of the dataset. The next row is blank, and the third row then contains some metadata to say that the data relates to England and Wales and to adults aged 16 and over. Only on row four do we see the column names. There are also blank rows within the data that are used to separate out different categories of data.</p>
+<p>If we try to import this data using, for example, the <code>read_excel()</code> function from the <code>readxl</code> package, we will find various problems.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb8-2"><a href="#cb8-2"></a></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="co"># Since `.xlsx` files are binary files, we need to add `mode = "wb"` on Windows.</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="co"># On other platforms it makes no difference, but adding `mode = "wb" does not</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="co"># cause any problems.</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="fu">download.file</span>(</span>
+<span id="cb8-7"><a href="#cb8-7"></a>  <span class="at">url =</span> <span class="st">"https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/crimeandjustice/datasets/crimeinenglandandwalesexperimentaltables/yearendingdecember2018/additionalfraudandcybercrimetablesyearendingdecember2018correction.xlsx"</span>,</span>
+<span id="cb8-8"><a href="#cb8-8"></a>  <span class="at">destfile =</span> <span class="fu">str_glue</span>(<span class="st">"{tempdir()}/cybercrime.xlsx"</span>),</span>
+<span id="cb8-9"><a href="#cb8-9"></a>  <span class="at">mode =</span> <span class="st">"wb"</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a>)</span>
+<span id="cb8-11"><a href="#cb8-11"></a></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="fu">read_excel</span>(<span class="fu">str_glue</span>(<span class="st">"{tempdir()}/cybercrime.xlsx"</span>), <span class="at">sheet =</span> <span class="st">"Table E1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>New names:
+• `` -&gt; `...2`
+• `` -&gt; `...3`
+• `` -&gt; `...4`
+• `` -&gt; `...5`</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 46 × 5
+   Table E1:  Fraud and computer misuse by loss (of mo…¹ ...2  ...3  ...4  ...5 
+   &lt;chr&gt;                                                 &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+ 1 &lt;NA&gt;                                                  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; 
+ 2 England and Wales                                     &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  Adul…
+ 3 Offence group3                                        Numb… Rate… Numb… Perc…
+ 4 &lt;NA&gt;                                                  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; 
+ 5 FRAUD5                                                3648  78.0… 3078  6.58…
+ 6 &lt;NA&gt;                                                  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; 
+ 7 With loss, no or only partial reimbursement           660   14.1… 613   1.31…
+ 8 With loss, fully reimbursed                           2066  44.2… 1765  3.77…
+ 9 Without loss                                          922   19.7… 804   1.72…
+10 &lt;NA&gt;                                                  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; 
+# ℹ 36 more rows
+# ℹ abbreviated name:
+#   ¹​`Table E1:  Fraud and computer misuse by loss (of money or property) - number and rate of incidents and number and percentage of victims, year ending December 2018 CSEW1,2`</code></pre>
+</div>
+</div>
+<p>It’s clear that this dataset has not loaded in the way that we want, because the first row doesn’t contain the column names. Fortunately, we can deal with this problem using the <code>skip</code> argument to the <code>read_excel()</code> function. This allows us to specify a number of rows to ignore at the start of the dataset. In this case, we want to ignore the first three rows of the data (the table title, a blank line and the the metadata line), so we can specify <code>skip = 3</code>. The same <code>skip</code> argument also exists in the <code>read_csv()</code> function for reading CSV data and the <code>read_tsv()</code> function for reading tab-separated data.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">read_excel</span>(</span>
+<span id="cb11-2"><a href="#cb11-2"></a>  <span class="fu">str_glue</span>(<span class="st">"{tempdir()}/cybercrime.xlsx"</span>), </span>
+<span id="cb11-3"><a href="#cb11-3"></a>  <span class="at">sheet =</span> <span class="st">"Table E1"</span>, </span>
+<span id="cb11-4"><a href="#cb11-4"></a>  <span class="at">skip =</span> <span class="dv">3</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 43 × 5
+   `Offence group3`                Number of incidents …¹ Rate per 1,000 adult…²
+   &lt;chr&gt;                                            &lt;dbl&gt;                  &lt;dbl&gt;
+ 1 &lt;NA&gt;                                                NA                  NA   
+ 2 FRAUD5                                            3648                  78.0 
+ 3 &lt;NA&gt;                                                NA                  NA   
+ 4 With loss, no or only partial …                    660                  14.1 
+ 5 With loss, fully reimbursed                       2066                  44.2 
+ 6 Without loss                                       922                  19.7 
+ 7 &lt;NA&gt;                                                NA                  NA   
+ 8 Bank and credit account fraud                     2433                  52.0 
+ 9 With loss, no or only partial …                    235                   5.03
+10 With loss, fully reimbursed                       1727                  36.9 
+# ℹ 33 more rows
+# ℹ abbreviated names: ¹​`Number of incidents (thousands)`,
+#   ²​`Rate per 1,000 adults`
+# ℹ 2 more variables: `Number of victims (thousands)4` &lt;dbl&gt;,
+#   `Percentage victims once or more4` &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>This has dealt with the problem caused by the extra rows at the top of the data. But if we look at the bottom of the dataset, we will see that there are also several rows of footnotes. These footnotes are important for us to have read so that we understand the data, but they aren’t part of the data itself.</p>
+<p class="full-width-image">
+<img src="images/ons_data2.png" alt="Screen shot of an Excel sheet of data from the UK Office for National Statistics, showing that there are multiple footer rows below the data."></p>
+<p>We can remove these extra rows at the end of our data using the <code>slice()</code> function from the <code>dplyr</code> package. <code>slice()</code> allows us to choose certain rows from our data by row number. Looking at the screen shot above, our data finishes on row 34 (row 36 looks like part of our data but the value there actually shows the number of people involved in the survey, not a number of incidents). But:</p>
+<ul>
+<li>we have already removed the first three rows using the <code>skip</code> argument to <code>read_excel()</code>, and</li>
+<li>row four of the original spreadsheet has become our column names,</li>
+</ul>
+<p>so row 34 on the spreadsheet is actually row 30 in our loaded dataset. Knowing this, we can remove all the rows below row 30 using <code>slice()</code>:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">str_glue</span>(<span class="st">"{tempdir()}/cybercrime.xlsx"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-2"><a href="#cb13-2"></a>  <span class="fu">read_excel</span>(<span class="at">sheet =</span> <span class="st">"Table E1"</span>, <span class="at">skip =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-3"><a href="#cb13-3"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 30 × 5
+   `Offence group3`                Number of incidents …¹ Rate per 1,000 adult…²
+   &lt;chr&gt;                                            &lt;dbl&gt;                  &lt;dbl&gt;
+ 1 &lt;NA&gt;                                                NA                  NA   
+ 2 FRAUD5                                            3648                  78.0 
+ 3 &lt;NA&gt;                                                NA                  NA   
+ 4 With loss, no or only partial …                    660                  14.1 
+ 5 With loss, fully reimbursed                       2066                  44.2 
+ 6 Without loss                                       922                  19.7 
+ 7 &lt;NA&gt;                                                NA                  NA   
+ 8 Bank and credit account fraud                     2433                  52.0 
+ 9 With loss, no or only partial …                    235                   5.03
+10 With loss, fully reimbursed                       1727                  36.9 
+# ℹ 20 more rows
+# ℹ abbreviated names: ¹​`Number of incidents (thousands)`,
+#   ²​`Rate per 1,000 adults`
+# ℹ 2 more variables: `Number of victims (thousands)4` &lt;dbl&gt;,
+#   `Percentage victims once or more4` &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>The final problem with the structure of this dataset is the blank rows that are used to separate different crime categories in the original table. We can deal with this using the <code>remove_empty()</code> function from the <code>janitor</code> package, which removes all rows and/or columns that contain only <code>NA</code> values. We will also clean the column names at the same time and then rename the columns to be shorter, which will make it easier to refer to them in our code.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">library</span>(janitor)</span>
+<span id="cb15-2"><a href="#cb15-2"></a></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="fu">str_glue</span>(<span class="st">"{tempdir()}/cybercrime.xlsx"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb15-4"><a href="#cb15-4"></a>  <span class="fu">read_excel</span>(<span class="at">sheet =</span> <span class="st">"Table E1"</span>, <span class="at">skip =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb15-5"><a href="#cb15-5"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb15-6"><a href="#cb15-6"></a>  <span class="fu">remove_empty</span>(<span class="at">which =</span> <span class="st">"rows"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb15-7"><a href="#cb15-7"></a>  <span class="fu">clean_names</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb15-8"><a href="#cb15-8"></a>  <span class="fu">rename</span>(</span>
+<span id="cb15-9"><a href="#cb15-9"></a>    <span class="at">offence =</span> offence_group3, </span>
+<span id="cb15-10"><a href="#cb15-10"></a>    <span class="at">crimes =</span> number_of_incidents_thousands, </span>
+<span id="cb15-11"><a href="#cb15-11"></a>    <span class="at">incidence =</span> rate_per_1_000_adults, </span>
+<span id="cb15-12"><a href="#cb15-12"></a>    <span class="at">victims =</span> number_of_victims_thousands_4, </span>
+<span id="cb15-13"><a href="#cb15-13"></a>    <span class="at">prevalence =</span> percentage_victims_once_or_more4</span>
+<span id="cb15-14"><a href="#cb15-14"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 22 × 5
+   offence                                   crimes incidence victims prevalence
+   &lt;chr&gt;                                      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;
+ 1 FRAUD5                                      3648     78.0     3078      6.58 
+ 2 With loss, no or only partial reimbursem…    660     14.1      613      1.31 
+ 3 With loss, fully reimbursed                 2066     44.2     1765      3.78 
+ 4 Without loss                                 922     19.7      804      1.72 
+ 5 Bank and credit account fraud               2433     52.0     2056      4.40 
+ 6 With loss, no or only partial reimbursem…    235      5.03     211      0.451
+ 7 With loss, fully reimbursed                 1727     36.9     1458      3.12 
+ 8 Without loss                                 470     10.1      419      0.896
+ 9 Consumer and retail fraud6                  1031     22.1      954      2.04 
+10 With loss, no or only partial reimbursem…    380      8.13     361      0.771
+# ℹ 12 more rows</code></pre>
+</div>
+</div>
+<p>This dataset now has a tidy structure: each row represents an observation (in this case, data about a particular type of crime), each column represents a piece of information about the observation and each cell represents a single value. We still need to clean up the footnote numbers that appear in some of the values, but we will deal with that later in this tutorial.</p>
+</section><section id="separating-multiple-variables-stored-in-a-single-column" class="level3" data-number="12.2.2"><h3 data-number="12.2.2" class="anchored" data-anchor-id="separating-multiple-variables-stored-in-a-single-column">
+<span class="header-section-number">12.2.2</span> Separating multiple variables stored in a single column</h3>
+<p>Sometimes datasets include multiple variables in a single column. For example, data about crime victims stored in an object called <code>victims</code> might include a single column representing both age and sex.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<table class="table table-sm table-striped small" data-quarto-postprocess="true">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">first_name</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">last_name</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">age_sex</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Lyda</td>
+<td style="text-align: left;">Gartrell</td>
+<td style="text-align: left;">40/F</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kareem</td>
+<td style="text-align: left;">David</td>
+<td style="text-align: left;">26</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lisa</td>
+<td style="text-align: left;">Dean</td>
+<td style="text-align: left;">21/F</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Melina</td>
+<td style="text-align: left;">Shehan</td>
+<td style="text-align: left;">25/F</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Alfredo</td>
+<td style="text-align: left;">Matamoros</td>
+<td style="text-align: left;">18/M</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>It would be easier to wrangle this data (e.g.&nbsp;to filter by age) if the data in the <code>age_sex</code> column was stored in two separate columns. Making this change would also make sure our data meets the definition of being tidy: every variable should be stored in a separate column.</p>
+<p>We can split the <code>age_sex</code> column into two using the <code>separate()</code> function from the <code>tidyr</code> package. We specify the existing column we want to split using the <code>col</code> argument, the names of the new columns we want to create using the <code>into</code> argument and the character(s) that represent the boundary between the two pieces of data in each column (in this case, <code>/</code>).</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">separate</span>(victims, <span class="at">col =</span> age_sex, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">"sex"</span>), <span class="at">sep =</span> <span class="st">"/"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Expected 2 pieces. Missing pieces filled with `NA` in 1 rows [2].</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 4
+  first_name last_name age   sex  
+  &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;
+1 Lyda       Gartrell  40    F    
+2 Kareem     David     26    &lt;NA&gt; 
+3 Lisa       Dean      21    F    
+4 Melina     Shehan    25    F    
+5 Alfredo    Matamoros 18    M    </code></pre>
+</div>
+</div>
+<p>You might have noticed that this function produced a warning message saying <code>Expected 2 pieces. Missing pieces filled with NA in 1 rows [2]</code>. This is because the second row of data in the <code>victims</code> object only contains one of the two pieces of data. When this happens, <code>separate()</code> fills in the values that are present from the left, filling any remaining columns to the right with <code>NA</code>. If this is what we want (as it is here), we can silence this warning by specifying <code>fill = "right"</code>. If instead we wanted <code>separate()</code> to fill in columns with <code>NA</code> values from the left, we could specify <code>fill = "left"</code>.</p>
+<p>Another issue with the separated data is that because the column <code>age_sex</code> was a character column, both <code>age</code> and <code>sex</code> are character columns, too. Since <code>age</code> is actually numeric, we can get <code>separate()</code> to convert this new column to the correct type automatically by specifying <code>convert = TRUE</code>.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">separate</span>(</span>
+<span id="cb20-2"><a href="#cb20-2"></a>  victims, </span>
+<span id="cb20-3"><a href="#cb20-3"></a>  <span class="at">col =</span> age_sex, </span>
+<span id="cb20-4"><a href="#cb20-4"></a>  <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">"sex"</span>), </span>
+<span id="cb20-5"><a href="#cb20-5"></a>  <span class="at">sep =</span> <span class="st">"/"</span>,</span>
+<span id="cb20-6"><a href="#cb20-6"></a>  <span class="at">convert =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb20-7"><a href="#cb20-7"></a>  <span class="at">fill =</span> <span class="st">"right"</span></span>
+<span id="cb20-8"><a href="#cb20-8"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 4
+  first_name last_name   age sex  
+  &lt;chr&gt;      &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;
+1 Lyda       Gartrell     40 F    
+2 Kareem     David        26 &lt;NA&gt; 
+3 Lisa       Dean         21 F    
+4 Melina     Shehan       25 F    
+5 Alfredo    Matamoros    18 M    </code></pre>
+</div>
+</div>
+<p>We now know how to convert a data into a tidy format using <code>pivot_longer()</code> to convert data to long format, remove non-data rows using <code>slice()</code>, <code>remove_empty()</code> and the <code>skip</code> argument to many functions like <code>read_csv()</code>, and split columns with <code>separate()</code>. In the next section, we’ll learn how to tidy the content of individual cells.</p>
+<p class="credits">
+<a href="https://github.com/allisonhorst/stats-illustrations">Stats Illustrations by Allison Horst</a> licensed under the <a href="https://github.com/allisonhorst/stats-illustrations/blob/master/license">Creative Commons Attribution licence</a>.
+</p>
+</section></section><section id="tidying-the-content-of-cells" class="level2" data-number="12.3"><h2 data-number="12.3" class="anchored" data-anchor-id="tidying-the-content-of-cells">
+<span class="header-section-number">12.3</span> Tidying the content of cells</h2>
+<p>As well as data with a messy structure, you might be provided with data with messy content inside some of the cells. In this section we will clean messy content, mostly using functions from the <code>stringr</code> package that is loaded automatically when we load <code>tidyverse</code>. All the functions in the <code>stringr</code> package start with <code>str_</code> so that they are easy to remember.</p>
+<p>We can change the case of text using one of four <code>str_to_</code> functions:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<table class="table table-sm table-striped small" data-quarto-postprocess="true">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">input</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">function</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">output</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">A stRinG oF TeXT</td>
+<td style="text-align: left;">`st_to_lower()`</td>
+<td style="text-align: left;">a string of text</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A stRinG oF TeXT</td>
+<td style="text-align: left;">`st_to_upper()`</td>
+<td style="text-align: left;">A STRING OF TEXT</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">A stRinG oF TeXT</td>
+<td style="text-align: left;">`st_to_sentence()`</td>
+<td style="text-align: left;">A string of text</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A stRinG oF TeXT</td>
+<td style="text-align: left;">`st_to_title()`</td>
+<td style="text-align: left;">A String Of Text</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>We can also remove unwanted text from within values. For example, if there is unwanted white-space (spaces, tabs, etc.) at the beginning or end of a string of characters, we can remove it with <code>str_trim()</code>. <code>str_squish()</code> does the same thing, but also reduces any repeated white-space characters in a string of text down to a single space. For example, <code>str_squish("  A string   of text")</code> produces the result <code>A string of text</code>.</p>
+<p class="full-width-image">
+<img src="images/str_squish.jpg" alt="Cartoon explaining that the str_squish() function removes leading, trailing and repeated interior whitespace from strings."></p>
+<p>Data from the UK police open data website includes the words ‘on or near’ at the start of every value in the <code>location</code> column of the data. This is to remind users that the locations of crimes are deliberately obscured by being ‘snapped’ to the centre of the street on which they occur to protect victims’ privacy.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<table class="table table-sm table-striped small" data-quarto-postprocess="true">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">month</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">longitude</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">latitude</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">location</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">lsoa_name</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2020-01</td>
+<td style="text-align: right;">-1.120</td>
+<td style="text-align: right;">53.3</td>
+<td style="text-align: left;">On or near Supermarket</td>
+<td style="text-align: left;">Bassetlaw 013C</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2020-02</td>
+<td style="text-align: right;">-0.993</td>
+<td style="text-align: right;">53.2</td>
+<td style="text-align: left;">On or near Turner Lane</td>
+<td style="text-align: left;">Newark and Sherwood 001A</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2020-05</td>
+<td style="text-align: right;">-1.250</td>
+<td style="text-align: right;">53.1</td>
+<td style="text-align: left;">On or near Brookdale Road</td>
+<td style="text-align: left;">Ashfield 004C</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2020-08</td>
+<td style="text-align: right;">-1.160</td>
+<td style="text-align: right;">53.0</td>
+<td style="text-align: left;">On or near Raithby Close</td>
+<td style="text-align: left;">Nottingham 006B</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2020-10</td>
+<td style="text-align: right;">-1.180</td>
+<td style="text-align: right;">53.0</td>
+<td style="text-align: left;">On or near Bowden Avenue</td>
+<td style="text-align: left;">Ashfield 013A</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>We don’t need this constant value for analysis, and for large datasets it can unnecessarily increase the size of the data when we save it to a file. For this reason we might want to remove this constant value using the <code>str_remove()</code> function.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">mutate</span>(uk_data, <span class="at">location =</span> <span class="fu">str_remove</span>(location, <span class="st">"On or near "</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 5
+  month   longitude latitude location       lsoa_name               
+  &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;                   
+1 2020-01    -1.12      53.3 Supermarket    Bassetlaw 013C          
+2 2020-02    -0.993     53.2 Turner Lane    Newark and Sherwood 001A
+3 2020-05    -1.25      53.1 Brookdale Road Ashfield 004C           
+4 2020-08    -1.16      53   Raithby Close  Nottingham 006B         
+5 2020-10    -1.18      53   Bowden Avenue  Ashfield 013A           </code></pre>
+</div>
+</div>
+<p>The <code>lsoa_name</code> code of this dataset includes the name of the small statistical area in which each crime occurred. Each name is made up of the name of the local government district covering the area followed by a unique code. If we wanted to extract just the district name (for example so we could count the number of crimes in each district) we can do that by removing the code that follows the district name. To do this we need to use a <em>regular expression</em>, which is a way of describing a pattern in a string of characters. Regular expressions can be used to find, extract or remove characters that match a specified pattern.</p>
+<p>Regular expressions can be complicated, so we will only scratch the surface of what’s possible here. You can find out much more about about them in the <a href="https://stringr.tidyverse.org/articles/regular-expressions.html">article on regular expressions included in the <code>stringr</code> package</a>. The coded description of the pattern of characters we need to match the code at the end of the <code>lsoa_name</code> column is <code>\\s\\w{4}$</code>. This is made up three parts:</p>
+<ul>
+<li>
+<code>\\s</code> means match exactly one white-space character (e.g.&nbsp;a space or a tab),</li>
+<li>
+<code>\\w{4}</code> means match exactly four word characters (i.e.&nbsp;any letter, any number or some punctuation marks), and</li>
+<li>
+<code>$</code> means match the end of the string.</li>
+</ul>
+<p>So <code>\\s\\w{4}$</code> means match exactly one white-space character followed by exactly four word characters at the end of the string. We can use this pattern as the second argument to the <code>str_remove()</code> function to remove the characters matched by the pattern.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="fu">mutate</span>(uk_data, <span class="at">district =</span> <span class="fu">str_remove</span>(lsoa_name, <span class="st">"</span><span class="sc">\\</span><span class="st">s</span><span class="sc">\\</span><span class="st">w{4}$"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 6
+  month   longitude latitude location                  lsoa_name        district
+  &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;                     &lt;chr&gt;            &lt;chr&gt;   
+1 2020-01    -1.12      53.3 On or near Supermarket    Bassetlaw 013C   Bassetl…
+2 2020-02    -0.993     53.2 On or near Turner Lane    Newark and Sher… Newark …
+3 2020-05    -1.25      53.1 On or near Brookdale Road Ashfield 004C    Ashfield
+4 2020-08    -1.16      53   On or near Raithby Close  Nottingham 006B  Notting…
+5 2020-10    -1.18      53   On or near Bowden Avenue  Ashfield 013A    Ashfield</code></pre>
+</div>
+</div>
+<p>We could also use regular expressions together with <code>str_extract()</code> to keep only the characters matched by the pattern, <code>str_replace()</code> to replace the first group of characters matched by the pattern and <code>str_replace_all()</code> to replace all the groups of characters matched by the pattern. For more tips on using regular expressions together with functions from the <code>stringr</code> package, see the <a href="https://github.com/rstudio/cheatsheets/blob/main/strings.pdf"><code>stringr</code> package cheat sheet</a> or visit <a href="https://regexr.com/">regexr.com</a>.</p>
+<section id="converting-between-types-of-variable" class="level3" data-number="12.3.1"><h3 data-number="12.3.1" class="anchored" data-anchor-id="converting-between-types-of-variable">
+<span class="header-section-number">12.3.1</span> Converting between types of variable</h3>
+<p>Sometimes columns in your data will be stored as the wrong type of variable. <code>read_csv()</code> and other functions from the <code>readr</code> package try to guess what type of variable is contained in each column based on what is contained in the first few rows, but this does not always work. For example, a variable containing numbers might be stored as characters, meaning functions like <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> will not work. In cases like this, we can use the <code><a href="https://rdrr.io/r/base/numeric.html">as.numeric()</a></code> function to convert the character variable into a numeric variable.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="co"># Some numbers stored as text (note the quote marks around each number)</span></span>
+<span id="cb26-2"><a href="#cb26-2"></a>numbers_as_text <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"14"</span>, <span class="st">"6"</span>, <span class="st">"17"</span>)</span>
+<span id="cb26-3"><a href="#cb26-3"></a></span>
+<span id="cb26-4"><a href="#cb26-4"></a><span class="co"># Trying to find the mean of these numbers stored as characters will produce </span></span>
+<span id="cb26-5"><a href="#cb26-5"></a><span class="co"># `NA` and a warning</span></span>
+<span id="cb26-6"><a href="#cb26-6"></a><span class="fu">mean</span>(numbers_as_text)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in mean.default(numbers_as_text): argument is not numeric or logical:
+returning NA</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] NA</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="co"># If we use `as.numeric()` then `mean()` now works</span></span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="fu">mean</span>(<span class="fu">as.numeric</span>(numbers_as_text))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 12.33333</code></pre>
+</div>
+</div>
+<p><img src="images/parse_number.jpg" alt="Cartoon showing that the parse_number() function extracts numeric values from text, stripping out all non-numeric characters." class="right-side-image" style="width: 400px; max-width: 50%;"></p>
+<p>We can use equivalent functions to convert columns to different types, e.g. <code><a href="https://rdrr.io/r/base/character.html">as.character()</a></code> to convert a variable to characters and <code><a href="https://rdrr.io/r/base/logical.html">as.logical()</a></code> to convert a variable to only <code>TRUE</code> and <code>FALSE</code> values. Be careful, though: if you try to convert a variable to a data type that makes no sense, you are likely to find all of your values replaced with <code>NA</code>.</p>
+<p>Sometimes numbers will be stored alongside other values, such as when currency values are stored together with a currency symbol. We can deal with values like these by using the <code>parse_number()</code> function from the <code>readr</code> package, which strips all the non-numeric characters from a value and then converts the numeric characters to a number. For example, <code>parse_number("Room 14A")</code> produces the numeric value <code>14</code>.</p>
+</section><section id="recoding-categorical-variables" class="level3" data-number="12.3.2"><h3 data-number="12.3.2" class="anchored" data-anchor-id="recoding-categorical-variables">
+<span class="header-section-number">12.3.2</span> Recoding categorical variables</h3>
+<p>Crime data often includes categorical variables, such as crime types or location categories. It can be useful to change these categories, for example so that we can join two datasets or abbreviate category names for use in the axis labels of a chart.</p>
+<p>We can use the <code>if_else()</code> function from the <code>dplyr</code> package to change particular values, but this only allows us to change a single value and can produce slightly untidy code. Instead we can use the <code>recode()</code> function from the <code>dplyr</code> package to change one or more values at the same time. For example, if we wanted to change the value <code>Supermarket</code> to <code>Shop</code> in the UK police data.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="co"># Once again we will remove the unnecessary 'On or near ' using `str_remove()`</span></span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="fu">mutate</span>(</span>
+<span id="cb31-3"><a href="#cb31-3"></a>  uk_data, </span>
+<span id="cb31-4"><a href="#cb31-4"></a>  <span class="at">location =</span> <span class="fu">recode</span>(</span>
+<span id="cb31-5"><a href="#cb31-5"></a>    <span class="fu">str_remove</span>(location, <span class="st">"On or near "</span>),</span>
+<span id="cb31-6"><a href="#cb31-6"></a>    <span class="st">"Supermarket"</span> <span class="ot">=</span> <span class="st">"Shop"</span></span>
+<span id="cb31-7"><a href="#cb31-7"></a>  )</span>
+<span id="cb31-8"><a href="#cb31-8"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 5
+  month   longitude latitude location       lsoa_name               
+  &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;                   
+1 2020-01    -1.12      53.3 Shop           Bassetlaw 013C          
+2 2020-02    -0.993     53.2 Turner Lane    Newark and Sherwood 001A
+3 2020-05    -1.25      53.1 Brookdale Road Ashfield 004C           
+4 2020-08    -1.16      53   Raithby Close  Nottingham 006B         
+5 2020-10    -1.18      53   Bowden Avenue  Ashfield 013A           </code></pre>
+</div>
+</div>
+<div class="tutorial">
+<p>Run the code needed to change the value <code>Nottingham</code> to <code>City of Nottingham</code> in the <code>district</code> column in the <code>uk_data</code> object (you will need to create the <code>district</code> column from the <code>lsoa_name</code> first).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>uk_data <span class="sc">|&gt;</span> </span>
+<span id="cb33-2"><a href="#cb33-2"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb33-3"><a href="#cb33-3"></a>    <span class="at">district =</span> <span class="fu">str_remove</span>(lsoa_name, <span class="st">"</span><span class="sc">\\</span><span class="st">s</span><span class="sc">\\</span><span class="st">w{4}$"</span>),</span>
+<span id="cb33-4"><a href="#cb33-4"></a>    <span class="at">district =</span> <span class="fu">recode</span>(district, <span class="st">"Nottingham"</span> <span class="ot">=</span> <span class="st">"City of Nottingham"</span>)</span>
+<span id="cb33-5"><a href="#cb33-5"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb33-6"><a href="#cb33-6"></a>  <span class="co"># Select only some columns to make the result easier to see below</span></span>
+<span id="cb33-7"><a href="#cb33-7"></a>  <span class="fu">select</span>(lsoa_name, district)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  lsoa_name                district           
+  &lt;chr&gt;                    &lt;chr&gt;              
+1 Bassetlaw 013C           Bassetlaw          
+2 Newark and Sherwood 001A Newark and Sherwood
+3 Ashfield 004C            Ashfield           
+4 Nottingham 006B          City of Nottingham 
+5 Ashfield 013A            Ashfield           </code></pre>
+</div>
+</div>
+</div>
+</section><section id="missing-values" class="level3" data-number="12.3.3"><h3 data-number="12.3.3" class="anchored" data-anchor-id="missing-values">
+<span class="header-section-number">12.3.3</span> Missing values</h3>
+<p>We have already encountered the <code>NA</code> value, which R uses to represent a value that is missing from a dataset. While R uses <code>NA</code> to represent missing values, some data providers use other codes. For example, a data provider might use a dash (<code>-</code>) or two periods (<code>..</code>) to represent missing values. Fortunately, we can convert any value to <code>NA</code> so that we know that it represents a missing value.</p>
+<p>Imagine that you have been provided with a dataset of burglaries that includes an estimate of the value of the goods that were stolen in British pounds. You have been told that when the value of the stolen goods wasn’t known, this is recorded as the value <code>-1</code> in the data. If we use <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> to estimate the average value of property stolen, the value <code>-1</code> will give us an incorrect result. If we instead convert that value to <code>NA</code> first, <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> will know to ignore that value as long as we specify the argument <code>na.rm = TRUE</code>.</p>
+<div class="cell" data-exercise="true" data-exercise.lines="16">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="co"># Print some rows of burglary values</span></span>
+<span id="cb35-2"><a href="#cb35-2"></a><span class="fu">head</span>(burglary_values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  date                value
+  &lt;dttm&gt;              &lt;dbl&gt;
+1 2020-01-05 15:44:41  1320
+2 2020-01-26 00:31:48   653
+3 2020-01-30 05:46:12  2068
+4 2020-01-21 23:33:55    -1
+5 2020-01-26 09:40:24   580</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="co"># Try to calculate the mean value -- no error, but the answer is wrong</span></span>
+<span id="cb37-2"><a href="#cb37-2"></a><span class="co"># `pull()` is used to extract the `value` column from `burglary_values`</span></span>
+<span id="cb37-3"><a href="#cb37-3"></a><span class="fu">mean</span>(<span class="fu">pull</span>(burglary_values, <span class="st">"value"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 924</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="co"># Convert `-1` to `NA` first, now you get the correct mean value</span></span>
+<span id="cb39-2"><a href="#cb39-2"></a>burglary_values <span class="ot">&lt;-</span> <span class="fu">mutate</span>(</span>
+<span id="cb39-3"><a href="#cb39-3"></a>  burglary_values,</span>
+<span id="cb39-4"><a href="#cb39-4"></a>  <span class="at">value =</span> <span class="fu">if_else</span>(value <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, <span class="cn">NA_real_</span>, value)</span>
+<span id="cb39-5"><a href="#cb39-5"></a>)</span>
+<span id="cb39-6"><a href="#cb39-6"></a></span>
+<span id="cb39-7"><a href="#cb39-7"></a><span class="co"># Calculate the mean value again, now excluding the missing value</span></span>
+<span id="cb39-8"><a href="#cb39-8"></a><span class="fu">mean</span>(<span class="fu">pull</span>(burglary_values, <span class="st">"value"</span>), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1155.25</code></pre>
+</div>
+</div>
+<p>Excluding the value <code>-1</code> makes a substantial difference to the mean, increasing it by over £100.</p>
+</section><section id="null-island" class="level3" data-number="12.3.4"><h3 data-number="12.3.4" class="anchored" data-anchor-id="null-island">
+<span class="header-section-number">12.3.4</span> Null Island</h3>
+<p>The problem of missing values being stored as numbers manifests itself in a particularly frustrating way when it comes to spatial data. People and organisations that produce spatial datasets sometimes recording missing co-ordinates as being <em>zero</em>, instead of being <em>missing</em>. This is a problem because the longitude/latitude co-ordinates “0, 0” correspond to a real location on the surface of the earth, in the Gulf of Guinea off the coast of Ghana. This location is incorrectly recorded in spatial datasets so often that it’s become known as <em>Null Island</em>. Watch this video to find out more about Null Island and the problems it causes.</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/bjvIpI-1w84" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>So if you see any co-ordinates on your map located in the Atlantic off the south coast of West Africa, you know that there are almost certainly rows in your data that have co-ordinates located at Null Island.</p>
+<p class="full-width-image">
+<img src="images/null_island.jpg" alt="A globe map showing Null Island at co-ordinates of 0 longitude and latitude" style="max-height: 700px;"></p>
+<p>When we make crime maps we are generally dealing with small areas such as cities and counties. So if you plot a dataset on a map and instead of seeing a map of the area you are interested in, you see a large area of the world with the place you are interested in in one corner and Null Island in the opposite corner, that almost certainly means some co-ordinates are located at Null Island.</p>
+<p>As an example, imagine we were trying to create a map of the home addresses of several (fictional) suspects for bank fraud in and around Cairo, Egypt. The data contain 10 rows stored in an object called <code>cairo_suspects</code> that looks like this:</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 65%">
+<col style="width: 17%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">address</th>
+<th style="text-align: left;">geometry</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Ahmed Hussein Ayman</td>
+<td style="text-align: left;">94, El Sheikh Abd El Jalil Issa Street, Al Banafseg 8, Banafseg Districts, New Cairo City, Cairo</td>
+<td style="text-align: left;">POINT (31.46236 30.04954)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mohamed Ali Mohamed</td>
+<td style="text-align: left;">22, Noran Street, Al Salam First, Al Qalyubiya</td>
+<td style="text-align: left;">POINT (31.4032 30.16475)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mahmoud Mostafa Ali</td>
+<td style="text-align: left;">43, Tarek Gamal Street, Cairo</td>
+<td style="text-align: left;">POINT (31.29651 30.11844)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Omar El-Badawi</td>
+<td style="text-align: left;">7, Abou Bakr Al Sediq Street, Al-Obour, Al Qalyubiya</td>
+<td style="text-align: left;">POINT (31.37844 30.17814)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Tarek Hazim Abdel-Rahman</td>
+<td style="text-align: left;">16, Al Madina Al Mnoura Street, Ma‘ di, Cairo</td>
+<td style="text-align: left;">POINT (31.26321 29.97942)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Youssef Sayyid</td>
+<td style="text-align: left;">18, Fathy Abou Wedn Street, Shubra al Khayma, Al Qalyubiya</td>
+<td style="text-align: left;">POINT (31.34177 30.15624)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hussein El-Masri</td>
+<td style="text-align: left;">61, Al Ashgar Street, South West, El Shorouk City, May Fair, Cairo</td>
+<td style="text-align: left;">POINT (31.61096 30.12838)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mariam Abdel Mubarak</td>
+<td style="text-align: left;">15R, Mohamed Farid Street, EL Sheikh Mubarak, Cairo</td>
+<td style="text-align: left;">POINT (31.24903 29.99366)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Farah Youssef Anwar</td>
+<td style="text-align: left;">35, Al Sadat Road, Neighborhood 9, El Shorouk City, Sunrise, Cairo</td>
+<td style="text-align: left;">POINT (31.6281 30.1478)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Nour El-Seifi</td>
+<td style="text-align: left;">23, Moustafa Kamel Street, Area 2, Badr, Cairo</td>
+<td style="text-align: left;">POINT (0 0)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>If we plotted these locations on a map, we might expect to see something like this:</p>
+<p class="full-width-image">
+<img src="images/null_island_cairo1.jpg" alt="A map showing several points in the city of Cairo, Egypt"></p>
+<p>But look again at the final row of data in the table above – the co-ordinates for the final row are both zero. There are several reasons why this might be. Perhaps the address was recorded incorrectly in a police database and that meant that when the addresses were run through geocoding software (which we will learn more about in the next section), no co-ordinates for that row could be found. What this means is that when we plot the data on a map, that map will actually look like this:</p>
+<p class="full-width-image">
+<img src="images/null_island_cairo2.jpg" alt="A map showing a large proportion of Africa, with several points clustered around the city of Cairo, Egypt in the top-right corner and a single point located in the Atlantic Ocean off the coast of Ghana."></p>
+<p>What we can see here is most of the points on this map are correctly located in and around Cairo, but a single point is incorrectly located at Null Island.</p>
+<p>We can deal with the problem of our data including points located at Null Island using the <code>st_intersection()</code> function that we have previously used to clip datasets to the boundaries of other datasets. In this case, we can use <code>st_intersection()</code> to remove any rows from the data that are not within the area that the data is supposed to cover.</p>
+<p>For example, we know that all the addresses of bank fraud suspects are supposed to be in Egypt, so we can safely clip the suspect data to the boundary of Egypt before mapping the data. There are lots of sources of data on the outlines of countries, but perhaps the most convenient to use in R is the data provided by the <code>rnaturalearth</code> package. We can use the <code>ne_countries()</code> function to retrieve the outline of Egypt as an SF object, which we can then use to clip the suspect dataset.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="co"># By default, `ne_countries()` does not return an SF object, so we have to</span></span>
+<span id="cb41-2"><a href="#cb41-2"></a><span class="co"># specify that is what we want using the `returnclass = "sf"` argument</span></span>
+<span id="cb41-3"><a href="#cb41-3"></a>egypt_outline <span class="ot">&lt;-</span> rnaturalearth<span class="sc">::</span><span class="fu">ne_countries</span>(</span>
+<span id="cb41-4"><a href="#cb41-4"></a>  <span class="at">country =</span> <span class="st">"Egypt"</span>, </span>
+<span id="cb41-5"><a href="#cb41-5"></a>  <span class="at">returnclass =</span> <span class="st">"sf"</span></span>
+<span id="cb41-6"><a href="#cb41-6"></a>)</span>
+<span id="cb41-7"><a href="#cb41-7"></a></span>
+<span id="cb41-8"><a href="#cb41-8"></a>cairo_suspects_valid <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(cairo_suspects, egypt_outline)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: attribute variables are assumed to be spatially constant throughout
+all geometries</code></pre>
+</div>
+</div>
+<p>Now if we were to plot a map using the <code>cairo_suspects_valid</code> object, we would see the map covered only the Cairo area, as we originally wanted.</p>
+</section></section><section id="geocoding-locations" class="level2" data-number="12.4"><h2 data-number="12.4" class="anchored" data-anchor-id="geocoding-locations">
+<span class="header-section-number">12.4</span> Geocoding locations</h2>
+<p>Throughout this course we have used geographic data that includes locations stored as pairs of co-ordinates, e.g.&nbsp;latitude and longitude or easting and northing. Sometimes geographic data will not contain co-ordinates but instead store the locations of places or events as free-text addresses.</p>
+<p><a href="http://www.kelleysgrilleandbar.com/" title="Kelley's Grill 
+&amp; Bar website"><img src="images/kelleys.jpg" class="right-side-image" style="border: 1px solid #333;"></a></p>
+<p>Address fields can be very messy indeed. This is because addresses can often be stored in different formats, include different abbreviations or use different spellings (including typos). For example, the official postal address ‘<a href="http://www.kelleysgrilleandbar.com/">Kelley’s Grill &amp; Bar</a>, 15540 State Avenue, Basehor, Kansas 66007, United States’ could be stored in a local police report as:</p>
+<ul>
+<li>Kelly’s Bar, 15540 US Highway 40, Basehor</li>
+<li>Kelley’s Grille, 15540 State</li>
+<li>Kelley’s, 15540 State Av</li>
+<li>Kelley’s Bar and Grill, 15540 State Ave</li>
+<li>Kelley’s Bar, State Av and 155th St</li>
+<li>Kelly’s Grill, State Ave btwn 155 and 158</li>
+</ul>
+<p>All of these address descriptions would probably be good enough for local police officers to know which building the author intended to reference. But since all these different addresses relate to the same physical location, they would make it very hard to (for example) work out how many incidents had occurred at Kelley’s Grill &amp; Bar using <code>count()</code> or a similar function.</p>
+<p>To make use of data containing addresses, it is typically necessary to <em>geocode</em> the locations, i.e.&nbsp;to convert the addresses into co-ordinates. The many ways to describe an address mean that geocoding is often quite hard.</p>
+<p><a href="https://jessecambon.github.io/tidygeocoder/" title="tidygeocoder website"><img src="images/tidygeocoder.png" class="right-side-image"></a></p>
+<p>We can geocode addresses in R using the <a href="https://jessecambon.github.io/tidygeocoder/"><code>tidygeocoder</code> package</a>, which provides an interface to several online geocoding services.</p>
+<p>To run a geocoding service an organisation has to maintain a database of many millions of addresses (which must be constantly updated) and handle addresses in many different formats, so organisations typically charge for these services or limit how many addresses you can geocode for free. Most services also require you to register, even if you are only making few-enough queries that you will not be charged. <code>tidygeocoder</code> supports several geocoding services:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<div id="yxjbqjhoop" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#yxjbqjhoop table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#yxjbqjhoop thead, #yxjbqjhoop tbody, #yxjbqjhoop tfoot, #yxjbqjhoop tr, #yxjbqjhoop td, #yxjbqjhoop th {
+  border-style: none;
+}
+
+#yxjbqjhoop p {
+  margin: 0;
+  padding: 0;
+}
+
+#yxjbqjhoop .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#yxjbqjhoop .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#yxjbqjhoop .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#yxjbqjhoop .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#yxjbqjhoop .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#yxjbqjhoop .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yxjbqjhoop .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#yxjbqjhoop .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#yxjbqjhoop .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#yxjbqjhoop .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#yxjbqjhoop .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#yxjbqjhoop .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#yxjbqjhoop .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#yxjbqjhoop .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#yxjbqjhoop .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#yxjbqjhoop .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#yxjbqjhoop .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#yxjbqjhoop .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#yxjbqjhoop .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yxjbqjhoop .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#yxjbqjhoop .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#yxjbqjhoop .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#yxjbqjhoop .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yxjbqjhoop .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#yxjbqjhoop .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#yxjbqjhoop .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yxjbqjhoop .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yxjbqjhoop .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#yxjbqjhoop .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yxjbqjhoop .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#yxjbqjhoop .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yxjbqjhoop .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#yxjbqjhoop .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yxjbqjhoop .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#yxjbqjhoop .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yxjbqjhoop .gt_left {
+  text-align: left;
+}
+
+#yxjbqjhoop .gt_center {
+  text-align: center;
+}
+
+#yxjbqjhoop .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#yxjbqjhoop .gt_font_normal {
+  font-weight: normal;
+}
+
+#yxjbqjhoop .gt_font_bold {
+  font-weight: bold;
+}
+
+#yxjbqjhoop .gt_font_italic {
+  font-style: italic;
+}
+
+#yxjbqjhoop .gt_super {
+  font-size: 65%;
+}
+
+#yxjbqjhoop .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#yxjbqjhoop .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#yxjbqjhoop .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#yxjbqjhoop .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#yxjbqjhoop .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#yxjbqjhoop .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#yxjbqjhoop .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead><tr class="header gt_col_headings">
+<th id="service" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">service</th>
+<th id="coverage" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">coverage</th>
+<th id="free limits" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">free limits</th>
+</tr></thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="service"><p><a href="https://nominatim.org/">Nominatim</a></p></td>
+<td class="gt_row gt_left" headers="coverage"><p>Worldwide</p></td>
+<td class="gt_row gt_left" headers="free limits"><p>1 address per second</p></td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="service"><p><a href="https://locationiq.com/">Location IQ</a></p></td>
+<td class="gt_row gt_left" headers="coverage"><p>Worldwide</p></td>
+<td class="gt_row gt_left" headers="free limits"><p>5,000 addresses per day</p></td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="service"><p><a href="https://geoapify.com/">Geoapify</a></p></td>
+<td class="gt_row gt_left" headers="coverage"><p>Worldwide</p></td>
+<td class="gt_row gt_left" headers="free limits"><p>3,000 addresses per day</p></td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="service"><p><a href="https://opencagedata.com/">OpenCage</a></p></td>
+<td class="gt_row gt_left" headers="coverage"><p>Worldwide</p></td>
+<td class="gt_row gt_left" headers="free limits"><p>2,500 addresses per day</p></td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="service"><p><a href="https://developer.tomtom.com/">TomTom</a></p></td>
+<td class="gt_row gt_left" headers="coverage"><p>Worldwide</p></td>
+<td class="gt_row gt_left" headers="free limits"><p>2,500 addresses per day</p></td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="service"><p><a href="https://developers.google.com/maps/documentation/geocoding/overview/">Google</a></p></td>
+<td class="gt_row gt_left" headers="coverage"><p>Worldwide</p></td>
+<td class="gt_row gt_left" headers="free limits"><p>40,000 addresses per month</p></td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="service"><p><a href="https://www.geocod.io/">Geocodio</a></p></td>
+<td class="gt_row gt_left" headers="coverage"><p>United States and Canada</p></td>
+<td class="gt_row gt_left" headers="free limits"><p>2,500 addresses per day</p></td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="service"><p><a href="https://geocoding.geo.census.gov/">US Census</a></p></td>
+<td class="gt_row gt_left" headers="coverage"><p>United States</p></td>
+<td class="gt_row gt_left" headers="free limits"><p>none</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<p>The <code>tidygeocoder</code> package also supports some other services that do not offer any free option – you can find out more about these options on the <a href="https://jessecambon.github.io/tidygeocoder/articles/geocoder_services.html">package website</a>.</p>
+<p>To illustrate the geocoding process, we will find co-ordinates for the addresses in the object <code>addresses</code>, which holds data for 10 sexual assaults in Chicago.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<table class="table table-sm table-striped small" data-quarto-postprocess="true">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">offense_date</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">location_type</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">address</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2019-01-01 00:00:00</td>
+<td style="text-align: left;">residence</td>
+<td style="text-align: left;">2400 W Carmen Ave</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-01-01 00:00:00</td>
+<td style="text-align: left;">residence</td>
+<td style="text-align: left;">2700 S TRIPP AVE</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2019-01-01 11:44:00</td>
+<td style="text-align: left;">residence</td>
+<td style="text-align: left;">3700 S PAULINA ST</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-01-01 11:44:00</td>
+<td style="text-align: left;">residence</td>
+<td style="text-align: left;">3700 S Paulina St</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2019-01-01 16:37:00</td>
+<td style="text-align: left;">government</td>
+<td style="text-align: left;">1100 S HAMILTON AVE</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-01-02 17:09:00</td>
+<td style="text-align: left;">gas station</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2019-01-02 17:09:00</td>
+<td style="text-align: left;">gas station</td>
+<td style="text-align: left;">8200 S HALSTED ST</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-01-05 00:01:00</td>
+<td style="text-align: left;">residence</td>
+<td style="text-align: left;">1300 N HUDSON AVE</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2019-01-05 14:00:00</td>
+<td style="text-align: left;">other</td>
+<td style="text-align: left;">6200 N Claremont Ave</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019-01-07 06:50:00</td>
+<td style="text-align: left;">residence</td>
+<td style="text-align: left;">9500 S BELL AVE</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Since most geocoding services limit the number of addresses you can look up at a time, the first step in geocoding is removing duplicate addresses and rows with missing address values. This avoids us geocoding identical addresses several times, which would otherwise unnecessarily increase our chance of hitting the limit on geocoding queries each day.</p>
+<p>We will also add the city and state to the end of each address, since at the moment (as with much data produced by local organisations) it includes only the building number and street.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a>addresses_for_geocoding <span class="ot">&lt;-</span> addresses <span class="sc">|&gt;</span> </span>
+<span id="cb43-2"><a href="#cb43-2"></a>  <span class="co"># Drop rows that have NA values in the `address` column</span></span>
+<span id="cb43-3"><a href="#cb43-3"></a>  <span class="fu">drop_na</span>(address) <span class="sc">|&gt;</span> </span>
+<span id="cb43-4"><a href="#cb43-4"></a>  <span class="co"># Add city and state then convert to upper case so that `count()` will not </span></span>
+<span id="cb43-5"><a href="#cb43-5"></a>  <span class="co"># treat identical addresses as different because of different cases, e.g. </span></span>
+<span id="cb43-6"><a href="#cb43-6"></a>  <span class="co"># 'ST' vs 'St' as abbreviations for 'Street'</span></span>
+<span id="cb43-7"><a href="#cb43-7"></a>  <span class="fu">mutate</span>(<span class="at">address =</span> <span class="fu">str_to_upper</span>(<span class="fu">str_glue</span>(<span class="st">"{address}, CHICAGO, IL"</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb43-8"><a href="#cb43-8"></a>  <span class="co"># Select only the address column, since we won't send the other columns to the</span></span>
+<span id="cb43-9"><a href="#cb43-9"></a>  <span class="co"># geocoding function</span></span>
+<span id="cb43-10"><a href="#cb43-10"></a>  <span class="fu">select</span>(address) <span class="sc">|&gt;</span> </span>
+<span id="cb43-11"><a href="#cb43-11"></a>  <span class="co"># Find all the unique rows in the data</span></span>
+<span id="cb43-12"><a href="#cb43-12"></a>  <span class="fu">distinct</span>(address)</span>
+<span id="cb43-13"><a href="#cb43-13"></a></span>
+<span id="cb43-14"><a href="#cb43-14"></a><span class="fu">head</span>(addresses_for_geocoding)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 1
+  address                         
+  &lt;chr&gt;                           
+1 2400 W CARMEN AVE, CHICAGO, IL  
+2 2700 S TRIPP AVE, CHICAGO, IL   
+3 3700 S PAULINA ST, CHICAGO, IL  
+4 1100 S HAMILTON AVE, CHICAGO, IL
+5 8200 S HALSTED ST, CHICAGO, IL  
+6 1300 N HUDSON AVE, CHICAGO, IL  </code></pre>
+</div>
+</div>
+<p>Since two addresses in the data were duplicates and one address was missing, we now have eight unique addresses, stored in a tibble with a single column. We can use this as the input to the <code>geocode()</code> function from the <code>tidygeocoder</code> package. The <code>address</code> argument specifies which column in the data contains the addresses and the <code>method</code> column specifies which geocoding service to use. In this case we use the Nominatim service (because it does not require registration and works worldwide). Nominatim is based on OpenStreetMap data, so can be chosen by specifying <code>method = "osm"</code>.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="fu">library</span>(tidygeocoder)</span>
+<span id="cb45-2"><a href="#cb45-2"></a></span>
+<span id="cb45-3"><a href="#cb45-3"></a>addresses_geocoded <span class="ot">&lt;-</span> <span class="fu">geocode</span>(</span>
+<span id="cb45-4"><a href="#cb45-4"></a>  addresses_for_geocoding, </span>
+<span id="cb45-5"><a href="#cb45-5"></a>  <span class="at">address =</span> <span class="st">"address"</span>, </span>
+<span id="cb45-6"><a href="#cb45-6"></a>  <span class="at">method =</span> <span class="st">"osm"</span></span>
+<span id="cb45-7"><a href="#cb45-7"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Passing 8 addresses to the Nominatim single address geocoder</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Query completed in: 8 seconds</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a>addresses_geocoded</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 8 × 3
+  address                             lat  long
+  &lt;chr&gt;                             &lt;dbl&gt; &lt;dbl&gt;
+1 2400 W CARMEN AVE, CHICAGO, IL     42.0 -87.7
+2 2700 S TRIPP AVE, CHICAGO, IL      41.8 -87.7
+3 3700 S PAULINA ST, CHICAGO, IL     41.8 -87.7
+4 1100 S HAMILTON AVE, CHICAGO, IL   41.9 -87.7
+5 8200 S HALSTED ST, CHICAGO, IL     41.7 -87.6
+6 1300 N HUDSON AVE, CHICAGO, IL     41.9 -87.6
+7 6200 N CLAREMONT AVE, CHICAGO, IL  42.0 -87.7
+8 9500 S BELL AVE, CHICAGO, IL       41.7 -87.7</code></pre>
+</div>
+</div>
+<p>Now that we have the latitude and longitude for each address, we can join that back to the original data using the address column to match the two datasets together. To do this we will create a temporary column in the original <code>addresses</code> object that matches the formatting changes we made to the original address.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a>addresses <span class="sc">|&gt;</span> </span>
+<span id="cb50-2"><a href="#cb50-2"></a>  <span class="co"># Create a temporary address column to use in matching the geocoded addresses</span></span>
+<span id="cb50-3"><a href="#cb50-3"></a>  <span class="fu">mutate</span>(<span class="at">temp_address =</span> <span class="fu">str_to_upper</span>(<span class="fu">str_glue</span>(<span class="st">"{address}, CHICAGO, IL"</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb50-4"><a href="#cb50-4"></a>  <span class="co"># `left_join()` keeps all the rows in the left-hand dataset (the original</span></span>
+<span id="cb50-5"><a href="#cb50-5"></a>  <span class="co"># `addresses` object) and matching rows in the right-hand dataset (the </span></span>
+<span id="cb50-6"><a href="#cb50-6"></a>  <span class="co"># geocoding results)</span></span>
+<span id="cb50-7"><a href="#cb50-7"></a>  <span class="fu">left_join</span>(addresses_geocoded, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"temp_address"</span> <span class="ot">=</span> <span class="st">"address"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb50-8"><a href="#cb50-8"></a>  <span class="co"># Remove the temporary address column</span></span>
+<span id="cb50-9"><a href="#cb50-9"></a>  <span class="fu">select</span>(<span class="sc">-</span>temp_address)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 5
+   offense_date        location_type address                lat  long
+   &lt;dttm&gt;              &lt;chr&gt;         &lt;chr&gt;                &lt;dbl&gt; &lt;dbl&gt;
+ 1 2019-01-01 00:00:00 residence     2400 W Carmen Ave     42.0 -87.7
+ 2 2019-01-01 00:00:00 residence     2700 S TRIPP AVE      41.8 -87.7
+ 3 2019-01-01 11:44:00 residence     3700 S PAULINA ST     41.8 -87.7
+ 4 2019-01-01 11:44:00 residence     3700 S Paulina St     41.8 -87.7
+ 5 2019-01-01 16:37:00 government    1100 S HAMILTON AVE   41.9 -87.7
+ 6 2019-01-02 17:09:00 gas station   &lt;NA&gt;                  NA    NA  
+ 7 2019-01-02 17:09:00 gas station   8200 S HALSTED ST     41.7 -87.6
+ 8 2019-01-05 00:01:00 residence     1300 N HUDSON AVE     41.9 -87.6
+ 9 2019-01-05 14:00:00 other         6200 N Claremont Ave  42.0 -87.7
+10 2019-01-07 06:50:00 residence     9500 S BELL AVE       41.7 -87.7</code></pre>
+</div>
+</div>
+<p>We can now use this data as we would any other spatial data. We would often start by converting our new object to an SF object using <code>st_as_sf()</code>. In that case, remember that all the geocoding services return co-ordinates as latitude and longitude using the WGS84 co-ordinate reference system, so you should use the EPSG code 4326.</p>
+</section><section id="conflicts-between-function-names" class="level2" data-number="12.5"><h2 data-number="12.5" class="anchored" data-anchor-id="conflicts-between-function-names">
+<span class="header-section-number">12.5</span> Conflicts between function names</h2>
+<p>R packages are written by experts in different types of data analysis. This means we can use R to conduct all sorts of analysis, including cutting-edge techniques. But because R packages are not all written by people working for a single organisation, it means there can sometimes be functions from different packages that have the same name – often because they do similar (but not necessarily identical) things.</p>
+<p>This can be a problem because R might be running a function from one package when you think you have written code that uses a function from another package. If the two functions have different arguments or produce different types of result, your code is unlikely to run properly. For example, if two functions have the same name but one produces an SF object while the other produces a tibble, that might cause problems later in your code if you are using other functions that expect to receive a particular type of input.</p>
+<p>One example of functions from two different packages with the same name is the <code>geocode()</code> function. We have already learned that the <code>tidygeocoder</code> package contains a function called <code>geocode()</code>, but the <code>ggmap</code> package also has a function called <code>geocode()</code>.</p>
+<p>If both the <code>tidygeocoder</code> and <code>ggmap</code> packages are loaded, R will use the <code>geocode()</code> function <em>from the package that has been loaded most recently</em>. So if your script includes the code:</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="fu">library</span>(ggmap)</span>
+<span id="cb52-2"><a href="#cb52-2"></a><span class="fu">library</span>(tidygeocoder)</span>
+<span id="cb52-3"><a href="#cb52-3"></a></span>
+<span id="cb52-4"><a href="#cb52-4"></a><span class="co"># [Code to load data, etc.]</span></span>
+<span id="cb52-5"><a href="#cb52-5"></a></span>
+<span id="cb52-6"><a href="#cb52-6"></a><span class="co"># Geocode some data</span></span>
+<span id="cb52-7"><a href="#cb52-7"></a>geocoded_data <span class="ot">&lt;-</span> <span class="fu">geocode</span>(ungeocoded_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then R will use the <code>geocode()</code> function from <code>tidygeocoder</code>, since that was loaded <em>after</em> <code>ggmap</code>. But if you reverse the order in which these packages are loaded:</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a><span class="fu">library</span>(tidygeocoder)</span>
+<span id="cb53-2"><a href="#cb53-2"></a><span class="fu">library</span>(ggmap)</span>
+<span id="cb53-3"><a href="#cb53-3"></a></span>
+<span id="cb53-4"><a href="#cb53-4"></a><span class="co"># [Code to load data, etc.]</span></span>
+<span id="cb53-5"><a href="#cb53-5"></a></span>
+<span id="cb53-6"><a href="#cb53-6"></a><span class="co"># Geocode some data</span></span>
+<span id="cb53-7"><a href="#cb53-7"></a>geocoded_data <span class="ot">&lt;-</span> <span class="fu">geocode</span>(ungeocoded_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then R will use the <code>geocode()</code> function from <code>ggmap</code> because that package was loaded after <code>tidygeocoder</code>.</p>
+<p>Knowing which of the two functions R uses when you type <code>geocode()</code> is important because they accept different inputs. The <code>geocode()</code> function from <code>ggmap</code> expects the first argument to contain a vector of addresses, while the <code>geocode()</code> function from <code>tidygeocoder</code> expects a data frame or tibble. If you provide the wrong type of input, either function will produce an error.</p>
+<p>When you load a package that includes a function with the same name as a function in a package that is already loaded, R will print a message in the console. For example, if you run <code><a href="https://github.com/dkahle/ggmap">library(ggmap)</a></code> and then <code><a href="https://jessecambon.github.io/tidygeocoder/">library(tidygeocoder)</a></code>, you will see a message saying the function from the already loaded package has been <em>masked</em> and so will be replaced by the function from the newly loaded package:</p>
+<pre><code>Attaching package: ‘tidygeocoder’
+
+The following object is masked from ‘package:ggmap’:
+
+    geocode</code></pre>
+<p>When you see a message like this, it means you need to check which version of that function you want to use. If you want to use the function from the most-recently loaded package then you don’t need to do anything. If you want to use the function that has been masked, you need to take one of the steps explained below.</p>
+<p>Our R scripts very often load the <code>tidyverse</code> package, which loads eight packages (<code>dplyr</code>, <code>forcats</code>, <code>ggplot2</code>, <code>purrr</code>, <code>readr</code>, <code>tibble</code>, <code>tidyr</code> and <code>stringr</code>) that we often need to use. Because <code>tidyverse</code> itself loads several packages, it produces a separate message to let you know which existing functions have been masked when you load <code>tidyverse</code>. If <code><a href="https://tidyverse.tidyverse.org">library(tidyverse)</a></code> is the first code you run after starting R, that message will look something like this:</p>
+<pre><code>── Conflicts ──────────────────────────────────────── tidyverse_conflicts() ──
+x dplyr::filter() masks stats::filter()
+x dplyr::lag()    masks stats::lag()</code></pre>
+<p>Since we more commonly want the tidyverse functions than the functions they mask (for example, we frequently use the <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> function from <code>dplyr</code> but rarely use the function with the same name in the <code>stats</code> package), it is common to load <code>tidyverse</code> after loading all the other packages needed for our code.</p>
+<p>There are several ways you can resolve conflicts between functions from different packages:</p>
+<ul>
+<li>Make sure you load packages in the order that gives you access to the functions you need. This can be simple if there are few conflicts, but can fall apart if you later change your code to load different packages. This is the option that almost everyone uses most of the time (and most people use all of the time).</li>
+<li>Specify which function you want to use using the <code>::</code> notation that we have already used in previous tutorials, e.g.&nbsp;by using the code <code><a href="https://rdrr.io/pkg/ggmap/man/geocode.html">ggmap::geocode()</a></code> or <code><a href="https://jessecambon.github.io/tidygeocoder/reference/geocode.html">tidygeocoder::geocode()</a></code>.</li>
+<li>Load the <code>conflicted</code> package, which produces an error whenever you try to use a function that is included in more than one loaded package. This makes it easy to know when there is a potential conflict, which you can then resolve using the <code>conflict_prefer()</code> function.</li>
+</ul>
+<p>In this final option, the authors of the <code>conflicted</code> package recommend that you specify which conflict-prone functions to use by calling <code>conflict_prefer()</code> just after you’ve loaded all the packages you need for your script. For example:</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a><span class="co"># This code produces several conflicts:</span></span>
+<span id="cb56-2"><a href="#cb56-2"></a><span class="co"># *  the `stats` package, which is loaded automatically in the background when </span></span>
+<span id="cb56-3"><a href="#cb56-3"></a><span class="co">#    you start R, contains a function called `filter()`</span></span>
+<span id="cb56-4"><a href="#cb56-4"></a><span class="co"># *  `MASS` contains a function called `select()`</span></span>
+<span id="cb56-5"><a href="#cb56-5"></a><span class="co"># *  `dplyr` contains functions called `filter()` and `select()`</span></span>
+<span id="cb56-6"><a href="#cb56-6"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb56-7"><a href="#cb56-7"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb56-8"><a href="#cb56-8"></a><span class="fu">library</span>(conflicted)</span>
+<span id="cb56-9"><a href="#cb56-9"></a></span>
+<span id="cb56-10"><a href="#cb56-10"></a><span class="co"># This code specifies that in the case of both conflicts, we want to use the</span></span>
+<span id="cb56-11"><a href="#cb56-11"></a><span class="co"># functions from `dplyr`</span></span>
+<span id="cb56-12"><a href="#cb56-12"></a><span class="fu">conflict_prefer</span>(<span class="st">"select"</span>, <span class="st">"dplyr"</span>)</span>
+<span id="cb56-13"><a href="#cb56-13"></a><span class="fu">conflict_prefer</span>(<span class="st">"filter"</span>, <span class="st">"dplyr"</span>)</span>
+<span id="cb56-14"><a href="#cb56-14"></a></span>
+<span id="cb56-15"><a href="#cb56-15"></a><span class="co"># In the rest of this script, any reference to `filter()` or `select()` will</span></span>
+<span id="cb56-16"><a href="#cb56-16"></a><span class="co"># use the functions with those names in the `dplyr` package, not those from</span></span>
+<span id="cb56-17"><a href="#cb56-17"></a><span class="co"># `stats` or `MASS`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Understanding function-name conflicts is important because they can be the cause of errors that are (for reasons we needn’t explain in detail) extremely hard to track down the cause of. So make sure that when you load packages, you take note of any messages in the console that warn you that functions have been masked. As with other messages in R, they will not always need you to take any action, but you always need to read the message and make a decision about whether to take any action.</p>
+<section id="check-your-understanding" class="level4 tutorial" data-number="12.5.0.1"><h4 class="tutorial anchored" data-number="12.5.0.1" data-anchor-id="check-your-understanding">
+<span class="header-section-number">12.5.0.1</span> Check your understanding</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">question</span>(</span>
+<span id="cb57-2"><a href="#cb57-2"></a>  <span class="st">"If you load two packages in R that both contain a function with the same name, which function will R use by default?"</span>,</span>
+<span id="cb57-3"><a href="#cb57-3"></a>  <span class="fu">answer</span>(<span class="st">"The function from the package that was loaded *last*"</span>, <span class="at">correct =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb57-4"><a href="#cb57-4"></a>  <span class="fu">answer</span>(<span class="st">"The function from the package that was loaded *first*"</span>),</span>
+<span id="cb57-5"><a href="#cb57-5"></a>  <span class="fu">answer</span>(<span class="st">"Neither function will run because R will produce an error."</span>),</span>
+<span id="cb57-6"><a href="#cb57-6"></a>  <span class="fu">answer</span>(<span class="st">"The function that is from the `tidyverse` suite of packages."</span>),</span>
+<span id="cb57-7"><a href="#cb57-7"></a>  <span class="at">correct =</span> <span class="fu">random_praise</span>(),</span>
+<span id="cb57-8"><a href="#cb57-8"></a>  <span class="at">incorrect =</span> <span class="fu">random_encouragement</span>(),</span>
+<span id="cb57-9"><a href="#cb57-9"></a>  <span class="at">allow_retry =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb57-10"><a href="#cb57-10"></a>  <span class="at">random_answer_order =</span> <span class="cn">TRUE</span></span>
+<span id="cb57-11"><a href="#cb57-11"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="in-summary" class="level2" data-number="12.6"><h2 data-number="12.6" class="anchored" data-anchor-id="in-summary">
+<span class="header-section-number">12.6</span> In summary</h2>
+<div class="box welldone">
+<p>In this tutorial we have learned to tidy messy data to make it easier to work with. In real-world data analysis (not just crime mapping), you will often have to deal with data that is messy in different ways. Fortunately, you can use R to fix all of these problems in a way that minimises the risk that you might introduce mistakes when you clean the data.</p>
+</div>
+<div class="box reading">
+<p>You can find out more about data cleaning and tidying with these resources:</p>
+<ul>
+<li>A <a href="https://tidyr.tidyverse.org/articles/pivot.html">tutorial on using the <code>pivot_longer()</code> and <code>pivot_wider()</code> functions to convert data between long and wide format</a>.</li>
+<li>A more-detailed <a href="https://jessecambon.github.io/tidygeocoder/articles/tidygeocoder.html">Introduction to <code>tidygeocoder</code></a>.</li>
+<li>An <a href="https://rfortherestofus.com/2019/12/how-to-clean-messy-data-in-r/">introduction to some other packages than can help you clean and tidy data</a>.</li>
+<li>A more-detailed <a href="https://conflicted.r-lib.org/">description of how to use the <code>conflicted</code> package</a>.</li>
+</ul>
+</div>
+<p class="full-width-image">
+<img src="images/tidydata_7.jpg" alt="Cartoon saying make friends with tidy data!"></p>
+<p class="credits">
+<a href="https://twitter.com/allison_horst">Artwork by <span class="citation" data-cites="allison_horst">@allison_horst</span></a>
+</p>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../11_mapping_hotspots/index.html" class="pagination-link" aria-label="Crime Mapping: Mapping hotspots">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Crime Mapping: Mapping hotspots</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../13_crime_series/index.html" class="pagination-link" aria-label="Mapping crime series">
+        <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Mapping crime series</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

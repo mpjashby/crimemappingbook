@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.489">
+<meta name="generator" content="quarto-1.4.551">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Learn crime mapping with R - 5&nbsp; Your second crime map</title>
 <style>
@@ -91,6 +91,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
@@ -236,6 +237,30 @@ quarto book
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Crime Mapping: Mapping hotspots</span></span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../12_messy_data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Handling messy data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../13_crime_series/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Mapping crime series</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../14_writing_reports/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Writing reports in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../15_no_maps/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Presenting spatial data without maps</span></span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
@@ -308,7 +333,10 @@ quarto book
 <p>In this tutorial we will make a map of bicycle thefts in Vancouver in 2020. At the end of this tutorial, the final map will look something like this. We will then improve it further in a future tutorial on what makes a good map.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<p><img src="images/vancouver_bike_thefts.jpg" class="img-fluid quarto-figure-center" style="width:80.0%"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="images/vancouver_bike_thefts.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Before we get into the detail of how to make this map, watch this video that goes over the main points of the code we will use:</p>
@@ -442,7 +470,10 @@ dbl (7): YEAR, MONTH, DAY, HOUR, MINUTE, X, Y
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<p><img src="images/utm_vancouver.jpg" class="img-fluid quarto-figure-center" style="width:80.0%"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="images/utm_vancouver.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>We can convert the <code>thefts</code> tibble to an SF object using the <code>st_as_sf()</code> function (remember, all functions in the <code>sf</code> package start with <code>st_</code>, which can sometimes make the function names a little confusing). We specify which columns in the data represent the geometry (in this case, the <code>x</code> and <code>y</code> columns), and what co-ordinate system the data uses.</p>
@@ -600,7 +631,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <p>The most-important of the <code>ggplot2</code> functions are those beginning with <code>geom_</code>, which add graphical elements to the chart. If you want to add a layer to your chart showing a scatter plot, you use the <code>geom_point()</code> function, while if you want to make a line chart you use <code>geom_line()</code>.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/example-charts-1.png" class="img-fluid quarto-figure-center" style="width:80.0%"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="index_files/figure-html/example-charts-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>There are lots of <code>geom_</code> functions available for representing data on charts in different ways. For maps, the SF package includes the <code>geom_sf()</code> function that is designed to add spatial data (in the form of an SF object such as our <code>bike_thefts</code> data) to a chart, making it into a map. So to simply plot the points in our bicycle-theft data, we can use the code:</p>
@@ -610,7 +644,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <span id="cb26-3"><a href="#cb26-3"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb26-4"><a href="#cb26-4"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bike_thefts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/map-exercise2-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/map-exercise2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <div class="box notewell">
@@ -643,7 +680,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <p>There are 25 built-in shapes for points in R (shape 16 is the default):</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/ggplot-shapes-1.png" class="img-fluid quarto-figure-center" style="width:80.0%"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="index_files/figure-html/ggplot-shapes-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <div class="tutorial">
@@ -652,7 +692,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb27-2"><a href="#cb27-2"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bike_thefts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/map-exercise3-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/map-exercise3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <div class="cell">
@@ -667,7 +710,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb30-2"><a href="#cb30-2"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bike_thefts, <span class="at">shape =</span> <span class="dv">15</span>, <span class="at">colour =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/map-exercise3-hint-3-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/map-exercise3-hint-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
@@ -683,7 +729,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb32-2"><a href="#cb32-2"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bike_thefts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/map-exercise4-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/map-exercise4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <div class="cell">
@@ -693,7 +742,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <span id="cb33-4"><a href="#cb33-4"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb33-5"><a href="#cb33-5"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bike_thefts, <span class="at">size =</span> <span class="fl">0.75</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/map-exercise4-solution-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/map-exercise4-solution-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
@@ -717,7 +769,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <p>You might recognise this procedure as another example of simplifying a complicated spatial dataset by converting it from individual points to a raster that summarises those points as values associated with a grid of cells. In this case, the value associated with each grid cell represents the relative density of points in that cell.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<p><img src="images/kde_explanation.jpg" class="img-fluid quarto-figure-center" style="width:80.0%"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="images/kde_explanation.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>We don’t need to worry at this point about the details of how the counts are used to estimate the density of crimes – we will return to this in a later tutorial.</p>
@@ -753,7 +808,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb37-2"><a href="#cb37-2"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> kde), <span class="at">data =</span> bike_theft_density, <span class="at">colour =</span> <span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/map-exercise6-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/map-exercise6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>We have already seen that we can set aesthetics such as colour and shape manually, but the <code>aes()</code> function allows us to specify that the values of different aesthetics should be controlled by columns in the data. The <code>aes()</code> function takes as its arguments pairs of values (combined with an <code>=</code> symbol) where the first value is an aesthetic and the second value is the name of a column in the data. For example, to use the colour of points on a map to represent different types of crime that were stored in a column in the data called <code>type</code>, we could use <code>aes(colour = type)</code>.</p>
@@ -774,7 +832,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <p>By default, <code>hotspot_kde()</code> chooses the cell size and the bandwidth automatically. The maps below show how changing these defaults changes the appearance of our map (with the legend and axes removed to make the small maps clearer).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<p><img src="images/bandwidth.jpg" class="img-fluid quarto-figure-center" style="width:100.0%"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="images/bandwidth.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>By looking at the maps on the right-hand side, you can see that reducing the number of grid cells leads to a map that looks blocky and lacks information. Looking at maps higher up, you can see that increasing the bandwidth relative to the default makes the density surface smoother. The smoother the surface, the less detail we can see about where crime is most concentrated, until on the top row we can see almost no information at all. On the other hand, if we reduce the bandwidth too much (the bottom row of maps) then almost no ‘nearby’ cells are included in the count and so it becomes more difficult to identify patterns.</p>
@@ -787,7 +848,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <span id="cb38-2"><a href="#cb38-2"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb38-3"><a href="#cb38-3"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> kde), <span class="at">colour =</span> <span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/map-exercise7-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/map-exercise7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <div class="cell">
@@ -797,7 +861,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <span id="cb39-4"><a href="#cb39-4"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb39-5"><a href="#cb39-5"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> kde), <span class="at">colour =</span> <span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/map-exercise7-solution-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/map-exercise7-solution-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Comparing this map to the first density map we produced, we can see that the slightly smaller bandwidth means we can see slightly more detail in the patterns of bike thefts.</p>
@@ -818,7 +885,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <p>In crime mapping we’re usually interested in showing how crime varies from low to high, so we need to use a <em>sequential</em> colour palette. There are 18 sequential colour schemes (or palettes) available in <code>scales_fill_distiller()</code>, each with a name:</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/kde-colours-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/kde-colours-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <div class="box notewell">
@@ -829,7 +899,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <p>By default, <code>scale_fill_distiller()</code> sets the <em>lowest</em> values to have the darkest colour. This often does not work well, but we can change this by setting the argument <code>direction = 1</code>. I recommend doing this in all cases.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/direction-map-1.png" class="img-fluid quarto-figure-center" style="width:80.0%"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="index_files/figure-html/direction-map-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>You can think of all the functions that we can add to <code>ggplot()</code> as being like a stack of pancakes, with each new function being placed on the top of the stack. To change the colour of our map, we just add <code>scale_fill_distiller()</code> to the existing stack.</p>
@@ -838,7 +911,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <span id="cb40-2"><a href="#cb40-2"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> kde), <span class="at">data =</span> bike_theft_density, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
 <span id="cb40-3"><a href="#cb40-3"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"Oranges"</span>, <span class="at">direction =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/map-exercise8-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/map-exercise8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <div class="tutorial">
@@ -928,7 +1004,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <span id="cb42-8"><a href="#cb42-8"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> kde), <span class="at">data =</span> bike_theft_density_bw_half, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
 <span id="cb42-9"><a href="#cb42-9"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"Purples"</span>, <span class="at">direction =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/basemap-exercise1-solution-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/basemap-exercise1-solution-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
@@ -1019,21 +1098,30 @@ geometries</code></pre>
 <span id="cb52-17"><a href="#cb52-17"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span> </span>
 <span id="cb52-18"><a href="#cb52-18"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/basemap-exercise2-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/basemap-exercise2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>The base maps returned by <code>annotation_map_tile()</code> are available at many different <a href="https://wiki.openstreetmap.org/wiki/Zoom_levels">zoom levels</a>, from level 1 that is useful for mapping the whole world in one map, to level 20 that can be used to map a single building. By default, <code>annotation_map_tile()</code> downloads tiles with slightly less detail than we might want, but we can fix this by using the argument <code>zoomin = 0</code>. We could also set a specific zoom level using the <code>zoom</code> argument.</p>
 <p>For example, these maps show the same area around the UCL Jill Dando Institute with base maps at different zoom levels.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<p><img src="images/zoom.jpg" class="img-fluid quarto-figure-center" style="width:100.0%"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="images/zoom.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Choosing the right zoom level is a matter of balancing the level of detail in the map and the clarity of the image. In the maps above, zoom levels less than 12 tend to have pixelated images because they do not contain enough detail, while zoom levels greater than 12 contain too much detail and so the information is hard to read. But if this map covered a smaller or larger area, a different zoom level might be better. In general, setting <code>zoomin = 0</code> and <em>not</em> setting any value for the <code>zoom</code> argument – so that <code>annotation_map_tile()</code> chooses the zoom level automatically – will produce an acceptable map.</p>
 <p><code>annotation_map_tile()</code> also gives us access to several different types of base map. The default style (seen in the maps above) is called ‘osm’ because it is the default style used by Open Street Map, the organisation that provides the map data. We can specify which style of base map we want using the <code>type</code> argument to <code>annotation_map_tile()</code>.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<p><img src="images/basemaps.jpg" class="img-fluid quarto-figure-center" style="width:100.0%"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="images/basemaps.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>You may want to experiment with different base map styles by using the <code>type</code> argument to <code>annotation_map_tile()</code> in the map above, e.g.&nbsp;using <code>annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none")</code>.</p>
@@ -1138,7 +1226,10 @@ Geodetic CRS:  WGS 84</code></pre>
 <span id="cb58-37"><a href="#cb58-37"></a>  <span class="co"># Remove the axes, legend and other elements from the map that we don't need</span></span>
 <span id="cb58-38"><a href="#cb58-38"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/layers-exercise2-1.png" class="img-fluid" style="width:100.0%"></p>
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/layers-exercise2-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Now we can see that bike theft in Vancouver is heavily concentrated in a handful of neighbourhoods, particularly the Downtown and West End neighbourhoods. This map is much more useful than the first map that we produced in this tutorial showing only the point location of each crime, since in this latest map we can see not only the greatest concentrations of bike thefts but how they relate to the different areas of the city.</p>
@@ -1243,6 +1334,24 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
   function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
@@ -1277,7 +1386,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
   const xrefs = window.document.querySelectorAll('a.quarto-xref');
@@ -1292,38 +1405,28 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
     }
     stripColumnClz(note)
-    const typesetMath = (el) => {
-      if (window.MathJax) {
-        // MathJax Typeset
-        window.MathJax.typeset([el]);
-      } else if (window.katex) {
-        // KaTeX Render
-        var mathElements = el.getElementsByClassName("math");
-        var macros = [];
-        for (var i = 0; i < mathElements.length; i++) {
-          var texText = mathElements[i].firstChild;
-          if (mathElements[i].tagName == "SPAN") {
-            window.katex.render(texText.data, mathElements[i], {
-              displayMode: mathElements[i].classList.contains('display'),
-              throwOnError: false,
-              macros: macros,
-              fleqn: false
-            });
-          }
-        }
-      }
-    }
     if (id === null || id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
       if (note.children && note.children.length > 2) {
-        for (let i = 0; i < 2; i++) {
-          container.appendChild(note.children[i].cloneNode(true));
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
         }
-        typesetMath(container);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
         return container.innerHTML
       } else {
-        typesetMath(note);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
         return note.innerHTML;
       }
     } else {
@@ -1332,8 +1435,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (anchorLink) {
         anchorLink.remove();
       }
-      typesetMath(note);
-      return note.innerHTML;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
     }
   }
   for (var i=0; i<xrefs.length; i++) {
@@ -1554,12 +1664,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="../04_code_with_style/index.html" class="pagination-link  aria-label=" with="" style="">
+      <a href="../04_code_with_style/index.html" class="pagination-link" aria-label="Code with style">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Code with style</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../06_map_context/index.html" class="pagination-link" aria-label="<span class='chapter-number'>6</span>&nbsp; <span class='chapter-title'>Giving a map context</span>">
+      <a href="../06_map_context/index.html" class="pagination-link" aria-label="Giving a map context">
         <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Giving a map context</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
@@ -1568,4 +1678,4 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-</body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
