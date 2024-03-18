@@ -10,9 +10,10 @@ assignees: ''
 
 ### In tutorial
 
-- [ ] Set `echo=false` for any chunks with `-setup` in the chunk name.
-- [ ] Set `echo=false` for any chunks that produce output using `knitr`.
-- [ ] Set `echo=false` for any chunks with `eval=FALSE`.
+- [ ] Set `echo=FALSE` for any chunks with `-setup` in the chunk name.
+- [ ] Set `echo=FALSE` for any chunks that produce output using `knitr`.
+- [ ] Set `echo=FALSE` for any chunks using the `gt()` function (unless they are used in explaining how `gt()` works).
+- [ ] Set `echo=FALSE` for any chunks with `eval=FALSE`.
 - [ ] Set `error=TRUE` for any code that is designed to cause an error.
 - [ ] Cmd+F for any references to `Run Code` button, which should all be inside `.tutorial` blocks.
 - [ ] Cmd+F for 'quiz' and check all quizzes are inside `.tutorial` blocks.
