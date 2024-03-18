@@ -1,0 +1,2130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.551">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Learn crime mapping with R - 16&nbsp; Mapping crime over time</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../appendices/read_functions.html" rel="next">
+<link href="../15_no_maps/index.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><!-- START OF INCLUDED HEADER --><!--
+This file contains code that will be included in the header of each page of the
+quarto book
+--><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script><!-- END OF INCLUDED HEADER --><link rel="stylesheet" href="../css/styles.css">
+<meta name="twitter:title" content="Learn crime mapping with R - 16&nbsp; Mapping crime over time">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+</head>
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../16_mapping_time/index.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Mapping crime over time</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Learn crime mapping with R</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/mpjashby/crimemappingbook/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <a href="../learn_crime_mapping_with_r.epub" title="Download ePub" class="quarto-navigation-tool px-1" aria-label="Download ePub"><i class="bi bi-journal"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+<li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=%7Curl%7C">
+              <i class="bi bi-bi-facebook pe-1"></i>
+            Facebook
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+</div>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome!</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../00_setup/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Install the software needed for this book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_getting_started/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting started</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_your_first_crime_map/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_data_wrangling/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Wrangling data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04_code_with_style/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Code with style</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../05_your_second_crime_map/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Your second crime map</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../06_map_context/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Giving a map context</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../07_handling_bugs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../08_projects/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Don’t get lost in data analysis</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../09_mapping_areas/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Mapping area data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../10_place_data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Crime Mapping: Using data about places</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../11_mapping_hotspots/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Crime Mapping: Mapping hotspots</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../12_messy_data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Handling messy data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../13_crime_series/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Mapping crime series</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../14_writing_reports/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Writing reports in R</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../15_no_maps/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Presenting spatial data without maps</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../16_mapping_time/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Mapping crime over time</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/read_functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Functions for reading data into R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/common_errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Common R errors and how to fix them</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+    <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">In this chapter</h2>
+   
+  <ul class="collapse">
+<li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">16.1</span> Introduction</a></li>
+  <li><a href="#handling-dates-in-r" id="toc-handling-dates-in-r" class="nav-link" data-scroll-target="#handling-dates-in-r"><span class="header-section-number">16.2</span> Handling dates in R</a></li>
+  <li><a href="#showing-change-over-time" id="toc-showing-change-over-time" class="nav-link" data-scroll-target="#showing-change-over-time"><span class="header-section-number">16.3</span> Showing change over time</a></li>
+  <li><a href="#how-to-map-change-over-time" id="toc-how-to-map-change-over-time" class="nav-link" data-scroll-target="#how-to-map-change-over-time"><span class="header-section-number">16.4</span> How to map change over time</a></li>
+  <li><a href="#making-animated-maps" id="toc-making-animated-maps" class="nav-link" data-scroll-target="#making-animated-maps"><span class="header-section-number">16.5</span> Making animated maps</a></li>
+  <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="header-section-number">16.6</span> In summary</a></li>
+  </ul><div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">
+<span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Mapping crime over time</span>
+</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><p><strong>Learn to show change over time on crime maps and charts</strong></p>
+<div class="box load-tutorial">
+<p>To load the <a href="../#how-to-use-this-book">interactive tutorial</a> for this chapter, copy and paste the following code into the RStudio console:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>crimemapping<span class="sc">::</span><span class="fu">tutorial</span>(<span class="st">"16_mapping_time"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>and press <code>Enter</code>.</p>
+</div>
+<section id="introduction" class="level2" data-number="16.1"><h2 data-number="16.1" class="anchored" data-anchor-id="introduction">
+<span class="header-section-number">16.1</span> Introduction</h2>
+<p>Understanding how crime varies over time is just as important as understanding how it varies between places. Very few places are hotspots of crime all the time – business districts might be hotspots of pickpocketing in the daytime but deserted at night, while a nearby entertainment district may be quiet in the daytime but a violence hotspot at night.</p>
+<p>Crime varies over time in lots of ways. For example, there was a long-term drop in many types of crime in many countries starting in the mid 1990s, e.g. <a href="https://crimesciencejournal.biomedcentral.com/articles/10.1186/s40163-016-0051-z">residential burglary in England and Wales dropped by 67% between 1993 and 2008</a> while the number of <a href="https://www.brennancenter.org/our-work/analysis-opinion/takeaways-2019-crime-data-major-american-cities">homicides in New York City dropped almost 90% from 2,245 in 1990 to 289 in 2018</a>.</p>
+<p>There are also short-term variations in crime. Many types of crime are more common at some types of year than others (known as <em>seasonal variation</em>). In Chicago, for example, assaults, residential burglaries and personal robberies all vary throughout the year, with assaults in particular being consistently higher in summer than winter.</p>
+<p class="full-width-image">
+<img src="images/chicago_seasonal_variation.png" alt="Chart showing that assaults, personal robberies and residential burglaries in Chicago all vary by seasonally throughout the year."></p>
+<p>It is also important to understand short-term variation in crime. For example, both property damage and sexual violence in Chicago peaks at weekends, while there are fewer shoplifting offences on Sundays when some shops are closed or have shorter opening hours.</p>
+<p class="full-width-image">
+<img src="images/chicago_weekly_variation.png" alt="Chart showing that property damage, sexual violence and shoplifting in Chicago all vary by day of the week."></p>
+<p>Understanding variation in crime over time is important because we can use the temporal concentration of crime to focus efforts to respond to crime most effectively. For example, imagine we wanted to deploy police patrols to a hotspot to respond to a particular crime problem. Such patrols could be very effective if they were targeted at the times when crimes were most likely to happen or completely useless if the officers were deployed at the wrong day or the wrong time.</p>
+<p>In this tutorial we will learn how to incorporate variation over time into our analysis of where crime happens, including making animated maps like this one:</p>
+<p class="centered-image">
+<img src="https://github.com/mpjashby/crimemapping/raw/main/inst/tutorials/16_mapping_time/images/chicago_downtown_agg_assaults.gif" alt="Animated map showing how the density of aggravated assaults in Chicago varies throughout the hours of the day."></p>
+</section><section id="handling-dates-in-r" class="level2" data-number="16.2"><h2 data-number="16.2" class="anchored" data-anchor-id="handling-dates-in-r">
+<span class="header-section-number">16.2</span> Handling dates in R</h2>
+<p class="full-width-image">
+<img src="images/lubridate_cartoon.jpg" alt="Cartoon showing little monsters feeding lubridate functions into a Back-to-the-Future-style car with the licence plate LUBRDAT."></p>
+<p>At a very basic level, computers can store data in two days: they can store numbers and they can store text. This makes storing dates slightly complicated, because dates aren’t completely like numbers and they aren’t completely like text either. Dates aren’t like numbers because you can’t do normal maths with dates (e.g.&nbsp;what date is the 29th of January plus one month?) and aren’t like text because you can do some maths with them (e.g.&nbsp;it is easy to calculate three days from today). Dates are especially complicated because they can be written as text in so many different ways. For example 17 January can be represented in all of these ways, all of them equally valid (although some are specific to particular countries):</p>
+<ul>
+<li>17/01/2024</li>
+<li>17.01.24</li>
+<li>1/17/2024</li>
+<li>2024-01-17</li>
+<li>17 Jan 24</li>
+<li>17 January 2024</li>
+<li>January 17th 2024</li>
+</ul>
+<p><a href="https://lubridate.tidyverse.org/" title="lubridate website"><img src="images/lubridate.png" class="right-side-image"></a></p>
+<p>R deals with this problem by <em>storing</em> dates internally as if they were numbers and <em>displaying</em> them (e.g.&nbsp;in the console or in a Quarto document) as if they were text, by default in the format <code>2024-03-18</code>. Fortunately, we don’t have to worry about how dates and times are stored internally in R because we can use the <a href="https://lubridate.tidyverse.org/"><code>lubridate</code> package</a> to work with them. <code>lubridate</code> contains functions for working with dates, including extracting parts of a date with functions such as <code>month()</code> and converting text to date values with functions like <code>ymd()</code>.</p>
+<p>Because of the special nature of dates, if we want to work with a date variable (for example to create a chart of crime over time) it is important that it is stored as a date, not as text or as a number. Many R functions for reading data, including <code>read_csv()</code>, <code>read_tsv()</code> and <code>read_excel()</code>, will try to recognise columns of data that contain dates and times stored in common formats. These will automatically be stored as date variables when the data is loaded.</p>
+<p>If R does not recognise automatically that a value contains a date, we can convert it to a date by using the date-parsing functions from <code>lubridate</code>. Which function to use depends on the order in which the components of the date (e.g.&nbsp; day, month and year) appear in the variable. For example, to convert the text “Saturday 17 January 1981” to a date format we can use the <code>dmy()</code> function because the <strong>d</strong>ay of the month comes first, the <strong>m</strong>onth next and then the <strong>y</strong>ear. Similarly, converting the text “01/17/81” needs the function <code>mdy()</code>. Note that the <code>lubridate</code> date-parsing functions are able convert both numeric and text-based months, and to ignore elements that aren’t needed, such as weekday names.</p>
+<p>If a date is stored in multiple columns in a dataset, e.g.&nbsp;one column for the year, one column for the month and one column for the day, we can create a single date column using the <code>make_date()</code> function to combine them. Similarly, we can create a date-time column using the <code>make_datetime()</code> function. For example, if we have a dataset of crimes called <code>thefts</code>:</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a>thefts <span class="sc">|&gt;</span>  </span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    <span class="at">date =</span> <span class="fu">make_date</span>(<span class="at">year =</span> year, <span class="at">month =</span> month_of_year, <span class="at">day =</span> day_of_month)</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  ) <span class="sc">|&gt;</span>  </span>
+<span id="cb2-7"><a href="#cb2-7"></a>  <span class="fu">select</span>(day_of_month, month_of_year, year, date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,840 × 4
+   day_of_month month_of_year  year date      
+          &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;    
+ 1            1             9  2020 2020-09-01
+ 2            1             9  2020 2020-09-01
+ 3            1             9  2020 2020-09-01
+ 4            1             9  2020 2020-09-01
+ 5            1             9  2020 2020-09-01
+ 6            1             9  2020 2020-09-01
+ 7            1             9  2020 2020-09-01
+ 8            1             9  2020 2020-09-01
+ 9            1             9  2020 2020-09-01
+10            1             9  2020 2020-09-01
+# ℹ 1,830 more rows</code></pre>
+</div>
+</div>
+<p>Note that in this dataset, the <code>date</code> variable we have just created has the type <code>&lt;date&gt;</code>.</p>
+<p>Once we have converted dates stored as text to dates stored as dates, R understands that they are dates and we can do things like compare them. So while running <code>"Sat 17 January 1981" == "01/17/81"</code> to test if two dates are the same would give the answer <code>FALSE</code> (because the two pieces of text are different), once we’ve converted the text to date values R can tell that the two dates are the same:</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># This code returns TRUE only because the two pieces of text are identical</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="st">"Sat 17 January 1981"</span> <span class="sc">==</span> <span class="st">"Sat 17 January 1981"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># This code returns FALSE because the two pieces of text are different, even</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="co"># though the dates they represent are the same</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="st">"Sat 17 January 1981"</span> <span class="sc">==</span> <span class="st">"01/17/81"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># This code returns TRUE because R knows they are dates and so compares them as</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="co"># dates, finding that the two dates are the same</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="fu">dmy</span>(<span class="st">"Sat 17 January 1981"</span>) <span class="sc">==</span> <span class="fu">mdy</span>(<span class="st">"01/17/81"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<section id="working-with-dates" class="level3" data-number="16.2.1"><h3 data-number="16.2.1" class="anchored" data-anchor-id="working-with-dates">
+<span class="header-section-number">16.2.1</span> Working with dates</h3>
+<p>When analysing dates and times, it is often useful to be able to extract date or time portions. We can do this with the <code>lubridate</code> functions <code>year()</code>, <code>month()</code>, <code>wday()</code> (for day of the week), <code>mday()</code> (for day of the month), <code>yday()</code> (for day of the year, counting from 1 January), <code>hour()</code>, <code>minute()</code> and <code>second()</code>, each of which extracts the relevant portion of a date or time as a number. The <code>month()</code> and <code>wday()</code> functions are slightly different, because they can also return the day or month name as text by specifying the argument <code>label = TRUE</code>. We can see this by extracting the different portions of the current date and time, which we can retrieve with the <code>now()</code> function from <code>lubridate</code>.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">message</span>(<span class="st">"Current year: "</span>, <span class="fu">year</span>(<span class="fu">now</span>()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Current year: 2024</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">message</span>(<span class="st">"Current month (as a number): "</span>, <span class="fu">month</span>(<span class="fu">now</span>()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Current month (as a number): 3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">message</span>(<span class="st">"Current month (as text, abbreviated): "</span>, <span class="fu">month</span>(<span class="fu">now</span>(), <span class="at">label =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Current month (as text, abbreviated): Mar</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">message</span>(<span class="st">"Current month (as text): "</span>, <span class="fu">month</span>(<span class="fu">now</span>(), <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">abbr =</span> <span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Current month (as text): March</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="fu">message</span>(<span class="st">"Current day of the year (days since 1 Jan): "</span>, <span class="fu">yday</span>(<span class="fu">now</span>()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Current day of the year (days since 1 Jan): 78</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">message</span>(<span class="st">"Current day of the month: "</span>, <span class="fu">mday</span>(<span class="fu">now</span>()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Current day of the month: 18</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">message</span>(<span class="st">"Current day of the week (as a number): "</span>, <span class="fu">wday</span>(<span class="fu">now</span>()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Current day of the week (as a number): 2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="fu">message</span>(<span class="st">"Current day of the week (as text): "</span>, <span class="fu">wday</span>(<span class="fu">now</span>(), <span class="at">label =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Current day of the week (as text): Mon</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">message</span>(<span class="st">"Current hour of the day: "</span>, <span class="fu">hour</span>(<span class="fu">now</span>()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Current hour of the day: 15</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="fu">message</span>(<span class="st">"Current minute: "</span>, <span class="fu">minute</span>(<span class="fu">now</span>()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Current minute: 24</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="fu">message</span>(<span class="st">"Current second: "</span>, <span class="fu">second</span>(<span class="fu">now</span>()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Current second: 5.16733503341675</code></pre>
+</div>
+</div>
+<p>It is sometimes useful to be able to add to or subtract from dates. For example, if you wanted to filter a dataset so that only records from the past 28 days were included, you would need to work out the date 28 days ago. We can do this with a group of functions from <code>lubridate</code> that store a period of time that we can then add to or subtract from an existing date. These functions are <code>years()</code>, <code><a href="https://rdrr.io/r/base/weekday.POSIXt.html">months()</a></code>, <code>weeks()</code>, <code>days()</code>, <code>hours()</code>, <code>minutes()</code>, and <code>seconds()</code>.</p>
+<div class="box notewell">
+<p>In the <code>lubridate</code> package, functions that are used to <em>extract</em> parts of a date are <em>singular</em>, e.g.&nbsp;<code>day()</code>, <code>month()</code>, <code>year()</code>. Functions that are used to <em>manipulate</em> dates by adding or subtracting from them are <em>plural</em>, e.g.&nbsp; <code>days()</code>, <code><a href="https://rdrr.io/r/base/weekday.POSIXt.html">months()</a></code>, <code>years()</code>. So, for example, you would use the code <code>month(now())</code> to extract the month (as a number between 1 and 12) from the current date but the code <code>now() + months(1)</code> to find out what the date and time will be one month from now.</p>
+</div>
+<p>To subtract 28 days from today’s date (which we can retrieve with the <code>today()</code> function), we would use <code>today() - days(28)</code>.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="fu">message</span>(<span class="fu">str_glue</span>(<span class="st">"Today is {today()} and 28 days ago was {today() - days(28)}"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Today is 2024-03-18 and 28 days ago was 2024-02-19</code></pre>
+</div>
+</div>
+<p>Adding or subtracting periods from dates can be very useful when combined with the <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> function from the <code>dplyr()</code> package. For example, if we had a dataset of crimes stored in an object called <code>crimes</code> and wanted to extract only those that occurred in the most-recent seven days, we could do this:</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="fu">filter</span>(crimes, occur_date <span class="sc">&gt;=</span> <span class="fu">today</span>() <span class="sc">-</span> <span class="fu">days</span>(<span class="dv">7</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 60 × 5
+   incident_key occur_date murder longitude latitude
+          &lt;dbl&gt; &lt;date&gt;     &lt;lgl&gt;      &lt;dbl&gt;    &lt;dbl&gt;
+ 1    191739126 2024-03-12 FALSE      -73.9     40.9
+ 2    191949900 2024-03-12 FALSE      -73.9     40.8
+ 3    192876454 2024-03-11 FALSE      -73.9     40.8
+ 4    193417904 2024-03-14 TRUE       -73.9     40.8
+ 5    193417904 2024-03-12 TRUE       -73.9     40.8
+ 6    193732895 2024-03-12 FALSE      -73.8     40.9
+ 7    193733167 2024-03-16 FALSE      -73.9     40.8
+ 8    193939359 2024-03-12 FALSE      -73.9     40.8
+ 9    193939360 2024-03-13 FALSE      -73.8     40.8
+10    195013387 2024-03-11 FALSE      -73.9     40.8
+# ℹ 50 more rows</code></pre>
+</div>
+</div>
+<p>If we wanted to extract crimes that occurred between two dates, we can use the <code>between()</code> function from <code>dplyr</code>, which returns either <code>TRUE</code> or <code>FALSE</code> depending on whether each item in the first argument is between the values given in the second and third arguments (inclusive).</p>
+<div class="tutorial">
+<p>For example, complete the following code by replacing the text <code>____</code> and <code>____</code> with <code>ymd()</code> functions to extract only crimes occurring between 12 February and 11 March 2024 inclusive.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="fu">filter</span>(crimes, <span class="fu">between</span>(occur_date, ____, ____))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error: &lt;text&gt;:1:37: unexpected input
+1: filter(crimes, between(occur_date, __
+                                        ^</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a><span class="co"># Add the dates to the following code in YYYY-MM-DD format (because you are </span></span>
+<span id="cb38-2"><a href="#cb38-2"></a><span class="co"># using the function `ymd()`)</span></span>
+<span id="cb38-3"><a href="#cb38-3"></a><span class="fu">filter</span>(crimes, <span class="fu">between</span>(occur_date, <span class="fu">ymd</span>(<span class="st">""</span>), <span class="fu">ymd</span>(<span class="st">""</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 0 × 5
+# ℹ 5 variables: incident_key &lt;dbl&gt;, occur_date &lt;date&gt;, murder &lt;lgl&gt;,
+#   longitude &lt;dbl&gt;, latitude &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</div>
+<p>When filtering based on dates or times, it is important to understand that R can store dates in two ways: as a <em>date</em> object or as a <em>date-time</em> object (shown as <code>&lt;dttm&gt;</code> when we print a tibble). Date variables store only a date with no time, while date-time variables always include a time component, even if the data doesn’t contain any information about time. If we store a variable that only has information about the date of an event as a date-time variable, R will silently add the time midnight to each date. This is important because if we compare a date variable to a date-time variable, R will silently convert the dates to date-times with the times set to midnight. If we are trying to filter crimes between two times, this might not be what we want. For example, if we used the code:</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a><span class="fu">between</span>(offence_date, <span class="fu">ymd</span>(<span class="st">"2021-01-01"</span>), <span class="fu">ymd</span>(<span class="st">"2021-01-31"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>to extract all the crimes that occurred in January 2021, that would work as we expected only if <code>offence_date</code> was a date variable. If the <code>offence_date</code> column instead held dates <em>and</em> times, R would filter the data <em>as if</em> we had specified:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="fu">between</span>(offence_date, <span class="fu">ymd_hm</span>(<span class="st">"2021-01-01 00:00"</span>), <span class="fu">ymd_hm</span>(<span class="st">"2021-01-31 00:00"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>which would exclude any crimes that occurred on 31 January (except those occurring at exactly midnight). To deal with this problem, we can either check to make sure the variables we are filtering on are date variables, convert them to date variables using the <code>as_date()</code> function, or assume that they might be date-time variables and specify the exact time that we want as the end of our range. For example, specifying:</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="fu">between</span>(offence_date, <span class="fu">ymd_hm</span>(<span class="st">"2021-01-01 00:00"</span>), <span class="fu">ymd_hm</span>(<span class="st">"2021-01-31 23:59"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>or</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="fu">between</span>(<span class="fu">as_date</span>(offence_date), <span class="fu">ymd</span>(<span class="st">"2021-01-01"</span>), <span class="fu">ymd</span>(<span class="st">"2021-01-31"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>would allow us to select all the crimes occurring in January 2021.</p>
+</section></section><section id="showing-change-over-time" class="level2" data-number="16.3"><h2 data-number="16.3" class="anchored" data-anchor-id="showing-change-over-time">
+<span class="header-section-number">16.3</span> Showing change over time</h2>
+<p>One common task in crime analysis is to show how crime changes over time. The simplest way to do this is to produce a <em>time-series chart</em>. For example, we can see how the frequency of aggravated assaults recorded by police in Chicago has changed over time:</p>
+<p class="full-width-image">
+<img src="images/chicago_assault_trend.png" alt="Chart showing that the weekly frequency of aggravated assaults in Chicago from 2010 to 2019, including seasonal increases each summer and lower frequency of assaults from 2013 to 2015."></p>
+<p>In this section we will learn how to construct a time-series chart like this. To illustrate this process, we will use an object called <code>assaults</code> that contains records of aggravated assaults in Chicago from 2010 to 2019.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<div id="fjuzkksabj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#fjuzkksabj table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#fjuzkksabj thead, #fjuzkksabj tbody, #fjuzkksabj tfoot, #fjuzkksabj tr, #fjuzkksabj td, #fjuzkksabj th {
+  border-style: none;
+}
+
+#fjuzkksabj p {
+  margin: 0;
+  padding: 0;
+}
+
+#fjuzkksabj .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#fjuzkksabj .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#fjuzkksabj .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#fjuzkksabj .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#fjuzkksabj .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#fjuzkksabj .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fjuzkksabj .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#fjuzkksabj .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#fjuzkksabj .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#fjuzkksabj .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#fjuzkksabj .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#fjuzkksabj .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#fjuzkksabj .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#fjuzkksabj .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#fjuzkksabj .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#fjuzkksabj .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#fjuzkksabj .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#fjuzkksabj .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#fjuzkksabj .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjuzkksabj .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#fjuzkksabj .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#fjuzkksabj .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#fjuzkksabj .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjuzkksabj .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#fjuzkksabj .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#fjuzkksabj .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fjuzkksabj .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjuzkksabj .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#fjuzkksabj .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fjuzkksabj .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#fjuzkksabj .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fjuzkksabj .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#fjuzkksabj .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjuzkksabj .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#fjuzkksabj .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjuzkksabj .gt_left {
+  text-align: left;
+}
+
+#fjuzkksabj .gt_center {
+  text-align: center;
+}
+
+#fjuzkksabj .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#fjuzkksabj .gt_font_normal {
+  font-weight: normal;
+}
+
+#fjuzkksabj .gt_font_bold {
+  font-weight: bold;
+}
+
+#fjuzkksabj .gt_font_italic {
+  font-style: italic;
+}
+
+#fjuzkksabj .gt_super {
+  font-size: 65%;
+}
+
+#fjuzkksabj .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#fjuzkksabj .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#fjuzkksabj .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#fjuzkksabj .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#fjuzkksabj .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#fjuzkksabj .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#fjuzkksabj .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead><tr class="header gt_col_headings">
+<th id="date" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">date</th>
+<th id="loc_cat" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">loc_cat</th>
+<th id="longitude" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">longitude</th>
+<th id="latitude" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">latitude</th>
+<th id="district" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">district</th>
+</tr></thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="date">2010-01-01 00:05:00</td>
+<td class="gt_row gt_left" headers="loc_cat">residence</td>
+<td class="gt_row gt_right" headers="longitude">-87.6277</td>
+<td class="gt_row gt_right" headers="latitude">41.7922</td>
+<td class="gt_row gt_right" headers="district">2</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="date">2010-01-01 00:12:00</td>
+<td class="gt_row gt_left" headers="loc_cat">street</td>
+<td class="gt_row gt_right" headers="longitude">-87.6683</td>
+<td class="gt_row gt_right" headers="latitude">41.7513</td>
+<td class="gt_row gt_right" headers="district">6</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="date">2010-01-01 00:30:00</td>
+<td class="gt_row gt_left" headers="loc_cat">hotel</td>
+<td class="gt_row gt_right" headers="longitude">-87.6242</td>
+<td class="gt_row gt_right" headers="latitude">41.8727</td>
+<td class="gt_row gt_right" headers="district">1</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="date">2010-01-01 00:30:00</td>
+<td class="gt_row gt_left" headers="loc_cat">street</td>
+<td class="gt_row gt_right" headers="longitude">-87.6478</td>
+<td class="gt_row gt_right" headers="latitude">41.7536</td>
+<td class="gt_row gt_right" headers="district">6</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="date">2010-01-01 00:54:00</td>
+<td class="gt_row gt_left" headers="loc_cat">street</td>
+<td class="gt_row gt_right" headers="longitude">-87.6446</td>
+<td class="gt_row gt_right" headers="latitude">41.7720</td>
+<td class="gt_row gt_right" headers="district">7</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="date">2010-01-01 01:15:00</td>
+<td class="gt_row gt_left" headers="loc_cat">street</td>
+<td class="gt_row gt_right" headers="longitude">-87.7311</td>
+<td class="gt_row gt_right" headers="latitude">41.8984</td>
+<td class="gt_row gt_right" headers="district">11</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<p>The first task in charting the frequency of crime is to choose a temporal <em>unit of analysis</em>. For example, the chart above counts the number of crimes each <em>week</em>. Weeks are often a good choice as units for counting crimes, since all weeks are the same length and because many human activities have a weekly cycle (e.g.&nbsp;people do different things at weekends than on weekdays, even though which days count as weekdays differs across cultures).</p>
+<div class="box notewell">
+<p>Months are much less useful than weeks as a temporal unit of analysis because months differ in length, so monthly counts of crime will look like they show some variation even if the amount of crime occurring each day remains constant. For example, if exactly 10 crimes occur every day throughout February and March, there will be 280 or 290 crimes in February (depending on whether it is a leap year) but 310 in March. In these circumstances, it will look like the volume of crime increased by 11% between February and March, not because the rate at which crimes occurred increased but because March is 11% longer than February.</p>
+<p>Months are also less useful because they contain different numbers of each day of the week (e.g.&nbsp;one month might have four Fridays while the next has five) and crimes are typically concentrated on particular days of the week (more on that later). <strong>Avoid using monthly counts of crime</strong> unless you have no choice because the only data you have available is monthly counts.</p>
+</div>
+<p>To count the number of crimes occurring each week we can use the <code>count()</code> function from the <code>dplyr</code> package. But before doing that, we have to allocate each crime to a week so that we can then count those weeks rather than counting days. To do this we use the <code>floor_date()</code> function from the <code>lubridate</code> package. This function rounds dates down to the start of a specified unit of time, in this case a week. By default, <code>floor_date()</code> treats Sunday as the start of the week and so if the specified unit of time is a week, all dates will be rounded down to the date of the previous Sunday.</p>
+<p><code>floor_date()</code> works on date variables, so if we want to use it on a date-time variable we should first convert it to a date variable using the <code>as_date()</code> function from <code>lubridate</code>. So to convert a date-time stored in a variable called <code>date</code> into the date of the first day of that week, we would use the code <code>floor_date(as_date(date), unit = "week")</code>.</p>
+<p>One complication of counting incidents by week is that our data might not fit neatly into calendar weeks. For example, if we have data for a particular year and that year started on a Tuesday, the first weekly count will only have data for five days and it will look like there were fewer crimes that week in comparison to other weeks. This could be misleading, since this week only looks like it has less crime because we don’t have data for the whole week. The same problem can happen with the last week of data, too. To deal with this, after counting the crimes by week we will remove the first and last row of the data using the <code>slice()</code> function from the <code>dplyr</code> package.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a>assault_weekly_counts <span class="ot">&lt;-</span> assaults <span class="sc">|&gt;</span> </span>
+<span id="cb44-2"><a href="#cb44-2"></a>  <span class="fu">mutate</span>(<span class="at">week_date =</span> <span class="fu">floor_date</span>(<span class="fu">as_date</span>(date), <span class="at">unit =</span> <span class="st">"week"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb44-3"><a href="#cb44-3"></a>  <span class="fu">count</span>(week_date, <span class="at">name =</span> <span class="st">"count"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb44-4"><a href="#cb44-4"></a>  <span class="co"># The code `(n() - 1)` gives us the row number of the second-to-last row in </span></span>
+<span id="cb44-5"><a href="#cb44-5"></a>  <span class="co"># the data because `n()` returns the number of rows in the data. Note the</span></span>
+<span id="cb44-6"><a href="#cb44-6"></a>  <span class="co"># parentheses!</span></span>
+<span id="cb44-7"><a href="#cb44-7"></a>  <span class="fu">slice</span>(<span class="dv">2</span><span class="sc">:</span>(<span class="fu">n</span>() <span class="sc">-</span> <span class="dv">1</span>))</span>
+<span id="cb44-8"><a href="#cb44-8"></a></span>
+<span id="cb44-9"><a href="#cb44-9"></a><span class="fu">head</span>(assault_weekly_counts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  week_date  count
+  &lt;date&gt;     &lt;int&gt;
+1 2010-01-03   234
+2 2010-01-10   300
+3 2010-01-17   303
+4 2010-01-24   257
+5 2010-01-31   276
+6 2010-02-07   264</code></pre>
+</div>
+</div>
+<p>Now we have weekly counts of aggravated assaults, we can plot them on a chart. The simplest way to do this would be to create a line chart using <code>ggplot()</code> with <code>geom_line()</code>.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="fu">ggplot</span>(assault_weekly_counts, <span class="fu">aes</span>(<span class="at">x =</span> week_date, <span class="at">y =</span> count)) <span class="sc">+</span></span>
+<span id="cb46-2"><a href="#cb46-2"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb46-3"><a href="#cb46-3"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/change-exercise2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This plot is fine, but there are several things that we can do to make it better. Most importantly, there seems to be lots of short-term fluctuation in the frequency of crime (e.g.&nbsp;from one week to another). While this variation is real, we often refer to it as <em>noise</em> because it can obscure the <em>signal</em> of longer-term trends (this terminology originally came to statistics – and therefore crime analysis – from radio engineering and has become common over time).</p>
+<p>We can reduce the visual impact of this short-term variation on our plot by adding a line showing a <em>moving average</em> (also called a <em>rolling average</em> or <em>rolling mean</em>) of the count of crime over time. A moving average is the average (or mean) of the count of crimes in the current week and a given number of adjacent (in this case, previous), weeks.</p>
+<p class="full-width-image">
+<img src="images/moving_averages.png" alt="Chart showing that moving averages are calculated by averaging the current week's count with the counts from a given number of previous weeks."></p>
+<p>Since moving averages show the average count of crime over several weeks, they are less influenced by week-to-week variation. To calculate a moving average we have to choose how many weeks to include (known as the <em>window</em> of the moving average). The more weeks we include in the window, the smoother the values will appear from week to week and the more short-term variation will be obscured. There is a balance to be struck between making longer-term trends clear and obscuring genuine short-term variation, so you should experiment with different window lengths to ensure you are not over-smoothing.</p>
+<p>We can calculate moving averages in R with the <code>slide_dbl()</code> function from the <a href="https://davisvaughan.github.io/slider/"><code>slider</code> package</a> (so called because its functions slide along a series of values). <code>slide_dbl()</code> can calculate several types of moving averages, so we specify that it should use the <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> function to calculate the average by specifying <code>.f = mean</code> (note the lack of parentheses after <code>mean</code>). We use the <code>.before</code> argument (note the <code>.</code>) to specify how many weeks <em>before the current week</em> to include in our moving average. So if we wanted to calculate a four-week moving average (i.e.&nbsp;the current week and the previous three weeks), we would specify <code>.before = 3</code>. We also specify <code>.complete = TRUE</code> to stop <code>slide_dbl()</code> from trying to calculate averages for the first few weeks in our data, because we don’t have the necessary data from previous weeks (i.e.&nbsp;before the start of our data) that we would need to make these averages accurate. <code>slide_dbl()</code> will use <code>NA</code> as the moving average value for those weeks, so we later need to specify <code>na.rm = TRUE</code> to tell <code>ggplot()</code> to ignore these when we plot the data.</p>
+<p>Once we’ve calculated a moving average, we can show this using the line on our chart and show the individual weekly counts as small light-grey dots to show how much short-term variation there is in the data.</p>
+<div class="cell" data-exercise="true" data-exercise.lines="27">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="fu">library</span>(slider)</span>
+<span id="cb47-2"><a href="#cb47-2"></a></span>
+<span id="cb47-3"><a href="#cb47-3"></a>assault_weekly_counts <span class="sc">|&gt;</span> </span>
+<span id="cb47-4"><a href="#cb47-4"></a>  <span class="fu">mutate</span>(<span class="at">moving_avg =</span> <span class="fu">slide_dbl</span>(count, mean, <span class="at">.before =</span> <span class="dv">3</span>, <span class="at">.complete =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb47-5"><a href="#cb47-5"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb47-6"><a href="#cb47-6"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> week_date, <span class="at">y =</span> count), <span class="at">colour =</span> <span class="st">"grey75"</span>, <span class="at">size =</span> <span class="fl">0.75</span>) <span class="sc">+</span></span>
+<span id="cb47-7"><a href="#cb47-7"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb47-8"><a href="#cb47-8"></a>    <span class="fu">aes</span>(<span class="at">x =</span> week_date, <span class="at">y =</span> moving_avg, <span class="at">colour =</span> <span class="st">"black"</span>), </span>
+<span id="cb47-9"><a href="#cb47-9"></a>    <span class="at">na.rm =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb47-10"><a href="#cb47-10"></a>    <span class="at">key_glyph =</span> <span class="st">"timeseries"</span></span>
+<span id="cb47-11"><a href="#cb47-11"></a>  ) <span class="sc">+</span></span>
+<span id="cb47-12"><a href="#cb47-12"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"1 year"</span>, <span class="at">date_labels =</span> <span class="st">"%b</span><span class="sc">\n</span><span class="st">%Y"</span>) <span class="sc">+</span></span>
+<span id="cb47-13"><a href="#cb47-13"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
+<span id="cb47-14"><a href="#cb47-14"></a>  <span class="fu">scale_colour_identity</span>(</span>
+<span id="cb47-15"><a href="#cb47-15"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"black"</span> <span class="ot">=</span> <span class="st">"four-week moving average"</span>),</span>
+<span id="cb47-16"><a href="#cb47-16"></a>    <span class="at">guide =</span> <span class="fu">guide_legend</span>()</span>
+<span id="cb47-17"><a href="#cb47-17"></a>  ) <span class="sc">+</span></span>
+<span id="cb47-18"><a href="#cb47-18"></a>  <span class="fu">labs</span>(</span>
+<span id="cb47-19"><a href="#cb47-19"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb47-20"><a href="#cb47-20"></a>    <span class="at">y =</span> <span class="st">"weekly count of aggravated assaults"</span>,</span>
+<span id="cb47-21"><a href="#cb47-21"></a>    <span class="at">colour =</span> <span class="cn">NULL</span></span>
+<span id="cb47-22"><a href="#cb47-22"></a>  ) <span class="sc">+</span></span>
+<span id="cb47-23"><a href="#cb47-23"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb47-24"><a href="#cb47-24"></a>  <span class="fu">theme</span>(</span>
+<span id="cb47-25"><a href="#cb47-25"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb47-26"><a href="#cb47-26"></a>    <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb47-27"><a href="#cb47-27"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/change-exercise3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Experiment with the effect of setting a longer or shorter window for the moving average by specifying larger or smaller values of the <code>.before</code> argument to <code>slide_dbl()</code>. For example, create an eight-week moving average by specifying <code>.before = 7</code>. What happens to the apparent seasonal variation in the number of assaults if you create an <em>annual moving average</em> by specifying <code>.before = 52</code>?</p>
+<p>You may have noticed that in this code we have also made some changes to the appearance of the plot to make it easier to read. Specifically, we have:</p>
+<ul>
+<li>Added a title for the <em>y</em> axis and removed the <em>x</em> axis and legend titles using the <code>labs()</code> function.</li>
+<li>Changed the labels on the <em>x</em> axis using <code>scale_x_date()</code>. In this case, we have used the argument <code>date_breaks = "1 year"</code> to specify that we want a label at the start of each year and the argument <code>date_labels = "%b\n%Y"</code> to specify that we want each label to consist of an abbreviated month name (using the code <code>%b</code>), a new line (the code <code>\n</code> as in a previous tutorial) and a four-digit year (using the code <code>%Y</code>). You can find a full list of codes used that can be used to specify different parts of a date and time by typing <code><a href="https://rdrr.io/r/base/strptime.html">?strptime</a></code> in the R console.</li>
+<li>Removed some of the vertical grid lines by setting the <code>panel.grid.minor.x</code> argument to <code>theme()</code> to equal <code>element_blank()</code>.</li>
+<li>Forced the <em>y</em> axis to begin at zero by specifying <code>limits = c(0, NA)</code>, remembering that <code>NA</code> in this context means to use the default value.</li>
+<li>Specified that we want the black line to be represented in the legend by a line that looks like a time series by specifying <code>key_glyph = "timeseries"</code>.</li>
+</ul>
+<p>We have also added a legend to explain what the black line shows. The code need to do this is slightly awkward, since <code>ggplot()</code> would not normally produce a legend for aesthetics (in this case, the colour of the line) that have only one value. To force <code>ggplot()</code> to add a legend, we:</p>
+<ol type="1">
+<li>Specify the colour of the line (i.e.&nbsp;<code>colour = "black"</code>) not as an argument to the function <code>geom_line()</code> as we normally would but as one of the aesthetics specified using <code>aes()</code>.</li>
+<li>Specify that <code>ggplot()</code> should treat the value <code>colour = "black"</code> as a literal colour name rather than as a reference to a column in the data (which is how the arguments to <code>aes()</code> are normally interpreted). To do this we add <code>scale_colour_identity()</code> to the <code>ggplot()</code> stack, because <em>identity</em> is the jargon used in R to say ‘keep this value exactly as it is’.</li>
+<li>Within <code>scale_colour_identity()</code>, specify a label to correspond to the black line by setting the <code>labels</code> argument.</li>
+<li>Specify <code>guide = guide_legend()</code> to tell <code>ggplot()</code> to add a legend corresponding to the black line because aesthetics styled using functions in the <code>scale_*_identity()</code> family do not produce a legend entry by default.</li>
+</ol>
+<p>Doing all this is obviously tedious, but makes for a better chart.</p>
+<section id="showing-repeating-patterns-over-time" class="level3" data-number="16.3.1"><h3 data-number="16.3.1" class="anchored" data-anchor-id="showing-repeating-patterns-over-time">
+<span class="header-section-number">16.3.1</span> Showing repeating patterns over time</h3>
+<p>We have already seen that there is seasonal variation in the number of aggravated assaults in Chicago. As is very common for assaults, there are more offences in the summer and fewer in the winter. We can see this in the time-series chart we have already produced, but it’s hard to see the detail. For example, we might want to know how consistent this seasonal variation is across different years. Is it, for example, consistent enough that the local police might want to restrict the number of officers who can take holidays in certain weeks of the year to maximise the number of officers available when crime is likely to be highest?</p>
+<p>To do this we can create a <em>seasonal chart</em>. This can be used to show any type of repeating variation, but is often used to show patterns across a year (hence the name). To create a seasonal plot we need to add a variable to our data specifying which year each weekly count belongs to, which we can do by using the <code>year()</code> function to extract the year from the offence dates. We can do this at the same time as we calculate the moving averages. Once we’ve done that, we can specify that we want our chart to have a separate line for each year by setting <code>group = year</code> inside the <code>aes()</code> function that controls how the data are shown on the chart, making each year a different colour using <code>colour = year</code>.</p>
+<div class="cell" data-exercise="true" data-exercise.lines="20">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a>assault_weekly_counts <span class="sc">|&gt;</span> </span>
+<span id="cb48-2"><a href="#cb48-2"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb48-3"><a href="#cb48-3"></a>    <span class="at">moving_avg =</span> <span class="fu">slide_dbl</span>(count, mean, <span class="at">.before =</span> <span class="dv">3</span>, <span class="at">.complete =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb48-4"><a href="#cb48-4"></a>    <span class="at">year =</span> <span class="fu">year</span>(week_date)</span>
+<span id="cb48-5"><a href="#cb48-5"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb48-6"><a href="#cb48-6"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> week_date, <span class="at">y =</span> moving_avg, <span class="at">colour =</span> year, <span class="at">group =</span> year)) <span class="sc">+</span></span>
+<span id="cb48-7"><a href="#cb48-7"></a>  <span class="fu">geom_line</span>(<span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">key_glyph =</span> <span class="st">"timeseries"</span>) <span class="sc">+</span></span>
+<span id="cb48-8"><a href="#cb48-8"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"1 year"</span>, <span class="at">date_labels =</span> <span class="st">"%b</span><span class="sc">\n</span><span class="st">%Y"</span>) <span class="sc">+</span></span>
+<span id="cb48-9"><a href="#cb48-9"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
+<span id="cb48-10"><a href="#cb48-10"></a>  <span class="fu">scale_colour_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">2010</span>, <span class="dv">2019</span>)) <span class="sc">+</span></span>
+<span id="cb48-11"><a href="#cb48-11"></a>  <span class="fu">labs</span>(</span>
+<span id="cb48-12"><a href="#cb48-12"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb48-13"><a href="#cb48-13"></a>    <span class="at">y =</span> <span class="st">"weekly count of aggravated assaults"</span>,</span>
+<span id="cb48-14"><a href="#cb48-14"></a>    <span class="at">colour =</span> <span class="cn">NULL</span></span>
+<span id="cb48-15"><a href="#cb48-15"></a>  ) <span class="sc">+</span></span>
+<span id="cb48-16"><a href="#cb48-16"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb48-17"><a href="#cb48-17"></a>  <span class="fu">theme</span>(</span>
+<span id="cb48-18"><a href="#cb48-18"></a>    <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb48-19"><a href="#cb48-19"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/change-exercise4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The result might not be what you expected. Although the grouping of the lines by year has worked (there is a break between the lines at the start of each year), it’s no easier to compare the seasonal patterns across years. Comparing years would be much easier if we superimpose the weekly counts for each year on top of one another.</p>
+<p>To do this, we need to trick <code>ggplot()</code> into plotting all the weekly counts as if they occurred in a single year, so the counts appear in the same locations on the horizontal axis of the chart, whichever year they occurred in. We can do this by creating a pseudo-date value for each weekly count which has the same month and day of the month as the original date, but a single year across all the rows in the data. We will create this pseudo date by extracting the month and day of the month using <code>month()</code> and <code>mday()</code>, then creating a new date with <code>make_date()</code>. We will also change the labels on the horizontal axis using the date-formatting code <code>%e\n%b</code> – <code>%e</code> means the day of the month and <code>%b</code> means the abbreviated name of the month.</p>
+<div class="cell" data-exercise="true" data-exercise.lines="24">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a>assault_weekly_counts <span class="sc">|&gt;</span> </span>
+<span id="cb49-2"><a href="#cb49-2"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb49-3"><a href="#cb49-3"></a>    <span class="at">moving_avg =</span> <span class="fu">slide_dbl</span>(count, mean, <span class="at">.before =</span> <span class="dv">3</span>, <span class="at">.complete =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb49-4"><a href="#cb49-4"></a>    <span class="at">year =</span> <span class="fu">year</span>(week_date),</span>
+<span id="cb49-5"><a href="#cb49-5"></a>    <span class="co"># By only specifying the `month` and `day` arguments to `make_date()` we</span></span>
+<span id="cb49-6"><a href="#cb49-6"></a>    <span class="co"># will create a date in 1970 (the year that R uses by default), but that </span></span>
+<span id="cb49-7"><a href="#cb49-7"></a>    <span class="co"># doesn't matter because we are not going to show the year on the chart</span></span>
+<span id="cb49-8"><a href="#cb49-8"></a>    <span class="at">pseudo_date =</span> <span class="fu">make_date</span>(<span class="at">month =</span> <span class="fu">month</span>(week_date), <span class="at">day =</span> <span class="fu">mday</span>(week_date))</span>
+<span id="cb49-9"><a href="#cb49-9"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb49-10"><a href="#cb49-10"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> pseudo_date, <span class="at">y =</span> moving_avg, <span class="at">colour =</span> year, <span class="at">group =</span> year)) <span class="sc">+</span></span>
+<span id="cb49-11"><a href="#cb49-11"></a>  <span class="fu">geom_line</span>(<span class="at">na.rm =</span> <span class="cn">TRUE</span>, <span class="at">key_glyph =</span> <span class="st">"timeseries"</span>) <span class="sc">+</span></span>
+<span id="cb49-12"><a href="#cb49-12"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"1 month"</span>, <span class="at">date_labels =</span> <span class="st">"%e</span><span class="sc">\n</span><span class="st">%b"</span>) <span class="sc">+</span></span>
+<span id="cb49-13"><a href="#cb49-13"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
+<span id="cb49-14"><a href="#cb49-14"></a>  <span class="fu">scale_colour_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">2010</span>, <span class="dv">2019</span>)) <span class="sc">+</span></span>
+<span id="cb49-15"><a href="#cb49-15"></a>  <span class="fu">labs</span>(</span>
+<span id="cb49-16"><a href="#cb49-16"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb49-17"><a href="#cb49-17"></a>    <span class="at">y =</span> <span class="st">"weekly count of aggravated assaults"</span>,</span>
+<span id="cb49-18"><a href="#cb49-18"></a>    <span class="at">colour =</span> <span class="cn">NULL</span></span>
+<span id="cb49-19"><a href="#cb49-19"></a>  ) <span class="sc">+</span></span>
+<span id="cb49-20"><a href="#cb49-20"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb49-21"><a href="#cb49-21"></a>  <span class="fu">theme</span>(</span>
+<span id="cb49-22"><a href="#cb49-22"></a>    <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb49-23"><a href="#cb49-23"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/change-exercise5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>From this chart we can see that assaults consistently peak in July, although in one year they peaked slightly earlier in late June and in one year slightly later in August. At the other end of the year, weekly counts of assaults are almost always least frequent in late January and throughout February before starting to increase quite rapidly in March.</p>
+<p>As well as showing seasonal variation, we can use the same technique to understand variation over other periods of time. For example, since we know a lot of human activities follow weekly patterns, we might want to produce a chart showing the number of crimes in each hour on each day of the week.</p>
+<p>To do this, we:</p>
+<ol type="1">
+<li>Extract the weekday and hour components of each date using <code>wday()</code> and <code>hour()</code>.</li>
+<li>Count the total number of crimes occurring in each hour of each day <em>across all ten years of the data</em> using <code>count()</code>.</li>
+<li>Create a pseudo-date-time using <code>make_datetime()</code>.</li>
+<li>Create a chart with appropriate labels on the horizontal axis and a suitable qualitative colour scheme to show the days of the week using <code>scale_colour_brewer()</code>.</li>
+</ol>
+<p>We can do this in a single piece of code.</p>
+<div class="cell" data-exercise="true" data-exercise.lines="23">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a>assault_hourly_counts <span class="ot">&lt;-</span> assaults <span class="sc">|&gt;</span> </span>
+<span id="cb50-2"><a href="#cb50-2"></a>  <span class="fu">mutate</span>(<span class="at">wday =</span> <span class="fu">wday</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>), <span class="at">hour =</span> <span class="fu">hour</span>(date)) <span class="sc">|&gt;</span> </span>
+<span id="cb50-3"><a href="#cb50-3"></a>  <span class="fu">count</span>(wday, hour, <span class="at">name =</span> <span class="st">"count"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb50-4"><a href="#cb50-4"></a>  <span class="co"># By only setting the `hour` argument to `make_datetime()` we will create a</span></span>
+<span id="cb50-5"><a href="#cb50-5"></a>  <span class="co"># date-time on 1 January 1970, but that doesn't matter because we will not </span></span>
+<span id="cb50-6"><a href="#cb50-6"></a>  <span class="co"># show the date on the chart</span></span>
+<span id="cb50-7"><a href="#cb50-7"></a>  <span class="fu">mutate</span>(<span class="at">pseudo_date =</span> <span class="fu">make_datetime</span>(<span class="at">hour =</span> hour))</span>
+<span id="cb50-8"><a href="#cb50-8"></a></span>
+<span id="cb50-9"><a href="#cb50-9"></a><span class="fu">ggplot</span>(</span>
+<span id="cb50-10"><a href="#cb50-10"></a>  assault_hourly_counts, </span>
+<span id="cb50-11"><a href="#cb50-11"></a>  <span class="fu">aes</span>(<span class="at">x =</span> pseudo_date, <span class="at">y =</span> count, <span class="at">colour =</span> wday, <span class="at">group =</span> wday)</span>
+<span id="cb50-12"><a href="#cb50-12"></a>) <span class="sc">+</span></span>
+<span id="cb50-13"><a href="#cb50-13"></a>  <span class="fu">geom_line</span>(<span class="at">key_glyph =</span> <span class="st">"timeseries"</span>) <span class="sc">+</span></span>
+<span id="cb50-14"><a href="#cb50-14"></a>  <span class="fu">scale_x_datetime</span>(<span class="at">date_breaks =</span> <span class="st">"2 hours"</span>, <span class="at">date_labels =</span> <span class="st">"%H:%M"</span>) <span class="sc">+</span></span>
+<span id="cb50-15"><a href="#cb50-15"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>), <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">comma_format</span>()) <span class="sc">+</span></span>
+<span id="cb50-16"><a href="#cb50-16"></a>  <span class="fu">scale_colour_brewer</span>(<span class="at">type =</span> <span class="st">"qual"</span>) <span class="sc">+</span></span>
+<span id="cb50-17"><a href="#cb50-17"></a>  <span class="fu">labs</span>(</span>
+<span id="cb50-18"><a href="#cb50-18"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb50-19"><a href="#cb50-19"></a>    <span class="at">y =</span> <span class="st">"hourly total of aggravated assaults, 2010-2019"</span>,</span>
+<span id="cb50-20"><a href="#cb50-20"></a>    <span class="at">colour =</span> <span class="cn">NULL</span></span>
+<span id="cb50-21"><a href="#cb50-21"></a>  ) <span class="sc">+</span></span>
+<span id="cb50-22"><a href="#cb50-22"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/change-exercise6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>On this chart you can see that there are two distinct temporal patterns of assaults on different days of the week. Between Mondays and Thursdays, assaults peak between about 14:00 and 21:00 before reducing to a very-low level at about 05:00. At the weekend, the picture is different: assaults peak between midnight and 02:00 on both Saturdays and Sundays (i.e.&nbsp;very late on Friday and Saturday evenings).</p>
+<p>This chart probably uses the maximum number of different colours for days of the week that we could use before some of the colours became too similar to one another to be distinguishable. But even with this many colours, it might not be easy for a colour-blind person to translate between the colours of the lines and the colours in the legend. When you find that there are too many colours on a chart, this is a good sign that you should consider using small-multiple charts instead. Fortunately, we can do this by adding a column to the data specifying whether each day is a weekday or on a weekend, then adding <code>facet_grid()</code> to our <code>ggplot()</code> stack.</p>
+<div class="cell" data-exercise="true" data-exercise.lines="19">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a>assault_hourly_counts <span class="sc">|&gt;</span> </span>
+<span id="cb51-2"><a href="#cb51-2"></a>  <span class="fu">mutate</span>(<span class="at">weekend =</span> <span class="fu">if_else</span>(wday <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Sat"</span>, <span class="st">"Sun"</span>), <span class="st">"Sat–Sun"</span>, <span class="st">"Mon–Fri"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb51-3"><a href="#cb51-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> pseudo_date, <span class="at">y =</span> count, <span class="at">colour =</span> wday)) <span class="sc">+</span></span>
+<span id="cb51-4"><a href="#cb51-4"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb51-5"><a href="#cb51-5"></a>  <span class="co"># Assign the facets to rows so that we can compare the same time on different</span></span>
+<span id="cb51-6"><a href="#cb51-6"></a>  <span class="co"># days more easily (change `rows` to `cols` to see the alternative)</span></span>
+<span id="cb51-7"><a href="#cb51-7"></a>  <span class="fu">facet_grid</span>(<span class="at">rows =</span> <span class="fu">vars</span>(weekend)) <span class="sc">+</span></span>
+<span id="cb51-8"><a href="#cb51-8"></a>  <span class="fu">scale_x_datetime</span>(<span class="at">date_breaks =</span> <span class="st">"2 hours"</span>, <span class="at">date_labels =</span> <span class="st">"%H:%M"</span>) <span class="sc">+</span></span>
+<span id="cb51-9"><a href="#cb51-9"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>), <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">comma_format</span>()) <span class="sc">+</span></span>
+<span id="cb51-10"><a href="#cb51-10"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">type =</span> <span class="st">"qual"</span>) <span class="sc">+</span></span>
+<span id="cb51-11"><a href="#cb51-11"></a>  <span class="fu">labs</span>(</span>
+<span id="cb51-12"><a href="#cb51-12"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb51-13"><a href="#cb51-13"></a>    <span class="at">y =</span> <span class="st">"hourly total of aggravated assaults, 2010-2019"</span>,</span>
+<span id="cb51-14"><a href="#cb51-14"></a>    <span class="at">fill =</span> <span class="cn">NULL</span></span>
+<span id="cb51-15"><a href="#cb51-15"></a>  ) <span class="sc">+</span></span>
+<span id="cb51-16"><a href="#cb51-16"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/change-exercise7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This shows the two distinct patterns (weekdays and weekends) more clearly, while also letting us see that Friday is not like other weekdays since the peak in assaults continues later in the evening. Now that we’ve created this chart using <code>facet_grid()</code>, we could also add columns to show the same patterns in different areas, such as police districts or local neighbourhoods, or during different seasons.</p>
+</section></section><section id="how-to-map-change-over-time" class="level2" data-number="16.4"><h2 data-number="16.4" class="anchored" data-anchor-id="how-to-map-change-over-time">
+<span class="header-section-number">16.4</span> How to map change over time</h2>
+<p>Time-series or seasonal charts are often the best way to show change in the frequency of crime over time. But it can also be useful to show maps of the patterns of crimes at different points in time. We might, for example, want to show the density of crime in an area for different periods in time.</p>
+<p>Choosing how to divide up time into periods is an important step in this process, because in doing so we are converting a continuous variable (time) into a number of categories (periods of time). Whenever we convert an continuous variable to a categorical one we inevitably lose information. For example, if we decided to categorise the maximum temperature every day as being either ‘hot’ or ‘cold’, we would lose a lot of information about whether a particular day was moderately hot, very hot, etc. The same is true of time, since by splitting time into periods (hours, days, weeks, etc.) we lose information about variations within each period. This is inevitable, since we can’t produce infinite maps showing all the infinite moments in time, but it’s the reason why choosing periods carefully is important.</p>
+<p>When choosing a period over which to count crime, it is important not to just use default periods like the day from 00:00 to 23:59 just because that is the standard definition of a day. As we saw in the previous section, the peaks of many types of crime like assaults cross over the boundaries between days because the peak frequency is late in the evening. For this reason it may be better to, for example, define a day as a period from 05:00 to 04:59 and count the number of crimes within each day according to that definition. This takes advantage of the fact that very few crimes concentrate in the early hours of the morning.</p>
+<p>Sometimes, it will be easy to choose periods because they will be dictated by the purpose for which you’re creating the map. In this section we will create separate maps showing the density of aggravated assaults in a part of Chicago for each of the standard Chicago Police shifts of 06:00 to 13:59, 14:00 to 21:59 and 22:00 to 05:59 (bearing in mind that the actual hours some officers work may differ slightly).</p>
+<p>To do this, we will estimate the density of assaults separately for each shift period, the combine the three density layers and plot them on small-multiple maps. First, we create a new object containing data for the Chicago Police districts we are interested in with a column showing which police shift each assault occurred in.</p>
+<p>We can construct this column using the <code>case_when()</code> function from <code>dplyr</code>. <code>case_when()</code> allows us to specify any number of tests that we can apply to our data – when a test is passed the function assigns the corresponding label to that row (the label is separated from the test by a tilde character <code>~</code>). <code>case_when()</code> is like <code>recode()</code>, but for when we need to test for more-complicated things than just whether a variable has a particular value.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a>assaults_by_shift <span class="ot">&lt;-</span> assaults <span class="sc">|&gt;</span> </span>
+<span id="cb52-2"><a href="#cb52-2"></a>  <span class="fu">filter</span>(district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">12</span>, <span class="dv">18</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb52-3"><a href="#cb52-3"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb52-4"><a href="#cb52-4"></a>    <span class="at">shift =</span> <span class="fu">case_when</span>(</span>
+<span id="cb52-5"><a href="#cb52-5"></a>      <span class="fu">between</span>(<span class="fu">hour</span>(date), <span class="dv">6</span>, <span class="dv">13</span>) <span class="sc">~</span> <span class="st">"06:00 to 13:59"</span>,</span>
+<span id="cb52-6"><a href="#cb52-6"></a>      <span class="fu">between</span>(<span class="fu">hour</span>(date), <span class="dv">14</span>, <span class="dv">21</span>) <span class="sc">~</span> <span class="st">"14:00 to 21:59"</span>,</span>
+<span id="cb52-7"><a href="#cb52-7"></a>      <span class="fu">hour</span>(date) <span class="sc">&gt;=</span> <span class="dv">22</span> <span class="sc">|</span> <span class="fu">hour</span>(date) <span class="sc">&lt;</span> <span class="dv">6</span> <span class="sc">~</span> <span class="st">"22:00 to 05:59"</span>,</span>
+<span id="cb52-8"><a href="#cb52-8"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb52-9"><a href="#cb52-9"></a>    )</span>
+<span id="cb52-10"><a href="#cb52-10"></a>  )<span class="sc">|&gt;</span> </span>
+<span id="cb52-11"><a href="#cb52-11"></a>  <span class="co"># Convert the data to an SF object</span></span>
+<span id="cb52-12"><a href="#cb52-12"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb52-13"><a href="#cb52-13"></a>  <span class="co"># Transform it to a co-ordinate reference system based on metres</span></span>
+<span id="cb52-14"><a href="#cb52-14"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:26916"</span>)</span>
+<span id="cb52-15"><a href="#cb52-15"></a></span>
+<span id="cb52-16"><a href="#cb52-16"></a><span class="fu">head</span>(assaults_by_shift)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 4 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 444951.9 ymin: 4635831 xmax: 449271.4 ymax: 4641406
+Projected CRS: NAD83 / UTM zone 16N
+# A tibble: 6 × 5
+  date                loc_cat    district shift                  geometry
+  &lt;dttm&gt;              &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt;               &lt;POINT [m]&gt;
+1 2010-01-01 00:30:00 hotel             1 22:00 to 05… (448202.2 4635831)
+2 2010-01-01 01:45:00 street           18 22:00 to 05…   (446518 4641406)
+3 2010-01-01 01:48:00 hotel             1 22:00 to 05… (448202.2 4635831)
+4 2010-01-01 02:00:00 government       18 22:00 to 05… (449271.4 4637966)
+5 2010-01-01 02:59:00 leisure          12 22:00 to 05… (444951.9 4637265)
+6 2010-01-01 05:00:00 residence        18 22:00 to 05… (447278.5 4639968)</code></pre>
+</div>
+</div>
+<div class="box extra-detail">
+<h5 id="map-box1-title" class="box-title anchored">
+Why did we include <code>TRUE ~ NA_character_</code> in <code>case_when()</code>?
+</h5>
+<div id="map-box1" class="box-content">
+<p><code>case_when()</code> uses a series of true/false tests to create a variable, usually based on the values of other columns in the data. To make sure that every row in the dataset is matched by at least one of the tests, it is common practice to include a final test that is always true. The easiest way to do this is to simply create a test with the fixed value <code>TRUE</code>, since <code>TRUE</code> is always true! This catch-all test must be the last test within the <code>case_when()</code> function, because <code>case_when()</code> runs the tests in the order in which they are given and stops testing a given row in the data as soon as a test produces a true value.</p>
+<p>In this case, we will set the label for this last test to be <code>NA</code> (in fact, the special value <code>NA_character_</code> because <code>case_when()</code> only accepts labels that are characters) to catch any rows that have missing values of <code>date</code> or aren’t matched by any of our tests. Since our tests between them cover all the hours of the day, there shouldn’t be any rows that are not matched by at-least one test, but including a catch-all test makes it easier to catch any problems with our code.</p>
+<p>There’s lot’s more to learn about the <code>case_when()</code> function: you can find out more by looking at the <a href="https://dplyr.tidyverse.org/reference/case_when.html"><code>case_when()</code> page on the package website</a>.</p>
+</div>
+</div>
+<script>
+$("#map-box1-title").click(function () { $("#map-box1").toggle("slow") })
+</script><p>The next step is to produce a kernel density (KDE) layer for assaults occurring in each shift. In a previous tutorial we learned how to do this using the <code>sfhotspot</code> package. We could run the <code>hotspot_kde()</code> function from that package three times to create the KDE layers for each shift, but there is a simpler way to apply the same function to different parts of a dataset using the <code>group_modify()</code> function from <code>dplyr</code>.</p>
+<p>Normally, when we use a function to modify a dataset, that function is applied to the dataset as a whole. With <code>group_modify()</code>, we can apply a function to different parts of a dataset separately but still get the result as a single tibble with a column showing which group each row relates to (which is what we need to produce a map).</p>
+<p><code>group_modify()</code> needs two inputs. The first is a <em>grouped</em> dataset. We already know how to specify which column in a dataset represents which group each row is in using the <code>group_by()</code> function. The second input to <code>group_modify()</code> is the name of the function we want to use to modify each group in the data. The only complication is that we have to provide the details of the function that <code>group_modify()</code> should use in a slightly unusual format called an <em>anonymous function</em>. You can see this in the block of code below. You do not need to understand the details of how an anonymous function works, but you should note two things:</p>
+<ol type="1">
+<li>Anonymous functions start with the <code>~</code> character.</li>
+<li>In an anonymous function used within <code>group_modify()</code>, you can use the special value <code>.x</code> (note the dot) to represent the data in each group.</li>
+</ol>
+<p>So this code:</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a>some_data <span class="sc">|&gt;</span> </span>
+<span id="cb54-2"><a href="#cb54-2"></a>  <span class="fu">group_by</span>(some_variable) <span class="sc">|&gt;</span> </span>
+<span id="cb54-3"><a href="#cb54-3"></a>  <span class="fu">group_modify</span>(<span class="sc">~</span> <span class="fu">hotspot_kde</span>(.x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Means ‘take the dataset <code>some_data</code>, group it according to the values in the <code>some_variable</code> column and apply the <code>hotspot_kde()</code> function separately to each group’. The only thing left for us to do then is to use <code>ungroup()</code> to remove the grouping from the result produced by <code>group_modify()</code> and convert that result back to an SF object using <code>st_as_sf()</code>. Don’t worry about specifying any arguments to <code>st_as_sf()</code> – R will extract information such as the co-ordinate reference system from the <code>geometry</code> column of the data automatically.</p>
+<div class="cell" data-exercise="true">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="fu">library</span>(sfhotspot)</span>
+<span id="cb55-2"><a href="#cb55-2"></a></span>
+<span id="cb55-3"><a href="#cb55-3"></a>kde_by_shift <span class="ot">&lt;-</span> assaults_by_shift <span class="sc">|&gt;</span> </span>
+<span id="cb55-4"><a href="#cb55-4"></a>  <span class="fu">group_by</span>(shift) <span class="sc">|&gt;</span> </span>
+<span id="cb55-5"><a href="#cb55-5"></a>  <span class="fu">group_modify</span>(</span>
+<span id="cb55-6"><a href="#cb55-6"></a>    <span class="sc">~</span> <span class="fu">hotspot_kde</span>(.x, <span class="at">cell_size =</span> <span class="dv">200</span>, <span class="at">bandwidth_adjust =</span> <span class="fl">0.75</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb55-7"><a href="#cb55-7"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb55-8"><a href="#cb55-8"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb55-9"><a href="#cb55-9"></a>  <span class="fu">st_as_sf</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb55-10"><a href="#cb55-10"></a>  <span class="co"># Clip the result to the boundary of Chicago, which is already stored in the </span></span>
+<span id="cb55-11"><a href="#cb55-11"></a>  <span class="co"># `cpd_central` object</span></span>
+<span id="cb55-12"><a href="#cb55-12"></a>  <span class="fu">st_intersection</span>(cpd_central)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: attribute variables are assumed to be spatially constant throughout
+all geometries</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">head</span>(kde_by_shift)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 4 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 446980 ymin: 4637342 xmax: 447685.6 ymax: 4637558
+Projected CRS: NAD83 / UTM zone 16N
+# A tibble: 6 × 5
+  shift              n   kde district_no                                geometry
+  &lt;chr&gt;          &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;                           &lt;POLYGON [m]&gt;
+1 06:00 to 13:59     0  161.          18 ((447085.6 4637358, 447085.6 4637355, …
+2 06:00 to 13:59     4  204.          18 ((447085.6 4637358, 447112.6 4637358, …
+3 06:00 to 13:59     0  147.          18 ((447085.6 4637558, 447085.6 4637358, …
+4 06:00 to 13:59     0  186.          18 ((447085.6 4637558, 447285.6 4637558, …
+5 06:00 to 13:59     2  225.          18 ((447285.6 4637558, 447485.6 4637558, …
+6 06:00 to 13:59     4  257.          18 ((447485.6 4637558, 447685.6 4637558, …</code></pre>
+</div>
+</div>
+<div class="box extra-detail">
+<h5 id="map-box2-title" class="box-title anchored">
+How to anonymous functions work?
+</h5>
+<div id="map-box2" class="box-content">
+<p>Anonymous functions in R (and in many other programming languages) are a compact way of creating a new function that we can then immediately use to modify a dataset.</p>
+<p>We can create our own functions in R by using the <code>function()</code> function. For example, if we wanted to create our own version of the <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code> function that printed the first 10 rows of a dataset – rather than the default six rows printed by <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code> – we could create a function called <code>head10()</code>:</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a>head10 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb59-2"><a href="#cb59-2"></a>  <span class="fu">head</span>(x, <span class="at">n =</span> <span class="dv">10</span>)</span>
+<span id="cb59-3"><a href="#cb59-3"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>When we call the new <code>head10()</code> function on a dataset, R will take whatever data we provide to that function and run all the code inside the braces <code><a href="https://rdrr.io/r/base/Paren.html">{}</a></code> above using that data. We can use this new function anywhere in our code <em>after</em> we’ve created it. For example, if we had a dataset called <code>some_data</code> we could view the first 10 rows of it by creating an then using our new function:</p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a>head10 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb60-2"><a href="#cb60-2"></a>  <span class="fu">head</span>(x, <span class="at">n =</span> <span class="dv">10</span>)</span>
+<span id="cb60-3"><a href="#cb60-3"></a>}</span>
+<span id="cb60-4"><a href="#cb60-4"></a></span>
+<span id="cb60-5"><a href="#cb60-5"></a><span class="fu">head10</span>(some_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Note that <em>inside</em> our new function, the dataset is referred to by the name that we gave it in the parentheses <code>()</code> after the word <code>function</code>, <em>not</em> by the name of the dataset itself. This is important because it means our custom function will work regardless of what a particular dataset is called.</p>
+<p>We could include lots of lines of code inside our new function, but in this case there is just one – <code>head(x, n = 10)</code>. When we want to create a function that consists of a single line of code, we can dispense with the braces and put the whole function on one line:</p>
+<div class="sourceCode" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a>head10 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">head</span>(x, <span class="at">n =</span> <span class="dv">10</span>)</span>
+<span id="cb61-2"><a href="#cb61-2"></a></span>
+<span id="cb61-3"><a href="#cb61-3"></a><span class="fu">head10</span>(some_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Creating a new function and giving it a name is useful if we want to use the function several times in our code. But in the case of the function we need to provide to <code>group_modify()</code> in our code, we only need to use the new function once. In this case, we can dispense with the need to give our new function a name, and instead create an anonymous function. To do this, we replace <code>function(x)</code> with the <code>~</code> character.</p>
+<p>This makes the definition of our custom function even faster, but means we can only use it inside a function such as <code>group_modify()</code> or <code>map()</code> that needs a function definition to work. Using an anonymous function also means we need some way of referring to our dataset inside the new function, since we don’t have the opportunity to define it inside parentheses after the word <code>function</code>. Fortunately, <code>group_modify()</code> understands that if we refer to <code>.x</code> (note the dot) inside our anonymous function, that should be interpreted as referring to our dataset.</p>
+<p>There is a lot more you could learn about creating your own functions in R. If you are interested, you might want to <a href="https://swcarpentry.github.io/r-novice-inflammation/02-func-R/">work through this lesson on Creating Functions</a>.</p>
+</div>
+</div>
+<script>
+$("#map-box2-title").click(function () { $("#map-box2").toggle("slow") })
+</script><p>Now we have a KDE layer for each shift, we can create three maps for the three shifts by adding <code>facet_wrap()</code> to a <code>ggplot()</code> stack.</p>
+<div class="cell" data-exercise="true" data-exercise.lines="30">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a><span class="fu">library</span>(ggspatial)</span>
+<span id="cb62-2"><a href="#cb62-2"></a></span>
+<span id="cb62-3"><a href="#cb62-3"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb62-4"><a href="#cb62-4"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"cartolight"</span>, <span class="at">zoomin =</span> <span class="dv">0</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb62-5"><a href="#cb62-5"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb62-6"><a href="#cb62-6"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> kde), </span>
+<span id="cb62-7"><a href="#cb62-7"></a>    <span class="at">data =</span> kde_by_shift, </span>
+<span id="cb62-8"><a href="#cb62-8"></a>    <span class="at">alpha =</span> <span class="fl">0.75</span>, </span>
+<span id="cb62-9"><a href="#cb62-9"></a>    <span class="at">colour =</span> <span class="cn">NA</span></span>
+<span id="cb62-10"><a href="#cb62-10"></a>  ) <span class="sc">+</span></span>
+<span id="cb62-11"><a href="#cb62-11"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb62-12"><a href="#cb62-12"></a>    <span class="at">data =</span> <span class="fu">filter</span>(cpd_districts, district_no <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">12</span>, <span class="dv">18</span>)), </span>
+<span id="cb62-13"><a href="#cb62-13"></a>    <span class="at">colour =</span> <span class="st">"grey33"</span>, </span>
+<span id="cb62-14"><a href="#cb62-14"></a>    <span class="at">fill =</span> <span class="cn">NA</span></span>
+<span id="cb62-15"><a href="#cb62-15"></a>  ) <span class="sc">+</span></span>
+<span id="cb62-16"><a href="#cb62-16"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(shift)) <span class="sc">+</span></span>
+<span id="cb62-17"><a href="#cb62-17"></a>  <span class="fu">scale_fill_distiller</span>(</span>
+<span id="cb62-18"><a href="#cb62-18"></a>    <span class="at">breaks =</span> <span class="fu">range</span>(<span class="fu">pull</span>(kde_by_shift, kde)),</span>
+<span id="cb62-19"><a href="#cb62-19"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"lower"</span>, <span class="st">"higher"</span>),</span>
+<span id="cb62-20"><a href="#cb62-20"></a>    <span class="at">direction =</span> <span class="dv">1</span></span>
+<span id="cb62-21"><a href="#cb62-21"></a>  ) <span class="sc">+</span></span>
+<span id="cb62-22"><a href="#cb62-22"></a>  <span class="fu">labs</span>(</span>
+<span id="cb62-23"><a href="#cb62-23"></a>    <span class="at">fill =</span> <span class="st">"density of aggravated assaults"</span></span>
+<span id="cb62-24"><a href="#cb62-24"></a>  ) <span class="sc">+</span></span>
+<span id="cb62-25"><a href="#cb62-25"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb62-26"><a href="#cb62-26"></a>  <span class="fu">theme</span>(</span>
+<span id="cb62-27"><a href="#cb62-27"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb62-28"><a href="#cb62-28"></a>    <span class="at">legend.title.align =</span> <span class="dv">1</span></span>
+<span id="cb62-29"><a href="#cb62-29"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: The `legend.title.align` argument of `theme()` is deprecated as of ggplot2
+3.5.0.
+ℹ Please use theme(legend.title = element_text(hjust)) instead.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/map-exercise3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>On this map we can see that some places have a relatively high density of assaults throughout all three shifts, but others only have a high density at certain times. We can perhaps make this clearer by only showing the grid cells with the highest estimated density of assaults during each shift. We can do this using the <code>slice_max()</code> function from <code>dplyr</code>, which allows us to extract the rows in a dataset with the highest values of a particular variable. In this case we will use <code>slice_max()</code> together with <code>group_by()</code> to get the rows with the highest values <em>separately for each shift</em> rather than those with the highest values across all three shifts combined.</p>
+<div class="cell" data-exercise="true" data-exercise.lines="21">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a>kde_shift_highest <span class="ot">&lt;-</span> kde_by_shift <span class="sc">|&gt;</span> </span>
+<span id="cb64-2"><a href="#cb64-2"></a>  <span class="fu">group_by</span>(shift) <span class="sc">|&gt;</span> </span>
+<span id="cb64-3"><a href="#cb64-3"></a>  <span class="fu">slice_max</span>(<span class="at">order_by =</span> kde, <span class="at">n =</span> <span class="dv">10</span>)</span>
+<span id="cb64-4"><a href="#cb64-4"></a></span>
+<span id="cb64-5"><a href="#cb64-5"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb64-6"><a href="#cb64-6"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"cartolight"</span>, <span class="at">zoomin =</span> <span class="dv">0</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb64-7"><a href="#cb64-7"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb64-8"><a href="#cb64-8"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> kde), </span>
+<span id="cb64-9"><a href="#cb64-9"></a>    <span class="at">data =</span> kde_shift_highest, </span>
+<span id="cb64-10"><a href="#cb64-10"></a>    <span class="at">alpha =</span> <span class="fl">0.75</span>, </span>
+<span id="cb64-11"><a href="#cb64-11"></a>    <span class="at">colour =</span> <span class="cn">NA</span>,</span>
+<span id="cb64-12"><a href="#cb64-12"></a>    <span class="at">fill =</span> <span class="st">"red2"</span></span>
+<span id="cb64-13"><a href="#cb64-13"></a>  ) <span class="sc">+</span></span>
+<span id="cb64-14"><a href="#cb64-14"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb64-15"><a href="#cb64-15"></a>    <span class="at">data =</span> <span class="fu">filter</span>(cpd_districts, district_no <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">12</span>, <span class="dv">18</span>)), </span>
+<span id="cb64-16"><a href="#cb64-16"></a>    <span class="at">colour =</span> <span class="st">"grey33"</span>, </span>
+<span id="cb64-17"><a href="#cb64-17"></a>    <span class="at">fill =</span> <span class="cn">NA</span></span>
+<span id="cb64-18"><a href="#cb64-18"></a>  ) <span class="sc">+</span></span>
+<span id="cb64-19"><a href="#cb64-19"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(shift)) <span class="sc">+</span></span>
+<span id="cb64-20"><a href="#cb64-20"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/map-exercise4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This map makes it very clear that the grid cells with the highest densities of aggravated assaults are very similar in the daytime and evening shifts, in both places being concentrated in the downtown area known as The Loop. For the overnight shift, however, the cells with the highest densities are on the other side of the Chicago River in the River North neighbourhood. A map like this might be particularly useful if the resources available to respond to a crime problem were very limited and so could only be deployed in the places where the problem was worst – this is often the case because crime-prevention resources <em>are</em> often very limited.</p>
+</section><section id="making-animated-maps" class="level2" data-number="16.5"><h2 data-number="16.5" class="anchored" data-anchor-id="making-animated-maps">
+<span class="header-section-number">16.5</span> Making animated maps</h2>
+<p>The small-multiple map we have produced of aggravated-assault hotspots in Chicago is useful, especially for policing because it uses periods based on police shifts. But aggregating crimes into only three temporal periods inevitably throws away a lot of information about when crime happens. For example, at what time of night does the area of highest assault density move across the river from The Loop to River North?</p>
+<p>We could produce a series of small-multiple maps showing shorter periods (meaning more small multiples). For example, we could show one small-multiple map for each hour of the day. However, this would make each map very small and it would be hard to see the details of locations on each map.</p>
+<p>One alternative is to produce an animated map with each frame in the animation representing the map for each hour. We can do this using the <a href="https://gganimate.com/"><code>gganimate</code> package</a>.</p>
+<p>The first step in producing an animated map is to create a KDE layer for each hour of the day. The code for this is the same as for the code we have already used to produce the KDE layers for each shift, except that we create a variable for hour of the day rather than police shift. Because an animated map of hours of the day needs 24 KDE layers, in this case it is particularly useful to use <code>group_modify()</code> to avoid having to create 24 different objects and then binding them together.</p>
+<div class="cell" data-exercise="true" data-exercise.lines="27">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1"></a><span class="fu">library</span>(gganimate)</span>
+<span id="cb65-2"><a href="#cb65-2"></a></span>
+<span id="cb65-3"><a href="#cb65-3"></a>assaults_by_hour <span class="ot">&lt;-</span> assaults <span class="sc">|&gt;</span> </span>
+<span id="cb65-4"><a href="#cb65-4"></a>  <span class="fu">filter</span>(district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">12</span>, <span class="dv">18</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb65-5"><a href="#cb65-5"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb65-6"><a href="#cb65-6"></a>    <span class="co"># Create nicely formatted labels for each hour</span></span>
+<span id="cb65-7"><a href="#cb65-7"></a>    <span class="at">hour_name =</span> <span class="fu">str_pad</span>(<span class="fu">hour</span>(date), <span class="at">width =</span> <span class="dv">2</span>, <span class="at">pad =</span> <span class="st">"0"</span>),</span>
+<span id="cb65-8"><a href="#cb65-8"></a>    <span class="at">hour_name =</span> <span class="fu">str_glue</span>(<span class="st">"{hour_name}:00 to {hour_name}:59"</span>)</span>
+<span id="cb65-9"><a href="#cb65-9"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb65-10"><a href="#cb65-10"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb65-11"><a href="#cb65-11"></a>  <span class="co"># Convert the data to a suitable co-ordinate system for Chicago</span></span>
+<span id="cb65-12"><a href="#cb65-12"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:26916"</span>)</span>
+<span id="cb65-13"><a href="#cb65-13"></a></span>
+<span id="cb65-14"><a href="#cb65-14"></a>hour_layers <span class="ot">&lt;-</span> assaults_by_hour <span class="sc">|&gt;</span> </span>
+<span id="cb65-15"><a href="#cb65-15"></a>  <span class="fu">group_by</span>(hour_name) <span class="sc">|&gt;</span> </span>
+<span id="cb65-16"><a href="#cb65-16"></a>  <span class="fu">group_modify</span>(</span>
+<span id="cb65-17"><a href="#cb65-17"></a>    <span class="sc">~</span> <span class="fu">hotspot_kde</span>(.x, <span class="at">cell_size =</span> <span class="dv">200</span>, <span class="at">bandwidth_adjust =</span> <span class="fl">0.75</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb65-18"><a href="#cb65-18"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb65-19"><a href="#cb65-19"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb65-20"><a href="#cb65-20"></a>  <span class="fu">st_as_sf</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb65-21"><a href="#cb65-21"></a>  <span class="fu">st_intersection</span>(cpd_central)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: attribute variables are assumed to be spatially constant throughout
+all geometries</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a><span class="co"># Extract only the 10 cells with the highest density in each hour</span></span>
+<span id="cb67-2"><a href="#cb67-2"></a>hour_highest <span class="ot">&lt;-</span> hour_layers <span class="sc">|&gt;</span> </span>
+<span id="cb67-3"><a href="#cb67-3"></a>  <span class="fu">group_by</span>(hour_name) <span class="sc">|&gt;</span> </span>
+<span id="cb67-4"><a href="#cb67-4"></a>  <span class="fu">slice_max</span>(<span class="at">order_by =</span> kde, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="box notewell tutorial">
+<p>It is possible that this code will time out and give an error saying <code>Your code ran longer than the permitted timelimit for this exercise.</code> – if that happens then just continue with the rest of the tutorial as normal.</p>
+</div>
+<div class="box notewell book">
+<p>This code is likely to take a while to run, because it calculates KDE values separately for every grid cell for each of 24 hours.</p>
+</div>
+<p>We can now use the <code>hour_highest</code> object as the basis for a new base map that only includes the areas of the highest density (so they appear larger on the animated map).</p>
+<p>To create an animated map we use the <code>transition_states()</code> function from the <code>gganimate</code> package. <code>transition_states()</code> works in a similar way to <code>facet_wrap()</code>, in that when added to a <code>ggplot()</code> stack it splits the chart or map up into a separate map for each value of one of the variables in the data (in this case, the hour of the day). The only difference is that while <code>facet_wrap()</code> arranges those separate maps next to one another, <code>transition_states()</code> arranges them into an animation.</p>
+<div class="cell" data-exercise="true" data-exercise.lines="18">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb68-2"><a href="#cb68-2"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"cartolight"</span>, <span class="at">zoomin =</span> <span class="dv">0</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb68-3"><a href="#cb68-3"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb68-4"><a href="#cb68-4"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> kde),</span>
+<span id="cb68-5"><a href="#cb68-5"></a>    <span class="at">data =</span> hour_highest, </span>
+<span id="cb68-6"><a href="#cb68-6"></a>    <span class="at">alpha =</span> <span class="fl">0.75</span>, </span>
+<span id="cb68-7"><a href="#cb68-7"></a>    <span class="at">colour =</span> <span class="cn">NA</span>,</span>
+<span id="cb68-8"><a href="#cb68-8"></a>    <span class="at">fill =</span> <span class="st">"red2"</span></span>
+<span id="cb68-9"><a href="#cb68-9"></a>  ) <span class="sc">+</span></span>
+<span id="cb68-10"><a href="#cb68-10"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> cpd_central, <span class="at">colour =</span> <span class="st">"grey33"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb68-11"><a href="#cb68-11"></a>  <span class="fu">transition_states</span>(<span class="at">states =</span> hour_name) <span class="sc">+</span></span>
+<span id="cb68-12"><a href="#cb68-12"></a>  <span class="fu">labs</span>(</span>
+<span id="cb68-13"><a href="#cb68-13"></a>    <span class="at">title =</span> <span class="st">"Aggravated assaults in downtown Chicago, 2010-2019"</span>,</span>
+<span id="cb68-14"><a href="#cb68-14"></a>    <span class="at">subtitle =</span> <span class="st">"Areas with most aggravated assaults:</span><span class="sc">\n</span><span class="st">{closest_state}"</span>,</span>
+<span id="cb68-15"><a href="#cb68-15"></a>    <span class="at">caption =</span> <span class="st">"Data from Chicago Police"</span></span>
+<span id="cb68-16"><a href="#cb68-16"></a>  ) <span class="sc">+</span></span>
+<span id="cb68-17"><a href="#cb68-17"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/animated-exercise3-1.gif" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="box extra-detail tutorial">
+<h5 id="animated-box1-title" class="box-title anchored">
+I got an error starting <code>Your code ran longer than</code>
+</h5>
+<div id="animated-box1" class="box-content">
+<p>This code may take longer to run than is allowed for code inside an interactive tutorial. In which case, you may see the error <code>Your code ran longer than the permitted timelimit for this exercise</code>. If that happens, you can <a href="https://mpjashby.github.io/crimemappingdata/chicago_aggravated_assaults.csv.gz">download the Chicago assaults data</a> and create an animated map in an R script of your own using the code in the chunks above. For reference, this code should produce a map looking like this:</p>
+<p class="centered-image">
+<img src="https://github.com/mpjashby/crimemapping/raw/main/inst/tutorials/16_mapping_time/images/chicago_animated_highest.gif" alt="Animated map showing how the areas of downtown Chicago with the highest density of aggravated assaults vary throughout the hours of the day."></p>
+</div>
+</div>
+<script>
+$("#animated-box1-title").click(function () { $("#animated-box1").toggle("slow") })
+</script><p>There is one other function of <code>gganimate</code> we have used in the code used to make this map. You might have noticed that in the map <code>subtitle</code> is the code <code>{closest_state}</code>. This is a special code that <code>gganimate</code> will replace with the current value of the variable in the data that is used to control which facet appears in each frame of the animation. So for this map, <code>{closest_state}</code> will be replaced in the animation with the value of the <code>hour_name</code> variable in the data for each frame in the animation.</p>
+<p>This animated map is very sensitive to the number of grid cells we choose to extract (in the map above, 10 cells for each hour) – it might look quite different if we had chosen a different number. To show the density of crime in all of downtown Chicago, we can combine the base map and KDE layers we have already created to produce another animated map.</p>
+<div class="cell" data-exercise="true" data-exercise.lines="18">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb69-2"><a href="#cb69-2"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"cartolight"</span>, <span class="at">zoomin =</span> <span class="dv">0</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb69-3"><a href="#cb69-3"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> kde), <span class="at">data =</span> hour_layers, <span class="at">alpha =</span> <span class="fl">0.75</span>, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb69-4"><a href="#cb69-4"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> cpd_central, <span class="at">colour =</span> <span class="st">"grey33"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb69-5"><a href="#cb69-5"></a>  <span class="fu">transition_states</span>(<span class="at">states =</span> hour_name) <span class="sc">+</span></span>
+<span id="cb69-6"><a href="#cb69-6"></a>  <span class="fu">scale_fill_distiller</span>(</span>
+<span id="cb69-7"><a href="#cb69-7"></a>    <span class="at">breaks =</span> <span class="fu">range</span>(<span class="fu">pull</span>(hour_layers, kde)),</span>
+<span id="cb69-8"><a href="#cb69-8"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"lower"</span>, <span class="st">"higher"</span>),</span>
+<span id="cb69-9"><a href="#cb69-9"></a>    <span class="at">direction =</span> <span class="dv">1</span></span>
+<span id="cb69-10"><a href="#cb69-10"></a>  ) <span class="sc">+</span></span>
+<span id="cb69-11"><a href="#cb69-11"></a>  <span class="fu">labs</span>(</span>
+<span id="cb69-12"><a href="#cb69-12"></a>    <span class="at">title =</span> <span class="st">"Aggravated assaults in downtown Chicago, 2010-2019"</span>,</span>
+<span id="cb69-13"><a href="#cb69-13"></a>    <span class="at">subtitle =</span> <span class="st">"Density of aggravated assaults: {closest_state}"</span>,</span>
+<span id="cb69-14"><a href="#cb69-14"></a>    <span class="at">caption =</span> <span class="st">"Data from Chicago Police"</span>,</span>
+<span id="cb69-15"><a href="#cb69-15"></a>    <span class="at">fill =</span> <span class="st">"density of</span><span class="sc">\n</span><span class="st">aggravated</span><span class="sc">\n</span><span class="st">assaults"</span></span>
+<span id="cb69-16"><a href="#cb69-16"></a>  ) <span class="sc">+</span></span>
+<span id="cb69-17"><a href="#cb69-17"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/animated-exercise4-1.gif" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="tutorial">
+<p>This code typically takes a minute or so to finish running because it has to generate 24 maps and then stitch them together. It is unlikely that the code will finish running before the maximum time that a chunk of code in an R tutorial is allowed to run for before automatically stopping. If you were to run this code in RStudio, the map it would produce would look like this:</p>
+<p class="centered-image">
+<img src="https://github.com/mpjashby/crimemapping/raw/main/inst/tutorials/16_mapping_time/images/chicago_downtown_agg_assaults.gif" alt="Animated map showing how the density of aggravated assaults in Chicago varies throughout the hours of the day."></p>
+</div>
+<p>We can save an animated map to a file using the <code>animate()</code> and <code>anim_save()</code> functions. <code>animate()</code> controls the type of file the animation will be saved in (by default, an animated GIF), the height and width of the plot and so on. <code>anim_save()</code> then saves the animation in a file. For example, if we stored the map created above in an object called <code>chicago_downtown_kde_map</code>, we could save it to an animated GIF file.</p>
+<div class="sourceCode" id="cb70"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1"></a><span class="fu">anim_save</span>(</span>
+<span id="cb70-2"><a href="#cb70-2"></a>  <span class="at">filename =</span> <span class="st">"chicago_downtown_agg_assaults.gif"</span>, </span>
+<span id="cb70-3"><a href="#cb70-3"></a>  <span class="at">animation =</span> <span class="fu">animate</span>(</span>
+<span id="cb70-4"><a href="#cb70-4"></a>    <span class="at">plot =</span> chicago_downtown_kde_map,</span>
+<span id="cb70-5"><a href="#cb70-5"></a>    <span class="at">height =</span> <span class="dv">800</span>, </span>
+<span id="cb70-6"><a href="#cb70-6"></a>    <span class="at">width =</span> <span class="dv">800</span>, </span>
+<span id="cb70-7"><a href="#cb70-7"></a>    <span class="at">units =</span> <span class="st">"px"</span></span>
+<span id="cb70-8"><a href="#cb70-8"></a>  )</span>
+<span id="cb70-9"><a href="#cb70-9"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section><section id="in-summary" class="level2" data-number="16.6"><h2 data-number="16.6" class="anchored" data-anchor-id="in-summary">
+<span class="header-section-number">16.6</span> In summary</h2>
+<div class="box welldone">
+<p>In this tutorial we have learned how to incorporate change over time into our analysis of where crime happens. This is important because the distribution of crime across different places often varies at different times. Being aware of the importance of time when we make maps means we can do things like create small-multiple or animated maps for different time periods, which we could use to make sure that scarce crime-prevention resources are used at the right time as well as in the right place.</p>
+</div>
+<p>This is the complete code we need to create an animated map of aggravated assaults in Chicago. Think about how you could change it, or what extra information you could add, to make this map as useful as possible to different groups of practitioners and policy makers.</p>
+<div class="cell" data-exercise="true" data-exercise.lines="72">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a><span class="co"># Load packages</span></span>
+<span id="cb71-2"><a href="#cb71-2"></a><span class="fu">library</span>(gganimate)</span>
+<span id="cb71-3"><a href="#cb71-3"></a><span class="fu">library</span>(ggspatial)</span>
+<span id="cb71-4"><a href="#cb71-4"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb71-5"><a href="#cb71-5"></a><span class="fu">library</span>(sf)</span>
+<span id="cb71-6"><a href="#cb71-6"></a><span class="fu">library</span>(sfhotspot)</span>
+<span id="cb71-7"><a href="#cb71-7"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb71-8"><a href="#cb71-8"></a></span>
+<span id="cb71-9"><a href="#cb71-9"></a></span>
+<span id="cb71-10"><a href="#cb71-10"></a><span class="co"># Load data --------------------------------------------------------------------</span></span>
+<span id="cb71-11"><a href="#cb71-11"></a></span>
+<span id="cb71-12"><a href="#cb71-12"></a><span class="co"># Aggravated assaults, Chicago, 2010 to 2019</span></span>
+<span id="cb71-13"><a href="#cb71-13"></a>assaults <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/chicago_aggravated_assaults.csv.gz"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 148636 Columns: 5
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr  (1): loc_cat
+dbl  (3): longitude, latitude, district
+dttm (1): date
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1"></a><span class="co"># Chicago Police districts 1, 12 and 18</span></span>
+<span id="cb73-2"><a href="#cb73-2"></a>cpd_central <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/chicago_police_districts.kml"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb73-3"><a href="#cb73-3"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:26916"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb73-4"><a href="#cb73-4"></a>  <span class="fu">mutate</span>(<span class="at">district_no =</span> <span class="fu">as.numeric</span>(Name)) <span class="sc">|&gt;</span> </span>
+<span id="cb73-5"><a href="#cb73-5"></a>  <span class="fu">filter</span>(district_no <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">12</span>, <span class="dv">18</span>))</span>
+<span id="cb73-6"><a href="#cb73-6"></a></span>
+<span id="cb73-7"><a href="#cb73-7"></a></span>
+<span id="cb73-8"><a href="#cb73-8"></a><span class="co"># Wrangle data -----------------------------------------------------------------</span></span>
+<span id="cb73-9"><a href="#cb73-9"></a></span>
+<span id="cb73-10"><a href="#cb73-10"></a><span class="co"># Calculate number of assaults each hour</span></span>
+<span id="cb73-11"><a href="#cb73-11"></a>hour_layers <span class="ot">&lt;-</span> assaults <span class="sc">|&gt;</span> </span>
+<span id="cb73-12"><a href="#cb73-12"></a>  <span class="fu">filter</span>(district <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">12</span>, <span class="dv">18</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb73-13"><a href="#cb73-13"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb73-14"><a href="#cb73-14"></a>    <span class="at">hour_name =</span> <span class="fu">str_pad</span>(<span class="fu">hour</span>(date), <span class="at">width =</span> <span class="dv">2</span>, <span class="at">pad =</span> <span class="st">"0"</span>),</span>
+<span id="cb73-15"><a href="#cb73-15"></a>    <span class="at">hour_name =</span> <span class="fu">str_glue</span>(<span class="st">"{hour_name}:00 to {hour_name}:59"</span>)</span>
+<span id="cb73-16"><a href="#cb73-16"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb73-17"><a href="#cb73-17"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb73-18"><a href="#cb73-18"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:26916"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb73-19"><a href="#cb73-19"></a>  <span class="fu">group_by</span>(hour_name) <span class="sc">|&gt;</span> </span>
+<span id="cb73-20"><a href="#cb73-20"></a>  <span class="fu">group_modify</span>(</span>
+<span id="cb73-21"><a href="#cb73-21"></a>    <span class="sc">~</span> <span class="fu">hotspot_kde</span>(.x, <span class="at">cell_size =</span> <span class="dv">200</span>, <span class="at">bandwidth_adjust =</span> <span class="fl">0.75</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb73-22"><a href="#cb73-22"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb73-23"><a href="#cb73-23"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb73-24"><a href="#cb73-24"></a>  <span class="fu">st_as_sf</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb73-25"><a href="#cb73-25"></a>  <span class="fu">st_intersection</span>(cpd_central)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: attribute variables are assumed to be spatially constant throughout
+all geometries</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1"></a><span class="co"># Create map ---------------------------------------------------------------------</span></span>
+<span id="cb75-2"><a href="#cb75-2"></a>chicago_downtown_kde_map <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb75-3"><a href="#cb75-3"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"cartolight"</span>, <span class="at">zoomin =</span> <span class="dv">0</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb75-4"><a href="#cb75-4"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> kde), <span class="at">data =</span> hour_layers, <span class="at">alpha =</span> <span class="fl">0.75</span>, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb75-5"><a href="#cb75-5"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> cpd_central, <span class="at">colour =</span> <span class="st">"grey33"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb75-6"><a href="#cb75-6"></a>  <span class="fu">transition_states</span>(<span class="at">states =</span> hour_name) <span class="sc">+</span></span>
+<span id="cb75-7"><a href="#cb75-7"></a>  <span class="fu">scale_fill_distiller</span>(</span>
+<span id="cb75-8"><a href="#cb75-8"></a>    <span class="at">breaks =</span> <span class="fu">range</span>(<span class="fu">pull</span>(hour_layers, kde)),</span>
+<span id="cb75-9"><a href="#cb75-9"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"lower"</span>, <span class="st">"higher"</span>),</span>
+<span id="cb75-10"><a href="#cb75-10"></a>    <span class="at">direction =</span> <span class="dv">1</span></span>
+<span id="cb75-11"><a href="#cb75-11"></a>  ) <span class="sc">+</span></span>
+<span id="cb75-12"><a href="#cb75-12"></a>  <span class="fu">labs</span>(</span>
+<span id="cb75-13"><a href="#cb75-13"></a>    <span class="at">title =</span> <span class="st">"Aggravated assaults in downtown Chicago, 2010-2019"</span>,</span>
+<span id="cb75-14"><a href="#cb75-14"></a>    <span class="at">subtitle =</span> <span class="st">"Density of aggravated assaults: {closest_state}"</span>,</span>
+<span id="cb75-15"><a href="#cb75-15"></a>    <span class="at">caption =</span> <span class="st">"Data from Chicago Police"</span>,</span>
+<span id="cb75-16"><a href="#cb75-16"></a>    <span class="at">fill =</span> <span class="st">"density of</span><span class="sc">\n</span><span class="st">aggravated</span><span class="sc">\n</span><span class="st">assaults"</span></span>
+<span id="cb75-17"><a href="#cb75-17"></a>  ) <span class="sc">+</span></span>
+<span id="cb75-18"><a href="#cb75-18"></a>  <span class="fu">theme_void</span>()</span>
+<span id="cb75-19"><a href="#cb75-19"></a></span>
+<span id="cb75-20"><a href="#cb75-20"></a></span>
+<span id="cb75-21"><a href="#cb75-21"></a><span class="co"># Save map ---------------------------------------------------------------------</span></span>
+<span id="cb75-22"><a href="#cb75-22"></a><span class="fu">anim_save</span>(</span>
+<span id="cb75-23"><a href="#cb75-23"></a>  <span class="at">filename =</span> <span class="st">"chicago_downtown_agg_assaults.gif"</span>, </span>
+<span id="cb75-24"><a href="#cb75-24"></a>  <span class="at">animation =</span> <span class="fu">animate</span>(</span>
+<span id="cb75-25"><a href="#cb75-25"></a>    <span class="at">plot =</span> chicago_downtown_kde_map,</span>
+<span id="cb75-26"><a href="#cb75-26"></a>    <span class="at">height =</span> <span class="dv">800</span>, </span>
+<span id="cb75-27"><a href="#cb75-27"></a>    <span class="at">width =</span> <span class="dv">800</span>, </span>
+<span id="cb75-28"><a href="#cb75-28"></a>    <span class="at">units =</span> <span class="st">"px"</span></span>
+<span id="cb75-29"><a href="#cb75-29"></a>  )</span>
+<span id="cb75-30"><a href="#cb75-30"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="reading">
+<p>You can learn more about:</p>
+<ul>
+<li>using the different functions in the <code>lubridate</code> package to <a href="https://lubridate.tidyverse.org/articles/lubridate.html">Do more with dates and times in R</a> and</li>
+<li>animating different types of map and chart in different ways in <a href="https://gganimate.com/articles/gganimate.html">Getting Started with <code>gganimate</code></a>.</li>
+</ul>
+</div>
+<p class="credits">
+<a href="https://twitter.com/allison_horst">Artwork by <span class="citation" data-cites="allison_horst">@allison_horst</span></a>
+</p>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../15_no_maps/index.html" class="pagination-link" aria-label="Presenting spatial data without maps">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Presenting spatial data without maps</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../appendices/read_functions.html" class="pagination-link" aria-label="Functions for reading data into R">
+        <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Functions for reading data into R</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+<li class="nav-item">
+    <a class="nav-link" href="https://creativecommons.org/licenses/by/4.0/">
+<p>This book is available under a Creative Commons Attribution 4.0 International licence</p>
+</a>
+  </li>  
+</ul>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+</body></html>
