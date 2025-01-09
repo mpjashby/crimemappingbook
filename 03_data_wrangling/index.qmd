@@ -1,90 +1,53 @@
-# Wrangling data
+# Wrangling data {#sec-wrangling-data}
 
-**Learn the building blocks of data analysis: loading, filtering, manipulating and saving data for crime mapping.**
-
-
-::: {.box .load-tutorial}
-To load the [interactive tutorial](../#how-to-use-this-book) for this chapter, copy and paste the following code into the RStudio console:
-
-```r
-crimemapping::tutorial("03_data_wrangling")
-```
-
-and press `Enter`.
+::: {.abstract}
+This chapter introduces the essential skills of data wrangling, an important step in preparing data for analysis and presentation. You'll learn to load, filter, manipulate, and save datasets using R. This chapter guides you through handling tabular and Excel data formats, selecting relevant data, and applying functions from powerful R packages like tidyverse. By the end of this chapter you will be able to confidently transform raw data into a format ready for meaningful insights. Let’s dive in!
 :::
 
 
-```{r setup, include=FALSE}
+```{r setup}
 #| echo: false
 #| include: false
 
-source(here::here("mask_learnr_functions.R"))
+# Load packages
+pacman::p_load(tidyverse)
 
-# load packages
-library(tidyverse)
-
-# load data
-download.file(
-  url = "https://mpjashby.github.io/crimemappingdata/aggravated_assaults.xlsx", 
-  destfile = agg_assaults_file <- tempfile(fileext = ".xlsx"),
-  mode = "wb"
-)
-agg_assault_data <- readxl::read_excel(agg_assaults_file, sheet = "Austin")
+# Load data
+agg_assault_data <- crimemappingdata::aggravated_assaults
+san_fran_rob <- crimemappingdata::san_francisco_robbery
 ```
 
 
 
 ## Introduction
 
-A major step in using any data to make decisions or draw conclusions is *data
-wrangling*: the process of transforming data from the format in which we 
-originally have it to the format needed to analyse and present it to our
-audience. 
+A major step in using any data to make decisions or draw conclusions is *data wrangling*: the process of transforming data from the format in which we originally have it to the format needed to analyse and present it to our audience. 
 
-<p class="full-width-image"><img src="https://github.com/mpjashby/crimemapping/raw/main/inst/tutorials/03_data_wrangling/images/datawrangling.jpg" alt="Cartoon of furry monsters putting boxes onto a conveyor belt with machines marked 'wrangle', 'vizualise' and 'model' adjusting the boxes as they move along the belt"></p>
+<p class="full-width-image"><img src="../images/datawrangling.jpg" alt="Cartoon of furry monsters putting boxes onto a conveyor belt with machines marked 'wrangle', 'vizualise' and 'model' adjusting the boxes as they move along the belt"></p>
 
-Start off by watching this video that walks through the different steps in 
-wrangling a dataset. We will cover all the steps in the video in more detail
-during the rest of this tutorial.
+Start off by watching this video that walks through the different steps in wrangling a dataset. We will cover all the steps in the video in more detail during the rest of this chapter.
 
 {{< video https://youtu.be/pQeJKt6O9dU >}}
+
+To get started, open RStudio and check that you are working in the Crime Mapping project you created previously. To do this, looking on the top right-hand corner of the RStudio window. If you see the text `Crime Mapping`, all is well. If you see the text `Project: (None)`, click on the downward triangle next to that text and then select the Crime Mapping project -- this will cause RStudio to restart and open your project.
+
+Now create a new R script file by clicking the `File` menu, then `New File` and then `R Script`. A new file will open in the left-hand panel in RStudio. Click `File` then `Save As...` to save this file in the project directory you created when you completed the previous chapter. Save the file as `chapter_03.R`.
 
 
 ### Functions
 
-In this tutorial we will learn how to wrangle data in R using 
-*functions* – specialised pieces of code that do something to the data we give
-it. The code to use a function (sometimes called *calling* the function) has two 
-parts: the function name followed by a pair of parentheses, inside which are 
-zero or more *arguments* separated by commas. Arguments are a way of providing 
-input that a function works on, or to fine-tune the way the function works (we 
-will see many examples of this later). Remember that you can identify a function
-in R because the name will always have parentheses after it.
+In this chapter we will learn how to wrangle data in R using *functions* – specialised pieces of code that do something to the data we give it. The code to use a function (sometimes called *calling* the function) has two parts: the function name followed by a pair of parentheses, inside which are zero or more *arguments* separated by commas. Arguments are a way of providing input that a function works on, or to fine-tune the way the function works (we will see many examples of this later). Remember that you can identify a function in R because the name will always have parentheses after it.
 
-One basic R function is `sqrt()`, which calculates the square root of a number.
-The `sqrt()` function has only one argument: the number that we want to find the 
-square root of. 
+One basic R function is `sqrt()`, which calculates the square root of a number. The `sqrt()` function has only one argument: the number that we want to find the square root of. If we typed the following code into the R Console, R would show us the square root of 2.
 
+```{r}
+#| eval: false
+#| filename: "R Console"
 
-::: {.tutorial}
-
-Type `sqrt(2)` in the box below and click `Run Code` to calculate the square 
-root of 2.
-
-```{r exercise2, exercise=TRUE}
-
-```
-
-:::
-
-
-```{r exercise2-solution}
 sqrt(2)
 ```
 
-When you run code in R, by default R prints the output of your code – in this 
-case, just the number ``r format(sqrt(2), digits = 7)`` (for now, you can ignore 
-the number `[1]` in square brackets).
+When you run code in R, by default R prints the output of your code – in this case, just the number ``r format(sqrt(2), digits = 7)`` (for now, you can ignore the number `[1]` in square brackets).
 
 
 
@@ -98,69 +61,101 @@ package_count <- available.packages(repos = "https://cran.rstudio.com/") |>
   scales::comma(accuracy = 100)
 ```
 
-R contains thousands of different functions that do different things. A few 
-functions are contained in the default installation of R that you have already
-installed (this is sometimes referred to as *base R*). But most functions are
-contained in *packages*, which are extensions to base R. Most packages focus
-on a particular type of data analysis, so that there are packages devoted to
-time-series analysis, testing whether events are clustered in particular places,
-network analysis and thousands of other tasks. Packages are often developed by
-experts in the field, and are typically updated to introduce new features.
+R contains thousands of different functions that do different things. A few functions are contained in the default installation of R that you have already installed (this is sometimes referred to as *base R*). But most functions are contained in *packages*, which are extensions to base R. Most packages focus on a particular type of data analysis, so that there are packages devoted to time-series analysis, testing whether events are clustered in particular places, network analysis and thousands of other tasks. Packages are often developed by experts in the field, and are typically updated to introduce new features.
 
 To use a package in R, we must do two things:
 
-  * *install* the package, which we have to do just once on each computer we
-    want to use, then
-  * *load* the package, which we have to do each time we restart R (which
-    happens when we open RStudio or switch between projects).
+  * *install* the package, which we have to do just once on each computer we want to use, then
+  * *load* the package, which we have to do each time we restart R (which happens when we open RStudio or switch between projects).
     
-The `install.packages()` function downloads and installs packages from the 
-[Comprehensive R Archive Network](https://cran.r-project.org/) (universally 
-known as CRAN), which contains about `r package_count` different packages. Some 
-packages that are still in the early stages of development are not available on 
-CRAN, but all the packages we will use are there.
+The `install.packages()` function downloads and installs packages from the [Comprehensive R Archive Network](https://cran.r-project.org/) (universally known as CRAN), which contains about `r package_count` different packages. Some packages that are still in the early stages of development are not available on CRAN, but all the packages we will use are there.
 
-<a href="https://tidyverse.org/" title="tidyverse website"><img src="images/tidyverse.png" class="right-side-image"></a>
+<a href="https://tidyverse.org/" title="tidyverse website"><img src="../images/tidyverse.png" class="right-side-image"></a>
 
-So to install (for example) the package called `tidyverse`, which we will use
-extensively in this tutorial, we would run the R code:
+So to install (for example) the package called `tidyverse`, which we will use extensively in this chapter, we would run the R code:
 
-```r
+```{r}
+#| eval: false
+#| filename: "R Console"
+
 install.packages("tidyverse")
 ```
 
 We only have to _install_ a package once for each computer that we will use to 
 run R, although we would have to do it again if we updated to a new version of 
-R. Once a package is installed on our computer, we have to _load_ it so that we 
-can use it in our code. We load packages using the `library()` function, which 
-should probably have been called `load_package()` but isn't. So to load the
-`tidyverse` package, we run the code:
+R. 
 
-```r
-library(tidyverse)
+
+::: {.callout-important}
+#### Never add `install.packages()` to an R script
+
+You should only ever use the `install.packages()` function in the R Console, never in an R script. There are two reasons for this:
+
+* When you share your code with other people -- which you will do often in this course -- they may have their system set up in such a way that running `install.packages()` in a script file might cause other code on their computer to stop working.
+* Since you don't need to install a package every time you need it (you only need to install it once), your code will run much more slowly if you needlessly install packages every time you run your code.
+:::
+
+
+Once a package is installed on our computer, we have to _load_ it so that we can use it in our code. We load packages using the `p_load()` function from the [pacman package](https://trinker.github.io/pacman_dev/). So to load the tidyverse package, we run the code:
+
+```{r}
+#| filename: "chapter_03.R"
+
+# Load packages
+pacman::p_load(tidyverse)
 ```
 
-Many packages are focused on specialist tasks and so are only used occasionally,
-but a few packages are likely to be useful in almost all the code we write. 
-Fortunately, packages can themselves load other packages, and all the main
-packages we need are themselves loaded by the `tidyverse` package. That is why
-you will often see `library(tidyverse)` at the top of R code in subsequent
-tutorials – that short line of code loads several packages containing hundreds
-of functions that we can use in data analysis.
+::: {.callout-tip collapse="true"}
+#### Why does this line of code start with `pacman::`?
+
+The pacman package is an R package that is used to manage other R packages. The `p_load()` function from that package is used to load packages. But we learned above that we must load a package before we can use it, which means we cannot use functions from the pacman package until we have loaded the pacman package. To get around that, instead of just using the function name `p_load()`, we can instead specify which package `p_load()` is from by prefixing the function name with the relevant package name, separated by `::`.
+:::
+
+One major advantage of using `p_load()` to load packages is that before loading any packages, this function will first install them if they have not already been installed on the computer we are using. This means that once we have the pacman package installed we won't need to worry about whether a package is installed or not -- we can just load the package, knowing it will automatically be installed if necessary.
+
+Many packages are focused on specialist tasks and so are only used occasionally, but a few packages are likely to be useful in almost all the code we write. Fortunately, packages can themselves load other packages, and all the main packages we need are loaded by the `tidyverse` package. That is why you will often see `pacman::p_load(tidyverse)` at the top of R code in subsequent chapters – that short line of code loads several packages containing hundreds of functions that we can use in data analysis.
 
 
+::: {.callout-quiz .callout}
+#### Data wrangling
 
-## Loading data
+```{r data-wrangling-quiz}
+#| echo: false
 
-Before we can do anything with any data, we have to load it into R. In this 
-course we will read tabular data in comma-separated values (CSV) and Excel
-formats, as well as spatial data in different formats (because there are lots of
-ways to store spatial data). We will learn how to read CSV and Excel data now,
-but leave loading spatial data until later.
+data_wrangling_quiz1 <- c(
+  "The process of collecting data from multiple sources.",
+  answer = "The process of transforming raw data into a format suitable for analysis.",
+  "The process of visualizing data on a map.",
+  "The process of cleaning corrupted data files."
+)
 
-Tabular data contains multiple columns where every column has the same number of 
-rows. For example, crime data might have columns for the type of crime, date and 
-address at which the crime occurred.
+data_wrangling_quiz2 <- c(
+  "A visual representation of data.",
+  "A mathematical formula used in graphs.",
+  "A set of instructions for saving data.",
+  answer = "A specialized piece of code that performs a task on data."
+)
+```
+
+
+**What is the purpose of data wrangling?**
+
+`r webexercises::longmcq(data_wrangling_quiz1)`
+
+
+**In general, what is a _function_ in R?**
+
+`r webexercises::longmcq(data_wrangling_quiz2)`
+
+
+:::
+
+
+## Loading data {#sec-read-data}
+
+Before we can do anything with any data, we have to load it into R. In this course we will read tabular data in comma-separated values (CSV) and Excel formats, as well as spatial data in different formats (because there are lots of ways to store spatial data). We will learn how to read CSV and Excel data now, but leave loading spatial data until later.
+
+_Tabular data_ (sometimes known as _rectangular data_) describes data formats with multiple columns where every column has the same number of rows. For example, crime data might have columns for the type of crime, date and address at which the crime occurred.
 
 ```{r tabular-data}
 #| echo: false
@@ -175,30 +170,21 @@ tibble::tribble(
   knitr::kable(caption = "Crime data in rectangular format")
 ```
 
+Almost all the data we will use in this course will be in this rectangular format, and most of the functions we will use expect data to be rectangular.
+
 
 
 ### Loading CSV data
 
-```{r read-load-robbery-data}
-#| echo: false
-#| include: false
+<a href="https://readr.tidyverse.org/" title="readr website"><img src="../images/readr.png" class="right-side-image"></a>
 
-san_fran_rob <- read_csv("https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv")
-```
+Data stored in CSV format is easy to load with the `read_csv()` function from the [readr package](https://readr.tidyverse.org). readr is one of the packages loaded by the tidyverse package, so all we need to do to use this package is include the code `pacman::p_load(tidyverse)` on the first line of our R script. We will use comments (lines of code beginning with `#`) to help explain the code as we go.
 
-<a href="https://readr.tidyverse.org/" title="readr website"><img src="images/readr.png" class="right-side-image"></a>
+`read_csv()` can handle data stored _locally_ on your computer, as well as data stored _remotely_ on an external website. During this course, most of the data we will use will be remote data stored on the [crimemappingdata website](https://pkgs.lesscrime.info/crimemappingdata/).
 
-Data stored in CSV format is easy to load with the `read_csv()` function from 
-the [`readr`](https://readr.tidyverse.org) package. `readr` is one of the 
-packages loaded by the `tidyverse` package, so all we need to do to use this 
-package is include the code `library(tidyverse)` on the first line of our R 
-script. We will use comments (lines of code beginning with `#`) to help explain 
-as we go.
-
-```r
-# Load the tidyverse suite of packages, including the readr package 
-# that contains the read_csv() function
-library(tidyverse)
+```{r}
+#| eval: false
+#| filename: "R Console"
 
 # We can load data from a file in the same folder as our R script
 san_fran_rob <- read_csv("san_francisco_robbery.csv")
@@ -211,129 +197,65 @@ san_fran_rob <- read_csv("../san_francisco_robbery.csv")
 san_fran_rob <- read_csv("http://example.com/san_francisco_robbery.csv")
 ```
 
-In each of these examples, the code stores the result of the `read_csv()` 
-function in an *object* named `san_fran_rob`. Objects are places where we can
-store data. To create an object and store our data in it, we use the assignment
-operator `<-` (a less-than sign followed by a dash). Continually typing `<-` can 
-be tedious, so in RStudio we can use the keyboard short cut `Option+-` (on Mac) 
-or `Alt+-` (on Windows or Linux) to insert the complete operator.
+In each of these examples, the code stores the result of the `read_csv()` function in an *object* named `san_fran_rob`. Objects are places where we can store data. To create an object and store our data in it, we use the assignment operator `<-` (a less-than sign followed by a dash). Continually typing `<-` can be tedious, so in RStudio we can use the keyboard short cut `Option+-` (on Mac) or `Alt+-` (on Windows or Linux) to insert the complete operator.
 
 
-::: {.box .notewell}
+::: {.callout-important}
+#### Object names can be overwritten
 
-When choosing object names, it is important to remember that if you assign a
-value (such as the number `1` or the result of the function `read_csv()`) to an 
-object name, R will overwrite any existing value of that object name. We can see
-this in a simple example:
+When choosing object names, it is important to remember that if you assign a value (such as the number `1` or the result of the function `read_csv()`) to an object name, R will overwrite any existing value of that object name. We can see this in a simple example:
 
-```r
+```{r}
+#| eval: false
+
 one_to_ten <- 1:10
 one_to_ten <- sqrt(2)
 ```
 
-If we were to run this code, the object `one_to_ten` would not actually hold the
-numbers from one to ten, but instead the value ``r format(sqrt(2), digits = 7)``
-(the square root of two). There is also no way to undo assignment of a value to 
-an object, so once you have run the code `one_to_ten <- sqrt(2)` it is not 
-possible to recover any previous value that was assigned to the object 
-`one_to_ten`.
-
+If we were to run this code, the object `one_to_ten` would not actually hold the numbers from one to ten, but instead the value `r format(sqrt(2), digits = 7)` (the square root of two). There is no way to undo assignment of a value to an object, so once you have run the code `one_to_ten <- sqrt(2)` it is not possible to recover any previous value that was assigned to the object `one_to_ten`.
 :::
 
 
-Objects come in several different types, with tabular data typically being 
-stored as a *data frame*. The `read_csv()` function actually produces a 
-modern variation on the data frame called (slightly strangely) a *tibble*, which
-makes use of some advances in how R handles data since the data-frame format was
-set 20 years ago. Tibbles behave just like data frames almost all of the time 
-(so much so that people working with tibbles often call them data frames) except 
-for a few occasions where they behave in a more-convenient way.
+Objects come in several different types, with tabular data typically being stored as a *data frame*. The `read_csv()` function actually produces a modern variation on the data frame called (slightly strangely) a *tibble*, which makes use of some advances in how R handles data since the data-frame format was set 20 years ago. Tibbles behave just like data frames almost all of the time (so much so that people working with tibbles often call them data frames) except for a few occasions where they behave in a more-convenient way. We will always use tibbles instead of data frames in this course.
 
-We can use `read_csv()` to load data from `https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv` 
-and store it in an object called `san_fran_rob`. 
+We can use `read_csv()` to load data from `https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv` and store it in an object called `san_fran_rob`. Add this code to the script file `chapter_03.R` and then run that code as you learned about in @sec-loading-packages.
 
 
-::: {.tutorial}
+```{r}
+#| filename: "chapter_03.R"
 
-Use the code above to help you, or click the `Solution` button to reveal the 
-answer.
-
-```{r read-exercise1, exercise=TRUE}
-
-```
-
-:::
-
-
-```{r read-exercise1-solution}
+# Load San Francisco robbery data
 san_fran_rob <- read_csv("https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv")
 ```
 
-If the data are loaded successfully, R will list the columns in the data and the
-type of variable (numeric, date etc.) stored in each column. The format of this 
-is somewhat esoteric, but if you are interested they are explained in the 
-'Extra detail' box below.
+If the data are loaded successfully, R will list the columns in the data and the type of variable (numeric, date etc.) stored in each column. The format of this is somewhat esoteric, but if you are interested they are explained in the 'Extra detail' box below.
 
+::: {.callout-tip collapse="true"}
+#### What do the messages produced by `read_csv()` mean?
 
-<div class="box extra-detail">
+By default, the `read_csv()` function prints a message when it loads data to summarise the format of each data column. In the case of the `san_fran_rob` dataset, `read_csv()` tells us that: 
 
-<h5 id="read-box1-title" class="box-title">What do the messages produced by 
-`read_csv()` mean?</h5>
+  * there is one column called `offense_type` that contains character (`chr`) values,
+  * there are three columns called `uid`, `longitude` and `latitude` containing numeric (`dbl`) values, and
+  * there is one column called `date_time` that contains values stored as dates and times (`dttm`).
 
-<div id="read-box1" class="box-content">
-
-By default, the `read_csv()` function prints a message when it loads data to
-summarise the format of each data column. In the case of the `san_fran_rob`
-dataset, `read_csv()` tells us that: 
-
-  * there is one column called `offense_type` that contains character (`chr`) 
-    values,
-  * there are three columns called `uid`, `longitude` and `latitude` containing 
-    numeric (`dbl`) values, and
-  * there is one column called `date_time` that contains values stored as dates
-    and times (`dttm`).
-
-There are some other possible types of data, but we will learn about these later
-on. The numeric values are referred to as `dbl` values because they are stored 
-in a format that can handle numbers that are not whole numbers (e.g. 123.456).
-This format for storing numbers is called the double-precision floating-point
-format, which is often known as the double format for short. Most numbers in R
-are stored in double format, so you can think of the format code `dbl` as 
-meaning 'numeric'.
-
-</div>
-
-</div>
-
-<script>
-$("#read-box1-title").click(function () { $("#read-box1").toggle("slow") })
-</script>
-
-
-To see the first few rows of data currently stored in an object, we can use the 
-`head()` function. 
-
-
-::: {.tutorial}
-
-Type the code needed to view the first few rows of the `san_fran_rob` object and 
-click the `Run Code` button.
-
-```{r read-exercise2, exercise=TRUE, exercise.setup="read-load-robbery-data"}
-
-```
-
+There are some other possible types of data, but we will learn about these later on. The numeric values are referred to as `dbl` values because they are stored in a format that can handle numbers that are not whole numbers (e.g. 123.456). This format for storing numbers is called the double-precision floating-point format, which is often known as the double format for short. Most numbers in R are stored in double format, so you can think of the format code `dbl` as meaning 'numeric'.
 :::
 
 
-```{r read-exercise2-solution}
+To see the first few rows of data currently stored in an object, we can use the `head()` function. 
+
+
+```{r}
+#| filename: "R Console"
+
 head(san_fran_rob)
 ```
 
 
 ### Loading Excel data
 
-<a href="https://readxl.tidyverse.org/" title="readxl website"><img src="images/readxl.png" class="right-side-image"></a>
+<a href="https://readxl.tidyverse.org/" title="readxl website"><img src="../images/readxl.png" class="right-side-image"></a>
 
 Loading data from Microsoft Excel files is very similar to loading CSV data,
 with a few important differences. Functions to load Excel data are contained in
@@ -459,166 +381,87 @@ handle messy Excel data in this online tutorial](http://lesscrime.info/post/clea
 :::
 
 
-::: {.tutorial}
+::: {.callout-quiz .callout}
+#### Reading data
 
-### Check your understanding
-
-Answer the following questions to check your understanding of what we've learned
-so far in this tutorial. If you get a question wrong, you can keep trying until
-you get the right answer.
+Answer the following questions to check your understanding of what we've learned so far in this chapter. If you get a question wrong, you can keep trying until you get the right answer.
 
 ```{r read-quiz}
 #| echo: false
 
-quiz(
-  caption = "",
-  
-  question(
-    "What R package contains the function `read_csv()` to read CSV data?",
-    answer("`readr`", correct = TRUE),
-    answer(
-      "`readxl`",
-      message = "The `readxl` package provides functions for reading Microsoft Excel data, not CSV data – try looking further up this page for the answer."
-    ),
-    answer(
-      "`reader`",
-      message = "That's nearly right, but you must spell R package names exactly correctly for R to be able to find and load the package – try looking further up this page for the answer."
-    ),
-    answer(
-      "`readcsv`",
-      message = "That's not quite right – try looking further up this page for the answer."
-    ),
-    correct = random_praise(),
-    allow_retry = TRUE,
-    random_answer_order = TRUE
-  ),
-  
-  question(
-    "What R code prints the first few rows of the tibble called `san_fran_rob`?",
-    answer(
-      "`head(san_fran_rob)`",
-      correct = TRUE,
-      message = "To see the first few rows of an object in R, we can use the `head()` function."
-    ),
-    answer(
-      "`message(san_fran_rob)`",
-      message = "`message()` is used to print a text message, but if a vector longer than one item is used inside `message()` then what is printed will be all the items in the vector stuck together, so `message(san_fran_rob)` prints a very long and incomprehensible string of text."
-    ),
-    answer(
-      "`summary(san_fran_rob)`",
-      message = "`summary()` is used to print a summary of an object, but if the object is a data frame then it will print a summary of each variable in the dataset, rather than the first few rows."
-    ),
-    answer(
-      "`peak_inside(san_fran_rob)`",
-      message = "There is no function called `peak_inside()` in any package that we have loaded, so this code will result in an error message."
-    ),
-    correct = random_praise(),
-    allow_retry = TRUE,
-    random_answer_order = TRUE
-  ),
-  
-  question(
-    "If we create an object using the code `number_ten <- 10` and then run the code `number_ten <- sqrt(2)`, what value will the object `number_ten` now have?",
-    answer("`1.414214` (the square root of 2)", correct = TRUE),
-    answer(
-      "`10` (the number 10)",
-      message = "That's not quite right, because the original value of `number_ten` has been overwritten by the code `number_ten <- sqrt(2)`."
-    ),
-    answer(
-      "`10.41421` (10 plus the square root of 2)",
-      message = "If you assign a value to an existing object that already stores another value, the first value is simply overwritten rather than the two values being added together (which wouldn't make sense for non-numeric values) – try looking further up this page for the answer."
-    ),
-    answer(
-      "`14.14214` (10 times the square root of 2)",
-      message = "If you assign a value to an existing object that already stores another value, the first value is simply overwritten rather than the two values being multiplied together (which wouldn't make sense for non-numeric values) – try looking further up this page for the answer."
-    ),
-    correct = random_praise(),
-    allow_retry = TRUE,
-    random_answer_order = TRUE
-  )
-  
+read_quiz1 <- c("`readxl`", "`reader`", answer = "`readr`", "`readcsv`")
+read_quiz2 <- c(
+  "`message(san_fran_rob)`",
+  "`summary(san_fran_rob)`",
+  "`peak_inside(san_fran_rob)`",
+  answer = "`head(san_fran_rob)`"
+)
+read_quiz3 <- c(
+  "`10` (the number 10)",
+  answer = "`1.414214` (the square root of 2)",
+  "`10.41421` (10 plus the square root of 2)",
+  "`14.14214` (10 times the square root of 2)"
 )
 ```
 
+**What R package contains the function `read_csv()` to read CSV data?**
+
+`r webexercises::longmcq(read_quiz1)`
+
+**What R code prints the first few rows of the tibble called `san_fran_rob`?**
+
+`r webexercises::longmcq(read_quiz2)`
+
+**If we create an object using the code `number_ten <- 10` and then run the code `number_ten <- sqrt(2)`, what value will the object `number_ten` now have?**
+
+`r webexercises::longmcq(read_quiz3)`
 :::
 
 
 
 ## Selecting columns
 
-In this section we will learn how to reduce the size of our data by selecting
-only the columns we need and discarding the rest. This can be particularly 
-useful if we are working with a very-large dataset, or if we want to produce a
-table containing only some columns.
+In this section we will learn how to reduce the size of our data by selecting only the columns we need and discarding the rest. This can be particularly useful if we are working with a very-large dataset, or if we want to produce a table containing only some columns.
 
-<p class="full-width-image"><img src="https://github.com/mpjashby/crimemapping/raw/main/inst/tutorials/03_data_wrangling/images/dplyr.jpg" alt="Cartoon showing a furry monster with 'dplyr' written on it wrangling a bunch of smaller, unruly, monsters."></p>
+<p class="full-width-image"><img src="../images/dplyr.jpg" alt="Cartoon showing a furry monster with 'dplyr' written on it wrangling a bunch of smaller, unruly, monsters."></p>
 
-We can use the `select()` function from the [`dplyr`](https://dplyr.tidyverse.org/)
-package (one of the packages that is loaded automatically when we call the 
-`library(tidyverse)` function) to select columns.
+We can use the `select()` function from the [dplyr package](https://dplyr.tidyverse.org/) (one of the packages that is loaded automatically when we call the `pacman::p_load(tidyverse)` function) to select columns.
 
-If we wanted to select just the `date` and `location_type` columns from the
-`agg_assault_data` we loaded in the previous section:
+If we wanted to select just the `date` and `location_type` columns from the `agg_assault_data` we loaded in the previous section, we can use this code:
 
-```{r select-exercise1, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 select(agg_assault_data, date, location_type)
 ```
 
-<a href="https://dplyr.tidyverse.org/" title="dplyr website"><img src="images/dplyr.png" class="right-side-image"></a>
+<a href="https://dplyr.tidyverse.org/" title="dplyr website"><img src="../images/dplyr.png" class="right-side-image"></a>
 
-In a previous section, we mentioned that the code needed to run (or *call*) a
-function in R has two parts: the function name followed by a pair of 
-parentheses, inside which are zero or more *arguments* separated by commas. The
-arguments in the `select()` function (and many other functions in the `dplyr`
-package) work in a slightly different way to many other functions. Here, the 
-first argument is the name of the data object that we want to select from. All
-the remaining arguments (here, `date` and `location_type`) are the names of the
-columns we want to select from the data. 
+In a previous section, we mentioned that the code needed to run (or *call*) a function in R has two parts: the function name followed by a pair of parentheses, inside which are zero or more *arguments* separated by commas. The arguments in the `select()` function (and many other functions in the `dplyr` package) work in a slightly different way to many other functions. Here, the first argument is the name of the data object that we want to select from. All the remaining arguments (here, `date` and `location_type`) are the names of the columns we want to select from the data. 
 
-We can select as many columns as we want, by just adding the names of the 
-columns separated by commas. 
+We can select as many columns as we want, by just adding the names of the columns separated by commas. The columns in our new dataset will appear in the order in which we specify them in the `select()` function.
 
+We can also use `select()` to rename columns at the same time as selecting them. For example, to select the columns `date` and `location_type` while also renaming `location_type` to be called `type`, can use:
 
-::: {.tutorial}
+```{r}
+#| filename: "R Console"
 
-Write the code necessary to select the `longitude` and `latitude` columns from 
-the `agg_assault_data` object:
-
-```{r select-exercise2, exercise=TRUE}
-
-```
-
-:::
-
-
-```{r select-exercise2-solution}
-select(agg_assault_data, longitude, latitude)
-```
-
-The columns in our new dataset will appear in the order in which we specify them
-in the `select()` function.
-
-We can also use `select()` to rename columns at the same time as selecting them.
-For example, to select the columns `date` and `location_type` while also 
-renaming `location_type` to be called `type`:
-
-```{r select-exercise3, exercise=TRUE}
 select(agg_assault_data, date, type = location_type)
 ```
 
-If we want to rename a column while keeping *all* the columns in the data, we 
-can instead use the `rename()` function (also from the `dplyr` package):
+`select()` removes any columns that we don't explicitly choose to keep. If we want to rename a column while keeping *all* the existing columns in the data, we can instead use the `rename()` function (also from the dplyr package):
 
-```{r select-exercise4, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 rename(agg_assault_data, type = location_type)
 ```
 
-Remember that functions in R generally do not change existing objects, but
-instead produce (or *return*) new ones. This means if we want to store the 
-result of this function so we can use it later, we have to assign the value
-returned by the function to a new object (or overwrite the existing object):
+Remember that functions in R generally do not change existing objects, but instead produce (or *return*) new ones. This means if we want to store the result of this function so we can use it later, we have to assign the value returned by the function to a new object (or overwrite the existing object):
 
-```{r select-exercise5, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 agg_assault_locations <- select(agg_assault_data, lon = longitude, lat = latitude)
 
 head(agg_assault_locations)
@@ -627,134 +470,113 @@ head(agg_assault_locations)
 
 ::: {.box .reading}
 
-You can learn more about selecting, filtering and arranging data using the
-functions in the `dplyr` package by reading this [Introduction to `dplyr` tutorial](https://dplyr.tidyverse.org/articles/dplyr.html).
+You can learn more about selecting, filtering and arranging data using the functions in the `dplyr` package by reading this [Introduction to dplyr tutorial](https://dplyr.tidyverse.org/articles/dplyr.html).
 
 :::
 
 
-::: {.tutorial}
-
-### Check your understanding
+::: {.callout-quiz .callout}
+#### `select()` and `rename()`
 
 ```{r select-quiz}
 #| echo: false
 
-quiz(
-  caption = "",
-  
-  question(
-    "Which `dplyr` function allows you to change the name of columns while keeping all the columns in the original data",
-    answer("`rename()`", correct = TRUE),
-    answer(
-      "`select()`", 
-      message = "`select()` does allow you to rename columns, but keeps only the columns you specify"
-    ),
-    correct = random_praise(),
-    allow_retry = TRUE,
-    random_answer_order = TRUE
-  ),
-  
-  question(
-    "Which `dplyr` function allows you to choose only some columns in the original data?",
-    answer("`select()`", correct = TRUE),
-    answer(
-      "`rename()`", 
-      message = "`rename()` does allow you to rename columns, but keeps all the columns in the original data"
-    ),
-    correct = random_praise(),
-    allow_retry = TRUE,
-    random_answer_order = TRUE
-  )
-  
-)
+select_quiz1 <- c(answer = "`rename()`", "`select()`")
+select_quiz2 <- c("`rename()`", answer = "`select()`")
 ```
 
+**Which `dplyr` function allows you to change the name of columns while keeping all the columns in the original data**
+
+`r webexercises::longmcq(select_quiz1)`
+
+**Which `dplyr` function allows you to choose only some columns in the original data?**
+
+`r webexercises::longmcq(select_quiz2)`
 :::
 
 
 
 ## Filtering rows
 
-Often in crime mapping we will only be interested in part of a particular
-dataset. In the same way that we can *select* particular *columns* in our data,
-we can *filter* particular *rows* using the `filter()` function from the `dplyr`
-package.
+Often in crime mapping we will only be interested in part of a particular dataset. In the same way that we can *select* particular *columns* in our data, we can *filter* particular *rows* using the `filter()` function from the dplyr package.
 
-<p class="full-width-image"><img src="https://github.com/mpjashby/crimemapping/raw/main/inst/tutorials/03_data_wrangling/images/filter.jpg" alt="Cartoon showing monsters explaining how the filter() function works."></p>
+<p class="full-width-image"><img src="../images/filter.jpg" alt="Cartoon showing monsters explaining how the filter() function works."></p>
 
-If we were only interested in offences in the `agg_assault_data` dataset that
-occurred in residences, we could use `filter()`:
+If we were only interested in offences in the `agg_assault_data` dataset that occurred in residences, we could use `filter()`:
 
-```{r filter-exercise1, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 filter(agg_assault_data, location_type == "residence")
 ```
 
 Note that: 
 
-  * the column _name_ `location_type` is not surrounded by quotes but the column 
-    _value_ `"residence"` is, and
-  * the `==` (equal to) operator is used, since a single equals sign `=` has 
-    another meaning in R.
+  * the column _name_ `location_type` is not surrounded by quotes (because it represents a column in the data) but the column _value_ `"residence"` is (because it represents the _literal_ character value "residence"), and
+  * the `==` (equal to) operator is used, since a single equals sign `=` has another meaning in R.
 
-We can filter using the values of more than one column simultaneously. To filter
-offences in which the `location_category` is 'retail' and the `location_type`
-is 'convenience store':
+We can filter using the values of more than one column simultaneously. To filter offences in which the `location_category` is 'retail' and the `location_type` is 'convenience store':
 
-```{r filter-exercise2, exercise=TRUE}
-filter(
-  agg_assault_data, 
+```{r}
+#| filename: "R Console"
+
+filter(agg_assault_data, 
   location_category == "retail", 
   location_type == "convenience store"
 )
 ```
 
-As well as filtering using the `==` operator, we can filter using the 
-greater-than (`>`), less-than (`<`), greater-than-or-equal-to (`>=`) and
-less-than-or-equal-to (`<=`) operators. For example, we can choose offences that
-occurred in residences on or after 1 July 2019:
+::: {.callout-important}
+#### `filter()` returns rows that meet _all_ the criteria you specify
 
-```{r filter-exercise3, exercise=TRUE}
+When you run the code above, the result will contain only those rows in the original data for which the `location_category` column has the value 'retail' _and_ the `location_type` column has the value 'convenience store'.
+:::
+
+As well as filtering using the `==` (equals) operator, we can filter using the greater-than (`>`), less-than (`<`), greater-than-or-equal-to (`>=`) and less-than-or-equal-to (`<=`) operators. For example, we can choose offences that occurred in residences on or after 1 July 2019:
+
+```{r}
+#| filename: "R Console"
+
 filter(
   agg_assault_data, 
   location_type == "residence", 
-  date >= as.Date("2019-07-01")
+  date >= ymd("2019-07-01")
 )
 ```
 
-Sometimes we will want to filter rows that are one thing *or* another. We can do
-this with the `|` (or) operator. For example, we can filter offences that 
-occurred either in leisure facilities or shopping malls on or after 1 July 2019:
+::: {.callout-tip collapse="true"}
+#### What does the `ymd()` function do?
 
-```{r filter-exercise4, exercise=TRUE}
+The `ymd()` function from the lubridate package (which we will find out more about below) converts a date stored as a text value to a value that R understands represents a calendar date. The function is called `ymd()` because it processes dates that are stored in year-month-date format. We will learn more about working with dates in @sec-mapping-time.
+:::
+
+Sometimes we will want to filter rows that are one thing *or* another. We can do this with the `|` (or) operator. For example, we can filter offences that occurred either in leisure facilities _or_ shopping malls on or after 1 July 2019:
+
+```{r}
+#| filename: "R Console"
+
 filter(
   agg_assault_data, 
   location_category == "leisure" | location_type == "mall", 
-  date >= as.Date("2019-07-01")
+  date >= ymd("2019-07-01")
 )
 ```
 
-If we want to filter offences that have any one of several different values of 
-the same column, we can use the `%in%` (in) operator. To filter offences that
-occurred in either streets or publicly accessible open spaces:
+If we want to filter offences that have any one of several different values of the same column, we can use the `%in%` (in) operator. To filter offences that occurred in either streets or publicly accessible open spaces:
 
-```{r filter-exercise5, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 filter(agg_assault_data, location_category %in% c("open space", "street"))
 ```
 
-The code `c("open space", "street")` produces what is referred to in R as a
-*vector* (sometimes referred to as an *atomic vector*, especially in error
-messages). A vector is a one-dimensional sequence of values of the same type
-(i.e. all numbers, all character strings etc.). For example, a vector might hold
-several strings of text (as in the vector `c("open space", "street")`) or a
-series of numbers such as `c(1, 2, 3)`. There is lots we could learn about
-vectors, but for now it's only necessary to know that we can create vectors with
-the `c()` or _combine_ function.
+The code `c("open space", "street")` produces what is referred to in R as a *vector* (sometimes referred to as an *atomic vector*, especially in error messages). A vector is a one-dimensional sequence of values of the same type (i.e. all numbers, all character strings etc.). For example, a vector might hold several strings of text (as in the vector `c("open space", "street")`) or a series of numbers such as `c(1, 2, 3)`. There is lots we could learn about vectors, but for now it's only necessary to know that we can create vectors with the `c()` or _combine_ function.
 
-If we wanted to re-use a vector of values several times in our code, it might
-make sense to store the vector as an object. For example:
+If we wanted to re-use a vector of values several times in our code, it might make sense to store the vector as an object. For example:
 
-```{r filter-exercise6, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 # Create vector of location types we are interested in
 location_types <- c("open space", "street")
 
@@ -762,92 +584,54 @@ location_types <- c("open space", "street")
 filter(agg_assault_data, location_category %in% location_types)
 ```
 
-Finally, you can filter based on the output of any R function that returns
-`TRUE` or `FALSE`. For example, missing values are represented in R as `NA`. We
-can test whether a value is missing using the `is.na()` function. If we wanted
-to remove rows from our data that had missing location types, we would filter
-for those rows that are *not* `NA`. We can do this by combining the `is.na()`
-function with the `!` (not) operator:
+Finally, you can filter based on the output of any R function that returns `TRUE` or `FALSE`. For example, missing values are represented in R as `NA`. We can test whether a value is missing using the `is.na()` function. If we wanted to remove rows from our data that had missing location types, we would filter for those rows that are *not* `NA`. We can do this by combining the `is.na()` function with the `!` (not) operator:
 
-```{r filter-exercise7, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 filter(agg_assault_data, !is.na(location_type))
 ```
 
-We will see lots more examples of how to use `filter()` in future tutorials.
+We will see lots more examples of how to use `filter()` in future chapters.
 
 
-::: {.tutorial}
-
-### Check your understanding
+::: {.callout-quiz .callout}
+#### `filter()`
 
 ```{r filter-quiz}
 #| echo: false
 
-quiz(
-  caption = "",
-  
-  question(
-    "What is a vector (sometimes known as an atomic vector) in R?",
-    answer("A type of object that stores a one-dimensional sequence of values of the same type", correct = TRUE),
-    answer(
-      "A type of object that stores a one-dimensional sequence of values that can be of different types", 
-      message = "Vectors are objects that store a one-dimensional sequence of values, but all the values must be of the same type."
-    ),
-    answer(
-      "A type of object that stores a tibble or data frame",
-      message = "Vectors can only store one-dimensional data, whereas a tibble or data frame has two dimensions (rows and columns). Try looking further up the page for more information about vectors."
-    ),
-    answer(
-      "There is no such thing as a vector in R",
-      message = "Vectors are a type of object in R. Try looking further up the page for more information about vectors."
-    ),
-    correct = random_praise(),
-    allow_retry = TRUE,
-    random_answer_order = TRUE
-  ),
-  
-  question(
-    'Which offences (rows) will be returned by the code `filter(agg_assault_data, location_type %in% c("restaurant", "mall"))`?',
-    answer("Offences that occurred either in restaurants *or* in shopping malls", correct = TRUE),
-    answer(
-      "Offences that occurred in both restaurants *and* in shopping malls (e.g. at restaurants inside shopping malls)", 
-      message = "The `|` (or) operator is used when we want to find rows that match one criteria or the other, not both together."
-    ),
-    answer(
-      "Offences that occurred anywhere *except* restaurants or shopping malls (e.g. in homes)",
-      message = "The `|` (or) operator is used when we want to find rows that match one criteria or the other (or both), but they must match at least one of the two."
-    ),
-    answer(
-      "No offences, because the way the two criteria are combined is illogical",
-      message = "The `|` (or) operator is used when we want to find rows that match one criteria or the other (or both). Since the location types 'restaurant' and 'mall' are different from one another, there is nothing illogical about this combination. Try looking further up the page for more information about the `|` (or) operator."
-    ),
-    correct = random_praise(),
-    allow_retry = TRUE,
-    random_answer_order = TRUE
-  ),
-  
-  question(
-    "What does the `<=` operator mean?",
-    answer("less than or equal to", correct = TRUE),
-    answer(
-      "greater than or equal to",
-      message = "Not quite right: the greater-than-or-equal-to operator is `>=`."
-    ),
-    answer(
-      "less than",
-      message = "Not quite right: the less-than operator is `<`."
-    ),
-    answer(
-      "greater than",
-      message = "Not quite right: the greater-than operator is `>`."
-    ),
-    correct = random_praise(),
-    allow_retry = TRUE,
-    random_answer_order = TRUE
-  )
-  
+filter_quiz1 <- c(
+  "A type of object that stores a tibble or data frame",
+  answer = "A type of object that stores a one-dimensional sequence of values of the same type",
+  "A type of object that stores a one-dimensional sequence of values that can be of different types",
+  "There is no such thing as a vector in R"
+)
+filter_quiz2 <- c(
+  "Offences that occurred in both restaurants *and* in shopping malls (e.g. at restaurants inside shopping malls)", 
+  "Offences that occurred anywhere *except* restaurants or shopping malls (e.g. in homes)",
+  "No offences, because the way the two criteria are combined is illogical",
+  answer = "Offences that occurred either in restaurants *or* in shopping malls"
+)
+filter_quiz3 <- c(
+  "greater than",
+  "less than",
+  answer = "less than or equal to",
+  "greater than or equal to"
 )
 ```
+
+**What is a vector (sometimes known as an atomic vector) in R?**
+
+`r webexercises::longmcq(filter_quiz1)`
+
+**Which offences (rows) will be returned by the code `filter(agg_assault_data, location_type %in% c("restaurant", "mall"))`?**
+
+`r webexercises::longmcq(filter_quiz2)`
+
+**What does the `<=` operator mean?**
+
+`r webexercises::longmcq(filter_quiz3)`
 
 :::
 
@@ -855,53 +639,25 @@ quiz(
 
 ## Transforming values
 
-It is often useful to create new columns in our data, or change the values of
-existing columns. The `mutate()` function in the `dplyr` package gives us a way
-to transform existing columns in our dataset using almost any R function.
+It is often useful to create new columns in our data, or change the values of existing columns. The `mutate()` function in the dplyr package gives us a way to transform existing columns in our dataset using almost any R function.
 
-<p class="full-width-image"><img src="https://github.com/mpjashby/crimemapping/raw/main/inst/tutorials/03_data_wrangling/images/mutate.jpg" alt="Cartoon showing furry monsters moving columns of data using a crane."></p>
+<p class="full-width-image"><img src="../images/mutate.jpg" alt="Cartoon showing furry monsters moving columns of data using a crane."></p>
 
-<a href="https://lubridate.tidyverse.org/" title="lubridate website"><img src="images/lubridate.png" class="right-side-image"></a>
+<a href="https://lubridate.tidyverse.org/" title="lubridate website"><img src="../images/lubridate.png" class="right-side-image"></a>
 
-For example, say we wanted to create a new column in our aggravated-assault
-dataset specifying the day of the week on which each crime occurred. We can do
-this using the `wday()` function from the [`lubridate`](https://lubridate.tidyverse.org/)
-package (using the `label = TRUE` argument to produce weekday names, rather 
-than numbers):
+For example, say we wanted to create a new column in our aggravated-assault dataset specifying the day of the week on which each crime occurred. We can do this using the `wday()` function from the [lubridate package](https://lubridate.tidyverse.org/) (using the `label = TRUE` argument to produce weekday names, rather than numbers):
 
-```{r mutate-exercise1, exercise=TRUE}
-library(lubridate)
+```{r}
+#| filename: "R Console"
 
 mutate(agg_assault_data, weekday = wday(date, label = TRUE))
 ```
 
-Depending on the width of your screen, you might need to click the `▸` button to
-see the new variable.
+We can also change existing columns. However (as with objects) there is no way to undo this, so you should only replace columns if you are sure you will not need them. For example, if we wanted to remove the time portion of the `date` variable (which may sometimes be useful, as shown in the next section) using the `as_date()` function (also from the lubridate package) and at the same time create the weekday variable:
 
-We can also categorise an existing variable, for example creating a variable to
-show whether an offence occurred in the northern or southern half of the city:
+```{r}
+#| filename: "R Console"
 
-```{r mutate-exercise2, exercise=TRUE}
-mutate(
-  agg_assault_data, 
-  region = if_else(latitude > median(latitude), "northern", "southern")
-)
-```
-
-We can change existing columns, although (as with objects) there is no way
-to undo this so you should only replace columns if you are sure you will not 
-need them. For example, if we wanted to remove the time portion of the `date`
-variable (which may sometimes be useful, as shown in the next section) using the
-`as_date()` function (also from the `lubridate` package) and at the same time 
-create the weekday variable:
-
-```{r mutate-exercise3-setup}
-#| echo: false
-
-library(lubridate)
-```
-
-```{r mutate-exercise3, exercise=TRUE}
 mutate(
   agg_assault_data, 
   date = as_date(date),
@@ -909,56 +665,43 @@ mutate(
 )
 ```
 
-You may sometimes want to change only some values in a column. We can do this in
-various ways, depending on which values we want to change:
+You may sometimes want to change only some values in a column. With a categorical variable, we can change one value to another using the `case_match()` function from the dplyr package. Look at this code and use the comments (lines starting with `# `) to understand how it works.
 
-```{r mutate-exercise4, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 mutate(
   agg_assault_data,
-  # Change a single value with a new value (and otherwise keep the existing 
-  # value) using the if_else() function
-  location_type = if_else(location_type == "street", "road", location_type),
-  # Change multiple values in a categorical variable using the recode() 
-  # function, in which values are changed using arguments in the format
-  # old_value = new_value
-  location_category = recode(
+  location_category = case_match(
     location_category, 
-    "open space" = "public open space",
-    "street" = "street or road"
+    # We specify which existing values we want to convert into which new values
+    # by providing the existing value on the left-hand side and the new value
+    # on the right hand side, separated by a tilde (~) character
+    "open space" ~ "public open space",
+    "street" ~ "street or road",
+    # If we want to keep the existing values for any values we have not
+    # specified, we can do that using the .default argument
+    .default = location_category
   )
 )
 ```
 
-We could also make changes based on more-complicated sets of criteria using the
-`case_when()` function, but we will return to that in a future tutorial.
+We could also make changes based on more-complicated sets of criteria using the `case_when()` function, but we will return to that in a future chapter.
 
-The R functions that you use inside `mutate()` must return the same number of
-values as there are rows in the dataset. This is true for most R functions
-(which are referred to as *vectorised* functions), but there are some – such as
-`mean()` and `max()` – that return a single value. These summarising functions
-cannot be used inside `mutate()` (you will see an error message if you try) but
-are instead used with the next data-wrangling function we will learn about:
-`summarise()`.
+The R functions that you use inside `mutate()` must return the same number of values as there are rows in the dataset. This is true for most R functions (which are referred to as *vectorised* functions), but there are some – such as `mean()` and `max()` – that return a single value. These _summarising functions_ cannot be used inside `mutate()` (you will see an error message if you try) but are instead used with the next data-wrangling function we will learn about: `summarise()`.
 
 
 
 ## Summarising rows
 
-Summarising data is often useful in crime analysis. We can use the `summarise()`
-function from the `dplyr` package to produce summaries of different columns in
-our data. There is an identical function called `summarize()` so that you do not
-have to remember whether to use the US or British spelling.
+Summarising data is often useful in crime analysis. We can use the `summarise()` function from the dplyr package to produce summaries of different columns in our data. There is an identical function called `summarize()` so that you do not have to remember whether to use the US or British spelling.
 
-By default, `summarise()` collapses data into a single row, with each column
-summarised using a function that you specify. For example, suppose you want to 
-find out which police station a specialist squad should be based at to most 
-easily respond to reports of serious assaults. You might do this by working out
-the weighted centre of all the offence locations, i.e. the means of the 
-longitudes and latitudes for all the crimes. You could then base the squad at
-the police station that was closest to the weighted centre.
+By default, `summarise()` collapses data into a single row, with each column summarised using a function that you specify. For example, suppose you want to find out which police station a specialist squad should be based at to most easily respond to reports of serious assaults. You might do this by working out the weighted centre of all the offence locations, i.e. the means of the longitudes and latitudes for all the crimes. You could then base the squad at the police station that was closest to the weighted centre.
 
 
-```{r summarise-exercise1, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 summarise(
   agg_assault_data, 
   mean_lng = mean(longitude, na.rm = TRUE),
@@ -967,49 +710,22 @@ summarise(
 ```
 
 
-<div class="box extra-detail">
+::: {.callout-tip collapse="true"}
+#### What does the argument `na.rm = TRUE` do?
 
-<h5 id="summarise-box1-title" class="box-title">What does the argument 
-`na.rm = TRUE` do?</h5>
+Lots of functions in R have an argument called `na.rm` that can be set to either `TRUE` or `FALSE`. Setting `na.rm = TRUE` in this case specifies that the  `mean()` function should remove (`rm`) any missing (`NA`) values before calculating the mean. 
 
-<div id="summarise-box1" class="box-content">
+If we do not specify this and our data contain any missing values, the `mean()` function will return `NA`. Functions in R do this because it is not possible to completely answer the question 'what is the mean of these values?' if some of the values are missing. 
 
-Lots of functions in R have an argument called `na.rm` that can be set to either
-`TRUE` or `FALSE`. Setting `na.rm = TRUE` in this case specifies that the 
-`mean()` function should remove (`rm`) any missing (`NA`) values before 
-calculating the mean. 
-
-If we do not specify this and our data contain any missing values, the `mean()` 
-function will return `NA`. Functions in R do this because it is not possible to
-completely answer the question 'what is the mean of these values?' if some of
-the values are missing. 
-
-This logic applies in lots of cases. For example, if you create an R object
-called `value` with the code `value <- 2` and then run the R code `value > 1`,
-you will get the answer `TRUE`. But if you set the object `value` to be `NA` 
-using the code `value <- NA`, when you run the R code `value > 1` you will get 
-the answer `NA`. This is because there is no way to know if the missing value 
-represented by `NA` is greater than 1 or not. This is why it is often useful to
-calculate statistics such as a mean value after removing any missing values 
-using the `na.rm = TRUE` argument.
-
-</div>
-
-</div>
-
-<script>
-$("#summarise-box1-title").click(function () { $("#summarise-box1").toggle("slow") })
-</script>
+This logic applies in lots of cases. For example, if you create an R object called `value` with the code `value <- 2` and then run the R code `value > 1`, you will get the answer `TRUE`. But if you set the object `value` to be `NA` using the code `value <- NA`, when you run the R code `value > 1` you will get the answer `NA`. This is because there is no way to know if the missing value represented by `NA` is greater than 1 or not. This is why it is often useful to calculate statistics such as a mean value after removing any missing values using the `na.rm = TRUE` argument.
+:::
 
 
-`summarise()` becomes more useful if we first divide our data into groups, since
-we then get a summary for each group separately. We can use the `.by` argument
-of the `summarise()` function to specify that we want separate summaries for
-each unique value of one or more columns in the data. For example, to produce a
-separate summary for each unique value of `location_category`, we can use this
-code:
+`summarise()` becomes more useful if we first divide our data into groups, since we then get a summary for each group separately. We can use the `.by` argument of the `summarise()` function to specify that we want separate summaries for each unique value of one or more columns in the data. For example, to produce a separate summary for each unique value of `location_category`, we can use this code:
 
-```{r summarise-exercise2, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 summarise(
   agg_assault_data,
   mean_lng = mean(longitude, na.rm = TRUE),
@@ -1018,10 +734,11 @@ summarise(
 )
 ```
 
-You can add multiple grouping variables using the `c()` (_combine_) function if 
-you want to generate summary values for groups within groups:
+You can add multiple grouping variables using the `c()` (_combine_) function if you want to generate summary values for groups within groups:
 
-```{r summarise-exercise3, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 summarise(
   agg_assault_data,
   mean_lng = mean(longitude, na.rm = TRUE),
@@ -1034,100 +751,83 @@ summarise(
 
 ### Counting rows
 
-One very common way of summarising data is to count the number of rows in a 
-dataset that have each unique value of one or more columns. For example, if we
-have a dataset of crimes in which each row represents a single crime, we might
-want to count how many crimes happened on each day of the week, or how many
-crimes of each type are in the dataset. We can use `summarise()` to do that,
-together with the `n()` function (from the same `dplyr` package as 
-`summarise()`). For example, if we wanted to count how many rows in the
-`agg_assault_data` dataset had each unique combination of `location_category` 
-and `location_type`:
+One very common way of summarising data is to count the number of rows in a dataset that have each unique value of one or more columns. For example, if we have a dataset of crimes in which each row represents a single crime, we might want to count how many crimes happened on each day of the week, or how many crimes of each type are in the dataset. We can use `summarise()` to do that, together with the `n()` function (from the same dplyr package as `summarise()`). For example, if we wanted to count how many rows in the `agg_assault_data` dataset had each unique combination of `location_category` and `location_type`:
 
-```{r summarise-exercise4, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 summarise(agg_assault_data, n = n(), .by = c(location_category, location_type))
 ```
 
-In this code, the `n()` function simply returns the number of rows of data in
-each group, i.e. the number of rows with each unique combination of values of
-`location_category` and `location_type`.
+In this code, the `n()` function simply returns the number of rows of data in each group, i.e. the number of rows with each unique combination of values of `location_category` and `location_type`.
 
-Since counting the number of rows in each group a dataset is a very common task,
-`dplyr` includes another function called `count()` that allows you to do the
-same thing as in the code above, but with slightly less typing:
+Since counting the number of rows in each group a dataset is a very common task, dplyr includes another function called `count()` that allows you to do the same thing as in the code above, but with slightly less typing:
 
-So if you wanted to know how many aggravated assaults had occurred in each 
-location category and type:
+So if you wanted to know how many aggravated assaults had occurred in each location category and type, you could this code instead of using `summarise()`:
 
-```{r summarise-exercise5, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 count(agg_assault_data, location_category, location_type)
 ```
+
+Note that the first argument of `count()` is the dataset, and every subsequent argument specifies another variable that should be used to group the data.
 
 
 
 ## Arranging rows
 
-It is sometimes useful to be able to place rows in a dataset into a particular
-order. We can do this using the `arrange()` function from the `dplyr` package.
-For example, we can sort the aggravated-assault data by date:
+It is sometimes useful to be able to place rows in a dataset into a particular order. We can do this using the `arrange()` function from the dplyr package. For example, we can sort the aggravated-assault data by date:
 
-```{r arrange-exercise1, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 arrange(agg_assault_data, date)
 ```
 
-By default, `arrange()` sorts rows in ascending order, i.e. it sorts numeric
-values from the smallest to the largest, dates from earliest to latest and
-character values alphabetically. We can instead sort values in descending order
-by wrapping the name of a column in the `desc()` function:
+By default, `arrange()` sorts rows in ascending order, i.e. it sorts numeric values from the smallest to the largest, dates from earliest to latest and character values alphabetically. We can instead sort values in descending order by wrapping the name of a column in the `desc()` function:
 
-```{r arrange-exercise2, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 arrange(agg_assault_data, desc(date))
 ```
 
-We can also sort the data based on multiple columns – the data are sorted first
-on the first column that you specify, with tied rows then sorted on the 
-subsequent columns in order.
+We can also sort the data based on multiple columns – the data are sorted first on the first column that you specify, with tied rows then sorted on the subsequent columns in order.
 
-```{r arrange-exercise3, exercise=TRUE}
+```{r}
+#| filename: "R Console"
+
 arrange(agg_assault_data, date, desc(location_type), location_category)
 ```
 
 
-::: {.tutorial}
+::: {.callout-quiz .callout}
+#### Arranging rows in data
 
-### Check your understanding
+In the R Console, type the code necessary to arrange `agg_assault_data` in order of latitude, in descending order (from largest to smallest). Once you've tried writing the code, if you need help you can click the 'Solution' button below.
 
-**Type the code necessary to arrange `agg_assault_data` in order of latitude,
-in descending order (from largest to smallest)**
+`r webexercises::hide()`
 
-Run your code using the `Run Code` button, then (if necessary) correct your code 
-and run it again. Once you are happy that your code does what it is intended to
-do, click the `Solution` button to check.
+`arrange(agg_assault_data, desc(latitude))`
 
-```{r arrange-exercise4, exercise=TRUE}
-
-```
-
-```{r arrange-exercise4-solution}
-arrange(agg_assault_data, desc(latitude))
-```
-
+`r webexercises::unhide()`
 :::
 
 
 
 ## Saving data
 
-Once we have finished wrangling a particular dataset, it is often useful to save
-it to a file so that we can use it again in future without going through all the
-steps of data wrangling again.
+Once we have finished wrangling a particular dataset, it is often useful to save it to a file so that we can use it again in future without going through all the steps of data wrangling again.
 
-Most R functions that begin with `read_` (like `read_csv()` and `read_excel()`)
-have equivalent functions that begin `write_` and which save data into a 
-particular file format. In this example, we will use the `write_csv()` function
-from the `readr` package, which is loaded when we load the `tidyverse` package.
+Most R functions that begin with `read_` (like `read_csv()` and `read_excel()`) have equivalent functions that begin `write_` and which save data into a particular file format. In this example, we will use the `write_csv()` function from the readr package, which is loaded when we load the tidyverse package.
 
-```r
+Just as `read_csv()` can read files from a variety of different locations, so `write_csv()` can write files to different locations. Look at this code and use the comments (lines beginning with `# `) to understand the different options for saving data.
+
+```{r}
+#| eval: false
+#| filename: "R Console"
+
 # We can write data to a file in the same folder as our R script
 write_csv(agg_assault_data, "fort_worth_agg_assault.csv")
 
@@ -1136,170 +836,98 @@ write_csv(agg_assault_data, "fort_worth_agg_assault.csv")
 write_csv(agg_assault_data, "../../fort_worth_agg_assault.csv")
 ```
 
-For very large datasets, we can save a compressed version of the file by adding
-`.gz` (for gzip) to the end of the file name, which tells R to compress the file 
-after creating it.
-
-```r
-write_csv(agg_assault_data, "fort_worth_agg_assault.csv.gz")
-```
-
-`read_csv()` can read gzipped CSV files, but some other programs (such as Excel) 
-cannot, so only use this option if you are sure you will only need to open the 
-file in software that can handle it.
-
-There are corresponding write functions for other types of data (which we will
-come back to when we learn how to handle spatial data), but in this course we
-will store all non-spatial data in CSV format because it can be read by many
-different programs.
+There are corresponding write functions for other types of data (which we will come back to when we learn how to handle spatial data), but in this course we will store all non-spatial data in CSV format because it can be read by many different programs.
 
 
 
-## Stringing functions together
+## Stringing functions together {#sec-pipe-operator}
 
-In this tutorial we have learned how to use the `dplyr` functions `select()`,
-`filter()`, `mutate()`, `summarise()` and `arrange()` to wrangle data from one
-format to another. Data wrangling is part of almost all data analysis, so these
-are skills we will use frequently.
+In this chapter we have learned how to use the dplyr functions `select()`, `filter()`, `mutate()`, `summarise()` and `arrange()` to wrangle data from one format to another. Data wrangling is part of almost all data analysis, so these are skills we will use frequently.
 
-Data wrangling often involves multiple steps. For example, we might want to load
-some data, select certain columns, filter some rows, mutate some of the 
-variables, summarise the dataset and save the result. We can do each of these
-steps separately, assigning the result of each step to a new object.
+Data wrangling often involves multiple steps. For example, we might want to load some data, select certain columns, filter some rows, mutate some of the variables, summarise the dataset and save the result. We can do each of these steps separately, assigning the result of each step to a new object.
 
-```{r pipe-exercise1, exercise=TRUE, exercise.lines=25}
-# Load the lubridate package, since we will need it below
-library(lubridate)
-
-# Read San Francisco robbery data
-robbery1 <- read_csv("https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv")
+```{r}
+#| eval: false
+#| filename: "chapter_03.R"
 
 # Select only the columns we need
-robbery2 <- select(robbery1, date_time)
+robbery2 <- select(san_fran_rob, date_time)
 
 # Filter only those offences that occurred in the first quarter of 2019
-robbery3 <- filter(robbery2, as.Date(date_time) <= as.Date("2019-03-31"))
+robbery3 <- filter(robbery2, as_date(date_time) <= ymd("2019-03-31"))
 
 # Create a new weekday variable
 robbery4 <- mutate(robbery3, weekday = wday(date_time, label = TRUE))
 
 # Count how many offences occurred on each weekday
 q1_weekday_counts <- count(robbery4, weekday)
-
-# Print the first few rows of the result
-head(q1_weekday_counts, n = 7)
 ```
 
-This code works, but involves creating six new objects, even though we only need
-the final object for our analysis. You may notice that the first argument 
-expected by `select()`, `filter()`, `mutate()` and `count()` is
-always the data tibble produced by the previous step. This means we can skip
-saving the result of each step as a new object, and just run the previous 
-function inside the first function. This approach produces the following code,
-which produces exactly the same result as the code above.
+This code works, but involves creating six new objects, even though we only need the final `q1_weekday_counts` object for our analysis. You may notice that the first argument expected by `select()`, `filter()`, `mutate()` and `count()` is always the data tibble produced by the previous step. For example, the `filter()` function on line 5 of this code uses the `robbery2` object created by line 2 of the code.
 
-```{r pipe-exercise2, exercise=TRUE}
-q1_weekday_counts <- count(
-  mutate(
-    filter(
-      select(
-        read_csv("https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"),
-        -offense_type
-      ), 
-      as.Date(date_time) <= as.Date("2019-03-31")
-    ),
-    weekday = wday(date_time, label = TRUE)
-  ),
-  weekday
-)
+Whenever you write code that (a) consists of several sequential steps, and (b) each step uses the data produced by the previous step, there is a better way to do it. This method uses the `|>` (or _pipe_) operator. The pipe operator works by using the result of the code on the left-hand side of the pipe as the first argument to a function on the right-hand side. So the code `x  |> fun1() |> fun2()` starts with an object called `x`, uses that as the input to the function `fun1()`, then passes the result produced by `fun1()` and uses that as the input to `fun2()`.
 
-head(q1_weekday_counts, n = 7)
-```
+It may be useful to read the pipe operator as 'and then', since piped code does the first thing *and then* the second thing with the result *and then* the third thing with the 
+result of that, and so on. Piped code (sometimes called a *pipeline*) is a lot like the series of steps in a recipe.
 
-This code works and takes up less space, but it's quite difficult to read –
-which can be a problem for finding and fixing problems with your code. For
-example, it's quite hard (without counting pairs of parentheses) to work out 
-that the reference to the column `weekday` on line 12 of this code belongs to 
-the `count()` function on line 1.
+Delete all the code from the file `chapter_03.R`, since we are now going to replace it with a piped version of the same code. This pipeline of code is better because it is shorter than the previous code, is easier to maintain and (once you get used to the pipeline) is easier to understand.
 
-It's possible to write this code so that it is readable and does not require us
-to create multiple different objects to store the result of each step in our
-code. This method uses the `|>` (or _pipe_) operator. The pipe operator works by 
-using the result of the code on the left-hand side of the pipe as the first 
-argument to a function on the right-hand side. So the code 
-`x  |> fun1() |> fun2(y)` is the same as the code `fun2(fun1(x), y)`, but it is 
-much easier to see that `fun1()` is run before `fun2()`. It may be useful to 
-read the pipe operator as 'and then', since piped code does the first thing 
-*and then* the second thing with the result *and then* the third thing with the 
-result of that, and so on. Piped code (sometimes called a *pipeline*) is a lot 
-like the series of steps in a recipe.
+```{r}
+#| eval: false
+#| filename: "chapter_03.R"
 
-Since each function we are using returns the new data, and the first argument to 
-all of those functions is the name of the input data object, the pipe means we 
-can just omit the first argument to all except the first function.
+# Load packages
+pacman::p_load(tidyverse)
 
-```{r pipe-exercise3, exercise=TRUE}
+# Load data
 san_fran_rob <- read_csv("https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv")
 
+# Produce counts of robberies each weekday
 q1_weekday_counts <- san_fran_rob |> 
   select(-offense_type) |> 
-  filter(as.Date(date_time) <= as.Date("2019-03-31")) |> 
+  filter(as_date(date_time) <= ymd("2019-03-31")) |> 
   mutate(weekday = wday(date_time, label = TRUE)) |> 
   count(weekday)
-
-head(q1_weekday_counts, n = 7)
 ```
 
-This code strikes a good balance between being easy to read and not requiring us
-to manage lots of intermediate variables. You might not find the pipe operator
-completely intuitive at the moment, but it will become easier as you see more
-examples in future tutorials. 
+```{r}
+#| echo: false
+
+# Load packages
+pacman::p_load(tidyverse)
+
+# Load data
+san_fran_rob <- read_csv("https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv")
+
+# Produce counts of robberies each weekday
+q1_weekday_counts <- san_fran_rob |> 
+  select(-offense_type) |> 
+  filter(as_date(date_time) <= ymd("2019-03-31")) |> 
+  mutate(weekday = wday(date_time, label = TRUE)) |> 
+  count(weekday)
+```
 
 
-<div class="box extra-detail">
-
-<h5 id="pipe-box1-title" class="box-title">What about the `%>%` pipe operator?</h5>
-
-<div id="pipe-box1" class="box-content">
-
-If you have learned any R coding before, you might have learned to use the `%>%` 
-pipe operator from the `magrittr` package. The `%>%` pipe operator was 
-introduced several years ago to allow people to construct pipelines of code in 
-R. The `%>%` operator was so widely used that the team that writes the R 
-programming language decided to provide a pipe operator in R itself, to avoid 
-the need to load the `magrittr` package. 
-
-You will still see the `%>%` pipe operator used in lots of R code examples 
-online. In almost all cases, when you see `%>%` you can replace it with the R 
-pipe operator `|>`, since they both work in very similar ways.
-
-</div>
-
-</div>
-
-<script>
-$("#pipe-box1-title").click(function () { $("#pipe-box1").toggle("slow") })
-</script>
+You might not find the pipe operator completely intuitive at the moment, but it will become easier as you see more examples in future chapters. 
 
 
-::: {.box .reading}
+::: {.callout-tip collapse="true"}
+#### What about the `%>%` pipe operator?
 
-You can find out more about how to use the pipe operator in the [Introducing `magrittr`](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) online tutorial.
+If you have learned any R coding before, you might have learned to use the `%>%` pipe operator from the magrittr package. The `%>%` pipe operator was introduced several years ago to allow people to construct pipelines of code in R. The `%>%` operator was so widely used that the team that writes the R programming language decided to provide the `|>` pipe operator in R itself, to avoid the need to load the magrittr package. You might sometimes see the `|>` referred to as the _native_ pipe operator.
 
+You will still see the `%>%` pipe operator used in lots of R code examples online. In almost all cases, when you see `%>%` you can replace it with the R  pipe operator `|>`, since they both work in very similar ways.
 :::
+
+
+Save the `chapter_03.R` file, then restart R to start a new session by clicking on the `Session` menu and then clicking `Restart R`. This creates a blank canvas for the next chapter.
+
 
 
 ## In summary
 
 
-::: {.box .welldone}
-
-In this tutorial, you have learned how to wrangle data in R using functions from
-packages in the `tidyverse` suite of packages. You can now construct a complete
-pipeline of R code to take raw data and transform it into the format(s) we need
-to effectively map crimes.
-
-:::
+In this chapter, you have learned how to wrangle data in R using functions from packages in the `tidyverse` suite of packages. You can now construct a complete pipeline of R code to take raw data and transform it into the format(s) we need to effectively map crimes.
 
 
 ::: {.box .reading}
@@ -1324,5 +952,19 @@ further, you might be interested in:
     Grolemund, a free online book that is the bible for wrangling data in R.
     
 :::
+
+
+::: {.callout-quiz .callout}
+### Revision questions {.unnumbered}
+
+Answer these questions to check you have understood the main points covered in this chapter. Write between 50 and 100 words to answer each question.
+
+1. What is data wrangling, and why is it an important step in data analysis?
+2. Describe the difference between loading data from a CSV file and an Excel file in R. What additional steps are required when working with Excel files?
+3. What is the purpose of the `select()` function in the dplyr package? How can it be used to both choose and rename columns? Include a brief example in your explanation.
+4. Explain why should should never include the function `install.packages()` in an R script file.
+5. What are the benefits of using the pipe (`|>`) operator in R?
+:::
+
 
 <p class="credits"><a href="https://twitter.com/allison_horst">Artwork by @allison_horst</a></p>

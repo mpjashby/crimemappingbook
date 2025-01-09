@@ -1,0 +1,550 @@
+# Code with style {#sec-code-style}
+
+::: {.abstract}
+This chapter explores the importance of writing clean, readable code in R. You’ll learn practical techniques such as organizing your code, using consistent naming conventions, and spacing effectively to improve clarity. The chapter also covers structuring functions and following style guidelines, which make it easier to fix problems with your code. Whether you’re working solo or sharing projects, these tips will help you write code that’s both efficient and accessible. Let’s get started with coding that works for you and others!
+:::
+
+
+## Introduction
+
+Now that you're beginning to write code in R, it's time to introduce a few conventions for how to write code so that it's easier to read. This is important because "[good coding style is like correct punctuation: you can manage without it, butitsuremakesthingseasiertoread](https://style.tidyverse.org/)".
+
+Writing readable code is particularly important because it is much easier to find mistakes in well-written code, and your code will inevitably contain mistakes (everyone's code contains mistakes!). That means writing readable code isn't just a matter of style but a key part of successfully using a programming language like R to do work.
+
+Writing code [has been compared to performing in a band](https://www.smashingmagazine.com/2012/10/why-coding-style-matters/):
+
+> I liken the situation to a group of musicians trying to form a band. Each one comes in believing that their way of doing things is best (their “method” or “process”). The band will struggle so long as everyone is trying to do their own thing. It’s impossible to create good music unless everyone in the band agrees on the tempo, the style and who should take lead during a song. Anyone who has ever heard a high school band perform knows this to be true. Unless everyone is on the same page, you aren’t going to accomplish much.
+
+You might be relaxing at this point, thinking "that isn't a problem for me, because I'm the only person who is going to be working on my code". If so, think again. It's been said that in data science that there are always at least two people working on a project: the _you_ who is working on the code now, and the _past you_ who has worked on the same code previously. The problem is that *[past you does 
+not answer emails](https://datasciencecampus.ons.gov.uk/taking-reproducible-analytical-pipelines-on-a-virtual-tour-first-stop-the-caribbean/)*. So you can save _future you_ a lot of hassle later by writing readable code.
+
+This chapter introduces some basic guidelines on formatting your code. Some sections of this chapter have been adapted from [The tidyverse style guide](https://style.tidyverse.org/), which provides lots more detail. All the code you see in the chapters in this book was written following this style guide.
+
+<p class="full-width-image"><img src="../images/on_perl.png" alt="A three-panel cartoon. In the first panel a man says 'this is the worst code I've ever seen'. In the second panel, he says 'the comments are useless, there's variables that do nothing …' and 'what depraved madman wrote this?'. In the third panel, he says 'wait, I did this two weeks ago'."></p>
+
+
+
+## Organising files in a project {#sec-projects}
+
+<p class="full-width-image"><img src="../images/data_cowboy.jpg" alt="Cartoon of a furry monster lassoing several sheets of data"></p>
+
+In @sec-create-project we learned how to create an RStudio project. Projects in RStudio are a way of keeping your analysis organised. When you work inside an project, RStudio will do various things in the background that make it easier to stay organised. For example, RStudio will save the project's _state_: if you have to close the project and re-open it later, all the files that you had open before will re-open, too.
+
+::: {.callout-important}
+#### Do everything in RStudio inside a project
+
+**I strongly recommend that you use projects for everything you do in RStudio.** There are no real costs to using projects and the benefits can be substantial, so try to get used to using them for all your analysis. Have one RStudio project for each project that you work on, for example you might have one project for each research report that you write or piece of analysis you do on a particular topic. For this purposes of this course, do all your work inside the single project you created in @sec-create-project.
+
+:::
+
+Once you have created an empty project, you can create some directories within it to organise your files. There are lots of suggestions online for how to organise your files within a project -- see this [summary of project-organisation methods if you would like to understand the different options available](https://discuss.ropensci.org/t/resources-on-project-directory-organization/340/1) -- but the most important thing is that you have separate places to store:
+
+  * the original/raw data that you have obtained (e.g. by downloading it from a website or extracting it from a police database),
+  * the results of any data wrangling that you do,
+  * files containing the code that you use to wrangle the data and conduct your analysis, and finally,
+  * the outputs from your analysis, including tables, charts and reports.
+
+Putting each of these four types of files in a separate directory within the project directory makes it much easier to keep track of them. We can create the necessary directories directly in R using the `dir.create()` function. You can run this code in the R Console whenever you create a new project:
+
+```{r}
+#| eval: false
+#| filename: "R Console"
+
+# `dir.create()` does not produce any output unless there is a problem
+dir.create("source_data")
+dir.create("analysis_data")
+dir.create("code")
+dir.create("outputs")
+```
+
+::: {.callout-important}
+#### Inside a project, all paths are relative to the project directory
+
+Because we are running these commands from inside an RStudio project, these directories will automatically be created as subdirectories of the project directory we have already created -- this saves a lot of moving between directories, and is another reason to use RStudio projects. 
+
+Once you are working within an RStudio project, RStudio knows to treat any reference to a file or folder as being relative to the folder that contains the RStudio project. So, for example, if your project for analysis of thefts in Vancouver is stored in a folder called `/Documents/crime_mapping/vancouver_thefts/` and you run the R code `read_csv("source_data/vancouver_thefts.csv")`, RStudio knows that you mean to open the file stored at `/Documents/crime_mapping/vancouver_thefts/source_data/vancouver_thefts.csv`. This can save you lots of time working out how to reference a particular file location in R.
+
+:::
+
+
+::: {.callout-tip collapse="true"}
+#### What about setting a working directory?
+
+If you have learned some R before this course -- especially if it was some time ago or taught by someone who themselves learned R a long time ago -- you might have learned to start each analysis by setting a *working directory* using the `setwd()` function or the `Session > Set Working Directory` menu option in RStudio. Not only do you not need to do this when you keep your analysis in an RStudio project, **you should not set a working directory in R** because it can have several unpleasant side effects.
+
+The biggest problem with manually setting a working directory in your R code is that if you share your code with someone else then it is likely the `setwd()` function will produce an error because that person's computer will have a different directory structure to your computer. So if the first line of your R script is `setwd("/Users/uctzaaa/Documents/crime_mapping_vancouver_thefts/")` because that is the location of the working directory on your computer, this will produce an error on another computer that does not have a `/Users/uctzaaa` directory (i.e. it will cause an error on almost every computer in the world). This makes it much harder to get help on your code, for example if you are using a reproducible example (which we will learn about later in this chapter) to show someone else a problem with your code.
+
+Setting a working directory using the `Session > Set Working Directory` menu buttons in RStudio has the additional problem that it's not possible to work out from reading your R code that you have set the working directory that way. So if someone else (or you, in a few weeks when you've forgotten) tried to run your code and it produced an error, there would be nothing in the code to tell them that they needed to change the working directory.
+
+For more detail on why you should not set a working directory manually, read this [blog post on project-oriented workflow](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/).
+
+:::
+
+
+<a href="https://purrr.tidyverse.org/" title="purrr package website"><img src="../images/purrr.png" class="right-side-image"></a>
+
+Typing out the `dir.create()` function four times is somewhat tedious, and certainly would be if we needed to create (say) 10 directories rather than four. One way to make this code shorter is to use the `walk()` function from the [purrr package](https://purrr.tidyverse.org/), which is part of the tidyverse suite of packages. `walk()` allows us to run any function several times, each time using a different input, one at a time. The function is called `walk()` because it 'walks' through all the items in a vector of inputs, applying the same function to each of them in turn.
+
+The general format of calls to the `walk()` function is:
+
+```r
+walk(vector_of_inputs, function_name_to_apply_to_those_inputs)
+```
+
+So if we wanted to create the same four directories using `walk()`, we could run this single line of code in the R Console:
+
+```{r}
+#| eval: false
+#| filename: "R Console"
+
+walk(c("source_data", "analysis_data", "code", "outputs"), dir.create)
+```
+
+Note that the function name `dir.create` is not followed by a pair of parentheses when it is used inside `walk()`.
+
+`walk()` is a very powerful function and this is only a very simple example of what it can do, but we will return to it when we need it again.
+
+
+::: {.callout-tip collapse="true"}
+#### Why didn't we use a loop instead of `walk()`?
+
+If you have learned any other programming languages, you might remember that the usual way to apply the same function to a series of values is to use a 'loop', which (depending on the language) might be called a 'for loop' or a 'foreach loop'. While you can create 'for' loops in R that would do the same thing as the `walk()` function, it is generally better not to use 'for' loops in R. This is both because [loops are often slower](https://stackoverflow.com/a/30241011/8222654) -- which can be particularly important when analysing large spatial datasets -- and because functions like `walk()` can easily be used inside pipelines constructed with the `|>` operator.
+
+**If you're ever tempted to use a 'for' loop in R, stop and think about how to achieve the same result using a function like `walk()`.**
+
+:::
+
+
+## Naming files
+
+The final step in organising your work so that you can analyse data and stay sane is to give every file you create a name that will help you find it later on. To do this, stick to three principles:
+
+  1. make your file names easily readable by _computers_,
+  2. make your file names easily readable by _humans_, and
+  3. use file names that will by-default by _sorted_ in a meaningful way.
+
+Computers can increasingly read file names that contain any characters you can think of, but many different characters make referencing your file names in your code more difficult than need be. To keep your code simple, stick to files names that contain only _lower-case_ letters (so you don't have to remember if each letter is upper-case or lower-case), numbers, hyphens (`-`) and underscores (`_`) -- that's it. If the language you are writing in uses letters with accents such as é or ü, its best to not use those accents in file names. So, instead of having files with names like this:
+
+```
+John's raw data.csv
+figure 4.jpg
+DüsseldorfCrimeData.xlsx
+```
+
+use the names:
+
+```
+john_raw_data.csv
+figure_4.jpg
+dusseldorf_crime_data.xlsx
+```
+
+<a href="https://xkcd.com/1459/"><img src="https://imgs.xkcd.com/comics/documents.png" alt="Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Copy of Untitled.doc" style="width: 33%; max-width: 300px; float: right; margin: 0 0 2em 2em;"></a>
+
+To make your files easily readable by humans, make sure the file name describes what the file contains or does. So giving a file the name `crime_data_atlanta_2020.csv` is much more useful than calling the same file `data_file_23.csv`. If you've been using computers for a while (or you've been taught by someone who has), you may have been trained to use very short file names because old computers could only handle very short names. Fortunately, modern computers can handle much longer file names, so it's generally safe to use a few extra characters to describe what your file is or does. File names are also easier to read if words are separated by a hyphen or underscore: `police_recorded_robbery_data_2020` is much easier to read than 
+`policerecordedrobberydata2020`. 
+
+If your files have a meaningful order, it's useful to reflect this in the file name. Imagine you have three code files: one for data wrangling, one for carrying out spatial analysis tasks on that wrangled data and a third one for creating charts to show the results of the analysis. You cannot run the analysis code until the data wrangling is complete, so the files have a meaningful order.
+
+When you look at these files in the Windows File Explorer, Mac Finder or RStudio Files tab, they are likely to appear out of order. For example, they might be:
+
+```
+analyse_data.R
+create_charts.R
+wrangle_data.R
+```
+
+If you add a number to the start of the file name to show which order to use the files in, things become clearer:
+
+```
+01_wrangle_data.R
+02_analyse_data.R
+03_create_charts.R
+```
+
+Note that the numbers are padded with a zero so that they will still be sorted in the correct order if you end up with more than 10 files in my workflow (I've only used one zero for padding because I don't expect to have more than 100 script files).
+
+
+
+## Organising your code
+
+In @sec-permanent-code we learned about the difference between temporary code that we type in the R Console in RStudio and permanent code that we type in a `.R` script file. In this section we will learn how to organise the permanent code within a script file so that it is easier to use.
+
+
+### Leaving notes for future you
+
+Within each `.R` file, you can make your code easier to understand in several ways. First, add a comment (one or more lines beginning with `#` _followed by a space_) at the top of the file to explain what the code in that file does. This will make it easier for you to know that you've found the right file if you are looking for it in a few weeks when you've forgotten (which you will) what file contains what code.
+
+```r
+# This code produces a density map of bike thefts in Vancouver in 2020
+```
+
+Comments should usually start with a capital letter and follow normal English rules of punctuation, spacing, etc.
+
+
+### Letting your code breathe
+
+Unless your code is very simple, it will probably consist of several separate tasks that are completed one after another. For example your code might download some data, wrangle it and then plot it on a map. In that case, it can be useful to split your code up into blocks by leaving a blank line between the code needed for each task. For example, if we take the code:
+
+```r
+pacman::p_load(tidyverse)
+crimes <- read_csv("crime_data.csv")
+crimes <- janitor::clean_names(crimes)
+burglaries <- filter(crimes, type == "burglary")
+burglaries <- mutate(burglaries, month = month(date_time))
+ggplot() + 
+  geom_point(aes(x = lon, y = lat, colour = month)) +
+  theme_void()
+```
+
+it becomes easier to read if we split the code up into four tasks: loading the
+necessary packages, reading the data, wrangling the data and plotting the data.
+
+```r
+pacman::p_load(tidyverse)
+
+crimes <- read_csv("crime_data.csv")
+
+crimes <- janitor::clean_names(crimes)
+burglaries <- filter(crimes, type == "burglary")
+burglaries <- mutate(burglaries, month = month(date_time))
+
+ggplot(burglaries) + 
+  geom_point(aes(x = lon, y = lat, colour = month)) +
+  theme_void()
+```
+
+Since data wrangling involves several steps and each function uses the result of the previous step, we could use the pipe operator `|>` to make that code a bit cleaner:
+
+```r
+pacman::p_load(tidyverse)
+
+crimes <- read_csv("crime_data.csv")
+
+burglaries <- crimes |> 
+  janitor::clean_names() |> 
+  filter(type == "burglary") |> 
+  mutate(month = month(date_time))
+
+ggplot(burglaries) + 
+  geom_point(aes(x = lon, y = lat, colour = month)) +
+  theme_void()
+```
+
+You can see that in this code, making sure there are no blank lines between lines of code in a pipeline or a `ggplot()`, and putting a blank line _between_ each pipeline or stack, makes it much easier to see where one task ends and the next begins.
+
+
+### Header comments
+
+If your code includes very long tasks (e.g. where the code takes up more than a full screen on your computer), you might want to use header comments to divide your code into sections. You can do this by writing a comment that is followed by four of more hyphens (`----`):
+
+```r
+# Load data ----
+
+… some code …
+
+
+# Wrangle data ----
+
+… some code …
+
+
+# Plot data ----
+
+… some code …
+```
+
+RStudio will recognise comments that end in four or more hyphens as being headings, and will create a table of contents for your code. You can use this to move between headings by clicking on the Jump To menu at the bottom of the Source panel in RStudio:
+
+```{r jump-to-menu}
+#| echo: false
+#| fig-align: center
+
+knitr::include_graphics("../images/rstudio_code_sections.png")
+```
+
+In general, writing code that is readable is more important than writing the shortest code possible, so don't be afraid to let your code breathe by using space to separate your code into meaningful chunks.
+
+
+::: {.callout-quiz .callout}
+#### Comments
+
+**How do you write a comment in R?**
+
+```{r comments-quiz}
+#| echo: false
+
+comments_quiz <- c(
+  "A `#` symbol, followed by no spaces. Comments should start with a capital letter. e.g. `#Load data`",
+  answer = "A `#` symbol followed by a space. Comments should start with a capital leter. e.g. `# Load data`",
+  "A `#` symbol, followed by no spaces. Comments should be in lower case unless the comment is long enough to contain more than one sentence. e.g. `#load data`",
+  "A `#` symbol followed by a space. Comments should be in lower case unless the comment is long enough to contain more than one sentence. e.g. `# load data`"
+)
+```
+
+`r webexercises::longmcq(comments_quiz)`
+
+:::
+
+
+
+## Naming objects
+
+R objects can have any name you like, as long as the name starts with a letter and contains only letters, numbers, dots (`.`) and underscores (`_`). That said, you will find coding easier if you follow a few conventions.
+
+  * Use only lower-case letters in the names of objects, which avoids you having to remember whether a particular letter was upper- or lower-case.
+  * Use *snake case* (`object_name`, with words separated by underscores) for object names rather than camel case (`objectName`) or kebab case  (`object-name`).
+  * Don't use dots in object names.
+  * Don't give objects the same names as R functions, because re-using function names makes reading your code more difficult.
+
+```{r snake-case}
+#| echo: false
+#| fig-align: center
+#| out.width: 80%
+
+knitr::include_graphics("../images/snake_case.jpeg")
+```
+
+Just as `crime_data_atlanta_2020.csv` is a more-useful file name than `data_file_23.csv`, you will find it easier to read your code if you give your objects meaningful names. So when you load data into R (e.g. with `read_csv()`) don't just call it `data` (not least because there is a function named `data()`) but instead give it a name like `atlanta_crimes` if it contains (for example) crime data from Atlanta.
+
+
+::: {.callout-quiz .callout}
+#### Naming objects
+
+**Which of these would be a good name for an object containing data on homicides in Abu Dhabi?**
+
+```{r naming-quiz}
+#| echo: false
+
+naming_quiz <- c(
+  "`abu-dhabi-homicides`",
+  "`Abu_Dhabi_homicides`",
+  "`homicide_data`",
+  answer = "`abu_dhabi_homicides`"
+)
+```
+
+`r webexercises::longmcq(naming_quiz)`
+
+:::
+
+
+
+## Spacing
+
+Spacing out code makes it much easier to read, but (just as in any language) code is easiest to read if spaces are used where people expect them to be by convention. 
+
+Mostly in R, we use spaces where we would expect them in English: after commas but not before, outside parentheses but not inside, etc.
+
+```r
+# Good
+read_csv("crime_data.csv", skip = 4)
+
+# Bad
+read_csv("crime_data.csv",skip = 4)
+read_csv("crime_data.csv" ,skip = 4)
+read_csv("crime_data.csv" , skip = 4)
+```
+
+Don't put spaces inside parentheses, or between the names of functions and the
+parentheses:
+
+```r
+# Good
+mean(x, na.rm = TRUE)
+
+# Bad
+mean (x, na.rm = TRUE)
+mean( x, na.rm = TRUE )
+```
+
+*Do* put spaces around most operators (`==`, `+`, `-`, `<-`, etc.), including
+either side of `=` when specifying the values of function arguments:
+
+```r
+# Good
+height <- (feet * 12) + inches
+mean(x, na.rm = TRUE)
+
+# Bad
+height<-feet*12+inches
+mean(x, na.rm=TRUE)
+```
+
+Although there are some operators that shouldn't have spaces around them: `$`, 
+`@`, `[`, `[[`, `^`, `:` and `?`.
+
+
+::: {.callout-quiz .callout}
+#### Spacing
+
+**Which of these lines of code has the optimal spacing?**
+
+```{r spacing-quiz}
+#| echo: false
+
+spacing_quiz <- c(
+  '`burglary<-filter(crimes,type=="burglary")`',
+  '`burglary <- filter(crimes, type=="burglary")`',
+  answer = '`burglary <- filter(crimes, type == "burglary")`',
+  '`burglary <- filter ( crimes , type == "burglary" )`'
+)
+```
+
+`r webexercises::longmcq(spacing_quiz)`
+
+:::
+
+
+
+## Functions
+
+We've now got used to calling functions to do things in R, like calling `read_csv()` to load data from a CSV file or `filter()` to choose certain rows from a dataset. We know that we can change the behaviour of functions by using arguments. For example, we can wrap a string of text into shorter lines using the `str_wrap()` function from the `stringr` package. `str_wrap()` needs two arguments: the text to be wrapped into multiple lines and the maximum length of a line of text before the next word is wrapped onto a new line. These arguments are called `string` and `width`, so we can call the function as:
+
+```r
+str_wrap(string = "some text to be wrapped", width = 10)
+```
+
+The `string` argument provides the *data* that the `str_wrap()` function will work on, while the `width` argument provides the details of how that work should be done. Since the data argument to a function is typically required (the function makes no sense without it) and is often the first argument, you can omit the name of data arguments to functions. For all other arguments, it is best to give the argument name. So to use `str_wrap()`, you can write:
+
+```r
+str_wrap("some text to be wrapped", width = 10)
+```
+
+In general, you should keep lines of code to a maximum of 80 characters long, since they can easily fit on most screens and are easy to read. When calling a function, put all of the parameters on a single line if they will fit into 80 characters or less:
+
+```r
+do_something_simple("something", with = "only", short, "arguments")
+```
+
+But if the function call is longer than 80 characters, use one line each for the function name, each argument, and the closing `)`, with the arguments indented by two spaces. This makes the code much easier to read.
+
+```r
+# Good
+do_something_very_complicated(
+  something = "that",
+  requires = many,
+  arguments = "some of which may be long"
+)
+
+# Bad
+do_something_very_complicated("that", requires, many, arguments, "some of which may be long")
+do_something_very_complicated("that", requires, many, arguments,
+                              "some of which may be long"
+                              )
+```
+
+
+::: {.callout-important}
+
+One mistake that people often make when splitting a function across multiple lines is to leave the closing parenthesis `)` at the end of the last line of the function, like this:
+
+```r
+# Bad
+do_something_very_complicated(
+  something = "that",
+  requires = many,
+  arguments = "some of which may be long")
+```
+
+The problem with this is that it makes it harder to see where a particular function ends. Instead, put the closing parenthesis on a line on its own, indented with the same number of spaces as the first line of the function:
+
+```r
+# Good
+do_something_very_complicated(
+  something = "that",
+  requires = many,
+  arguments = "some of which may be long"
+)
+```
+
+This makes it much easier to see where a function call starts and ends.
+
+:::
+
+
+When combining multiple functions using the pipe operator (`|>`), put each function on a single line, with all but the first line indented by two spaces:
+
+```r
+a_function() |> 
+  another_function() |> 
+  and_a_third_function()
+```
+
+Once you learn about other types of R code you will need to know how best to style it, but we will learn about those when we need to.
+
+
+::: {.callout-quiz .callout}
+#### Styling functions in code
+
+**If a function is written across several lines of code because it will not fit on one line, where should the closing parenthesis `)` at the end of the function be placed?**
+
+```{r functions-quiz}
+#| echo: false
+
+functions_quiz <- c(
+  answer = "On a separate line, indented as much as the function name.",
+  "On a separate line, indented as much as the arguments on the lines above it.",
+  "At the end of the final function argument, on the same line.",
+  "It doesn't matter where the closing parenthesis is placed as long as there is one."
+)
+```
+
+`r webexercises::longmcq(functions_quiz)`
+
+:::
+
+
+
+## Styling your code automatically {#sec-styler}
+
+You can get help on styling your R code using the [`styler`](https://styler.r-lib.org/) package, which can automatically format your code for you. After you install the `styler` package with the code `pacman::p_install("styler")`, you can style your code by:
+
+  1. selecting the code you want to style,
+  2. opening the `Addins` menu at the top of the Source panel in RStudio,
+  3. clicking 'Style selection' in the 'Styler' section of the list of addins.
+  
+```{r styler-gif}
+#| echo: false
+#| fig-align: center
+
+knitr::include_graphics("../images/styler.gif")
+```
+
+RStudio will also try to help style your code as you type, for example by automatically indenting lines.
+
+
+
+## In summary
+
+You now know how to write your R code so that it is easy to read, which makes it much easier to understand. Understanding code when you read it is important because it allows you to work out what the code is trying to achieve and because it makes it much easier to find and fix problems when your code is not behaving as you want it to.
+
+
+::: {.box .reading}
+
+Writing readable, understandable code is important. To find out more about this,
+read some of these articles:
+
+  * [Why coding style matters](https://www.smashingmagazine.com/2012/10/why-coding-style-matters/) by Nicholas Zakas.
+  * [The tidyverse style guide](https://style.tidyverse.org/) by Hadley Wickham, which is the basis for the rules outlined in this chapter.
+
+:::
+
+
+::: {.callout-quiz .callout}
+### Revision questions {.unnumbered}
+
+Answer these questions to check you have understood the main points covered in this chapter. Write between 50 and 100 words to answer each question.
+
+1. Why is maintaining a consistent coding style important in R? Explain how it benefits both the person writing the code and others who may need to read or edit it later.
+2. What are some best practices for organizing your code different sections? Provide examples of how comments and spacing can make your code easier to navigate.
+3. Describe the guidelines for naming objects in R. Why is it important to avoid using names that clash with existing R functions?
+4. What are the key rules for spacing in R code? Provide examples of good and bad practices when spacing around operators, commas, and parentheses.
+5. Explain how to format a function call that spans multiple lines. Why is it important to place the closing parenthesis on a separate, indented line?
+:::
+
+
+<p class="credits">
+[On Perl](http://www.threepanelsoul.com/comic/on-perl) from [Three Panel Soul](http://www.threepanelsoul.com/). ['File Organization: Naming' by Data Carpentry](https://datacarpentry.org/rr-organization1/01-file-naming/index.html) licensed under the [Creative Commons Attribution licence](https://creativecommons.org/licenses/by/4.0/). [XKCD.com comic 'Documents'](https://xkcd.com/1459/) licensed under the [Creative Commons Attribution-NonCommercial license](https://xkcd.com/license.html). [The tidyverse style guide](https://style.tidyverse.org/) licensed under the [Creative Commons Attribution-ShareAlike licence](https://github.com/tidyverse/style/blob/master/LICENSE.md). <a href="https://twitter.com/allison_horst">Artwork by @allison_horst</a>. Some content on this page contains public sector information licensed under the Open Government Licence v3.
+</p>
+

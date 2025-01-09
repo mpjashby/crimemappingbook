@@ -1,55 +1,33 @@
-# Your first crime map
+# Your first crime map {#sec-first-map}
 
-**Quickly walk (or jog) through the process of creating a complete crime map in R.**
-
-
-::: {.box .load-tutorial}
-To load the [interactive tutorial](../#how-to-use-this-book) for this chapter, copy and paste the following code into the RStudio console:
-
-```r
-crimemapping::tutorial("02_your_first_crime_map")
-```
-
-and press `Enter`.
+::: {.abstract}
+This chapter provides a beginner-friendly introduction to creating crime maps in R. We will walk through the essential steps, including loading pre-prepared crime data, processing it into a usable format, and visualizing it on a map. This chapter introduces key R concepts like working with spatial data and using simple features (SF) objects. You’ll learn to distinguish between temporary and permanent code, understand the basics of coordinate reference systems, and produce a professional-looking map. Let’s get started!
 :::
 
 
 
-```{r setup, include=FALSE}
+```{r setup}
 #| echo: false
 #| include: false
 
-source(here::here("mask_learnr_functions.R"))
-
-library(tidyverse)
-
-# {ggspatial} uses {rosm} to download OSM map tiles and {rosm} needs {raster} to
-# render them, but {rosm} only Suggests {raster} rather than Importing it. If
-# {raster} is not installed on a user's machine, {learnr} will not install it
-# when loading the tutorial because {learnr} only installs Imported packages.
-# By loading {raster} explicitly (even though we don't need it directly), we 
-# force {learnr} to install it if it is not present.
-library(raster)
+pacman::p_load(tidyverse)
 ```
 
 
 
 ## Introduction
 
-In this tutorial we will use R to produce a simple crime map. To do this we will
+In this chapter we will use R to produce a simple crime map. To do this we will
 skip over lots of the detail of how R works and what choices we should make in
 creating maps. We will return to all these details in future sessions, so 
 for-now please don't worry about understanding every single line of code. 
-Everything will become clear as we work through the tutorials in this course.
+Everything will become clear as we work through this book.
 
-```{r make-final-map, include=FALSE, eval=FALSE}
-# THIS CODE DOES NOT RUN BY DEFAULT, SINCE LEARNR SOMETIMES RUNS THE CODE EVEN
-# WHEN THE FILE ALREADY EXISTS, AND THE FILE WILL ALWAYS EXIST WHEN THE TUTORIAL
-# IS DEPLOYED. THE CODE IS JUST HERE FOR FUTURE REFERENCE IF NEEDED. 
-# 
-# IF YOU NEED TO RE-CREATE THE FILE, RUN THE CODE MANUALLY.
+```{r make-final-map}
+#| eval: false
+#| include: false
 
-if (!file.exists(here::here("inst/tutorials/02_your_first_crime_map/images/atlanta_downtown_homicides.jpg"))) {
+if (!file.exists(here::here("images/atlanta_downtown_homicides.jpg"))) {
   
   # These packages are loaded inside this if statement because loading them at
   # the start of the script means that no package startup messages are produced
@@ -81,7 +59,7 @@ if (!file.exists(here::here("inst/tutorials/02_your_first_crime_map/images/atlan
   
   # Save the map
   ggsave(
-    here::here("inst/tutorials/02_your_first_crime_map/images/atlanta_downtown_homicides.jpg"), 
+    here::here("images/atlanta_downtown_homicides.jpg"), 
     downtown_homicides_map,
     width = 800 / 150, 
     dpi = 150
@@ -93,46 +71,70 @@ if (!file.exists(here::here("inst/tutorials/02_your_first_crime_map/images/atlan
 The map we're going to create shows the locations of four homicides in downtown
 Atlanta in 2019:
 
-```{r show-final-map, fig.align="center", out.width="80%"}
+```{r show-final-map}
 #| echo: false
+#| fig-align: center
+#| out-width: 80%
 
-knitr::include_graphics("images/atlanta_downtown_homicides.jpg")
+knitr::include_graphics("../images/atlanta_downtown_homicides.jpg")
 ```
 
-To start off with, watch this video that walks through the code needed to make
-this map. Don't worry if there are things in the video that you don't understand 
--- the rest of this tutorial will explain each line of code in turn.
+To start off with, watch this video that walks through the code needed to make this map. Don't worry if there are things in the video that you don't understand -- the rest of this chapter will explain each line of code in turn.
 
 {{< video https://youtu.be/ipyKc7-ReTs >}}
 
 
-::: {.tutorial}
 
-### Running code in this tutorial
+## Permanent and temporary R code {#sec-permanent-code}
 
-In the video above you saw code being run in RStudio, but to save switching 
-between this tutorial and the RStudio console, the rest of this tutorial 
-includes short chunks of R code that you can run directly in this window. We 
-will use these chunks of code to walk through the code we need to produce a map. 
-To run the code in each chunk, just click the `Run Code` button in the top-right 
-corner of each chunk. If you want to re-run a chunk of code, you can click the 
-`Start Over` button in the top-left corner of each chunk.
+To get started, open RStudio. Now click the `File` menu, then `New File` and then `R Script`. A new file will open in the left-hand panel in RStudio. Click `File` then `Save As...` to save this file in the project directory you created when you completed the previous chapter. Save the file as `chapter_02a.R`.
 
-When you click `Run Code`, the output of the chunk will appear below it (there
-may be a delay of a few seconds for more-complicated chunks).
+::: {.callout-tip collapse="true"}
+#### Why are we naming the file `chapter_02a.R`?
 
-To try out using a code chunk, click `Run Code` below – you should see the
-message 'Hello, world!' printed below the box.
+In each chapter of this book, you will create one or more R script files to store the code needed to produce a map or complete some other task. We will create two separate code files in this chapter, so we will use letters after the chapter number of distinguish between the different files.
+:::
 
-```{r exercise0, exercise=TRUE}
-message("Hello, world!")
+Each chapter in this book includes chunks of R code that you can run in RStudio. We can think of this code as falling into two categories. _Permanent code_ is code that we need to run to complete a piece of data analysis. For example, in the next section we will see some permanent code that loads some crime data. We type permanent code in the R script file that we have just created. By the end of this chapter, the script file we have just created will contain all the code needed to make a basic crime map.
+
+As well as permanent code, we sometimes also need to write _temporary code_. This is code that we don't need to complete an analytical task, but we do need _to write the permanent code that completes a task_. For example, we might need to write a piece of code that shows us the name of each column in a dataset, so we can refer to columns by name in our script file. Once we know the names of the columns, we don't need to code we wrote to find out the column names, which is why we refer to it as temporary code.
+
+Temporary code is not written in our R script file, because including everything in a script file would make it much more complicated and harder to keep track of. Instead, we write temporary code in the _R Console_.
+
+To help keep track of which code in this book is permanent code and which is temporary code, each chunk of code will either be labelled with the name of the R script file you should add it to, or the word 'Console' to indicate that it is temporary code you should type into the R Console.
+
+
+::: {.callout-quiz .callout}
+#### Permanent and temporary code
+
+```{r permanent-code-quiz}
+#| echo: false
+
+permanent_code_quiz1 <- c(
+  answer = "Permanent code is stored in a script file, while temporary code is used only in the Console.",
+  "Permanent code is run manually, while temporary code runs automatically.",
+  "Temporary code is saved, while permanent code is discarded.",
+  "Permanent code produces errors, while temporary code avoids them."
+)
+
+permanent_code_quiz2 <- c(
+  "Temporary code requires real-time user input.",
+  "RStudio is not capable of storing temporary code in R script files.",
+  answer = "To keep our R script files as simple as possible",
+  "Temporary code must run on a separate server."
+)
 ```
 
-`message()` is a *function* – a piece of R code that does something. The thing
-that the `messages()` function does is simple: it prints a message on the 
-screen.
 
-Now click `Continue` below to start this tutorial.
+**What is the difference between permanent and temporary code?**
+
+`r webexercises::longmcq(permanent_code_quiz1)`
+
+
+**Why are temporary code written in the R Console instead of a script file?**
+
+`r webexercises::longmcq(permanent_code_quiz2)`
+
 
 :::
 
@@ -141,46 +143,53 @@ Now click `Continue` below to start this tutorial.
 ## Loading crime data
 
 
-### Loading packages
+### Loading packages {#sec-loading-packages}
 
 
-::: {.tutorial}
+Before we can work with our data, we first load packages of functions for use in the analysis. For example, we will load the tidyverse package, which automatically loads several packages that are useful for data wrangling and analysis.
 
-Before we can work with our data, we first load packages of functions for use in
-the analysis. To load these packages, click `Run Code`. This will produce
-various messages, all of which you can safely ignore for now.
+Copy the code below and paste it into the blank file `chapter_02a.R` that you created earlier. This adds these lines of code to your script, but you need to _run_ that code for it to do anything. To run these three lines of code, you should highlight the lines of code you want to run and then either:
 
+* click the `Run` button at the top of the R script panel, or
+* press `Ctrl+Enter` (Windows) or `Command+Return` (Mac) on your keyboard.
+
+::: {.callout-tip collapse="true"}
+#### What are the `Command`, `Ctrl`, `Enter` or `Return` keys?
+
+The `Enter` or `Return` key on your keyboard may be marked &#9166;. On Mac keyboards, the `Command` key is sometimes marked &#8984;.
 :::
 
+If you just want to run one line of code, you don't need to highlight the whole line to run it. Just place the cursor anywhere on that line, then either click the `Run` button or press `Ctrl+Enter`/`Command+Return`.
 
-::: {.book}
+Highlight all three lines of code and press `Run`. You will see that nothing happens in the R script, but several messages appear in the R Console. You will also see that the three lines of code have been copied into the Console just above those messages. This means you can use the R Console as a record of all the code you have run in RStudio.
 
-Before we can work with our data, we first load packages of functions for use in
-the analysis. Loading packages will produce various messages, all of which you 
-can safely ignore for now.
 
+::: {.callout-warning}
+#### Package loading messages
+
+Loading packages will sometimes produce various messages. _For now_, you can safely ignore these messages. It is not always safe to ignore R messages -- we will cover how you should deal with messages, warnings and errors in a later chapter.
 :::
 
+```{r}
+#| eval: false
+#| filename: "chapter_02a.R"
 
-```{r exercise1, exercise=TRUE, exercise.lines=5}
 # Load the R packages we need to analyse this data
-library(ggspatial)
-library(sf)
-library(tidyverse)
+pacman::p_load(ggspatial, sf, tidyverse)
 ```
 
-<div class="box extra-detail">
+```{r}
+#| echo: false
 
-<h5 id="loading-box1-title" class="box-title">What do these messages mean?</h5>
+pacman::p_load(ggspatial, sf, tidyverse)
+```
 
-<div id="loading-box1" class="box-content">
+::: {.callout-tip collapse="true"}
+
+#### What do these messages mean?
+
 For now you don't need to worry about these messages, but if you really want to
 know what they mean …
-
-<!-- Some R packages make use of external services. For example, the `ggmap` package -->
-<!-- can make use of mapping services provided by Google. Google requires anyone -->
-<!-- using their service to comply with their terms of service, so the `ggmap` -->
-<!-- package prints a message when you load it to remind you of this. -->
 
 Some R packages make use of other apps and utilities on your computer. For
 example, the `sf` package makes use of a piece of software call GDAL that is 
@@ -197,134 +206,134 @@ previously loaded.
 In general, R packages use start-up messages to remind you of information that 
 is not likely to be critical to your work, but which it might be useful to know
 at some point in the future.
-</div>
 
-</div>
+:::
 
-<script>
-$("#loading-box1-title").click(function () { $("#loading-box1").toggle("slow") })
-</script>
 
+::: {.callout-quiz .callout}
+#### Loading packages
+
+```{r loading_packages_quiz}
+#| echo: false
+
+loading_packages_quiz1 <- c(
+  "Press Alt+F4.",
+  answer = "Place the cursor anywhere on the line and press Ctrl+Enter.",
+  "Double-click the line and press Run.",
+  "Click on the Console and press Shift+Enter."
+)
+
+loading_packages_quiz2 <- c("ggspatial", answer = "tidyverse", "pacman", "sf")
+```
+
+
+**How do you run a line of code in RStudio for Windows without highlighting the whole line?**
+
+`r webexercises::longmcq(loading_packages_quiz1)`
+
+
+**Which package do we load to simultaneously load common packages used for data wrangling and analysis?**
+
+`r webexercises::longmcq(loading_packages_quiz2)`
+
+:::
 
 
 ### Loading data
 
-The first task in creating any crime map is to obtain the crime and other data
-necessary. In many cases preparing the data for analysis and mapping will be a 
-substantial task, but in this case we are going to use some pre-prepared crime
-data together with a pre-drawn street map (which we will ask R to download
-automatically when it draws the final map).
+The first task in creating any crime map is to obtain the crime and other data necessary. In many cases preparing the data for analysis and mapping will be a substantial task, but in this case we are going to use some pre-prepared crime data together with a pre-drawn street map (which we will ask R to download automatically when it draws the final map).
 
-The data we will use will be records of homicides in the Downtown neighbourhood
-of Atlanta, Georgia, in 2019. We can load the homicide data using the
-`read_csv()` function. 
+The data we will use will be records of homicides in the Downtown neighbourhood of Atlanta, Georgia, in 2019. We can load the homicide data using the `read_csv()` function. A _function_ in R is a piece of code that performs an action. You can think of functions as being like verbs (i.e. 'doing words'), which is why the names of functions are often verbs such as `filter()`, `select()`, etc. The `read_csv()` function loads data from a file and prints a message showing the name of each column in the data and the type of data (number, text etc.) in each column. Again, you can ignore this message for now.
 
+::: {.callout-important}
 
-::: {.tutorial}
+#### Multiple functions with similar names
 
-Click the `Run Code` button to load the data.
+Sometimes R has several functions that have similar names but do different things. That means it is very important to pay attention to which function you need in any particular set of circumstances. In this case we are using the `read_csv()` function, which does a slightly different thing from the similarly named `read.csv()` function (note the `.` instead of the `_`). It is usually better to use `read_csv()` because it produces a type of object (called a tibble) that is  easier to work with than the object (called a data frame) that is produced by `read.csv()`. For that reason, we will always use `read_csv()` in this course.
 
 :::
 
 
-```{r exercise2-setup, include=FALSE}
-#| echo: false
+Copy these lines of code into your R script file, then run the line containing the `read_csv()` function by clicking anywhere on that line and pressing `Ctrl+Enter` (Windows) or `Command+Return` (Mac) on your keyboard.
 
-# Load the R packages we need to analyse this data
-suppressPackageStartupMessages(library("tidyverse"))
-```
+```{r}
+#| filename: "chapter_02a.R"
 
-```{r exercise2, exercise=TRUE}
 # Download the data directly from a URL and store it as an object
 homicides <- read_csv("https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv")
 ```
 
-The `read_csv()` function loads data from a file and prints a message showing 
-the name of each column in the data and the type of data (number, text etc.) in 
-each column. Again, you can ignore this message for now.
 
+::: {.callout-tip collapse="true"}
 
-::: {.box .notewell}
+#### What does this output mean?
 
-Sometimes R has several functions that have similar names but do different 
-things. That means it is very important to pay attention to which function you
-need in any particular set of circumstances. In this case we are using the
-`read_csv()` function, which does a slightly different thing from the similarly
-named `read.csv()` function (note the `.` instead of the `_`). Since 
-`read.csv()` has several limitations that `read_csv()` does not have, we will
-always use `read_csv()` in this course.
-
+When `read_csv()` loads data from a file, it produces a short summary of the data and prints that in the R Console. Looking at this message, you can see that the data contains `r nrow(homicides)` rows and `r ncol(homicides)` columns of values in each row. You can also see the names of the columns: `r knitr::combine_words(map_chr(names(homicides), \(x) str_glue("'{x}'")), oxford_comma = FALSE)`.
 :::
 
 
-We have stored the results of the `read_csv()` function in an R *object* called
-`homicides`. An object in R is anything that stores any type of data. There are
-many types of objects, but for this tutorial we don't need to explore these in
-any more detail. All you need to remember for now is that objects store data and 
-functions do things.
+We have stored the results of the `read_csv()` function in an R *object* called `homicides`. An object in R is anything that stores any type of data. There are many types of objects, but for this chapter we don't need to explore these in any more detail. All you need to remember for now is that objects store data (which is why their names are often nouns) and functions do things.
 
 
 
 ### Viewing the data
 
-To check the data has been loaded correctly, we can view the loaded data using
-the `head()` function. By default, `head()` prints the first six rows of the 
-data stored in an object.
+To check the data has been loaded correctly, we can view the loaded data using the `head()` function. By default, `head()` prints the first six rows of the data stored in an object. Copy this code into the R Console and press `Enter` or `Return` on your keyboard.
 
 
-::: {.tutorial}
+```{r exercise3}
+#| filename: "R Console"
 
-Click `Run Code` to view the data.
-
-:::
-
-
-```{r exercise3-setup, message=FALSE, warning=FALSE, include=FALSE}
-#| echo: false
-
-# Load the R packages we need to analyse this data
-suppressPackageStartupMessages(library("tidyverse"))
-
-# Download the data directly from a URL and store it as an object
-homicides <- read_csv(
-  "https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv",
-  col_types = cols(
-    report_number = col_double(),
-    label = col_character(),
-    longitude = col_double(),
-    latitude = col_double()
-  )
-)
-```
-
-```{r exercise3, exercise=TRUE}
-# Display the data
 head(homicides)
 ```
 
 
+The data contain four columns: a unique identifier for a homicide, a label describing when and where that homicide occurred, and the longitude and latitude of the homicide location. We can use this data to plot the homicides on a map.
 
-The data contain four columns: a unique identifier for a homicide, a label 
-describing when and where that homicide occurred, and the longitude and latitude 
-of the homicide location. Depending on the width of your screen, you may need to 
-click on the '▸' symbol to view all the columns in the data. We can use this 
-data to plot the homicides on a map.
 
-::: {.box .notewell}
+::: {.callout-important}
+### Quoted and unquoted values
 
-**In the code `head(homicides)`, there are no quote marks around the word
-`homicides`.**
+**In the code `head(homicides)`, there are no quote marks around the word `homicides`.**
 
-Almost all programming languages will interpret words differently depending on
-whether they have quotes around them or not. In this case, if you type the code
-`head(homicides)` then R will print the first few rows of the data stored in the
-`homicides` object. 
+Almost all programming languages will interpret words differently depending on whether they have quotes around them or not. In this case, if you type the code `head(homicides)` then R will print the first few rows of the data stored in the `homicides` object. 
 
-On the other hand, if you type the code `head("homicides")` or
-`head('homicides')`, R will interpret this as an instruction to print the first
-few elements of the literal text 'homicides'. Since the text 'homicides' 
-contains only one element (more about that later), `head("homicides")` will just 
-print the word 'homicides'.
+On the other hand, if you type the code `head("homicides")` or `head('homicides')`, R will interpret this as an instruction to print the first few elements of the literal text 'homicides'. Since the text 'homicides' contains only one element (more about that later), `head("homicides")` will just print the word 'homicides'.
+
+:::
+
+
+::: {.callout-quiz .callout}
+#### Loading data
+
+```{r loading-data-quiz}
+#| echo: false
+
+loading_data_quiz1 <- c(
+  "`read_csv()` handles larger datasets.",
+  answer = "`read_csv()` produces a tibble instead of a data frame.",
+  "`read.csv()` cannot process numeric data.",
+  "`read_csv()` is the only function compatible with RStudio."
+)
+
+loading_data_quiz2 <- c(
+  "A plot of all homicides on a map.",
+  "A summary of the entire `homicides` dataset.",
+  answer = "The first six rows of the `homicides` dataset.",
+  "An error message about missing data."
+)
+```
+
+
+**Why is the `read_csv()` function preferred over `read.csv()` in this chapter?**
+
+`r webexercises::longmcq(loading_data_quiz1)`
+
+
+**What is the output of the following R code: head(homicides)?**
+
+`r webexercises::longmcq(loading_data_quiz2)`
+
 
 :::
 
@@ -341,96 +350,13 @@ data.
 
 ### Converting the data into a spatial format
 
-Two data-processing tasks are needed to produce this map. The first is to 
-convert the data into a *simple features* or SF object, which is a special type 
-of R object that can be used by functions that process spatial data. We will 
-cover the details of the `st_as_sf()` function that converts our data into into 
-an SF object later on. 
+Two data-processing tasks are needed to produce this map. The first is to convert the data into a *simple features* or SF object, which is a special type of R object that can be used by functions that process spatial data. We will cover the details of the `st_as_sf()` function that converts our data into into an SF object later on. 
+
+Copy this code into the `chapter_02a.R` file, then select these lines of code and click the `Run` button or press `Ctrl+Enter`/`Command+Return`.
 
 
-::: {.tutorial}
-
-Click `Run Code` to convert the data into SF format.
-
-:::
-
-
-```{r exercise4-setup, message=FALSE, warning=FALSE, include=FALSE}
-#| echo: false
-
-# Load the R packages we need to analyse this data
-suppressPackageStartupMessages(library("sf"))
-suppressPackageStartupMessages(library("tidyverse"))
-
-# Download the data directly from a URL and store it as an object
-homicides <- read_csv(
-  "https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv",
-  col_types = cols(
-    report_number = col_double(),
-    label = col_character(),
-    longitude = col_double(),
-    latitude = col_double()
-  )
-)
-```
-
-
-```{r exercise4, exercise=TRUE}
-# Convert the data to a simple features object, which we can use in functions 
-# that work on spatial data
-homicides_sf <- st_as_sf(
-  homicides, 
-  coords = c("longitude", "latitude"), 
-  crs = "EPSG:4326"
-)
-```
-
-When you run this code, it looks like nothing happened. This is because the 
-results of the code are stored in the `homicides_sf` object. Do you remember 
-what R code to use to view the first few rows of this object?
-
-
-::: {.tutorial}
-
-Type that code into the box below and click `Run Code` to view the data.
-
-:::
-
-
-::: {.box .notewell}
-
-**If you cannot remember how to view the contents of an object, you can click on
-the `Solution` button to get help.**
-
-As you go through these tutorials, try to avoid using the `Solution` button 
-unless you have tried to input the correct code yourself. You will learn much
-more if you try to work out the answer by referring back to an earlier page in
-the tutorial or to your own notes.
-
-Don't worry about getting the answer wrong – nothing bad will happen if you run
-the wrong code in this tutorial and you can have as many attempts as you like to
-get the answer right.
-
-:::
-
-
-```{r exercise5-setup, message=FALSE, warning=FALSE, include=FALSE}
-#| echo: false
-
-# Load the R packages we need to analyse this data
-suppressPackageStartupMessages(library("sf"))
-suppressPackageStartupMessages(library("tidyverse"))
-
-# Download the data directly from a URL and store it as an object
-homicides <- read_csv(
-  "https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv",
-  col_types = cols(
-    report_number = col_double(),
-    label = col_character(),
-    longitude = col_double(),
-    latitude = col_double()
-  )
-)
+```{r}
+#| filename: "chapter_02a.R"
 
 # Convert the data to a simple features object, which we can use in functions 
 # that work on spatial data
@@ -441,111 +367,138 @@ homicides_sf <- st_as_sf(
 )
 ```
 
-```{r exercise5, exercise=TRUE}
+When you run this code, it looks like nothing happened. This is because the results of the code are stored in the `homicides_sf` object. We can check the contents of `homicides_sf` in the R Console as before:
 
-```
+```{r}
+#| filename: "R Console"
 
-```{r exercise5-solution}
-# To view an object in R, use the `head()` function. To view the contents of the
-# homicides object, use this code:
 head(homicides_sf)
 ```
 
-The data looks identical to before running the function `st_as_sf()`, except 
-that the two columns called `longitude` and `latitude` have disappeared and 
-there is now an extra column called `geometry`. The `geometry` column is 
-important because lots of functions in R can recognise that the `geometry` 
-column represents a location on the surface of the earth that can be used to 
-analyse and map data in space.
+The data looks identical to before running the function `st_as_sf()`, except that the two columns called `longitude` and `latitude` have disappeared and there is now an extra column called `geometry`. The `geometry` column is important because lots of functions in R can recognise that the `geometry` column represents a location on the surface of the Earth that can be used to analyse and map data in space.
 
 
 
 ### Changing the data projection
 
-The `geometry` column in the `homicides_sf` object represents locations on the 
-surface of the earth using _co-ordinates_ (pairs of numbers). In this case, the
-co-ordinates are expressed as longitudes and latitudes, but there are lots of
-other types of co-ordinates (known as _co-ordinate reference systems_). 
+The `geometry` column in the `homicides_sf` object represents locations on the surface of the earth using _co-ordinates_ (pairs of numbers). In this case, the co-ordinates are expressed as longitudes and latitudes, but there are lots of other types of co-ordinates (known as _co-ordinate reference systems_). 
 
-We'll learn more about co-ordinate reference systems in a future tutorial, but 
-for now it's enough to know that each different system has advantages and 
-disadvantages. To make the homicide locations easier to add to a map, we are
-going to first _transform_ the co-ordinates from longitudes and latitudes to a
-co-ordinate reference system that is specifically designed for mapping data for
-the US state of Georgia.
+We'll learn more about co-ordinate reference systems in @sec-second-map, but for now it's enough to know that each different system has advantages and disadvantages. To make the homicide locations easier to add to a map, we are going to first _transform_ the co-ordinates from longitudes and latitudes to a co-ordinate reference system that is specifically designed for mapping data for the US state of Georgia.
 
-To do this, we will use the `st_transform()` function, together with a code
-representing the co-ordinate reference system we want to use (you don't need to
-understand this code at this stage).
+To do this, we will use the `st_transform()` function, together with a code representing the co-ordinate reference system we want to use (you don't need to understand this code at this stage). Copy this code into the `chapter_02a.R` file, click anywhere on the new line of code and press the `Run` button or press `Ctrl+Enter`/`Command+Return`.
 
 
-```{r exercise6, exercise=TRUE, exercise.setup = "exercise5-setup"}
+```{r}
+#| filename: "chapter_02a.R"
+
+# Transform the data co-ordinate reference system
 homicides_sf_trans <- st_transform(homicides_sf, "EPSG:26967")
+```
+
+Once again, we can check what the result looks like in the R Console.
+
+```{r}
+#| filename: "R Console"
 
 head(homicides_sf_trans)
 ```
 
-Again, the data looks almost identical, except that the values in the `geometry`
-column have changed (you don't need to understand yet the details of how these
-numbers are different). Now that we've completed the data processing, we can
-go on to produce the map itself.
+The data looks almost identical, except that the values in the `geometry` column have changed (you don't need to understand yet the details of how these numbers are different). Now that we've completed the data processing, we can go on to produce the map itself.
 
 
 
-## Draw the map
+## Checking our progress
 
-We are now ready to produce our map of homicides in downtown Atlanta. So that
-people viewing the map will understand where the homicides occurred, we will
-plot the homicides on top of a base layer showing streets, parks and other 
-geographic features obtained from an online web mapping service. 
+At the moment, the file `chapter_02a.R` that you have created should look like this:
+
+```{r}
+#| eval: false
+#| filename: chapter_02a.R
+
+# Load the R packages we need to analyse this data
+pacman::p_load(ggspatial, sf, tidyverse)
+
+# Download the data directly from a URL and store it as an object
+homicides <- read_csv("https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv")
+
+# Convert the data to a simple features object, which we can use in functions 
+# that work on spatial data
+homicides_sf <- st_as_sf(
+  homicides, 
+  coords = c("longitude", "latitude"), 
+  crs = "EPSG:4326"
+)
+
+# Transform the data co-ordinate reference system
+homicides_sf_trans <- st_transform(homicides_sf, "EPSG:26967")
+```
+
+Note how this code tells a clear story about exactly what you have done. This code is easier to understand because: 
+
+1. we have left blank lines between each piece of code so that it's easy to see each separate task that is being completed, and
+2. we have used comments (lines of code starting with `# `) to explain what each step does.
+
+Before going any further, let's check all of our code has been run successfully. To do this, find the Environment panel in RStudio: if you followed the instructions on setting up RStudio in @sec-adjust-rstudio, you should see Environment below your R script file. Click 'Environment' and RStudio will show you a list of all the objects that you have created since the start of your R session. You should see three objects listed:
+
+* `homicides`, which should have `r nrow(homicides)` observations (i.e. rows) of `r ncol(homicides)` variables (i.e. columns)
+* `homicides_sf`, which should have `r nrow(homicides_sf)` observations of `r ncol(homicides_sf)` variables
+* `homicides_sf_trans`, which should have `r nrow(homicides_sf_trans)` observations of `r ncol(homicides_sf_trans)` variables
+
+If any of those objects are missing from the list of objects in the Environment panel, you might have forgotten to run the code after pasting it into your script file. If so, you can run that part of the code now by selecting the relevant lines of code and pressing the `Run` button in RStudio or `Ctrl+Enter`/`Command+Return` on your keyboard.
 
 
-::: {.tutorial}
+::: {.callout-quiz .callout}
+#### Processing the data
 
-Click `Run Code` to create the map.
+```{r processing-data-quiz}
+#| echo: false
+
+processing_data_quiz1 <- c(
+  answer = "Converts non-spatial data into a simple features (SF) object.",
+  "Analyzes spatial relationships between features.",
+  "Exports data to a spatial file format.",
+  "Visualizes data as a map."
+)
+
+processing_data_quiz2 <- c(
+  "To make the script executable by others.",
+  answer = "To explain what each part of the code does.",
+  "To automatically debug the code.",
+  "To make the R script run faster."
+)
+```
+
+
+**What does the `st_as_sf()` function do?**
+
+`r webexercises::longmcq(processing_data_quiz1)`
+
+
+**Why is it important to use comments in your R script?**
+
+`r webexercises::longmcq(processing_data_quiz2)`
+
 
 :::
 
 
-```{r exercise7-setup, exercise.lines=18, message=FALSE, warning=FALSE, include=FALSE}
-#| echo: false
+## Draw the map
 
-# Load the R packages we need to analyse this data
-suppressPackageStartupMessages(library("ggspatial"))
-suppressPackageStartupMessages(library("sf"))
-suppressPackageStartupMessages(library("tidyverse"))
+We are now ready to produce our map of homicides in downtown Atlanta. So that people viewing the map will understand where the homicides occurred, we will plot the homicides on top of a _base map_ showing streets, parks and other geographic features obtained from an online web mapping service. 
 
-# Download the data directly from a URL and store it as an object
-homicides_sf_trans <- read_csv(
-  "https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv",
-  col_types = cols(
-    report_number = col_double(),
-    label = col_character(),
-    longitude = col_double(),
-    latitude = col_double()
-  )
-) |> 
-  st_as_sf(
-    coords = c("longitude", "latitude"), 
-    crs = "EPSG:4326", 
-    remove = FALSE
-  ) |> 
-  st_transform("EPSG:26967")
-```
+The code needed to produce the map looks quite complicated, but we don't need to understand it all at this point -- we will go through this code in @sec-second-map. For now, copy the code into the `chapter_02a.R` file, put the cursor somewhere on the line that includes the function `ggplot()`, then click the `Run` button or `Ctrl+Enter`/`Command+Return` on your keyboard.
 
-```{r exercise7, exercise=TRUE, exercise.lines=15, message=FALSE, fig.width=7, fig.asp=1}
+
+```{r}
+#| filename: chapter_02a.R
+
+# Create the map
 ggplot(homicides_sf_trans) + 
   annotation_map_tile(type = "osm", zoom = 15, progress = "none") + 
-  geom_sf_label(
-    aes(label = label), 
-    lineheight = 1, 
-    size = 2.5, 
-    hjust = 1, 
-    vjust = 0
-  ) + 
-  geom_sf(colour = "white", fill = "orangered1", size = 4, shape = 21) + 
-  scale_x_continuous(expand = expansion(mult = 0.5)) + 
-  scale_y_continuous(expand = expansion(mult = 0.2)) + 
+  geom_sf_label(aes(label = label), size = 2.5, hjust = 1, vjust = 0) + 
+  geom_sf(colour = "orangered1", size = 4) + 
+  scale_x_continuous(expand = expansion(mult = 0.5)) +
+  scale_y_continuous(expand = expansion(mult = 0.2)) +
   labs(
     title = "Homicides in Downtown Atlanta, 2019",
     caption = "Background map by OpenStreetMap"
@@ -553,39 +506,22 @@ ggplot(homicides_sf_trans) +
   theme_void()
 ```
 
-You can change the appearance of the map by changing various parts of the code
-above. For example, you could change the colour of the points that mark the 
-homicides by changing the code `fill = "orangered1"` to `fill = "mediumblue"`, 
-or change the base map to a different style by changing the code `type = "osm"` 
-to `type = "cartolight"`. 
-
-
-::: {.tutorial}
-
-Each time you change part of the code, click `Run Code` to see what changes on 
-the map.
-
-Once you have finished experimenting with changing the appearance of the map,
-click `Next Topic` below.
-
-:::
+You can change the appearance of the map by changing various parts of the code above. For example, you could change the colour of the points that mark the homicides by changing the code `colour = "orangered1"` to `colour = "mediumblue"`, or change the base map to a different style by changing the code `type = "osm"` to `type = "cartolight"`. Try some of these out -- after you make each change, press the `Run` button in RStudio or `Ctrl+Enter`/`Command+Return` on your keyboard to see how the map changes.
 
 
 
 ## Putting the code together
 
-Now we have walked through the different parts of the code, we can create a map
-from scratch in a single block of code. In this example, we will map homicides
-from in Glenrose Heights neighbourhood of Atlanta, and a different style of base
-map. Since the area covered by the map is derived from the data itself, the
-extent of the map will update automatically.
+Now we have walked through the different parts of the code, we can create a map from scratch in a single block of code. In this example, we will map homicides from in Glenrose Heights neighbourhood of Atlanta, and a different style of base map. Since the area covered by the map is derived from the data itself, the extent of the map will update automatically.
 
+Create a new script file in RStudio by clicking `File`, `New File` then `R Script`. Paste the following code into this new file, then save the file as `chapter_02b.R`.
 
-```{r exercise8, exercise=TRUE, exercise.lines=38, message=FALSE, fig.width=7, fig.asp=1}
+```{r}
+#| eval: false
+#| filename: chapter_02b.R
+
 # Load the R packages we need to analyse this data
-library(ggspatial)
-library(sf)
-library(tidyverse)
+pacman::p_load(ggspatial, sf, tidyverse)
 
 # Download the data directly from a URL and store it as an object
 homicides <- read_csv("https://mpjashby.github.io/crimemappingdata/glenrose_heights_homicides.csv")
@@ -604,14 +540,8 @@ homicides_sf_trans <- st_transform(homicides_sf, "EPSG:26967")
 # Plot the map
 ggplot(homicides_sf_trans) + 
   annotation_map_tile(type = "osm", zoom = 15, progress = "none") + 
-  geom_sf_label(
-    aes(label = label), 
-    lineheight = 1, 
-    size = 2.5, 
-    hjust = 1, 
-    vjust = 0
-  ) + 
-  geom_sf(colour = "white", fill = "mediumblue", size = 4, shape = 21) + 
+  geom_sf_label(aes(label = label), size = 2.5, hjust = 1, vjust = 0) + 
+  geom_sf(colour = "mediumblue", size = 4) + 
   scale_x_continuous(expand = expansion(mult = 1.5)) + 
   scale_y_continuous(expand = expansion(mult = 0.2)) + 
   labs(
@@ -621,26 +551,69 @@ ggplot(homicides_sf_trans) +
   theme_void()
 ```
 
+```{r}
+#| echo: false
+
+# Download the data directly from a URL and store it as an object
+homicides <- read_csv("https://mpjashby.github.io/crimemappingdata/glenrose_heights_homicides.csv")
+
+# Convert the data to a simple features object, which we can use in functions 
+# that work on spatial data
+homicides_sf <- st_as_sf(
+  homicides, 
+  coords = c("longitude", "latitude"), 
+  crs = "EPSG:4326"
+)
+
+# Transform the data to a co-ordinate reference system for the state of Georgia
+homicides_sf_trans <- st_transform(homicides_sf, "EPSG:26967")
+
+# Plot the map
+ggplot(homicides_sf_trans) + 
+  annotation_map_tile(type = "osm", zoom = 15, progress = "none") + 
+  geom_sf_label(aes(label = label), size = 2.5, hjust = 1, vjust = 0) + 
+  geom_sf(colour = "mediumblue", size = 4) + 
+  scale_x_continuous(expand = expansion(mult = 1.5)) + 
+  scale_y_continuous(expand = expansion(mult = 0.2)) + 
+  labs(
+    title = "Homicides in Glenrose Heights, 2019",
+    caption = "Background map by OpenStreetMap"
+  ) +
+  theme_void()
+```
+
+When we want to run all the code in a file, it would be tedious to run each chunk of code separately. Instead, we can run all the code in a file in one go by: 
+
+* clicking the tiny downward arrow next to the `Source` button in the script panel in RStudio (to the right of the `Run` button) then clicking `Source with Echo`, or 
+* clicking anywhere in our code and pressing `Shift+Ctrl+Enter` (Windows) or `Shift+Command+Return` (Mac) on the computer keyboard.
+
+This runs all the code in our script in one go. You should see some messages appear in the R Console, and the final map appear in the RStudio Plots panel.
+
+Save the `chapter_02b.R` file by hitting `Ctrl+S` on Windows or `Command+S` on Mac, then restart R to start a new session by clicking on the `Session` menu and then clicking `Restart R`. This creates a blank canvas for the next chapter.
 
 
 ## In summary
 
 
-::: {.box .welldone}
+**Well done – you have created your first map!**
 
-**Well done – you have finished your first mapping tutorial.** You may not have
-understood every line of code in this tutorial, but we will cover them all in
-more detail over the rest of this course. By the end of the tutorials, you will
-be able to write code like this to create many different types of crime map.
+You may not have understood every line of code in this chapter, but we will cover them all in more detail over the rest of this course. By the end of this course, you will be able to write code like this to create many different types of crime map.
+
+
+In this chapter you have learned how to load data into R, prepare it for use in making a map and then used it to make your first crime map of this course. 
+
+The map we have produced in this chapter is effective for showing the locations of just a few crimes, but is too limited to show more complicated patterns or larger datasets. In the following chapter, we will learn how to produce more sophisticated maps and spatial analysis. We will also learn how each of the functions that we have used in this chapter work.
+
+
+::: {.callout-quiz .callout}
+
+### Revision questions {.unnumbered}
+
+Answer these questions to check you have understood the main points covered in this chapter. Write between 50 and 100 words to answer each question.
+
+1. Why is it important to differentiate between temporary and permanent code when working in R? Provide an example of each and explain how they are used in creating a crime map.
+2. Explain why it is useful to store spatial data as a simple features (SF) object. What steps are required to convert crime data into an SF object, and why is this conversion necessary?
+3. What are coordinate reference systems (CRS), and why might you need to transform the CRS of spatial data? Describe how this was applied in the chapter to map homicides in Atlanta.
+4. What steps are involved in creating a crime map in R from loading data to visualizing it? Highlight the key functions used and the purpose of each in the process.
 
 :::
-
-
-In this tutorial you have learned how to load data into R, prepare it for use in
-making a map and then used it to make your first crime map of this course. 
-
-The map we have produced in this tutorial is effective for showing the locations 
-of just a few crimes, but is too limited to show more complicated patterns or 
-larger datasets. In the following tutorials, we will learn how to produce more 
-sophisticated maps and spatial analysis. We will also learn how each of the 
-functions that we have used in this tutorial work.

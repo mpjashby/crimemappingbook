@@ -1,50 +1,18 @@
-# Getting started
+# Getting started {#sec-getting-started}
 
-**Get started with crime mapping by learning about why putting crime on maps is useful, and get a tour of the RStudio software we will use throughout this course.**
-
-::: {.box .load-tutorial}
-To load the [interactive tutorial](../#how-to-use-this-book) for this chapter, copy and paste the following code into the RStudio console:
-
-```r
-crimemapping::tutorial("01_getting_started")
-```
-
-and press `Enter`.
+::: {.abstract}
+Get started with crime mapping by learning about why putting crime on maps is useful, and get a tour of the RStudio software we will use throughout this course.
 :::
 
 
-```{r setup}
-#| echo: false
-#| include: false
-
-source(here::here("mask_learnr_functions.R"))
-```
 
 ## Welcome
 
 
-::: {.tutorial}
-
-Welcome to this course on crime mapping! This course uses interactive tutorials like this one to help you learn about using maps and spatial analysis techniques to understand crime. Watch this video to learn more about the course.
-
-:::
-
-
-::: {.book}
-
 Welcome to _Learn Crime Mapping with R_. This book will help you learn about using maps and spatial analysis techniques to understand crime. Watch this video to learn more.
-
-:::
 
 
 {{< video https://youtu.be/zT78IBRsIBk >}}
-
-
-::: {.tutorial}
-
-Now click `Next Topic` below to start this tutorial.
-
-:::
 
 
 
@@ -55,23 +23,69 @@ This course is about how we can use maps and other spatial analysis tools to hel
 {{< video https://youtu.be/-FQwFQ8e-O0 >}}
 
 
-```{r why-maps-quiz}
+::: {.callout-quiz .callout}
+#### Concentration of crime
+
+```{r}
 #| echo: false
 
-quiz(
-  caption = "",
-  question("Which *one* of these statements is true?",
-    answer("Crime is usually not geographically concentrated at micro places"),
-    answer("Crime is very geographically concentrated – we can expect half of crime to be concentrated in about 5% of micro places", correct = TRUE),
-    answer("Crime is slightly geographically concentrated – we can expect half of crime to be concentrated in about one quarter of micro places"),
-    answer("Crime is extremely geographically concentrated – we can expect half of crime to be concentrated in about 1% of micro places"),
-    correct = "That's correct – based on previous studies, we can expect half of crime to be concentrated in about 5% of micro places",
-    incorrect = "That's not correct – try re-watching the video and then try the question again.",
-    allow_retry = TRUE,
-    random_answer_order = TRUE
-  )
+why_maps_quiz1 <- c(
+  "To estimate the total number of crimes in a city",
+  answer = "To understand where different types of crime happen most often",
+  "To predict the weather in crime-prone areas",
+  "To determine the average time crimes occur"
+)
+
+why_maps_quiz2 <- c(
+  "Most crime is caused by a large number of offenders",
+  "About half of all crime happens in half of a city’s neighborhoods",
+  answer = "Most crime occurs in a small minority of places",
+  "Crime is approximately equally distributed across all streets in a city"
+)
+
+why_maps_quiz3 <- c("25%", answer = "50%", "75%", "100%")
+
+why_maps_quiz4 <- c(
+  answer = "Most crime in a high-crime neighborhood occurs at only a few streets or addresses",
+  "Crime is usually random at the neighborhood level",
+  "Analyzing neighborhoods is harder",
+  "It is easier to access data on crime at particular addresses than for neighbourhoods"
+)
+
+why_maps_quiz5 <- c(
+  "Crimes in Medellin are evenly distributed across the city",
+  "No specific places in Kaduna experience concentrated burglary rates",
+  "Crime in Oslo is spread equally across the city",
+  answer = "About half of crimes in Seattle occur on 5% of streets"
 )
 ```
+
+
+**Why is it important to map crime?**
+
+`r webexercises::longmcq(why_maps_quiz1)`
+
+
+**What does the law of crime concentration state?**
+
+`r webexercises::longmcq(why_maps_quiz2)`
+
+
+**According to research on the concentration of crime, how much crime typically happens in the 5–8% of streets or addresses with the most crime?**
+
+`r webexercises::longmcq(why_maps_quiz3)`
+
+
+**Why do researchers often prefer to focus on micro places, such as streets and addresses, rather than neighbourhoods?**
+
+`r webexercises::longmcq(why_maps_quiz4)`
+
+
+**Which of the following findings is consistent with the law of crime concentration?**
+
+`r webexercises::longmcq(why_maps_quiz5)`
+
+:::
 
 
 ::: {.box .reading}
@@ -93,23 +107,75 @@ Why is crime concentrated in space? Watch this video to find out more about how 
 {{< video https://youtu.be/SvfPGslMrcs >}}
 
 
+::: {.callout-quiz .callout}
+#### Routine activities
+
+
 ```{r why-concentrated-quiz}
 #| echo: false
 
-quiz(
-  caption = "",
-  question(
-    "What are the three elements of an opportunity for a crime to occur that are outlined in the routine activities apporach?",
-    answer("offender, target, place", correct = TRUE),
-    answer("means, motive, opportunity", message = "It looks like you've watched lots of police dramas, but maybe not the video here! Try watching the video again and think about the elements of the routine activities approach."),
-    answer("offender, victim, place", message = "While many crimes have a victim, the routine activities apporach focuses on the interaction between the offender and the *target*. Sometimes (e.g. in an assault) the target will be the victim, but in others (e.g. a burglary) the target that the offender is interested in might be separte from the victim."),
-    answer("offender, target, opportunity", message = "The three 'almost always' elements make up an opportunity for crime, but opportunity is not one of the three elements."),
-    correct = random_praise(),
-    allow_retry = TRUE,
-    random_answer_order = TRUE
-  )
+why_concentrated_quiz1 <- c(
+  "Crime happens randomly in all places",
+  answer = "Some places have more environmental features that facilitate specific crimes",
+  "Police allocate more resources to high-crime areas",
+  "Criminals prefer remote locations to commit crimes"
+)
+
+why_concentrated_quiz2 <- c(
+  "A motivated offender",
+  "A suitable target",
+  answer = "A controller who prevents the crime",
+  "A place where the offender and target can meet"
+)
+
+why_concentrated_quiz3 <- c(
+  answer = "They reduce the likelihood of opportunities for crime occurring, e.g. by making targets or places less vulnerable",
+  "They deter crimes by arresting offenders",
+  "They create opportunities for offenders and targets to meet",
+  "They plan environments to increase crime rates"
+)
+
+why_concentrated_quiz4 <- c(
+  "Criminals always prefer urban areas for all types of crime",
+  "Police enforcement varies between locations",
+  "Opportunities for crime are spread evenly across all areas",
+  answer = "Opportunities for crime are influenced by specific environmental features that vary by crime type"
+)
+
+why_concentrated_quiz5 <- c(
+  "A location where offenders and controllers meet",
+  answer = "The person or object that an offender aims to harm, steal, or engage with",
+  "A police operation to reduce crime in specific areas",
+  "Any place where crime does not occur"
 )
 ```
+
+**Why are opportunities for crime concentrated in some places more than others?**
+
+`r webexercises::longmcq(why_concentrated_quiz1)`
+
+
+**According to the routine activities approach, which of the following is _not_ required for a crime opportunity to occur?**
+
+`r webexercises::longmcq(why_concentrated_quiz2)`
+
+
+**What role do controllers play in preventing crime, according to the routine activities approach?**
+
+`r webexercises::longmcq(why_concentrated_quiz3)`
+
+
+**Why do different types of crime concentrate in different places?**
+
+`r webexercises::longmcq(why_concentrated_quiz4)`
+
+
+**What is a target in the context of the routine activities approach?**
+
+`r webexercises::longmcq(why_concentrated_quiz5)`
+
+
+:::
 
 
 ::: {.box .reading}
@@ -129,13 +195,17 @@ We will use RStudio for almost all of this course. Watch this video to find your
 {{< video https://youtu.be/QhmPrfleCx4 >}}
 
 
-### Slightly adjusting how RStudio works
+### Slightly adjusting how RStudio works {#sec-adjust-rstudio}
 
 Before we start using RStudio, we should make a few changes to how it is set up that will make it easier to fix any mistakes we make while coding. To do this, click on the `Tools` menu in RStudio and then on `Global Options…`. In the dialogue box that opens, click on `General` in the left-hand panel if `General` is not selected already.
 
-<p class="centered-image"><img src="images/workspace_options.png" alt="A screen shot of the RStudio Global Options dialogue box, showing which options should be selected."></p>
+<p class="centered-image"><img src="../images/workspace_options.png" alt="A screen shot of the RStudio Global Options dialogue box, showing which options should be selected."></p>
 
-In the "Workspace" section of the right-hand panel, find an option that says "Restore .RData into workspace at startup" and make sure the check box to the left of that option is **not checked**. On the next line down, click the drop-down menu labelled "Save workspace to .RData on exit:" and choose the option **Never**. Click `Apply` and then `OK` to close the dialogue box.
+In the "Workspace" section of the right-hand panel, find an option that says "Restore .RData into workspace at startup" and make sure the check box to the left of that option is **not checked**. On the next line down, click the drop-down menu labelled "Save workspace to .RData on exit:" and choose the option **Never**. 
+
+Now click on `Code` in the left-hand panel. Find the box that is marked "Use native pipe operator, |> (requires R 4.1+)" and make sure it is **checked**.
+
+Click `Apply` and then `OK` to close the dialogue box.
 
 
 ::: {.box .reading}
@@ -147,7 +217,32 @@ The [RStudio IDE Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/master
 :::
 
 
-## Navigating these tutorials {.tutorial}
+### Creating an RStudio project {#sec-create-project}
+
+RStudio includes a feature called Projects, which make it much easier to manage all the files that you will need to use as part of many data-analysis projects. We will learn more about projects later on, but for now it's enough to create a single project in which you can store all the code you write while working through this book.
+
+To create a new project from within RStudio, click `File` then `New Project …` 
+and choose to create the project in a new directory on your computer:
+
+<p class="full-width-image"><img src="../images/new_project_1.png" alt="Screenshot of an RStudio window for choosing between opening a new project in a new directory, in an existing directory or based on a project from a version-control system"></p>
+
+Choose to create a new (empty) project, rather than use any of the templates for specific types of projects:
+
+<p class="full-width-image"><img src="../images/new_project_2.png" alt="Screenshot of an RStudio window for choosing from different types of RStudio project"></p>
+
+Choose what the new project <abbr title="directories on your computer are also sometimes called folders"> directory</abbr> should be called (probably 'Crime Mapping'), and where on your computer it should be created, then click `Create Project`:
+
+<p class="full-width-image"><img src="../images/new_project_3.png" alt="Screenshot of an RStudio window for choosing the directory that should be used for a new project"></p>
+
+That's it -- you have created an RStudio project that you can organise your work in.
+
+
+
+<!--
+
+## Navigating this book
+
+This book includes chunks of R code that you can run in RStudio. 
 
 The tutorials that make up this course include short chunks of R code that you 
 can run directly in this window. To run the code in each chunk, just click the 
@@ -200,16 +295,16 @@ to them later if you have a question.
 $("#intro-box1-title").click(function () { $("#intro-box1").toggle("slow") })
 </script>
 
-
+-->
 
 
 
 ## In summary
 
-Now that you know why crime mapping is useful for understanding crime, why crime is typically concentrated in space and how to find your way around RStudio, in the next tutorial we will produce our first crime map in R.
+Now that you know why crime mapping is useful for understanding crime, why crime is typically concentrated in space and how to find your way around RStudio, in the next chapter we will produce our first crime map in R.
 
-If you're not feeling too confident at this point in the course, don't worry – learning something new is always a bit of a roller coaster and there is lots of help available in subsequent tutorials.
+If you're not feeling too confident at this point in the course, don't worry – learning something new is always a bit of a roller coaster and there is lots of help available in subsequent chapters.
 
-<p class="full-width-image"><img src="https://github.com/mpjashby/crimemapping/raw/main/inst/tutorials/01_getting_started/images/r_rollercoaster.png" alt="Cartoon line chart showing how you become more confident in using R over time, then less confident and then more confident again."></p>
+<p class="full-width-image"><img src="../images/r_rollercoaster.png" alt="Cartoon line chart showing how you become more confident in using R over time, then less confident and then more confident again."></p>
 
 <p class="credits"><a href="https://twitter.com/allison_horst">Artwork by @allison_horst</a></p>

@@ -1,0 +1,110 @@
+---
+number-depth: 0
+execute: 
+  include: false
+  echo: false
+---
+
+# Some R functions you should avoid {#sec-functions-to-avoid}
+
+::: {.abstract}
+R is very useful, but there are some R functions that are no longer the best way to get particular things done. Some of these have negative side-effects or can cause other problems. Fortunately, in every case there is a newer function that does the same thing better. Use this guide to help you avoid getting trapped by an obsolete R function.
+:::
+
+
+```{r}
+pacman::p_load(tidyverse)
+```
+
+
+::: {.callout-tip collapse="true"}
+#### Why haven't these functions been removed from R?
+
+The R language is `r interval(ym("1993-08"), today()) %/% years(1)` years old and has developed substantially over that time. Lots of people need to run R code that was written some time ago, and so may use functions that are now obsolete. To ensure _backwards compatibility_ with old code, new versions of R typically do not remove obsolete functions, but just provide new functions as alternatives. This means old R code will still run, but also means people writing new R code need to know which obsolete R functions to avoid.
+:::
+
+
+### Avoid `attach()`
+
+What it does
+: Allows you to refer to each column in a dataset as if it were a separate object.
+
+Why you should avoid it
+: Once your code includes more than one object containing data (which code almost always does), it becomes very difficult to keep track of which dataset a particular function is using. The version of each column loaded by `attach()` also doesn't update when you make changes to the dataset as you wrangle your data. Find out more about [why using `attach()` is usually a bad idea](https://stackoverflow.com/q/10067680/8222654).
+
+What to do instead
+: Explicitly refer to the dataset you want to use when you call each function (this is the way most code is written in any case). Modelling functions such as `lm()` and `glm()` have a `data = ` argument you can use for this purpose. If you need to extract a column from a dataset, use [`pull()`](https://dplyr.tidyverse.org/reference/pull.html) from the dplyr package.
+
+
+### Avoid `setwd()`
+
+What it does
+: Sets the _working directory_ for your R session, which tells R where to look for any data files you try to load, and where to save any output files to.
+
+Why you should avoid it
+: The way `setwd()` works means that your code will break as soon as you share the file with someone else or move to a new computer. It also makes it easy to end up with files in the wrong place if you cut-and-paste code from one script to another. Find out more about [why using `setwd()` is generally a bad idea](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/).
+
+What to do instead
+: Create an RStudio Project for each analytical project you work on. RStudio will manage where files should go relative to the directory you save the project in. You can learn more about RStudio Projects in @sec-projects. You can also use the [here package](https://here.r-lib.org/) to specify where you want files to be stored.
+
+
+### Avoid `rm(list = ls())`
+
+What it does
+: Deletes all the R objects you have created during your R session (also called _clearing the environment_).
+
+Why you should avoid it
+: Sometimes it's useful to clear your environment, for example when you want to start working on a new piece of analysis. However, if you include `rm(list = ls())` in your R scripts then you might accidentally delete everything when you don't want to. Worse, if you share your code with someone else and they run it, this line of code will delete everything they were already working on. Find out more about [why `rm(list = ls())` is always a bad idea, and sometimes a dangerous one](https://rstats.wtf/source-and-blank-slates#sec-rm-list-ls).
+
+What to do instead
+: When you want to clear the R environment, do it by restarting R: click the `Session` menu in RStudio then click `Restart R`.
+
+
+### Avoid `subset()`
+
+What it does
+: Extracts some rows and/or columns from a dataset.
+
+Why you should avoid it
+: `subset()` isn't bad, but `filter()` and `select()` from the dplyr package perform the same tasks better. In particular, `subset()` doesn't understand grouped datasets (`filter()` does), and `subset()` sometimes changes the types of columns in datasets. Find out more about [`subset()` vs `filter()` and `select()`](https://stackoverflow.com/q/39882463/8222654).
+
+What to do instead
+: Use the [`filter()`](https://dplyr.tidyverse.org/reference/filter.html) and [`select()`](https://dplyr.tidyverse.org/reference/select.html) functions from the dplyr package (@sec-wrangling-data).
+
+
+### Avoid `%>%`
+
+What it does
+: Pipes the result of one function to another, e.g. `runif(100) %>% mean()`.
+
+Why you should avoid it
+: `%>%` (from the magrittr package) is very useful, but it has been replaced by the `|>` that does the same thing in almost all circumstances, is easier to type, and doesn't require you to load the magrittr package. 
+
+What to do instead
+: In most cases it's better to use the `|>` pipe, although the differences between them are not large. Find out more about [the differences between `%>%` and `|>`](https://www.tidyverse.org/blog/2023/04/base-vs-magrittr-pipe/).
+
+
+
+### Avoid `as.numeric()`
+
+What it does
+: `as.numeric()`, `as.double()` and `as.integer()` convert non-numeric values to numbers.
+
+Why you should avoid it
+: These functions are commonly used either to convert numbers that have been stored as text to numeric values, or to convert [factors](https://r4ds.hadley.nz/factors.html) to numeric values. The problem is that converting factors to numeric values is (to quote the R documentation for `as.numeric()`) "often meaningless as it may not correspond to the factor levels". Meanwhile `as.numeric()` fails to convert numbers stored as text to numeric values if the text also includes non-numbers. For example, `as.numeric("$1")` returns a `` `r as.numeric("$1")` ``.
+
+What to do instead
+: To extract numbers from text and store them as a numeric value, use the [`parse_number()`](https://readr.tidyverse.org/reference/parse_number.html) function from the readr package. This is able to handle text that includes non-numeric characters, e.g. `parse_number("$1")` returns the value `` `r parse_number("$1")` `` rather than a missing value.
+
+
+### Avoid `ifelse()`
+
+What it does
+: `ifelse()` returns one of two specified values depending on whether a particular criterion is true or false.
+
+Why you should avoid it
+: The job `ifelse()` does is important, but `ifelse()` doesn't handle missing values very well and sometimes silently converts variables to a different type of value (which can cause hard-to-detect errors later in your code). 
+
+What to do instead
+: The [`if_else()`](https://dplyr.tidyverse.org/reference/if_else.html) (note the underscore) function from the dplyr package does the same job as `ifelse()` but is better at handling missing values and doesn't convert variables to different types.
+

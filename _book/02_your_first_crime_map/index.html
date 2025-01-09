@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.551">
+<meta name="generator" content="quarto-1.5.57">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Learn crime mapping with R - 2&nbsp; Your first crime map</title>
+
+
+<title>2&nbsp; Your first crime map – Learn Crime Mapping with R</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,7 +33,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -53,6 +56,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 </style>
 
+
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
@@ -70,7 +74,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -96,59 +102,81 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script><!-- START OF INCLUDED HEADER --><!--
+}</script>
+<!-- START OF INCLUDED HEADER -->
+
+<!--
 This file contains code that will be included in the header of each page of the
 quarto book
---><script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script><!-- END OF INCLUDED HEADER --><link rel="stylesheet" href="../css/styles.css">
-<meta name="twitter:title" content="Learn crime mapping with R - 2&nbsp; Your first crime map">
+-->
+
+<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+
+<!-- END OF INCLUDED HEADER -->
+
+
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../include/webex.css">
+<meta name="twitter:title" content="2&nbsp; Your first crime map – Learn Crime Mapping with R">
 <meta name="twitter:description" content="">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="../images/cover_image.png">
+<meta name="twitter:card" content="summary_large_image">
 </head>
+
 <body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
         <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../02_your_first_crime_map/index.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span></a></li></ol></nav>
-        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
-  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/cover_image.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
     <div class="sidebar-title mb-0 py-0">
-      <a href="../">Learn crime mapping with R</a> 
+      <a href="../">Learn Crime Mapping with R</a> 
         <div class="sidebar-tools-main tools-wide">
     <a href="https://github.com/mpjashby/crimemappingbook/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
     <a href="../learn_crime_mapping_with_r.epub" title="Download ePub" class="quarto-navigation-tool px-1" aria-label="Download ePub"><i class="bi bi-journal"></i></a>
     <div class="dropdown">
-      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
       <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
-<li>
-            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
-              <i class="bi bi-bi-twitter pe-1"></i>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-twitter pe-1"></i>
             Twitter
             </a>
           </li>
           <li>
-            <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=%7Curl%7C">
-              <i class="bi bi-bi-facebook pe-1"></i>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=|url|">
+              <i class="bi bi-facebook pe-1"></i>
             Facebook
             </a>
           </li>
           <li>
-            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
-              <i class="bi bi-bi-linkedin pe-1"></i>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+              <i class="bi bi-linkedin pe-1"></i>
             LinkedIn
             </a>
           </li>
       </ul>
-</div>
+    </div>
 </div>
     </div>
       </div>
@@ -159,7 +187,7 @@ quarto book
         </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-<li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Welcome!</span></a>
@@ -167,7 +195,13 @@ quarto book
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../00_setup/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../contents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contents</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../setup.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Install the software needed for this book</span></a>
   </div>
 </li>
@@ -191,32 +225,32 @@ quarto book
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../04_code_with_style/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Code with style</span></span></a>
+  <a href="../04_your_second_crime_map/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Your second crime map</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../05_your_second_crime_map/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Your second crime map</span></span></a>
+  <a href="../05_code_with_style/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Code with style</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../06_map_context/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Giving a map context</span></span></a>
+  <a href="../06_mapping_crime_patterns/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Mapping crime patterns</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../07_handling_bugs/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></span></a>
+  <a href="../07_map_context/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Giving a map context</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../08_projects/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Don’t get lost in data analysis</span></span></a>
+  <a href="../08_handling_bugs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -228,13 +262,13 @@ quarto book
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../10_place_data/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Crime Mapping: Using data about places</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Using data about places</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../11_mapping_hotspots/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Crime Mapping: Mapping hotspots</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Mapping hotspots</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -269,14 +303,14 @@ quarto book
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
  <span class="menu-text">Appendices</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
-<li class="sidebar-item">
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../appendices/read_functions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Functions for reading data into R</span></span></a>
@@ -284,33 +318,57 @@ quarto book
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../appendices/map_checklist.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Checklist: Making a good crime map</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../appendices/common_errors.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Common R errors and how to fix them</span></span></a>
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Common R errors and how to fix them</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/functions_to_avoid.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Some R functions you should avoid</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/handling_errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">Checklist: handling code errors</span></span></a>
   </div>
 </li>
       </ul>
-</li>
+  </li>
     </ul>
-</div>
-    <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">In this chapter</h2>
-   
-  <ul class="collapse">
-<li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">2.1</span> Introduction</a></li>
-  <li><a href="#loading-crime-data" id="toc-loading-crime-data" class="nav-link" data-scroll-target="#loading-crime-data"><span class="header-section-number">2.2</span> Loading crime data</a></li>
-  <li><a href="#processing-the-data" id="toc-processing-the-data" class="nav-link" data-scroll-target="#processing-the-data"><span class="header-section-number">2.3</span> Processing the data</a></li>
-  <li><a href="#draw-the-map" id="toc-draw-the-map" class="nav-link" data-scroll-target="#draw-the-map"><span class="header-section-number">2.4</span> Draw the map</a></li>
-  <li><a href="#putting-the-code-together" id="toc-putting-the-code-together" class="nav-link" data-scroll-target="#putting-the-code-together"><span class="header-section-number">2.5</span> Putting the code together</a></li>
-  <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="header-section-number">2.6</span> In summary</a></li>
-  </ul><div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
-</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">In this chapter</h2>
+   
+  <ul class="collapse">
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">2.1</span> Introduction</a></li>
+  <li><a href="#sec-permanent-code" id="toc-sec-permanent-code" class="nav-link" data-scroll-target="#sec-permanent-code"><span class="header-section-number">2.2</span> Permanent and temporary R code</a></li>
+  <li><a href="#loading-crime-data" id="toc-loading-crime-data" class="nav-link" data-scroll-target="#loading-crime-data"><span class="header-section-number">2.3</span> Loading crime data</a></li>
+  <li><a href="#processing-the-data" id="toc-processing-the-data" class="nav-link" data-scroll-target="#processing-the-data"><span class="header-section-number">2.4</span> Processing the data</a></li>
+  <li><a href="#checking-our-progress" id="toc-checking-our-progress" class="nav-link" data-scroll-target="#checking-our-progress"><span class="header-section-number">2.5</span> Checking our progress</a></li>
+  <li><a href="#draw-the-map" id="toc-draw-the-map" class="nav-link" data-scroll-target="#draw-the-map"><span class="header-section-number">2.6</span> Draw the map</a></li>
+  <li><a href="#putting-the-code-together" id="toc-putting-the-code-together" class="nav-link" data-scroll-target="#putting-the-code-together"><span class="header-section-number">2.7</span> Putting the code together</a></li>
+  <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="header-section-number">2.8</span> In summary</a></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title">
-<span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span>
-</h1>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span id="sec-first-map" class="quarto-section-identifier"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span></span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -324,87 +382,190 @@ quarto book
   
 
 
-</header><p><strong>Quickly walk (or jog) through the process of creating a complete crime map in R.</strong></p>
-<div class="box load-tutorial">
-<p>To load the <a href="../#how-to-use-this-book">interactive tutorial</a> for this chapter, copy and paste the following code into the RStudio console:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>crimemapping<span class="sc">::</span><span class="fu">tutorial</span>(<span class="st">"02_your_first_crime_map"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>and press <code>Enter</code>.</p>
+</header>
+
+
+<div class="abstract">
+<p>This chapter provides a beginner-friendly introduction to creating crime maps in R. We will walk through the essential steps, including loading pre-prepared crime data, processing it into a usable format, and visualizing it on a map. This chapter introduces key R concepts like working with spatial data and using simple features (SF) objects. You’ll learn to distinguish between temporary and permanent code, understand the basics of coordinate reference systems, and produce a professional-looking map. Let’s get started!</p>
 </div>
-<section id="introduction" class="level2" data-number="2.1"><h2 data-number="2.1" class="anchored" data-anchor-id="introduction">
-<span class="header-section-number">2.1</span> Introduction</h2>
-<p>In this tutorial we will use R to produce a simple crime map. To do this we will skip over lots of the detail of how R works and what choices we should make in creating maps. We will return to all these details in future sessions, so for-now please don’t worry about understanding every single line of code. Everything will become clear as we work through the tutorials in this course.</p>
+<section id="introduction" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">2.1</span> Introduction</h2>
+<p>In this chapter we will use R to produce a simple crime map. To do this we will skip over lots of the detail of how R works and what choices we should make in creating maps. We will return to all these details in future sessions, so for-now please don’t worry about understanding every single line of code. Everything will become clear as we work through this book.</p>
 <p>The map we’re going to create shows the locations of four homicides in downtown Atlanta in 2019:</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
-<figure class="figure"><p><img src="images/atlanta_downtown_homicides.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+<figure class="figure">
+<p><img src="../images/atlanta_downtown_homicides.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>To start off with, watch this video that walks through the code needed to make this map. Don’t worry if there are things in the video that you don’t understand – the rest of this tutorial will explain each line of code in turn.</p>
+<p>To start off with, watch this video that walks through the code needed to make this map. Don’t worry if there are things in the video that you don’t understand – the rest of this chapter will explain each line of code in turn.</p>
 <div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/ipyKc7-ReTs" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
-<section id="running-code-in-this-tutorial" class="level3 tutorial" data-number="2.1.1"><h3 data-number="2.1.1" class="anchored" data-anchor-id="running-code-in-this-tutorial">
-<span class="header-section-number">2.1.1</span> Running code in this tutorial</h3>
-<p>In the video above you saw code being run in RStudio, but to save switching between this tutorial and the RStudio console, the rest of this tutorial includes short chunks of R code that you can run directly in this window. We will use these chunks of code to walk through the code we need to produce a map. To run the code in each chunk, just click the <code>Run Code</code> button in the top-right corner of each chunk. If you want to re-run a chunk of code, you can click the <code>Start Over</code> button in the top-left corner of each chunk.</p>
-<p>When you click <code>Run Code</code>, the output of the chunk will appear below it (there may be a delay of a few seconds for more-complicated chunks).</p>
-<p>To try out using a code chunk, click <code>Run Code</code> below – you should see the message ‘Hello, world!’ printed below the box.</p>
-<div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">message</span>(<span class="st">"Hello, world!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Hello, world!</code></pre>
+</section>
+<section id="sec-permanent-code" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="sec-permanent-code"><span class="header-section-number">2.2</span> Permanent and temporary R code</h2>
+<p>To get started, open RStudio. Now click the <code>File</code> menu, then <code>New File</code> and then <code>R Script</code>. A new file will open in the left-hand panel in RStudio. Click <code>File</code> then <code>Save As...</code> to save this file in the project directory you created when you completed the previous chapter. Save the file as <code>chapter_02a.R</code>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Why are we naming the file <code>chapter_02a.R</code>?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>In each chapter of this book, you will create one or more R script files to store the code needed to produce a map or complete some other task. We will create two separate code files in this chapter, so we will use letters after the chapter number of distinguish between the different files.</p>
 </div>
 </div>
-<p><code><a href="https://rdrr.io/r/base/message.html">message()</a></code> is a <em>function</em> – a piece of R code that does something. The thing that the <code>messages()</code> function does is simple: it prints a message on the screen.</p>
-<p>Now click <code>Continue</code> below to start this tutorial.</p>
-</section></section><section id="loading-crime-data" class="level2" data-number="2.2"><h2 data-number="2.2" class="anchored" data-anchor-id="loading-crime-data">
-<span class="header-section-number">2.2</span> Loading crime data</h2>
-<section id="loading-packages" class="level3" data-number="2.2.1"><h3 data-number="2.2.1" class="anchored" data-anchor-id="loading-packages">
-<span class="header-section-number">2.2.1</span> Loading packages</h3>
-<div class="tutorial">
-<p>Before we can work with our data, we first load packages of functions for use in the analysis. To load these packages, click <code>Run Code</code>. This will produce various messages, all of which you can safely ignore for now.</p>
 </div>
-<div class="book">
-<p>Before we can work with our data, we first load packages of functions for use in the analysis. Loading packages will produce various messages, all of which you can safely ignore for now.</p>
+<p>Each chapter in this book includes chunks of R code that you can run in RStudio. We can think of this code as falling into two categories. <em>Permanent code</em> is code that we need to run to complete a piece of data analysis. For example, in the next section we will see some permanent code that loads some crime data. We type permanent code in the R script file that we have just created. By the end of this chapter, the script file we have just created will contain all the code needed to make a basic crime map.</p>
+<p>As well as permanent code, we sometimes also need to write <em>temporary code</em>. This is code that we don’t need to complete an analytical task, but we do need <em>to write the permanent code that completes a task</em>. For example, we might need to write a piece of code that shows us the name of each column in a dataset, so we can refer to columns by name in our script file. Once we know the names of the columns, we don’t need to code we wrote to find out the column names, which is why we refer to it as temporary code.</p>
+<p>Temporary code is not written in our R script file, because including everything in a script file would make it much more complicated and harder to keep track of. Instead, we write temporary code in the <em>R Console</em>.</p>
+<p>To help keep track of which code in this book is permanent code and which is temporary code, each chunk of code will either be labelled with the name of the R script file you should add it to, or the word ‘Console’ to indicate that it is temporary code you should type into the R Console.</p>
+<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-<div class="cell" data-exercise="true" data-exercise.lines="5">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Load the R packages we need to analyse this data</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">library</span>(ggspatial)</span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="fu">library</span>(sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE</code></pre>
+<div class="callout-title-container flex-fill">
+Permanent and temporary code
 </div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="box extra-detail">
-<h5 id="loading-box1-title" class="box-title anchored">
+<div class="callout-body-container callout-body">
+<p><strong>What is the difference between permanent and temporary code?</strong></p>
+<div id="radio_WOKWCVNMAU" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_WOKWCVNMAU" value="answer"> <span>Permanent code is stored in a script file, while temporary code is used only in the Console.</span></label><label><input type="radio" autocomplete="off" name="radio_WOKWCVNMAU" value=""> <span>Permanent code is run manually, while temporary code runs automatically.</span></label><label><input type="radio" autocomplete="off" name="radio_WOKWCVNMAU" value=""> <span>Temporary code is saved, while permanent code is discarded.</span></label><label><input type="radio" autocomplete="off" name="radio_WOKWCVNMAU" value=""> <span>Permanent code produces errors, while temporary code avoids them.</span></label>
+</div>
+<p><strong>Why are temporary code written in the R Console instead of a script file?</strong></p>
+<div id="radio_JNVIVCWJNH" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_JNVIVCWJNH" value=""> <span>Temporary code requires real-time user input.</span></label><label><input type="radio" autocomplete="off" name="radio_JNVIVCWJNH" value=""> <span>RStudio is not capable of storing temporary code in R script files.</span></label><label><input type="radio" autocomplete="off" name="radio_JNVIVCWJNH" value="answer"> <span>To keep our R script files as simple as possible</span></label><label><input type="radio" autocomplete="off" name="radio_JNVIVCWJNH" value=""> <span>Temporary code must run on a separate server.</span></label>
+</div>
+</div>
+</div>
+</section>
+<section id="loading-crime-data" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="loading-crime-data"><span class="header-section-number">2.3</span> Loading crime data</h2>
+<section id="sec-loading-packages" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="sec-loading-packages"><span class="header-section-number">2.3.1</span> Loading packages</h3>
+<p>Before we can work with our data, we first load packages of functions for use in the analysis. For example, we will load the tidyverse package, which automatically loads several packages that are useful for data wrangling and analysis.</p>
+<p>Copy the code below and paste it into the blank file <code>chapter_02a.R</code> that you created earlier. This adds these lines of code to your script, but you need to <em>run</em> that code for it to do anything. To run these three lines of code, you should highlight the lines of code you want to run and then either:</p>
+<ul>
+<li>click the <code>Run</code> button at the top of the R script panel, or</li>
+<li>press <code>Ctrl+Enter</code> (Windows) or <code>Command+Return</code> (Mac) on your keyboard.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+What are the <code>Command</code>, <code>Ctrl</code>, <code>Enter</code> or <code>Return</code> keys?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The <code>Enter</code> or <code>Return</code> key on your keyboard may be marked ⏎. On Mac keyboards, the <code>Command</code> key is sometimes marked ⌘.</p>
+</div>
+</div>
+</div>
+<p>If you just want to run one line of code, you don’t need to highlight the whole line to run it. Just place the cursor anywhere on that line, then either click the <code>Run</code> button or press <code>Ctrl+Enter</code>/<code>Command+Return</code>.</p>
+<p>Highlight all three lines of code and press <code>Run</code>. You will see that nothing happens in the R script, but several messages appear in the R Console. You will also see that the three lines of code have been copied into the Console just above those messages. This means you can use the R Console as a record of all the code you have run in RStudio.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Package loading messages
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Loading packages will sometimes produce various messages. <em>For now</em>, you can safely ignore these messages. It is not always safe to ignore R messages – we will cover how you should deal with messages, warnings and errors in a later chapter.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter_02a.R</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb1" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># Load the R packages we need to analyse this data</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, sf, tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
 What do these messages mean?
-</h5>
-<div id="loading-box1" class="box-content">
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
 <p>For now you don’t need to worry about these messages, but if you really want to know what they mean …</p>
-<!-- Some R packages make use of external services. For example, the `ggmap` package -->
-<!-- can make use of mapping services provided by Google. Google requires anyone -->
-<!-- using their service to comply with their terms of service, so the `ggmap` -->
-<!-- package prints a message when you load it to remind you of this. -->
 <p>Some R packages make use of other apps and utilities on your computer. For example, the <code>sf</code> package makes use of a piece of software call GDAL that is used for managing spatial data. So that you know which version of GDAL is being used, <code>sf</code> prints a message telling you.</p>
 <p>The <code>tidyverse</code> package itself loads several packages that are commonly used together for analysing data. When you load <code>tidyverse</code>, it will print a message telling you which packages it has loaded, along with the version number for each package. It also prints a message saying if any functions from the <code>tidyverse</code> packages have replaced (“masked”) any functions from packages that were previously loaded.</p>
 <p>In general, R packages use start-up messages to remind you of information that is not likely to be critical to your work, but which it might be useful to know at some point in the future.</p>
 </div>
 </div>
-<script>
-$("#loading-box1-title").click(function () { $("#loading-box1").toggle("slow") })
-</script></section><section id="loading-data" class="level3" data-number="2.2.2"><h3 data-number="2.2.2" class="anchored" data-anchor-id="loading-data">
-<span class="header-section-number">2.2.2</span> Loading data</h3>
-<p>The first task in creating any crime map is to obtain the crime and other data necessary. In many cases preparing the data for analysis and mapping will be a substantial task, but in this case we are going to use some pre-prepared crime data together with a pre-drawn street map (which we will ask R to download automatically when it draws the final map).</p>
-<p>The data we will use will be records of homicides in the Downtown neighbourhood of Atlanta, Georgia, in 2019. We can load the homicide data using the <code>read_csv()</code> function.</p>
-<div class="tutorial">
-<p>Click the <code>Run Code</code> button to load the data.</p>
 </div>
-<div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># Download the data directly from a URL and store it as an object</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a>homicides <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Loading packages
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>How do you run a line of code in RStudio for Windows without highlighting the whole line?</strong></p>
+<div id="radio_UVGHORFYMK" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_UVGHORFYMK" value=""> <span>Press Alt+F4.</span></label><label><input type="radio" autocomplete="off" name="radio_UVGHORFYMK" value="answer"> <span>Place the cursor anywhere on the line and press Ctrl+Enter.</span></label><label><input type="radio" autocomplete="off" name="radio_UVGHORFYMK" value=""> <span>Double-click the line and press Run.</span></label><label><input type="radio" autocomplete="off" name="radio_UVGHORFYMK" value=""> <span>Click on the Console and press Shift+Enter.</span></label>
+</div>
+<p><strong>Which package do we load to simultaneously load common packages used for data wrangling and analysis?</strong></p>
+<div id="radio_TPWSESXJCM" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_TPWSESXJCM" value=""> <span>ggspatial</span></label><label><input type="radio" autocomplete="off" name="radio_TPWSESXJCM" value="answer"> <span>tidyverse</span></label><label><input type="radio" autocomplete="off" name="radio_TPWSESXJCM" value=""> <span>pacman</span></label><label><input type="radio" autocomplete="off" name="radio_TPWSESXJCM" value=""> <span>sf</span></label>
+</div>
+</div>
+</div>
+</section>
+<section id="loading-data" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="loading-data"><span class="header-section-number">2.3.2</span> Loading data</h3>
+<p>The first task in creating any crime map is to obtain the crime and other data necessary. In many cases preparing the data for analysis and mapping will be a substantial task, but in this case we are going to use some pre-prepared crime data together with a pre-drawn street map (which we will ask R to download automatically when it draws the final map).</p>
+<p>The data we will use will be records of homicides in the Downtown neighbourhood of Atlanta, Georgia, in 2019. We can load the homicide data using the <code>read_csv()</code> function. A <em>function</em> in R is a piece of code that performs an action. You can think of functions as being like verbs (i.e.&nbsp;‘doing words’), which is why the names of functions are often verbs such as <code>filter()</code>, <code>select()</code>, etc. The <code>read_csv()</code> function loads data from a file and prints a message showing the name of each column in the data and the type of data (number, text etc.) in each column. Again, you can ignore this message for now.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Multiple functions with similar names
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Sometimes R has several functions that have similar names but do different things. That means it is very important to pay attention to which function you need in any particular set of circumstances. In this case we are using the <code>read_csv()</code> function, which does a slightly different thing from the similarly named <code>read.csv()</code> function (note the <code>.</code> instead of the <code>_</code>). It is usually better to use <code>read_csv()</code> because it produces a type of object (called a tibble) that is easier to work with than the object (called a data frame) that is produced by <code>read.csv()</code>. For that reason, we will always use <code>read_csv()</code> in this course.</p>
+</div>
+</div>
+<p>Copy these lines of code into your R script file, then run the line containing the <code>read_csv()</code> function by clicking anywhere on that line and pressing <code>Ctrl+Enter</code> (Windows) or <code>Command+Return</code> (Mac) on your keyboard.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter_02a.R</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Download the data directly from a URL and store it as an object</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>homicides <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Rows: 4 Columns: 4
+<pre data-code-line-numbers=""><code>Rows: 4 Columns: 4
 ── Column specification ────────────────────────────────────────────────────────
 Delimiter: ","
 chr (1): label
@@ -414,22 +575,36 @@ dbl (3): report_number, longitude, latitude
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
 </div>
-<p>The <code>read_csv()</code> function loads data from a file and prints a message showing the name of each column in the data and the type of data (number, text etc.) in each column. Again, you can ignore this message for now.</p>
-<div class="box notewell">
-<p>Sometimes R has several functions that have similar names but do different things. That means it is very important to pay attention to which function you need in any particular set of circumstances. In this case we are using the <code>read_csv()</code> function, which does a slightly different thing from the similarly named <code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code> function (note the <code>.</code> instead of the <code>_</code>). Since <code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code> has several limitations that <code>read_csv()</code> does not have, we will always use <code>read_csv()</code> in this course.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-<p>We have stored the results of the <code>read_csv()</code> function in an R <em>object</em> called <code>homicides</code>. An object in R is anything that stores any type of data. There are many types of objects, but for this tutorial we don’t need to explore these in any more detail. All you need to remember for now is that objects store data and functions do things.</p>
-</section><section id="viewing-the-data" class="level3" data-number="2.2.3"><h3 data-number="2.2.3" class="anchored" data-anchor-id="viewing-the-data">
-<span class="header-section-number">2.2.3</span> Viewing the data</h3>
-<p>To check the data has been loaded correctly, we can view the loaded data using the <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code> function. By default, <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code> prints the first six rows of the data stored in an object.</p>
-<div class="tutorial">
-<p>Click <code>Run Code</code> to view the data.</p>
+<div class="callout-title-container flex-fill">
+What does this output mean?
 </div>
-<div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Display the data</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="fu">head</span>(homicides)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>When <code>read_csv()</code> loads data from a file, it produces a short summary of the data and prints that in the R Console. Looking at this message, you can see that the data contains 4 rows and 4 columns of values in each row. You can also see the names of the columns: ‘report_number’, ‘label’, ‘longitude’ and ‘latitude’.</p>
+</div>
+</div>
+</div>
+<p>We have stored the results of the <code>read_csv()</code> function in an R <em>object</em> called <code>homicides</code>. An object in R is anything that stores any type of data. There are many types of objects, but for this chapter we don’t need to explore these in any more detail. All you need to remember for now is that objects store data (which is why their names are often nouns) and functions do things.</p>
+</section>
+<section id="viewing-the-data" class="level3" data-number="2.3.3">
+<h3 data-number="2.3.3" class="anchored" data-anchor-id="viewing-the-data"><span class="header-section-number">2.3.3</span> Viewing the data</h3>
+<p>To check the data has been loaded correctly, we can view the loaded data using the <code>head()</code> function. By default, <code>head()</code> prints the first six rows of the data stored in an object. Copy this code into the R Console and press <code>Enter</code> or <code>Return</code> on your keyboard.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>R Console</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">head</span>(homicides)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 4
+<pre data-code-line-numbers=""><code># A tibble: 4 × 4
   report_number label                                         longitude latitude
           &lt;dbl&gt; &lt;chr&gt;                                             &lt;dbl&gt;    &lt;dbl&gt;
 1     190191530 "400 W PEACHTREE ST NW\n19 January @ 15:00"       -84.4     33.8
@@ -438,45 +613,75 @@ dbl (3): report_number, longitude, latitude
 4     193302338 "80 JESSE HILL JR DR SE @GRADY\n26 November …     -84.4     33.8</code></pre>
 </div>
 </div>
-<p>The data contain four columns: a unique identifier for a homicide, a label describing when and where that homicide occurred, and the longitude and latitude of the homicide location. Depending on the width of your screen, you may need to click on the ‘▸’ symbol to view all the columns in the data. We can use this data to plot the homicides on a map.</p>
-<div class="box notewell">
+<p>The data contain four columns: a unique identifier for a homicide, a label describing when and where that homicide occurred, and the longitude and latitude of the homicide location. We can use this data to plot the homicides on a map.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Quoted and unquoted values
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p><strong>In the code <code>head(homicides)</code>, there are no quote marks around the word <code>homicides</code>.</strong></p>
 <p>Almost all programming languages will interpret words differently depending on whether they have quotes around them or not. In this case, if you type the code <code>head(homicides)</code> then R will print the first few rows of the data stored in the <code>homicides</code> object.</p>
 <p>On the other hand, if you type the code <code>head("homicides")</code> or <code>head('homicides')</code>, R will interpret this as an instruction to print the first few elements of the literal text ‘homicides’. Since the text ‘homicides’ contains only one element (more about that later), <code>head("homicides")</code> will just print the word ‘homicides’.</p>
 </div>
-</section></section><section id="processing-the-data" class="level2" data-number="2.3"><h2 data-number="2.3" class="anchored" data-anchor-id="processing-the-data">
-<span class="header-section-number">2.3</span> Processing the data</h2>
+</div>
+<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Loading data
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Why is the <code>read_csv()</code> function preferred over <code>read.csv()</code> in this chapter?</strong></p>
+<div id="radio_EPJFWDKKJZ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_EPJFWDKKJZ" value=""> <span><code>read_csv()</code> handles larger datasets.</span></label><label><input type="radio" autocomplete="off" name="radio_EPJFWDKKJZ" value="answer"> <span><code>read_csv()</code> produces a tibble instead of a data frame.</span></label><label><input type="radio" autocomplete="off" name="radio_EPJFWDKKJZ" value=""> <span><code>read.csv()</code> cannot process numeric data.</span></label><label><input type="radio" autocomplete="off" name="radio_EPJFWDKKJZ" value=""> <span><code>read_csv()</code> is the only function compatible with RStudio.</span></label>
+</div>
+<p><strong>What is the output of the following R code: head(homicides)?</strong></p>
+<div id="radio_DKCLUTFIUR" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_DKCLUTFIUR" value=""> <span>A plot of all homicides on a map.</span></label><label><input type="radio" autocomplete="off" name="radio_DKCLUTFIUR" value=""> <span>A summary of the entire <code>homicides</code> dataset.</span></label><label><input type="radio" autocomplete="off" name="radio_DKCLUTFIUR" value="answer"> <span>The first six rows of the <code>homicides</code> dataset.</span></label><label><input type="radio" autocomplete="off" name="radio_DKCLUTFIUR" value=""> <span>An error message about missing data.</span></label>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="processing-the-data" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="processing-the-data"><span class="header-section-number">2.4</span> Processing the data</h2>
 <p>Before we can plot the data on a map, we have to complete some pre-processing steps. Having to process data before being able to analyse or visualise it is common in all types of data analysis, but spatial analysis often involves additional processing that takes account of the special features of spatial data.</p>
-<section id="converting-the-data-into-a-spatial-format" class="level3" data-number="2.3.1"><h3 data-number="2.3.1" class="anchored" data-anchor-id="converting-the-data-into-a-spatial-format">
-<span class="header-section-number">2.3.1</span> Converting the data into a spatial format</h3>
+<section id="converting-the-data-into-a-spatial-format" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="converting-the-data-into-a-spatial-format"><span class="header-section-number">2.4.1</span> Converting the data into a spatial format</h3>
 <p>Two data-processing tasks are needed to produce this map. The first is to convert the data into a <em>simple features</em> or SF object, which is a special type of R object that can be used by functions that process spatial data. We will cover the details of the <code>st_as_sf()</code> function that converts our data into into an SF object later on.</p>
-<div class="tutorial">
-<p>Click <code>Run Code</code> to convert the data into SF format.</p>
-</div>
-<div class="cell" data-exercise="true">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># Convert the data to a simple features object, which we can use in functions </span></span>
-<span id="cb11-2"><a href="#cb11-2"></a><span class="co"># that work on spatial data</span></span>
-<span id="cb11-3"><a href="#cb11-3"></a>homicides_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
-<span id="cb11-4"><a href="#cb11-4"></a>  homicides, </span>
-<span id="cb11-5"><a href="#cb11-5"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), </span>
-<span id="cb11-6"><a href="#cb11-6"></a>  <span class="at">crs =</span> <span class="st">"EPSG:4326"</span></span>
-<span id="cb11-7"><a href="#cb11-7"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>When you run this code, it looks like nothing happened. This is because the results of the code are stored in the <code>homicides_sf</code> object. Do you remember what R code to use to view the first few rows of this object?</p>
-<div class="tutorial">
-<p>Type that code into the box below and click <code>Run Code</code> to view the data.</p>
-</div>
-<div class="box notewell">
-<p><strong>If you cannot remember how to view the contents of an object, you can click on the <code>Solution</code> button to get help.</strong></p>
-<p>As you go through these tutorials, try to avoid using the <code>Solution</code> button unless you have tried to input the correct code yourself. You will learn much more if you try to work out the answer by referring back to an earlier page in the tutorial or to your own notes.</p>
-<p>Don’t worry about getting the answer wrong – nothing bad will happen if you run the wrong code in this tutorial and you can have as many attempts as you like to get the answer right.</p>
-</div>
+<p>Copy this code into the <code>chapter_02a.R</code> file, then select these lines of code and click the <code>Run</code> button or press <code>Ctrl+Enter</code>/<code>Command+Return</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co"># To view an object in R, use the `head()` function. To view the contents of the</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="co"># homicides object, use this code:</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a><span class="fu">head</span>(homicides_sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter_02a.R</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># Convert the data to a simple features object, which we can use in functions </span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="co"># that work on spatial data</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>homicides_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb6-4"><a href="#cb6-4"></a>  homicides, </span>
+<span id="cb6-5"><a href="#cb6-5"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), </span>
+<span id="cb6-6"><a href="#cb6-6"></a>  <span class="at">crs =</span> <span class="st">"EPSG:4326"</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<p>When you run this code, it looks like nothing happened. This is because the results of the code are stored in the <code>homicides_sf</code> object. We can check the contents of <code>homicides_sf</code> in the R Console as before:</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>R Console</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">head</span>(homicides_sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Simple feature collection with 4 features and 2 fields
+<pre data-code-line-numbers=""><code>Simple feature collection with 4 features and 2 fields
 Geometry type: POINT
 Dimension:     XY
 Bounding box:  xmin: -84.39732 ymin: 33.74827 xmax: -84.38185 ymax: 33.76614
@@ -490,18 +695,32 @@ Geodetic CRS:  WGS 84
 4     193302338 "80 JESSE HILL JR DR SE @GRADY\n26 No… (-84.38198 33.75168)</code></pre>
 </div>
 </div>
-<p>The data looks identical to before running the function <code>st_as_sf()</code>, except that the two columns called <code>longitude</code> and <code>latitude</code> have disappeared and there is now an extra column called <code>geometry</code>. The <code>geometry</code> column is important because lots of functions in R can recognise that the <code>geometry</code> column represents a location on the surface of the earth that can be used to analyse and map data in space.</p>
-</section><section id="changing-the-data-projection" class="level3" data-number="2.3.2"><h3 data-number="2.3.2" class="anchored" data-anchor-id="changing-the-data-projection">
-<span class="header-section-number">2.3.2</span> Changing the data projection</h3>
+<p>The data looks identical to before running the function <code>st_as_sf()</code>, except that the two columns called <code>longitude</code> and <code>latitude</code> have disappeared and there is now an extra column called <code>geometry</code>. The <code>geometry</code> column is important because lots of functions in R can recognise that the <code>geometry</code> column represents a location on the surface of the Earth that can be used to analyse and map data in space.</p>
+</section>
+<section id="changing-the-data-projection" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="changing-the-data-projection"><span class="header-section-number">2.4.2</span> Changing the data projection</h3>
 <p>The <code>geometry</code> column in the <code>homicides_sf</code> object represents locations on the surface of the earth using <em>co-ordinates</em> (pairs of numbers). In this case, the co-ordinates are expressed as longitudes and latitudes, but there are lots of other types of co-ordinates (known as <em>co-ordinate reference systems</em>).</p>
-<p>We’ll learn more about co-ordinate reference systems in a future tutorial, but for now it’s enough to know that each different system has advantages and disadvantages. To make the homicide locations easier to add to a map, we are going to first <em>transform</em> the co-ordinates from longitudes and latitudes to a co-ordinate reference system that is specifically designed for mapping data for the US state of Georgia.</p>
-<p>To do this, we will use the <code>st_transform()</code> function, together with a code representing the co-ordinate reference system we want to use (you don’t need to understand this code at this stage).</p>
-<div class="cell" data-exercise="true" data-exercise.setup="exercise5-setup">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>homicides_sf_trans <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(homicides_sf, <span class="st">"EPSG:26967"</span>)</span>
-<span id="cb14-2"><a href="#cb14-2"></a></span>
-<span id="cb14-3"><a href="#cb14-3"></a><span class="fu">head</span>(homicides_sf_trans)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We’ll learn more about co-ordinate reference systems in <a href="../04_your_second_crime_map/index.html" class="quarto-xref"><span>Chapter 4</span></a>, but for now it’s enough to know that each different system has advantages and disadvantages. To make the homicide locations easier to add to a map, we are going to first <em>transform</em> the co-ordinates from longitudes and latitudes to a co-ordinate reference system that is specifically designed for mapping data for the US state of Georgia.</p>
+<p>To do this, we will use the <code>st_transform()</code> function, together with a code representing the co-ordinate reference system we want to use (you don’t need to understand this code at this stage). Copy this code into the <code>chapter_02a.R</code> file, click anywhere on the new line of code and press the <code>Run</code> button or press <code>Ctrl+Enter</code>/<code>Command+Return</code>.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter_02a.R</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Transform the data co-ordinate reference system</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>homicides_sf_trans <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(homicides_sf, <span class="st">"EPSG:26967"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<p>Once again, we can check what the result looks like in the R Console.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>R Console</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">head</span>(homicides_sf_trans)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Simple feature collection with 4 features and 2 fields
+<pre data-code-line-numbers=""><code>Simple feature collection with 4 features and 2 fields
 Geometry type: POINT
 Dimension:     XY
 Bounding box:  xmin: 678630.6 ymin: 415608.5 xmax: 680065.5 ymax: 417588.4
@@ -515,101 +734,409 @@ Projected CRS: NAD83 / Georgia West
 4     193302338 "80 JESSE HILL JR DR SE @GRADY\n26 No… (680052.6 415983.6)</code></pre>
 </div>
 </div>
-<p>Again, the data looks almost identical, except that the values in the <code>geometry</code> column have changed (you don’t need to understand yet the details of how these numbers are different). Now that we’ve completed the data processing, we can go on to produce the map itself.</p>
-</section></section><section id="draw-the-map" class="level2" data-number="2.4"><h2 data-number="2.4" class="anchored" data-anchor-id="draw-the-map">
-<span class="header-section-number">2.4</span> Draw the map</h2>
-<p>We are now ready to produce our map of homicides in downtown Atlanta. So that people viewing the map will understand where the homicides occurred, we will plot the homicides on top of a base layer showing streets, parks and other geographic features obtained from an online web mapping service.</p>
-<div class="tutorial">
-<p>Click <code>Run Code</code> to create the map.</p>
+<p>The data looks almost identical, except that the values in the <code>geometry</code> column have changed (you don’t need to understand yet the details of how these numbers are different). Now that we’ve completed the data processing, we can go on to produce the map itself.</p>
+</section>
+</section>
+<section id="checking-our-progress" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="checking-our-progress"><span class="header-section-number">2.5</span> Checking our progress</h2>
+<p>At the moment, the file <code>chapter_02a.R</code> that you have created should look like this:</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter_02a.R</strong></pre>
 </div>
-<div class="cell" data-exercise="true" data-exercise.lines="15">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">ggplot</span>(homicides_sf_trans) <span class="sc">+</span> </span>
-<span id="cb16-2"><a href="#cb16-2"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"osm"</span>, <span class="at">zoom =</span> <span class="dv">15</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span> </span>
-<span id="cb16-3"><a href="#cb16-3"></a>  <span class="fu">geom_sf_label</span>(</span>
-<span id="cb16-4"><a href="#cb16-4"></a>    <span class="fu">aes</span>(<span class="at">label =</span> label), </span>
-<span id="cb16-5"><a href="#cb16-5"></a>    <span class="at">lineheight =</span> <span class="dv">1</span>, </span>
-<span id="cb16-6"><a href="#cb16-6"></a>    <span class="at">size =</span> <span class="fl">2.5</span>, </span>
-<span id="cb16-7"><a href="#cb16-7"></a>    <span class="at">hjust =</span> <span class="dv">1</span>, </span>
-<span id="cb16-8"><a href="#cb16-8"></a>    <span class="at">vjust =</span> <span class="dv">0</span></span>
-<span id="cb16-9"><a href="#cb16-9"></a>  ) <span class="sc">+</span> </span>
-<span id="cb16-10"><a href="#cb16-10"></a>  <span class="fu">geom_sf</span>(<span class="at">colour =</span> <span class="st">"white"</span>, <span class="at">fill =</span> <span class="st">"orangered1"</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span> </span>
-<span id="cb16-11"><a href="#cb16-11"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.5</span>)) <span class="sc">+</span> </span>
-<span id="cb16-12"><a href="#cb16-12"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.2</span>)) <span class="sc">+</span> </span>
-<span id="cb16-13"><a href="#cb16-13"></a>  <span class="fu">labs</span>(</span>
-<span id="cb16-14"><a href="#cb16-14"></a>    <span class="at">title =</span> <span class="st">"Homicides in Downtown Atlanta, 2019"</span>,</span>
-<span id="cb16-15"><a href="#cb16-15"></a>    <span class="at">caption =</span> <span class="st">"Background map by OpenStreetMap"</span></span>
-<span id="cb16-16"><a href="#cb16-16"></a>  ) <span class="sc">+</span></span>
-<span id="cb16-17"><a href="#cb16-17"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co"># Load the R packages we need to analyse this data</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, sf, tidyverse)</span>
+<span id="cb12-3"><a href="#cb12-3"></a></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="co"># Download the data directly from a URL and store it as an object</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a>homicides <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv"</span>)</span>
+<span id="cb12-6"><a href="#cb12-6"></a></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="co"># Convert the data to a simple features object, which we can use in functions </span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="co"># that work on spatial data</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a>homicides_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb12-10"><a href="#cb12-10"></a>  homicides, </span>
+<span id="cb12-11"><a href="#cb12-11"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), </span>
+<span id="cb12-12"><a href="#cb12-12"></a>  <span class="at">crs =</span> <span class="st">"EPSG:4326"</span></span>
+<span id="cb12-13"><a href="#cb12-13"></a>)</span>
+<span id="cb12-14"><a href="#cb12-14"></a></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="co"># Transform the data co-ordinate reference system</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a>homicides_sf_trans <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(homicides_sf, <span class="st">"EPSG:26967"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<p>Note how this code tells a clear story about exactly what you have done. This code is easier to understand because:</p>
+<ol type="1">
+<li>we have left blank lines between each piece of code so that it’s easy to see each separate task that is being completed, and</li>
+<li>we have used comments (lines of code starting with <code>#</code>) to explain what each step does.</li>
+</ol>
+<p>Before going any further, let’s check all of our code has been run successfully. To do this, find the Environment panel in RStudio: if you followed the instructions on setting up RStudio in <a href="../01_getting_started/index.html#sec-adjust-rstudio" class="quarto-xref"><span>Section 1.4.1</span></a>, you should see Environment below your R script file. Click ‘Environment’ and RStudio will show you a list of all the objects that you have created since the start of your R session. You should see three objects listed:</p>
+<ul>
+<li><code>homicides</code>, which should have 4 observations (i.e.&nbsp;rows) of 4 variables (i.e.&nbsp;columns)</li>
+<li><code>homicides_sf</code>, which should have 4 observations of 3 variables</li>
+<li><code>homicides_sf_trans</code>, which should have 4 observations of 3 variables</li>
+</ul>
+<p>If any of those objects are missing from the list of objects in the Environment panel, you might have forgotten to run the code after pasting it into your script file. If so, you can run that part of the code now by selecting the relevant lines of code and pressing the <code>Run</code> button in RStudio or <code>Ctrl+Enter</code>/<code>Command+Return</code> on your keyboard.</p>
+<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Processing the data
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>What does the <code>st_as_sf()</code> function do?</strong></p>
+<div id="radio_OKNOEKQSUH" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_OKNOEKQSUH" value="answer"> <span>Converts non-spatial data into a simple features (SF) object.</span></label><label><input type="radio" autocomplete="off" name="radio_OKNOEKQSUH" value=""> <span>Analyzes spatial relationships between features.</span></label><label><input type="radio" autocomplete="off" name="radio_OKNOEKQSUH" value=""> <span>Exports data to a spatial file format.</span></label><label><input type="radio" autocomplete="off" name="radio_OKNOEKQSUH" value=""> <span>Visualizes data as a map.</span></label>
+</div>
+<p><strong>Why is it important to use comments in your R script?</strong></p>
+<div id="radio_XHLQGUCZSD" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_XHLQGUCZSD" value=""> <span>To make the script executable by others.</span></label><label><input type="radio" autocomplete="off" name="radio_XHLQGUCZSD" value="answer"> <span>To explain what each part of the code does.</span></label><label><input type="radio" autocomplete="off" name="radio_XHLQGUCZSD" value=""> <span>To automatically debug the code.</span></label><label><input type="radio" autocomplete="off" name="radio_XHLQGUCZSD" value=""> <span>To make the R script run faster.</span></label>
+</div>
+</div>
+</div>
+</section>
+<section id="draw-the-map" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="draw-the-map"><span class="header-section-number">2.6</span> Draw the map</h2>
+<p>We are now ready to produce our map of homicides in downtown Atlanta. So that people viewing the map will understand where the homicides occurred, we will plot the homicides on top of a <em>base map</em> showing streets, parks and other geographic features obtained from an online web mapping service.</p>
+<p>The code needed to produce the map looks quite complicated, but we don’t need to understand it all at this point – we will go through this code in <a href="../04_your_second_crime_map/index.html" class="quarto-xref"><span>Chapter 4</span></a>. For now, copy the code into the <code>chapter_02a.R</code> file, put the cursor somewhere on the line that includes the function <code>ggplot()</code>, then click the <code>Run</code> button or <code>Ctrl+Enter</code>/<code>Command+Return</code> on your keyboard.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter_02a.R</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># Create the map</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="fu">ggplot</span>(homicides_sf_trans) <span class="sc">+</span> </span>
+<span id="cb13-3"><a href="#cb13-3"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"osm"</span>, <span class="at">zoom =</span> <span class="dv">15</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span> </span>
+<span id="cb13-4"><a href="#cb13-4"></a>  <span class="fu">geom_sf_label</span>(<span class="fu">aes</span>(<span class="at">label =</span> label), <span class="at">size =</span> <span class="fl">2.5</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">vjust =</span> <span class="dv">0</span>) <span class="sc">+</span> </span>
+<span id="cb13-5"><a href="#cb13-5"></a>  <span class="fu">geom_sf</span>(<span class="at">colour =</span> <span class="st">"orangered1"</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span> </span>
+<span id="cb13-6"><a href="#cb13-6"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.2</span>)) <span class="sc">+</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a>  <span class="fu">labs</span>(</span>
+<span id="cb13-9"><a href="#cb13-9"></a>    <span class="at">title =</span> <span class="st">"Homicides in Downtown Atlanta, 2019"</span>,</span>
+<span id="cb13-10"><a href="#cb13-10"></a>    <span class="at">caption =</span> <span class="st">"Background map by OpenStreetMap"</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a>  ) <span class="sc">+</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre data-code-line-numbers=""><code>Loading required namespace: raster</code></pre>
+</div>
 <div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="index_files/figure-html/exercise7-1.png" class="img-fluid figure-img" width="672"></p>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>You can change the appearance of the map by changing various parts of the code above. For example, you could change the colour of the points that mark the homicides by changing the code <code>fill = "orangered1"</code> to <code>fill = "mediumblue"</code>, or change the base map to a different style by changing the code <code>type = "osm"</code> to <code>type = "cartolight"</code>.</p>
-<div class="tutorial">
-<p>Each time you change part of the code, click <code>Run Code</code> to see what changes on the map.</p>
-<p>Once you have finished experimenting with changing the appearance of the map, click <code>Next Topic</code> below.</p>
-</div>
-</section><section id="putting-the-code-together" class="level2" data-number="2.5"><h2 data-number="2.5" class="anchored" data-anchor-id="putting-the-code-together">
-<span class="header-section-number">2.5</span> Putting the code together</h2>
+<p>You can change the appearance of the map by changing various parts of the code above. For example, you could change the colour of the points that mark the homicides by changing the code <code>colour = "orangered1"</code> to <code>colour = "mediumblue"</code>, or change the base map to a different style by changing the code <code>type = "osm"</code> to <code>type = "cartolight"</code>. Try some of these out – after you make each change, press the <code>Run</code> button in RStudio or <code>Ctrl+Enter</code>/<code>Command+Return</code> on your keyboard to see how the map changes.</p>
+</section>
+<section id="putting-the-code-together" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="putting-the-code-together"><span class="header-section-number">2.7</span> Putting the code together</h2>
 <p>Now we have walked through the different parts of the code, we can create a map from scratch in a single block of code. In this example, we will map homicides from in Glenrose Heights neighbourhood of Atlanta, and a different style of base map. Since the area covered by the map is derived from the data itself, the extent of the map will update automatically.</p>
-<div class="cell" data-exercise="true" data-exercise.lines="38">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="co"># Load the R packages we need to analyse this data</span></span>
-<span id="cb17-2"><a href="#cb17-2"></a><span class="fu">library</span>(ggspatial)</span>
-<span id="cb17-3"><a href="#cb17-3"></a><span class="fu">library</span>(sf)</span>
-<span id="cb17-4"><a href="#cb17-4"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb17-5"><a href="#cb17-5"></a></span>
-<span id="cb17-6"><a href="#cb17-6"></a><span class="co"># Download the data directly from a URL and store it as an object</span></span>
-<span id="cb17-7"><a href="#cb17-7"></a>homicides <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/glenrose_heights_homicides.csv"</span>)</span>
-<span id="cb17-8"><a href="#cb17-8"></a></span>
-<span id="cb17-9"><a href="#cb17-9"></a><span class="co"># Convert the data to a simple features object, which we can use in functions </span></span>
-<span id="cb17-10"><a href="#cb17-10"></a><span class="co"># that work on spatial data</span></span>
-<span id="cb17-11"><a href="#cb17-11"></a>homicides_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
-<span id="cb17-12"><a href="#cb17-12"></a>  homicides, </span>
-<span id="cb17-13"><a href="#cb17-13"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), </span>
-<span id="cb17-14"><a href="#cb17-14"></a>  <span class="at">crs =</span> <span class="st">"EPSG:4326"</span></span>
-<span id="cb17-15"><a href="#cb17-15"></a>)</span>
-<span id="cb17-16"><a href="#cb17-16"></a></span>
-<span id="cb17-17"><a href="#cb17-17"></a><span class="co"># Transform the data to a co-ordinate reference system for the state of Georgia</span></span>
-<span id="cb17-18"><a href="#cb17-18"></a>homicides_sf_trans <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(homicides_sf, <span class="st">"EPSG:26967"</span>)</span>
-<span id="cb17-19"><a href="#cb17-19"></a></span>
-<span id="cb17-20"><a href="#cb17-20"></a><span class="co"># Plot the map</span></span>
-<span id="cb17-21"><a href="#cb17-21"></a><span class="fu">ggplot</span>(homicides_sf_trans) <span class="sc">+</span> </span>
-<span id="cb17-22"><a href="#cb17-22"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"osm"</span>, <span class="at">zoom =</span> <span class="dv">15</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span> </span>
-<span id="cb17-23"><a href="#cb17-23"></a>  <span class="fu">geom_sf_label</span>(</span>
-<span id="cb17-24"><a href="#cb17-24"></a>    <span class="fu">aes</span>(<span class="at">label =</span> label), </span>
-<span id="cb17-25"><a href="#cb17-25"></a>    <span class="at">lineheight =</span> <span class="dv">1</span>, </span>
-<span id="cb17-26"><a href="#cb17-26"></a>    <span class="at">size =</span> <span class="fl">2.5</span>, </span>
-<span id="cb17-27"><a href="#cb17-27"></a>    <span class="at">hjust =</span> <span class="dv">1</span>, </span>
-<span id="cb17-28"><a href="#cb17-28"></a>    <span class="at">vjust =</span> <span class="dv">0</span></span>
-<span id="cb17-29"><a href="#cb17-29"></a>  ) <span class="sc">+</span> </span>
-<span id="cb17-30"><a href="#cb17-30"></a>  <span class="fu">geom_sf</span>(<span class="at">colour =</span> <span class="st">"white"</span>, <span class="at">fill =</span> <span class="st">"mediumblue"</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span> </span>
-<span id="cb17-31"><a href="#cb17-31"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">1.5</span>)) <span class="sc">+</span> </span>
-<span id="cb17-32"><a href="#cb17-32"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.2</span>)) <span class="sc">+</span> </span>
-<span id="cb17-33"><a href="#cb17-33"></a>  <span class="fu">labs</span>(</span>
-<span id="cb17-34"><a href="#cb17-34"></a>    <span class="at">title =</span> <span class="st">"Homicides in Glenrose Heights, 2019"</span>,</span>
-<span id="cb17-35"><a href="#cb17-35"></a>    <span class="at">caption =</span> <span class="st">"Background map by OpenStreetMap"</span></span>
-<span id="cb17-36"><a href="#cb17-36"></a>  ) <span class="sc">+</span></span>
-<span id="cb17-37"><a href="#cb17-37"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Create a new script file in RStudio by clicking <code>File</code>, <code>New File</code> then <code>R Script</code>. Paste the following code into this new file, then save the file as <code>chapter_02b.R</code>.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter_02b.R</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="co"># Load the R packages we need to analyse this data</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, sf, tidyverse)</span>
+<span id="cb15-3"><a href="#cb15-3"></a></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="co"># Download the data directly from a URL and store it as an object</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a>homicides <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/glenrose_heights_homicides.csv"</span>)</span>
+<span id="cb15-6"><a href="#cb15-6"></a></span>
+<span id="cb15-7"><a href="#cb15-7"></a><span class="co"># Convert the data to a simple features object, which we can use in functions </span></span>
+<span id="cb15-8"><a href="#cb15-8"></a><span class="co"># that work on spatial data</span></span>
+<span id="cb15-9"><a href="#cb15-9"></a>homicides_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb15-10"><a href="#cb15-10"></a>  homicides, </span>
+<span id="cb15-11"><a href="#cb15-11"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), </span>
+<span id="cb15-12"><a href="#cb15-12"></a>  <span class="at">crs =</span> <span class="st">"EPSG:4326"</span></span>
+<span id="cb15-13"><a href="#cb15-13"></a>)</span>
+<span id="cb15-14"><a href="#cb15-14"></a></span>
+<span id="cb15-15"><a href="#cb15-15"></a><span class="co"># Transform the data to a co-ordinate reference system for the state of Georgia</span></span>
+<span id="cb15-16"><a href="#cb15-16"></a>homicides_sf_trans <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(homicides_sf, <span class="st">"EPSG:26967"</span>)</span>
+<span id="cb15-17"><a href="#cb15-17"></a></span>
+<span id="cb15-18"><a href="#cb15-18"></a><span class="co"># Plot the map</span></span>
+<span id="cb15-19"><a href="#cb15-19"></a><span class="fu">ggplot</span>(homicides_sf_trans) <span class="sc">+</span> </span>
+<span id="cb15-20"><a href="#cb15-20"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"osm"</span>, <span class="at">zoom =</span> <span class="dv">15</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span> </span>
+<span id="cb15-21"><a href="#cb15-21"></a>  <span class="fu">geom_sf_label</span>(<span class="fu">aes</span>(<span class="at">label =</span> label), <span class="at">size =</span> <span class="fl">2.5</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">vjust =</span> <span class="dv">0</span>) <span class="sc">+</span> </span>
+<span id="cb15-22"><a href="#cb15-22"></a>  <span class="fu">geom_sf</span>(<span class="at">colour =</span> <span class="st">"mediumblue"</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span> </span>
+<span id="cb15-23"><a href="#cb15-23"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">1.5</span>)) <span class="sc">+</span> </span>
+<span id="cb15-24"><a href="#cb15-24"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.2</span>)) <span class="sc">+</span> </span>
+<span id="cb15-25"><a href="#cb15-25"></a>  <span class="fu">labs</span>(</span>
+<span id="cb15-26"><a href="#cb15-26"></a>    <span class="at">title =</span> <span class="st">"Homicides in Glenrose Heights, 2019"</span>,</span>
+<span id="cb15-27"><a href="#cb15-27"></a>    <span class="at">caption =</span> <span class="st">"Background map by OpenStreetMap"</span></span>
+<span id="cb15-28"><a href="#cb15-28"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-29"><a href="#cb15-29"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre data-code-line-numbers=""><code>Rows: 4 Columns: 4
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (1): label
+dbl (3): report_number, longitude, latitude
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
 <div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="index_files/figure-html/exercise8-1.png" class="img-fluid figure-img" width="672"></p>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-</section><section id="in-summary" class="level2" data-number="2.6"><h2 data-number="2.6" class="anchored" data-anchor-id="in-summary">
-<span class="header-section-number">2.6</span> In summary</h2>
-<div class="box welldone">
-<p><strong>Well done – you have finished your first mapping tutorial.</strong> You may not have understood every line of code in this tutorial, but we will cover them all in more detail over the rest of this course. By the end of the tutorials, you will be able to write code like this to create many different types of crime map.</p>
+<p>When we want to run all the code in a file, it would be tedious to run each chunk of code separately. Instead, we can run all the code in a file in one go by:</p>
+<ul>
+<li>clicking the tiny downward arrow next to the <code>Source</code> button in the script panel in RStudio (to the right of the <code>Run</code> button) then clicking <code>Source with Echo</code>, or</li>
+<li>clicking anywhere in our code and pressing <code>Shift+Ctrl+Enter</code> (Windows) or <code>Shift+Command+Return</code> (Mac) on the computer keyboard.</li>
+</ul>
+<p>This runs all the code in our script in one go. You should see some messages appear in the R Console, and the final map appear in the RStudio Plots panel.</p>
+<p>Save the <code>chapter_02b.R</code> file by hitting <code>Ctrl+S</code> on Windows or <code>Command+S</code> on Mac, then restart R to start a new session by clicking on the <code>Session</code> menu and then clicking <code>Restart R</code>. This creates a blank canvas for the next chapter.</p>
+</section>
+<section id="in-summary" class="level2" data-number="2.8">
+<h2 data-number="2.8" class="anchored" data-anchor-id="in-summary"><span class="header-section-number">2.8</span> In summary</h2>
+<p><strong>Well done – you have created your first map!</strong></p>
+<p>You may not have understood every line of code in this chapter, but we will cover them all in more detail over the rest of this course. By the end of this course, you will be able to write code like this to create many different types of crime map.</p>
+<p>In this chapter you have learned how to load data into R, prepare it for use in making a map and then used it to make your first crime map of this course.</p>
+<p>The map we have produced in this chapter is effective for showing the locations of just a few crimes, but is too limited to show more complicated patterns or larger datasets. In the following chapter, we will learn how to produce more sophisticated maps and spatial analysis. We will also learn how each of the functions that we have used in this chapter work.</p>
+<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-<p>In this tutorial you have learned how to load data into R, prepare it for use in making a map and then used it to make your first crime map of this course.</p>
-<p>The map we have produced in this tutorial is effective for showing the locations of just a few crimes, but is too limited to show more complicated patterns or larger datasets. In the following tutorials, we will learn how to produce more sophisticated maps and spatial analysis. We will also learn how each of the functions that we have used in this tutorial work.</p>
+<div class="callout-title-container flex-fill">
+Revision questions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Answer these questions to check you have understood the main points covered in this chapter. Write between 50 and 100 words to answer each question.</p>
+<ol type="1">
+<li>Why is it important to differentiate between temporary and permanent code when working in R? Provide an example of each and explain how they are used in creating a crime map.</li>
+<li>Explain why it is useful to store spatial data as a simple features (SF) object. What steps are required to convert crime data into an SF object, and why is this conversion necessary?</li>
+<li>What are coordinate reference systems (CRS), and why might you need to transform the CRS of spatial data? Describe how this was applied in the chapter to map homicides in Atlanta.</li>
+<li>What steps are involved in creating a crime map in R from loading data to visualizing it? Highlight the key functions used and the purpose of each in the process.</li>
+</ol>
+</div>
+</div>
 
 
-</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script>
+
+/* update total correct if #webex-total_correct exists */
+update_total_correct = function() {
+  console.log("webex: update total_correct");
+
+  var t = document.getElementsByClassName("webex-total_correct");
+  for (var i = 0; i < t.length; i++) {
+    p = t[i].parentElement;
+    var correct = p.getElementsByClassName("webex-correct").length;
+    var solvemes = p.getElementsByClassName("webex-solveme").length;
+    var radiogroups = p.getElementsByClassName("webex-radiogroup").length;
+    var selects = p.getElementsByClassName("webex-select").length;
+
+    t[i].innerHTML = correct + " of " + (solvemes + radiogroups + selects) + " correct";
+  }
+}
+
+/* webex-solution button toggling function */
+b_func = function() {
+  console.log("webex: toggle hide");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('open')) {
+    cl.remove("open");
+  } else {
+    cl.add("open");
+  }
+}
+
+/* check answers */
+check_func = function() {
+  console.log("webex: check answers");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('unchecked')) {
+    cl.remove("unchecked");
+    this.innerHTML = "Hide Answers";
+  } else {
+    cl.add("unchecked");
+    this.innerHTML = "Show Answers";
+  }
+}
+
+/* function for checking solveme answers */
+solveme_func = function(e) {
+  console.log("webex: check solveme");
+
+  var real_answers = JSON.parse(this.dataset.answer);
+  var my_answer = this.value;
+  var cl = this.classList;
+  if (cl.contains("ignorecase")) {
+    my_answer = my_answer.toLowerCase();
+  }
+  if (cl.contains("nospaces")) {
+    my_answer = my_answer.replace(/ /g, "")
+  }
+
+  if (my_answer == "") {
+    cl.remove("webex-correct");
+    cl.remove("webex-incorrect");
+  } else if (real_answers.includes(my_answer)) {
+    cl.add("webex-correct");
+    cl.remove("webex-incorrect");
+  } else {
+    cl.add("webex-incorrect");
+    cl.remove("webex-correct");
+  }
+
+  // match numeric answers within a specified tolerance
+  if(this.dataset.tol > 0){
+    var tol = JSON.parse(this.dataset.tol);
+    var matches = real_answers.map(x => Math.abs(x - my_answer) < tol)
+    if (matches.reduce((a, b) => a + b, 0) > 0) {
+      cl.add("webex-correct");
+    } else {
+      cl.remove("webex-correct");
+    }
+  }
+
+  // added regex bit
+  if (cl.contains("regex")){
+    answer_regex = RegExp(real_answers.join("|"))
+    if (answer_regex.test(my_answer)) {
+      cl.add("webex-correct");
+    }
+  }
+
+  update_total_correct();
+}
+
+/* function for checking select answers */
+select_func = function(e) {
+  console.log("webex: check select");
+
+  var cl = this.classList
+
+  /* add style */
+  cl.remove("webex-incorrect");
+  cl.remove("webex-correct");
+  if (this.value == "answer") {
+    cl.add("webex-correct");
+  } else if (this.value != "blank") {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+/* function for checking radiogroups answers */
+radiogroups_func = function(e) {
+  console.log("webex: check radiogroups");
+
+  var checked_button = document.querySelector('input[name=' + this.id + ']:checked');
+  var cl = checked_button.parentElement.classList;
+  var labels = checked_button.parentElement.parentElement.children;
+
+  /* get rid of styles */
+  for (i = 0; i < labels.length; i++) {
+    labels[i].classList.remove("webex-incorrect");
+    labels[i].classList.remove("webex-correct");
+  }
+
+  /* add style */
+  if (checked_button.value == "answer") {
+    cl.add("webex-correct");
+  } else {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+window.onload = function() {
+  console.log("webex onload");
+  /* set up solution buttons */
+  var buttons = document.getElementsByTagName("button");
+
+  for (var i = 0; i < buttons.length; i++) {
+    if (buttons[i].parentElement.classList.contains('webex-solution')) {
+      buttons[i].onclick = b_func;
+    }
+  }
+
+  var check_sections = document.getElementsByClassName("webex-check");
+  console.log("check:", check_sections.length);
+  for (var i = 0; i < check_sections.length; i++) {
+    check_sections[i].classList.add("unchecked");
+
+    let btn = document.createElement("button");
+    btn.innerHTML = "Show Answers";
+    btn.classList.add("webex-check-button");
+    btn.onclick = check_func;
+    check_sections[i].appendChild(btn);
+
+    let spn = document.createElement("span");
+    spn.classList.add("webex-total_correct");
+    check_sections[i].appendChild(spn);
+  }
+
+  /* set up webex-solveme inputs */
+  var solveme = document.getElementsByClassName("webex-solveme");
+
+  for (var i = 0; i < solveme.length; i++) {
+    /* make sure input boxes don't auto-anything */
+    solveme[i].setAttribute("autocomplete","off");
+    solveme[i].setAttribute("autocorrect", "off");
+    solveme[i].setAttribute("autocapitalize", "off");
+    solveme[i].setAttribute("spellcheck", "false");
+    solveme[i].value = "";
+
+    /* adjust answer for ignorecase or nospaces */
+    var cl = solveme[i].classList;
+    var real_answer = solveme[i].dataset.answer;
+    if (cl.contains("ignorecase")) {
+      real_answer = real_answer.toLowerCase();
+    }
+    if (cl.contains("nospaces")) {
+      real_answer = real_answer.replace(/ /g, "");
+    }
+    solveme[i].dataset.answer = real_answer;
+
+    /* attach checking function */
+    solveme[i].onkeyup = solveme_func;
+    solveme[i].onchange = solveme_func;
+
+    solveme[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  /* set up radiogroups */
+  var radiogroups = document.getElementsByClassName("webex-radiogroup");
+  for (var i = 0; i < radiogroups.length; i++) {
+    radiogroups[i].onchange = radiogroups_func;
+  }
+
+  /* set up selects */
+  var selects = document.getElementsByClassName("webex-select");
+  for (var i = 0; i < selects.length; i++) {
+    selects[i].onchange = select_func;
+    selects[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  update_total_correct();
+}
+
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
     const mode = bsSheetEl.getAttribute("data-mode");
@@ -644,18 +1171,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -687,7 +1203,80 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -695,7 +1284,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {
@@ -1017,7 +1606,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
-</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
       <a href="../01_getting_started/index.html" class="pagination-link" aria-label="Getting started">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting started</span></span>
       </a>          
@@ -1027,21 +1618,643 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Wrangling data</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
-</nav>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb17" data-shortcodes="false" data-code-line-numbers=""><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu"># Your first crime map {#sec-first-map}</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a></span>
+<span id="cb17-3"><a href="#cb17-3"></a>::: {.abstract}</span>
+<span id="cb17-4"><a href="#cb17-4"></a>This chapter provides a beginner-friendly introduction to creating crime maps in R. We will walk through the essential steps, including loading pre-prepared crime data, processing it into a usable format, and visualizing it on a map. This chapter introduces key R concepts like working with spatial data and using simple features (SF) objects. You’ll learn to distinguish between temporary and permanent code, understand the basics of coordinate reference systems, and produce a professional-looking map. Let’s get started!</span>
+<span id="cb17-5"><a href="#cb17-5"></a>:::</span>
+<span id="cb17-6"><a href="#cb17-6"></a></span>
+<span id="cb17-7"><a href="#cb17-7"></a></span>
+<span id="cb17-8"><a href="#cb17-8"></a></span>
+<span id="cb17-9"><a href="#cb17-9"></a><span class="in">```{r setup}</span></span>
+<span id="cb17-10"><a href="#cb17-10"></a><span class="in">#| echo: false</span></span>
+<span id="cb17-11"><a href="#cb17-11"></a><span class="in">#| include: false</span></span>
+<span id="cb17-12"><a href="#cb17-12"></a></span>
+<span id="cb17-13"><a href="#cb17-13"></a><span class="in">pacman::p_load(tidyverse)</span></span>
+<span id="cb17-14"><a href="#cb17-14"></a><span class="in">```</span></span>
+<span id="cb17-15"><a href="#cb17-15"></a></span>
+<span id="cb17-16"><a href="#cb17-16"></a></span>
+<span id="cb17-17"><a href="#cb17-17"></a></span>
+<span id="cb17-18"><a href="#cb17-18"></a><span class="fu">## Introduction</span></span>
+<span id="cb17-19"><a href="#cb17-19"></a></span>
+<span id="cb17-20"><a href="#cb17-20"></a>In this chapter we will use R to produce a simple crime map. To do this we will</span>
+<span id="cb17-21"><a href="#cb17-21"></a>skip over lots of the detail of how R works and what choices we should make in</span>
+<span id="cb17-22"><a href="#cb17-22"></a>creating maps. We will return to all these details in future sessions, so </span>
+<span id="cb17-23"><a href="#cb17-23"></a>for-now please don't worry about understanding every single line of code. </span>
+<span id="cb17-24"><a href="#cb17-24"></a>Everything will become clear as we work through this book.</span>
+<span id="cb17-25"><a href="#cb17-25"></a></span>
+<span id="cb17-26"><a href="#cb17-26"></a><span class="in">```{r make-final-map}</span></span>
+<span id="cb17-27"><a href="#cb17-27"></a><span class="in">#| eval: false</span></span>
+<span id="cb17-28"><a href="#cb17-28"></a><span class="in">#| include: false</span></span>
+<span id="cb17-29"><a href="#cb17-29"></a></span>
+<span id="cb17-30"><a href="#cb17-30"></a><span class="in">if (!file.exists(here::here("images/atlanta_downtown_homicides.jpg"))) {</span></span>
+<span id="cb17-31"><a href="#cb17-31"></a><span class="in">  </span></span>
+<span id="cb17-32"><a href="#cb17-32"></a><span class="in">  # These packages are loaded inside this if statement because loading them at</span></span>
+<span id="cb17-33"><a href="#cb17-33"></a><span class="in">  # the start of the script means that no package startup messages are produced</span></span>
+<span id="cb17-34"><a href="#cb17-34"></a><span class="in">  # by exercise1</span></span>
+<span id="cb17-35"><a href="#cb17-35"></a><span class="in">  library(ggspatial)</span></span>
+<span id="cb17-36"><a href="#cb17-36"></a><span class="in">  library(sf)</span></span>
+<span id="cb17-37"><a href="#cb17-37"></a></span>
+<span id="cb17-38"><a href="#cb17-38"></a><span class="in">  downtown_homicides &lt;- read_csv("https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv") |&gt; </span></span>
+<span id="cb17-39"><a href="#cb17-39"></a><span class="in">    st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326") |&gt; </span></span>
+<span id="cb17-40"><a href="#cb17-40"></a><span class="in">    st_transform("EPSG:26967")</span></span>
+<span id="cb17-41"><a href="#cb17-41"></a></span>
+<span id="cb17-42"><a href="#cb17-42"></a><span class="in">  downtown_homicides_map &lt;- ggplot(downtown_homicides) + </span></span>
+<span id="cb17-43"><a href="#cb17-43"></a><span class="in">    annotation_map_tile(type = "osm", zoom = 15, progress = "none") + </span></span>
+<span id="cb17-44"><a href="#cb17-44"></a><span class="in">    geom_sf_label(</span></span>
+<span id="cb17-45"><a href="#cb17-45"></a><span class="in">      aes(label = label), </span></span>
+<span id="cb17-46"><a href="#cb17-46"></a><span class="in">      lineheight = 1, </span></span>
+<span id="cb17-47"><a href="#cb17-47"></a><span class="in">      size = 2.5, </span></span>
+<span id="cb17-48"><a href="#cb17-48"></a><span class="in">      hjust = 1, </span></span>
+<span id="cb17-49"><a href="#cb17-49"></a><span class="in">      vjust = 0</span></span>
+<span id="cb17-50"><a href="#cb17-50"></a><span class="in">    ) + </span></span>
+<span id="cb17-51"><a href="#cb17-51"></a><span class="in">    geom_sf(colour = "white", fill = "orangered1", size = 4, shape = 21) + </span></span>
+<span id="cb17-52"><a href="#cb17-52"></a><span class="in">    scale_x_continuous(expand = expansion(mult = 0.5)) + </span></span>
+<span id="cb17-53"><a href="#cb17-53"></a><span class="in">    scale_y_continuous(expand = expansion(mult = 0.2)) + </span></span>
+<span id="cb17-54"><a href="#cb17-54"></a><span class="in">    labs(</span></span>
+<span id="cb17-55"><a href="#cb17-55"></a><span class="in">      title = "Homicides in Downtown Atlanta, 2019",</span></span>
+<span id="cb17-56"><a href="#cb17-56"></a><span class="in">      caption = "Background map by OpenStreetMap"</span></span>
+<span id="cb17-57"><a href="#cb17-57"></a><span class="in">    ) +</span></span>
+<span id="cb17-58"><a href="#cb17-58"></a><span class="in">    theme_void()</span></span>
+<span id="cb17-59"><a href="#cb17-59"></a><span class="in">  </span></span>
+<span id="cb17-60"><a href="#cb17-60"></a><span class="in">  # Save the map</span></span>
+<span id="cb17-61"><a href="#cb17-61"></a><span class="in">  ggsave(</span></span>
+<span id="cb17-62"><a href="#cb17-62"></a><span class="in">    here::here("images/atlanta_downtown_homicides.jpg"), </span></span>
+<span id="cb17-63"><a href="#cb17-63"></a><span class="in">    downtown_homicides_map,</span></span>
+<span id="cb17-64"><a href="#cb17-64"></a><span class="in">    width = 800 / 150, </span></span>
+<span id="cb17-65"><a href="#cb17-65"></a><span class="in">    dpi = 150</span></span>
+<span id="cb17-66"><a href="#cb17-66"></a><span class="in">  )</span></span>
+<span id="cb17-67"><a href="#cb17-67"></a><span class="in">  </span></span>
+<span id="cb17-68"><a href="#cb17-68"></a><span class="in">}</span></span>
+<span id="cb17-69"><a href="#cb17-69"></a><span class="in">```</span></span>
+<span id="cb17-70"><a href="#cb17-70"></a></span>
+<span id="cb17-71"><a href="#cb17-71"></a>The map we're going to create shows the locations of four homicides in downtown</span>
+<span id="cb17-72"><a href="#cb17-72"></a>Atlanta in 2019:</span>
+<span id="cb17-73"><a href="#cb17-73"></a></span>
+<span id="cb17-74"><a href="#cb17-74"></a><span class="in">```{r show-final-map}</span></span>
+<span id="cb17-75"><a href="#cb17-75"></a><span class="in">#| echo: false</span></span>
+<span id="cb17-76"><a href="#cb17-76"></a><span class="in">#| fig-align: center</span></span>
+<span id="cb17-77"><a href="#cb17-77"></a><span class="in">#| out-width: 80%</span></span>
+<span id="cb17-78"><a href="#cb17-78"></a></span>
+<span id="cb17-79"><a href="#cb17-79"></a><span class="in">knitr::include_graphics("../images/atlanta_downtown_homicides.jpg")</span></span>
+<span id="cb17-80"><a href="#cb17-80"></a><span class="in">```</span></span>
+<span id="cb17-81"><a href="#cb17-81"></a></span>
+<span id="cb17-82"><a href="#cb17-82"></a>To start off with, watch this video that walks through the code needed to make this map. Don't worry if there are things in the video that you don't understand -- the rest of this chapter will explain each line of code in turn.</span>
+<span id="cb17-83"><a href="#cb17-83"></a></span>
+<span id="cb17-84"><a href="#cb17-84"></a>{{&lt; video https://youtu.be/ipyKc7-ReTs &gt;}}</span>
+<span id="cb17-85"><a href="#cb17-85"></a></span>
+<span id="cb17-86"><a href="#cb17-86"></a></span>
+<span id="cb17-87"><a href="#cb17-87"></a></span>
+<span id="cb17-88"><a href="#cb17-88"></a><span class="fu">## Permanent and temporary R code {#sec-permanent-code}</span></span>
+<span id="cb17-89"><a href="#cb17-89"></a></span>
+<span id="cb17-90"><a href="#cb17-90"></a>To get started, open RStudio. Now click the <span class="in">`File`</span> menu, then <span class="in">`New File`</span> and then <span class="in">`R Script`</span>. A new file will open in the left-hand panel in RStudio. Click <span class="in">`File`</span> then <span class="in">`Save As...`</span> to save this file in the project directory you created when you completed the previous chapter. Save the file as <span class="in">`chapter_02a.R`</span>.</span>
+<span id="cb17-91"><a href="#cb17-91"></a></span>
+<span id="cb17-92"><a href="#cb17-92"></a>::: {.callout-tip collapse="true"}</span>
+<span id="cb17-93"><a href="#cb17-93"></a><span class="fu">#### Why are we naming the file `chapter_02a.R`?</span></span>
+<span id="cb17-94"><a href="#cb17-94"></a></span>
+<span id="cb17-95"><a href="#cb17-95"></a>In each chapter of this book, you will create one or more R script files to store the code needed to produce a map or complete some other task. We will create two separate code files in this chapter, so we will use letters after the chapter number of distinguish between the different files.</span>
+<span id="cb17-96"><a href="#cb17-96"></a>:::</span>
+<span id="cb17-97"><a href="#cb17-97"></a></span>
+<span id="cb17-98"><a href="#cb17-98"></a>Each chapter in this book includes chunks of R code that you can run in RStudio. We can think of this code as falling into two categories. _Permanent code_ is code that we need to run to complete a piece of data analysis. For example, in the next section we will see some permanent code that loads some crime data. We type permanent code in the R script file that we have just created. By the end of this chapter, the script file we have just created will contain all the code needed to make a basic crime map.</span>
+<span id="cb17-99"><a href="#cb17-99"></a></span>
+<span id="cb17-100"><a href="#cb17-100"></a>As well as permanent code, we sometimes also need to write _temporary code_. This is code that we don't need to complete an analytical task, but we do need _to write the permanent code that completes a task_. For example, we might need to write a piece of code that shows us the name of each column in a dataset, so we can refer to columns by name in our script file. Once we know the names of the columns, we don't need to code we wrote to find out the column names, which is why we refer to it as temporary code.</span>
+<span id="cb17-101"><a href="#cb17-101"></a></span>
+<span id="cb17-102"><a href="#cb17-102"></a>Temporary code is not written in our R script file, because including everything in a script file would make it much more complicated and harder to keep track of. Instead, we write temporary code in the _R Console_.</span>
+<span id="cb17-103"><a href="#cb17-103"></a></span>
+<span id="cb17-104"><a href="#cb17-104"></a>To help keep track of which code in this book is permanent code and which is temporary code, each chunk of code will either be labelled with the name of the R script file you should add it to, or the word 'Console' to indicate that it is temporary code you should type into the R Console.</span>
+<span id="cb17-105"><a href="#cb17-105"></a></span>
+<span id="cb17-106"><a href="#cb17-106"></a></span>
+<span id="cb17-107"><a href="#cb17-107"></a>::: {.callout-quiz .callout}</span>
+<span id="cb17-108"><a href="#cb17-108"></a><span class="fu">#### Permanent and temporary code</span></span>
+<span id="cb17-109"><a href="#cb17-109"></a></span>
+<span id="cb17-110"><a href="#cb17-110"></a><span class="in">```{r permanent-code-quiz}</span></span>
+<span id="cb17-111"><a href="#cb17-111"></a><span class="in">#| echo: false</span></span>
+<span id="cb17-112"><a href="#cb17-112"></a></span>
+<span id="cb17-113"><a href="#cb17-113"></a><span class="in">permanent_code_quiz1 &lt;- c(</span></span>
+<span id="cb17-114"><a href="#cb17-114"></a><span class="in">  answer = "Permanent code is stored in a script file, while temporary code is used only in the Console.",</span></span>
+<span id="cb17-115"><a href="#cb17-115"></a><span class="in">  "Permanent code is run manually, while temporary code runs automatically.",</span></span>
+<span id="cb17-116"><a href="#cb17-116"></a><span class="in">  "Temporary code is saved, while permanent code is discarded.",</span></span>
+<span id="cb17-117"><a href="#cb17-117"></a><span class="in">  "Permanent code produces errors, while temporary code avoids them."</span></span>
+<span id="cb17-118"><a href="#cb17-118"></a><span class="in">)</span></span>
+<span id="cb17-119"><a href="#cb17-119"></a></span>
+<span id="cb17-120"><a href="#cb17-120"></a><span class="in">permanent_code_quiz2 &lt;- c(</span></span>
+<span id="cb17-121"><a href="#cb17-121"></a><span class="in">  "Temporary code requires real-time user input.",</span></span>
+<span id="cb17-122"><a href="#cb17-122"></a><span class="in">  "RStudio is not capable of storing temporary code in R script files.",</span></span>
+<span id="cb17-123"><a href="#cb17-123"></a><span class="in">  answer = "To keep our R script files as simple as possible",</span></span>
+<span id="cb17-124"><a href="#cb17-124"></a><span class="in">  "Temporary code must run on a separate server."</span></span>
+<span id="cb17-125"><a href="#cb17-125"></a><span class="in">)</span></span>
+<span id="cb17-126"><a href="#cb17-126"></a><span class="in">```</span></span>
+<span id="cb17-127"><a href="#cb17-127"></a></span>
+<span id="cb17-128"><a href="#cb17-128"></a></span>
+<span id="cb17-129"><a href="#cb17-129"></a>**What is the difference between permanent and temporary code?**</span>
+<span id="cb17-130"><a href="#cb17-130"></a></span>
+<span id="cb17-131"><a href="#cb17-131"></a><span class="in">`r webexercises::longmcq(permanent_code_quiz1)`</span></span>
+<span id="cb17-132"><a href="#cb17-132"></a></span>
+<span id="cb17-133"><a href="#cb17-133"></a></span>
+<span id="cb17-134"><a href="#cb17-134"></a>**Why are temporary code written in the R Console instead of a script file?**</span>
+<span id="cb17-135"><a href="#cb17-135"></a></span>
+<span id="cb17-136"><a href="#cb17-136"></a><span class="in">`r webexercises::longmcq(permanent_code_quiz2)`</span></span>
+<span id="cb17-137"><a href="#cb17-137"></a></span>
+<span id="cb17-138"><a href="#cb17-138"></a></span>
+<span id="cb17-139"><a href="#cb17-139"></a>:::</span>
+<span id="cb17-140"><a href="#cb17-140"></a></span>
+<span id="cb17-141"><a href="#cb17-141"></a></span>
+<span id="cb17-142"><a href="#cb17-142"></a></span>
+<span id="cb17-143"><a href="#cb17-143"></a><span class="fu">## Loading crime data</span></span>
+<span id="cb17-144"><a href="#cb17-144"></a></span>
+<span id="cb17-145"><a href="#cb17-145"></a></span>
+<span id="cb17-146"><a href="#cb17-146"></a><span class="fu">### Loading packages {#sec-loading-packages}</span></span>
+<span id="cb17-147"><a href="#cb17-147"></a></span>
+<span id="cb17-148"><a href="#cb17-148"></a></span>
+<span id="cb17-149"><a href="#cb17-149"></a>Before we can work with our data, we first load packages of functions for use in the analysis. For example, we will load the tidyverse package, which automatically loads several packages that are useful for data wrangling and analysis.</span>
+<span id="cb17-150"><a href="#cb17-150"></a></span>
+<span id="cb17-151"><a href="#cb17-151"></a>Copy the code below and paste it into the blank file <span class="in">`chapter_02a.R`</span> that you created earlier. This adds these lines of code to your script, but you need to _run_ that code for it to do anything. To run these three lines of code, you should highlight the lines of code you want to run and then either:</span>
+<span id="cb17-152"><a href="#cb17-152"></a></span>
+<span id="cb17-153"><a href="#cb17-153"></a><span class="ss">* </span>click the <span class="in">`Run`</span> button at the top of the R script panel, or</span>
+<span id="cb17-154"><a href="#cb17-154"></a><span class="ss">* </span>press <span class="in">`Ctrl+Enter`</span> (Windows) or <span class="in">`Command+Return`</span> (Mac) on your keyboard.</span>
+<span id="cb17-155"><a href="#cb17-155"></a></span>
+<span id="cb17-156"><a href="#cb17-156"></a>::: {.callout-tip collapse="true"}</span>
+<span id="cb17-157"><a href="#cb17-157"></a><span class="fu">#### What are the `Command`, `Ctrl`, `Enter` or `Return` keys?</span></span>
+<span id="cb17-158"><a href="#cb17-158"></a></span>
+<span id="cb17-159"><a href="#cb17-159"></a>The <span class="in">`Enter`</span> or <span class="in">`Return`</span> key on your keyboard may be marked <span class="dv">&amp;#9166;</span>. On Mac keyboards, the <span class="in">`Command`</span> key is sometimes marked <span class="dv">&amp;#8984;</span>.</span>
+<span id="cb17-160"><a href="#cb17-160"></a>:::</span>
+<span id="cb17-161"><a href="#cb17-161"></a></span>
+<span id="cb17-162"><a href="#cb17-162"></a>If you just want to run one line of code, you don't need to highlight the whole line to run it. Just place the cursor anywhere on that line, then either click the <span class="in">`Run`</span> button or press <span class="in">`Ctrl+Enter`</span>/<span class="in">`Command+Return`</span>.</span>
+<span id="cb17-163"><a href="#cb17-163"></a></span>
+<span id="cb17-164"><a href="#cb17-164"></a>Highlight all three lines of code and press <span class="in">`Run`</span>. You will see that nothing happens in the R script, but several messages appear in the R Console. You will also see that the three lines of code have been copied into the Console just above those messages. This means you can use the R Console as a record of all the code you have run in RStudio.</span>
+<span id="cb17-165"><a href="#cb17-165"></a></span>
+<span id="cb17-166"><a href="#cb17-166"></a></span>
+<span id="cb17-167"><a href="#cb17-167"></a>::: {.callout-warning}</span>
+<span id="cb17-168"><a href="#cb17-168"></a><span class="fu">#### Package loading messages</span></span>
+<span id="cb17-169"><a href="#cb17-169"></a></span>
+<span id="cb17-170"><a href="#cb17-170"></a>Loading packages will sometimes produce various messages. _For now_, you can safely ignore these messages. It is not always safe to ignore R messages -- we will cover how you should deal with messages, warnings and errors in a later chapter.</span>
+<span id="cb17-171"><a href="#cb17-171"></a>:::</span>
+<span id="cb17-172"><a href="#cb17-172"></a></span>
+<span id="cb17-175"><a href="#cb17-175"></a><span class="in">```{r}</span></span>
+<span id="cb17-176"><a href="#cb17-176"></a><span class="co">#| eval: false</span></span>
+<span id="cb17-177"><a href="#cb17-177"></a><span class="co">#| filename: "chapter_02a.R"</span></span>
+<span id="cb17-178"><a href="#cb17-178"></a></span>
+<span id="cb17-179"><a href="#cb17-179"></a><span class="co"># Load the R packages we need to analyse this data</span></span>
+<span id="cb17-180"><a href="#cb17-180"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, sf, tidyverse)</span>
+<span id="cb17-181"><a href="#cb17-181"></a><span class="in">```</span></span>
+<span id="cb17-182"><a href="#cb17-182"></a></span>
+<span id="cb17-185"><a href="#cb17-185"></a><span class="in">```{r}</span></span>
+<span id="cb17-186"><a href="#cb17-186"></a><span class="co">#| echo: false</span></span>
+<span id="cb17-187"><a href="#cb17-187"></a></span>
+<span id="cb17-188"><a href="#cb17-188"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, sf, tidyverse)</span>
+<span id="cb17-189"><a href="#cb17-189"></a><span class="in">```</span></span>
+<span id="cb17-190"><a href="#cb17-190"></a></span>
+<span id="cb17-191"><a href="#cb17-191"></a>::: {.callout-tip collapse="true"}</span>
+<span id="cb17-192"><a href="#cb17-192"></a></span>
+<span id="cb17-193"><a href="#cb17-193"></a><span class="fu">#### What do these messages mean?</span></span>
+<span id="cb17-194"><a href="#cb17-194"></a></span>
+<span id="cb17-195"><a href="#cb17-195"></a>For now you don't need to worry about these messages, but if you really want to</span>
+<span id="cb17-196"><a href="#cb17-196"></a>know what they mean …</span>
+<span id="cb17-197"><a href="#cb17-197"></a></span>
+<span id="cb17-198"><a href="#cb17-198"></a>Some R packages make use of other apps and utilities on your computer. For</span>
+<span id="cb17-199"><a href="#cb17-199"></a>example, the <span class="in">`sf`</span> package makes use of a piece of software call GDAL that is </span>
+<span id="cb17-200"><a href="#cb17-200"></a>used for managing spatial data. So that you know which version of GDAL is being</span>
+<span id="cb17-201"><a href="#cb17-201"></a>used, <span class="in">`sf`</span> prints a message telling you.</span>
+<span id="cb17-202"><a href="#cb17-202"></a></span>
+<span id="cb17-203"><a href="#cb17-203"></a>The <span class="in">`tidyverse`</span> package itself loads several packages that are commonly used </span>
+<span id="cb17-204"><a href="#cb17-204"></a>together for analysing data. When you load <span class="in">`tidyverse`</span>, it will print a message</span>
+<span id="cb17-205"><a href="#cb17-205"></a>telling you which packages it has loaded, along with the version number for each</span>
+<span id="cb17-206"><a href="#cb17-206"></a>package. It also prints a message saying if any functions from the <span class="in">`tidyverse`</span></span>
+<span id="cb17-207"><a href="#cb17-207"></a>packages have replaced ("masked") any functions from packages that were </span>
+<span id="cb17-208"><a href="#cb17-208"></a>previously loaded.</span>
+<span id="cb17-209"><a href="#cb17-209"></a></span>
+<span id="cb17-210"><a href="#cb17-210"></a>In general, R packages use start-up messages to remind you of information that </span>
+<span id="cb17-211"><a href="#cb17-211"></a>is not likely to be critical to your work, but which it might be useful to know</span>
+<span id="cb17-212"><a href="#cb17-212"></a>at some point in the future.</span>
+<span id="cb17-213"><a href="#cb17-213"></a></span>
+<span id="cb17-214"><a href="#cb17-214"></a>:::</span>
+<span id="cb17-215"><a href="#cb17-215"></a></span>
+<span id="cb17-216"><a href="#cb17-216"></a></span>
+<span id="cb17-217"><a href="#cb17-217"></a>::: {.callout-quiz .callout}</span>
+<span id="cb17-218"><a href="#cb17-218"></a><span class="fu">#### Loading packages</span></span>
+<span id="cb17-219"><a href="#cb17-219"></a></span>
+<span id="cb17-220"><a href="#cb17-220"></a><span class="in">```{r loading_packages_quiz}</span></span>
+<span id="cb17-221"><a href="#cb17-221"></a><span class="in">#| echo: false</span></span>
+<span id="cb17-222"><a href="#cb17-222"></a></span>
+<span id="cb17-223"><a href="#cb17-223"></a><span class="in">loading_packages_quiz1 &lt;- c(</span></span>
+<span id="cb17-224"><a href="#cb17-224"></a><span class="in">  "Press Alt+F4.",</span></span>
+<span id="cb17-225"><a href="#cb17-225"></a><span class="in">  answer = "Place the cursor anywhere on the line and press Ctrl+Enter.",</span></span>
+<span id="cb17-226"><a href="#cb17-226"></a><span class="in">  "Double-click the line and press Run.",</span></span>
+<span id="cb17-227"><a href="#cb17-227"></a><span class="in">  "Click on the Console and press Shift+Enter."</span></span>
+<span id="cb17-228"><a href="#cb17-228"></a><span class="in">)</span></span>
+<span id="cb17-229"><a href="#cb17-229"></a></span>
+<span id="cb17-230"><a href="#cb17-230"></a><span class="in">loading_packages_quiz2 &lt;- c("ggspatial", answer = "tidyverse", "pacman", "sf")</span></span>
+<span id="cb17-231"><a href="#cb17-231"></a><span class="in">```</span></span>
+<span id="cb17-232"><a href="#cb17-232"></a></span>
+<span id="cb17-233"><a href="#cb17-233"></a></span>
+<span id="cb17-234"><a href="#cb17-234"></a>**How do you run a line of code in RStudio for Windows without highlighting the whole line?**</span>
+<span id="cb17-235"><a href="#cb17-235"></a></span>
+<span id="cb17-236"><a href="#cb17-236"></a><span class="in">`r webexercises::longmcq(loading_packages_quiz1)`</span></span>
+<span id="cb17-237"><a href="#cb17-237"></a></span>
+<span id="cb17-238"><a href="#cb17-238"></a></span>
+<span id="cb17-239"><a href="#cb17-239"></a>**Which package do we load to simultaneously load common packages used for data wrangling and analysis?**</span>
+<span id="cb17-240"><a href="#cb17-240"></a></span>
+<span id="cb17-241"><a href="#cb17-241"></a><span class="in">`r webexercises::longmcq(loading_packages_quiz2)`</span></span>
+<span id="cb17-242"><a href="#cb17-242"></a></span>
+<span id="cb17-243"><a href="#cb17-243"></a>:::</span>
+<span id="cb17-244"><a href="#cb17-244"></a></span>
+<span id="cb17-245"><a href="#cb17-245"></a></span>
+<span id="cb17-246"><a href="#cb17-246"></a><span class="fu">### Loading data</span></span>
+<span id="cb17-247"><a href="#cb17-247"></a></span>
+<span id="cb17-248"><a href="#cb17-248"></a>The first task in creating any crime map is to obtain the crime and other data necessary. In many cases preparing the data for analysis and mapping will be a substantial task, but in this case we are going to use some pre-prepared crime data together with a pre-drawn street map (which we will ask R to download automatically when it draws the final map).</span>
+<span id="cb17-249"><a href="#cb17-249"></a></span>
+<span id="cb17-250"><a href="#cb17-250"></a>The data we will use will be records of homicides in the Downtown neighbourhood of Atlanta, Georgia, in 2019. We can load the homicide data using the <span class="in">`read_csv()`</span> function. A _function_ in R is a piece of code that performs an action. You can think of functions as being like verbs (i.e. 'doing words'), which is why the names of functions are often verbs such as <span class="in">`filter()`</span>, <span class="in">`select()`</span>, etc. The <span class="in">`read_csv()`</span> function loads data from a file and prints a message showing the name of each column in the data and the type of data (number, text etc.) in each column. Again, you can ignore this message for now.</span>
+<span id="cb17-251"><a href="#cb17-251"></a></span>
+<span id="cb17-252"><a href="#cb17-252"></a>::: {.callout-important}</span>
+<span id="cb17-253"><a href="#cb17-253"></a></span>
+<span id="cb17-254"><a href="#cb17-254"></a><span class="fu">#### Multiple functions with similar names</span></span>
+<span id="cb17-255"><a href="#cb17-255"></a></span>
+<span id="cb17-256"><a href="#cb17-256"></a>Sometimes R has several functions that have similar names but do different things. That means it is very important to pay attention to which function you need in any particular set of circumstances. In this case we are using the <span class="in">`read_csv()`</span> function, which does a slightly different thing from the similarly named <span class="in">`read.csv()`</span> function (note the <span class="in">`.`</span> instead of the <span class="in">`_`</span>). It is usually better to use <span class="in">`read_csv()`</span> because it produces a type of object (called a tibble) that is  easier to work with than the object (called a data frame) that is produced by <span class="in">`read.csv()`</span>. For that reason, we will always use <span class="in">`read_csv()`</span> in this course.</span>
+<span id="cb17-257"><a href="#cb17-257"></a></span>
+<span id="cb17-258"><a href="#cb17-258"></a>:::</span>
+<span id="cb17-259"><a href="#cb17-259"></a></span>
+<span id="cb17-260"><a href="#cb17-260"></a></span>
+<span id="cb17-261"><a href="#cb17-261"></a>Copy these lines of code into your R script file, then run the line containing the <span class="in">`read_csv()`</span> function by clicking anywhere on that line and pressing <span class="in">`Ctrl+Enter`</span> (Windows) or <span class="in">`Command+Return`</span> (Mac) on your keyboard.</span>
+<span id="cb17-262"><a href="#cb17-262"></a></span>
+<span id="cb17-265"><a href="#cb17-265"></a><span class="in">```{r}</span></span>
+<span id="cb17-266"><a href="#cb17-266"></a><span class="co">#| filename: "chapter_02a.R"</span></span>
+<span id="cb17-267"><a href="#cb17-267"></a></span>
+<span id="cb17-268"><a href="#cb17-268"></a><span class="co"># Download the data directly from a URL and store it as an object</span></span>
+<span id="cb17-269"><a href="#cb17-269"></a>homicides <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv"</span>)</span>
+<span id="cb17-270"><a href="#cb17-270"></a><span class="in">```</span></span>
+<span id="cb17-271"><a href="#cb17-271"></a></span>
+<span id="cb17-272"><a href="#cb17-272"></a></span>
+<span id="cb17-273"><a href="#cb17-273"></a>::: {.callout-tip collapse="true"}</span>
+<span id="cb17-274"><a href="#cb17-274"></a></span>
+<span id="cb17-275"><a href="#cb17-275"></a><span class="fu">#### What does this output mean?</span></span>
+<span id="cb17-276"><a href="#cb17-276"></a></span>
+<span id="cb17-277"><a href="#cb17-277"></a>When <span class="in">`read_csv()`</span> loads data from a file, it produces a short summary of the data and prints that in the R Console. Looking at this message, you can see that the data contains <span class="in">`r nrow(homicides)`</span> rows and <span class="in">`r ncol(homicides)`</span> columns of values in each row. You can also see the names of the columns: <span class="in">`r knitr::combine_words(map_chr(names(homicides), \(x) str_glue("'{x}'")), oxford_comma = FALSE)`</span>.</span>
+<span id="cb17-278"><a href="#cb17-278"></a>:::</span>
+<span id="cb17-279"><a href="#cb17-279"></a></span>
+<span id="cb17-280"><a href="#cb17-280"></a></span>
+<span id="cb17-281"><a href="#cb17-281"></a>We have stored the results of the <span class="in">`read_csv()`</span> function in an R *object* called <span class="in">`homicides`</span>. An object in R is anything that stores any type of data. There are many types of objects, but for this chapter we don't need to explore these in any more detail. All you need to remember for now is that objects store data (which is why their names are often nouns) and functions do things.</span>
+<span id="cb17-282"><a href="#cb17-282"></a></span>
+<span id="cb17-283"><a href="#cb17-283"></a></span>
+<span id="cb17-284"><a href="#cb17-284"></a></span>
+<span id="cb17-285"><a href="#cb17-285"></a><span class="fu">### Viewing the data</span></span>
+<span id="cb17-286"><a href="#cb17-286"></a></span>
+<span id="cb17-287"><a href="#cb17-287"></a>To check the data has been loaded correctly, we can view the loaded data using the <span class="in">`head()`</span> function. By default, <span class="in">`head()`</span> prints the first six rows of the data stored in an object. Copy this code into the R Console and press <span class="in">`Enter`</span> or <span class="in">`Return`</span> on your keyboard.</span>
+<span id="cb17-288"><a href="#cb17-288"></a></span>
+<span id="cb17-289"><a href="#cb17-289"></a></span>
+<span id="cb17-290"><a href="#cb17-290"></a><span class="in">```{r exercise3}</span></span>
+<span id="cb17-291"><a href="#cb17-291"></a><span class="in">#| filename: "R Console"</span></span>
+<span id="cb17-292"><a href="#cb17-292"></a></span>
+<span id="cb17-293"><a href="#cb17-293"></a><span class="in">head(homicides)</span></span>
+<span id="cb17-294"><a href="#cb17-294"></a><span class="in">```</span></span>
+<span id="cb17-295"><a href="#cb17-295"></a></span>
+<span id="cb17-296"><a href="#cb17-296"></a></span>
+<span id="cb17-297"><a href="#cb17-297"></a>The data contain four columns: a unique identifier for a homicide, a label describing when and where that homicide occurred, and the longitude and latitude of the homicide location. We can use this data to plot the homicides on a map.</span>
+<span id="cb17-298"><a href="#cb17-298"></a></span>
+<span id="cb17-299"><a href="#cb17-299"></a></span>
+<span id="cb17-300"><a href="#cb17-300"></a>::: {.callout-important}</span>
+<span id="cb17-301"><a href="#cb17-301"></a><span class="fu">### Quoted and unquoted values</span></span>
+<span id="cb17-302"><a href="#cb17-302"></a></span>
+<span id="cb17-303"><a href="#cb17-303"></a>**In the code `head(homicides)`, there are no quote marks around the word `homicides`.**</span>
+<span id="cb17-304"><a href="#cb17-304"></a></span>
+<span id="cb17-305"><a href="#cb17-305"></a>Almost all programming languages will interpret words differently depending on whether they have quotes around them or not. In this case, if you type the code <span class="in">`head(homicides)`</span> then R will print the first few rows of the data stored in the <span class="in">`homicides`</span> object. </span>
+<span id="cb17-306"><a href="#cb17-306"></a></span>
+<span id="cb17-307"><a href="#cb17-307"></a>On the other hand, if you type the code <span class="in">`head("homicides")`</span> or <span class="in">`head('homicides')`</span>, R will interpret this as an instruction to print the first few elements of the literal text 'homicides'. Since the text 'homicides' contains only one element (more about that later), <span class="in">`head("homicides")`</span> will just print the word 'homicides'.</span>
+<span id="cb17-308"><a href="#cb17-308"></a></span>
+<span id="cb17-309"><a href="#cb17-309"></a>:::</span>
+<span id="cb17-310"><a href="#cb17-310"></a></span>
+<span id="cb17-311"><a href="#cb17-311"></a></span>
+<span id="cb17-312"><a href="#cb17-312"></a>::: {.callout-quiz .callout}</span>
+<span id="cb17-313"><a href="#cb17-313"></a><span class="fu">#### Loading data</span></span>
+<span id="cb17-314"><a href="#cb17-314"></a></span>
+<span id="cb17-315"><a href="#cb17-315"></a><span class="in">```{r loading-data-quiz}</span></span>
+<span id="cb17-316"><a href="#cb17-316"></a><span class="in">#| echo: false</span></span>
+<span id="cb17-317"><a href="#cb17-317"></a></span>
+<span id="cb17-318"><a href="#cb17-318"></a><span class="in">loading_data_quiz1 &lt;- c(</span></span>
+<span id="cb17-319"><a href="#cb17-319"></a><span class="in">  "`read_csv()` handles larger datasets.",</span></span>
+<span id="cb17-320"><a href="#cb17-320"></a><span class="in">  answer = "`read_csv()` produces a tibble instead of a data frame.",</span></span>
+<span id="cb17-321"><a href="#cb17-321"></a><span class="in">  "`read.csv()` cannot process numeric data.",</span></span>
+<span id="cb17-322"><a href="#cb17-322"></a><span class="in">  "`read_csv()` is the only function compatible with RStudio."</span></span>
+<span id="cb17-323"><a href="#cb17-323"></a><span class="in">)</span></span>
+<span id="cb17-324"><a href="#cb17-324"></a></span>
+<span id="cb17-325"><a href="#cb17-325"></a><span class="in">loading_data_quiz2 &lt;- c(</span></span>
+<span id="cb17-326"><a href="#cb17-326"></a><span class="in">  "A plot of all homicides on a map.",</span></span>
+<span id="cb17-327"><a href="#cb17-327"></a><span class="in">  "A summary of the entire `homicides` dataset.",</span></span>
+<span id="cb17-328"><a href="#cb17-328"></a><span class="in">  answer = "The first six rows of the `homicides` dataset.",</span></span>
+<span id="cb17-329"><a href="#cb17-329"></a><span class="in">  "An error message about missing data."</span></span>
+<span id="cb17-330"><a href="#cb17-330"></a><span class="in">)</span></span>
+<span id="cb17-331"><a href="#cb17-331"></a><span class="in">```</span></span>
+<span id="cb17-332"><a href="#cb17-332"></a></span>
+<span id="cb17-333"><a href="#cb17-333"></a></span>
+<span id="cb17-334"><a href="#cb17-334"></a>**Why is the `read_csv()` function preferred over `read.csv()` in this chapter?**</span>
+<span id="cb17-335"><a href="#cb17-335"></a></span>
+<span id="cb17-336"><a href="#cb17-336"></a><span class="in">`r webexercises::longmcq(loading_data_quiz1)`</span></span>
+<span id="cb17-337"><a href="#cb17-337"></a></span>
+<span id="cb17-338"><a href="#cb17-338"></a></span>
+<span id="cb17-339"><a href="#cb17-339"></a>**What is the output of the following R code: head(homicides)?**</span>
+<span id="cb17-340"><a href="#cb17-340"></a></span>
+<span id="cb17-341"><a href="#cb17-341"></a><span class="in">`r webexercises::longmcq(loading_data_quiz2)`</span></span>
+<span id="cb17-342"><a href="#cb17-342"></a></span>
+<span id="cb17-343"><a href="#cb17-343"></a></span>
+<span id="cb17-344"><a href="#cb17-344"></a>:::</span>
+<span id="cb17-345"><a href="#cb17-345"></a></span>
+<span id="cb17-346"><a href="#cb17-346"></a></span>
+<span id="cb17-347"><a href="#cb17-347"></a><span class="fu">## Processing the data</span></span>
+<span id="cb17-348"><a href="#cb17-348"></a></span>
+<span id="cb17-349"><a href="#cb17-349"></a>Before we can plot the data on a map, we have to complete some pre-processing </span>
+<span id="cb17-350"><a href="#cb17-350"></a>steps. Having to process data before being able to analyse or visualise it is </span>
+<span id="cb17-351"><a href="#cb17-351"></a>common in all types of data analysis, but spatial analysis often involves</span>
+<span id="cb17-352"><a href="#cb17-352"></a>additional processing that takes account of the special features of spatial</span>
+<span id="cb17-353"><a href="#cb17-353"></a>data.</span>
+<span id="cb17-354"><a href="#cb17-354"></a></span>
+<span id="cb17-355"><a href="#cb17-355"></a></span>
+<span id="cb17-356"><a href="#cb17-356"></a></span>
+<span id="cb17-357"><a href="#cb17-357"></a><span class="fu">### Converting the data into a spatial format</span></span>
+<span id="cb17-358"><a href="#cb17-358"></a></span>
+<span id="cb17-359"><a href="#cb17-359"></a>Two data-processing tasks are needed to produce this map. The first is to convert the data into a *simple features* or SF object, which is a special type of R object that can be used by functions that process spatial data. We will cover the details of the <span class="in">`st_as_sf()`</span> function that converts our data into into an SF object later on. </span>
+<span id="cb17-360"><a href="#cb17-360"></a></span>
+<span id="cb17-361"><a href="#cb17-361"></a>Copy this code into the <span class="in">`chapter_02a.R`</span> file, then select these lines of code and click the <span class="in">`Run`</span> button or press <span class="in">`Ctrl+Enter`</span>/<span class="in">`Command+Return`</span>.</span>
+<span id="cb17-362"><a href="#cb17-362"></a></span>
+<span id="cb17-363"><a href="#cb17-363"></a></span>
+<span id="cb17-366"><a href="#cb17-366"></a><span class="in">```{r}</span></span>
+<span id="cb17-367"><a href="#cb17-367"></a><span class="co">#| filename: "chapter_02a.R"</span></span>
+<span id="cb17-368"><a href="#cb17-368"></a></span>
+<span id="cb17-369"><a href="#cb17-369"></a><span class="co"># Convert the data to a simple features object, which we can use in functions </span></span>
+<span id="cb17-370"><a href="#cb17-370"></a><span class="co"># that work on spatial data</span></span>
+<span id="cb17-371"><a href="#cb17-371"></a>homicides_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb17-372"><a href="#cb17-372"></a>  homicides, </span>
+<span id="cb17-373"><a href="#cb17-373"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), </span>
+<span id="cb17-374"><a href="#cb17-374"></a>  <span class="at">crs =</span> <span class="st">"EPSG:4326"</span></span>
+<span id="cb17-375"><a href="#cb17-375"></a>)</span>
+<span id="cb17-376"><a href="#cb17-376"></a><span class="in">```</span></span>
+<span id="cb17-377"><a href="#cb17-377"></a></span>
+<span id="cb17-378"><a href="#cb17-378"></a>When you run this code, it looks like nothing happened. This is because the results of the code are stored in the <span class="in">`homicides_sf`</span> object. We can check the contents of <span class="in">`homicides_sf`</span> in the R Console as before:</span>
+<span id="cb17-379"><a href="#cb17-379"></a></span>
+<span id="cb17-382"><a href="#cb17-382"></a><span class="in">```{r}</span></span>
+<span id="cb17-383"><a href="#cb17-383"></a><span class="co">#| filename: "R Console"</span></span>
+<span id="cb17-384"><a href="#cb17-384"></a></span>
+<span id="cb17-385"><a href="#cb17-385"></a><span class="fu">head</span>(homicides_sf)</span>
+<span id="cb17-386"><a href="#cb17-386"></a><span class="in">```</span></span>
+<span id="cb17-387"><a href="#cb17-387"></a></span>
+<span id="cb17-388"><a href="#cb17-388"></a>The data looks identical to before running the function <span class="in">`st_as_sf()`</span>, except that the two columns called <span class="in">`longitude`</span> and <span class="in">`latitude`</span> have disappeared and there is now an extra column called <span class="in">`geometry`</span>. The <span class="in">`geometry`</span> column is important because lots of functions in R can recognise that the <span class="in">`geometry`</span> column represents a location on the surface of the Earth that can be used to analyse and map data in space.</span>
+<span id="cb17-389"><a href="#cb17-389"></a></span>
+<span id="cb17-390"><a href="#cb17-390"></a></span>
+<span id="cb17-391"><a href="#cb17-391"></a></span>
+<span id="cb17-392"><a href="#cb17-392"></a><span class="fu">### Changing the data projection</span></span>
+<span id="cb17-393"><a href="#cb17-393"></a></span>
+<span id="cb17-394"><a href="#cb17-394"></a>The <span class="in">`geometry`</span> column in the <span class="in">`homicides_sf`</span> object represents locations on the surface of the earth using _co-ordinates_ (pairs of numbers). In this case, the co-ordinates are expressed as longitudes and latitudes, but there are lots of other types of co-ordinates (known as _co-ordinate reference systems_). </span>
+<span id="cb17-395"><a href="#cb17-395"></a></span>
+<span id="cb17-396"><a href="#cb17-396"></a>We'll learn more about co-ordinate reference systems in @sec-second-map, but for now it's enough to know that each different system has advantages and disadvantages. To make the homicide locations easier to add to a map, we are going to first _transform_ the co-ordinates from longitudes and latitudes to a co-ordinate reference system that is specifically designed for mapping data for the US state of Georgia.</span>
+<span id="cb17-397"><a href="#cb17-397"></a></span>
+<span id="cb17-398"><a href="#cb17-398"></a>To do this, we will use the <span class="in">`st_transform()`</span> function, together with a code representing the co-ordinate reference system we want to use (you don't need to understand this code at this stage). Copy this code into the <span class="in">`chapter_02a.R`</span> file, click anywhere on the new line of code and press the <span class="in">`Run`</span> button or press <span class="in">`Ctrl+Enter`</span>/<span class="in">`Command+Return`</span>.</span>
+<span id="cb17-399"><a href="#cb17-399"></a></span>
+<span id="cb17-400"><a href="#cb17-400"></a></span>
+<span id="cb17-403"><a href="#cb17-403"></a><span class="in">```{r}</span></span>
+<span id="cb17-404"><a href="#cb17-404"></a><span class="co">#| filename: "chapter_02a.R"</span></span>
+<span id="cb17-405"><a href="#cb17-405"></a></span>
+<span id="cb17-406"><a href="#cb17-406"></a><span class="co"># Transform the data co-ordinate reference system</span></span>
+<span id="cb17-407"><a href="#cb17-407"></a>homicides_sf_trans <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(homicides_sf, <span class="st">"EPSG:26967"</span>)</span>
+<span id="cb17-408"><a href="#cb17-408"></a><span class="in">```</span></span>
+<span id="cb17-409"><a href="#cb17-409"></a></span>
+<span id="cb17-410"><a href="#cb17-410"></a>Once again, we can check what the result looks like in the R Console.</span>
+<span id="cb17-411"><a href="#cb17-411"></a></span>
+<span id="cb17-414"><a href="#cb17-414"></a><span class="in">```{r}</span></span>
+<span id="cb17-415"><a href="#cb17-415"></a><span class="co">#| filename: "R Console"</span></span>
+<span id="cb17-416"><a href="#cb17-416"></a></span>
+<span id="cb17-417"><a href="#cb17-417"></a><span class="fu">head</span>(homicides_sf_trans)</span>
+<span id="cb17-418"><a href="#cb17-418"></a><span class="in">```</span></span>
+<span id="cb17-419"><a href="#cb17-419"></a></span>
+<span id="cb17-420"><a href="#cb17-420"></a>The data looks almost identical, except that the values in the <span class="in">`geometry`</span> column have changed (you don't need to understand yet the details of how these numbers are different). Now that we've completed the data processing, we can go on to produce the map itself.</span>
+<span id="cb17-421"><a href="#cb17-421"></a></span>
+<span id="cb17-422"><a href="#cb17-422"></a></span>
+<span id="cb17-423"><a href="#cb17-423"></a></span>
+<span id="cb17-424"><a href="#cb17-424"></a><span class="fu">## Checking our progress</span></span>
+<span id="cb17-425"><a href="#cb17-425"></a></span>
+<span id="cb17-426"><a href="#cb17-426"></a>At the moment, the file <span class="in">`chapter_02a.R`</span> that you have created should look like this:</span>
+<span id="cb17-427"><a href="#cb17-427"></a></span>
+<span id="cb17-430"><a href="#cb17-430"></a><span class="in">```{r}</span></span>
+<span id="cb17-431"><a href="#cb17-431"></a><span class="co">#| eval: false</span></span>
+<span id="cb17-432"><a href="#cb17-432"></a><span class="co">#| filename: chapter_02a.R</span></span>
+<span id="cb17-433"><a href="#cb17-433"></a></span>
+<span id="cb17-434"><a href="#cb17-434"></a><span class="co"># Load the R packages we need to analyse this data</span></span>
+<span id="cb17-435"><a href="#cb17-435"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, sf, tidyverse)</span>
+<span id="cb17-436"><a href="#cb17-436"></a></span>
+<span id="cb17-437"><a href="#cb17-437"></a><span class="co"># Download the data directly from a URL and store it as an object</span></span>
+<span id="cb17-438"><a href="#cb17-438"></a>homicides <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv"</span>)</span>
+<span id="cb17-439"><a href="#cb17-439"></a></span>
+<span id="cb17-440"><a href="#cb17-440"></a><span class="co"># Convert the data to a simple features object, which we can use in functions </span></span>
+<span id="cb17-441"><a href="#cb17-441"></a><span class="co"># that work on spatial data</span></span>
+<span id="cb17-442"><a href="#cb17-442"></a>homicides_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb17-443"><a href="#cb17-443"></a>  homicides, </span>
+<span id="cb17-444"><a href="#cb17-444"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), </span>
+<span id="cb17-445"><a href="#cb17-445"></a>  <span class="at">crs =</span> <span class="st">"EPSG:4326"</span></span>
+<span id="cb17-446"><a href="#cb17-446"></a>)</span>
+<span id="cb17-447"><a href="#cb17-447"></a></span>
+<span id="cb17-448"><a href="#cb17-448"></a><span class="co"># Transform the data co-ordinate reference system</span></span>
+<span id="cb17-449"><a href="#cb17-449"></a>homicides_sf_trans <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(homicides_sf, <span class="st">"EPSG:26967"</span>)</span>
+<span id="cb17-450"><a href="#cb17-450"></a><span class="in">```</span></span>
+<span id="cb17-451"><a href="#cb17-451"></a></span>
+<span id="cb17-452"><a href="#cb17-452"></a>Note how this code tells a clear story about exactly what you have done. This code is easier to understand because: </span>
+<span id="cb17-453"><a href="#cb17-453"></a></span>
+<span id="cb17-454"><a href="#cb17-454"></a><span class="ss">1. </span>we have left blank lines between each piece of code so that it's easy to see each separate task that is being completed, and</span>
+<span id="cb17-455"><a href="#cb17-455"></a><span class="ss">2. </span>we have used comments (lines of code starting with <span class="in">`# `</span>) to explain what each step does.</span>
+<span id="cb17-456"><a href="#cb17-456"></a></span>
+<span id="cb17-457"><a href="#cb17-457"></a>Before going any further, let's check all of our code has been run successfully. To do this, find the Environment panel in RStudio: if you followed the instructions on setting up RStudio in @sec-adjust-rstudio, you should see Environment below your R script file. Click 'Environment' and RStudio will show you a list of all the objects that you have created since the start of your R session. You should see three objects listed:</span>
+<span id="cb17-458"><a href="#cb17-458"></a></span>
+<span id="cb17-459"><a href="#cb17-459"></a><span class="ss">* </span><span class="in">`homicides`</span>, which should have <span class="in">`r nrow(homicides)`</span> observations (i.e. rows) of <span class="in">`r ncol(homicides)`</span> variables (i.e. columns)</span>
+<span id="cb17-460"><a href="#cb17-460"></a><span class="ss">* </span><span class="in">`homicides_sf`</span>, which should have <span class="in">`r nrow(homicides_sf)`</span> observations of <span class="in">`r ncol(homicides_sf)`</span> variables</span>
+<span id="cb17-461"><a href="#cb17-461"></a><span class="ss">* </span><span class="in">`homicides_sf_trans`</span>, which should have <span class="in">`r nrow(homicides_sf_trans)`</span> observations of <span class="in">`r ncol(homicides_sf_trans)`</span> variables</span>
+<span id="cb17-462"><a href="#cb17-462"></a></span>
+<span id="cb17-463"><a href="#cb17-463"></a>If any of those objects are missing from the list of objects in the Environment panel, you might have forgotten to run the code after pasting it into your script file. If so, you can run that part of the code now by selecting the relevant lines of code and pressing the <span class="in">`Run`</span> button in RStudio or <span class="in">`Ctrl+Enter`</span>/<span class="in">`Command+Return`</span> on your keyboard.</span>
+<span id="cb17-464"><a href="#cb17-464"></a></span>
+<span id="cb17-465"><a href="#cb17-465"></a></span>
+<span id="cb17-466"><a href="#cb17-466"></a>::: {.callout-quiz .callout}</span>
+<span id="cb17-467"><a href="#cb17-467"></a><span class="fu">#### Processing the data</span></span>
+<span id="cb17-468"><a href="#cb17-468"></a></span>
+<span id="cb17-469"><a href="#cb17-469"></a><span class="in">```{r processing-data-quiz}</span></span>
+<span id="cb17-470"><a href="#cb17-470"></a><span class="in">#| echo: false</span></span>
+<span id="cb17-471"><a href="#cb17-471"></a></span>
+<span id="cb17-472"><a href="#cb17-472"></a><span class="in">processing_data_quiz1 &lt;- c(</span></span>
+<span id="cb17-473"><a href="#cb17-473"></a><span class="in">  answer = "Converts non-spatial data into a simple features (SF) object.",</span></span>
+<span id="cb17-474"><a href="#cb17-474"></a><span class="in">  "Analyzes spatial relationships between features.",</span></span>
+<span id="cb17-475"><a href="#cb17-475"></a><span class="in">  "Exports data to a spatial file format.",</span></span>
+<span id="cb17-476"><a href="#cb17-476"></a><span class="in">  "Visualizes data as a map."</span></span>
+<span id="cb17-477"><a href="#cb17-477"></a><span class="in">)</span></span>
+<span id="cb17-478"><a href="#cb17-478"></a></span>
+<span id="cb17-479"><a href="#cb17-479"></a><span class="in">processing_data_quiz2 &lt;- c(</span></span>
+<span id="cb17-480"><a href="#cb17-480"></a><span class="in">  "To make the script executable by others.",</span></span>
+<span id="cb17-481"><a href="#cb17-481"></a><span class="in">  answer = "To explain what each part of the code does.",</span></span>
+<span id="cb17-482"><a href="#cb17-482"></a><span class="in">  "To automatically debug the code.",</span></span>
+<span id="cb17-483"><a href="#cb17-483"></a><span class="in">  "To make the R script run faster."</span></span>
+<span id="cb17-484"><a href="#cb17-484"></a><span class="in">)</span></span>
+<span id="cb17-485"><a href="#cb17-485"></a><span class="in">```</span></span>
+<span id="cb17-486"><a href="#cb17-486"></a></span>
+<span id="cb17-487"><a href="#cb17-487"></a></span>
+<span id="cb17-488"><a href="#cb17-488"></a>**What does the `st_as_sf()` function do?**</span>
+<span id="cb17-489"><a href="#cb17-489"></a></span>
+<span id="cb17-490"><a href="#cb17-490"></a><span class="in">`r webexercises::longmcq(processing_data_quiz1)`</span></span>
+<span id="cb17-491"><a href="#cb17-491"></a></span>
+<span id="cb17-492"><a href="#cb17-492"></a></span>
+<span id="cb17-493"><a href="#cb17-493"></a>**Why is it important to use comments in your R script?**</span>
+<span id="cb17-494"><a href="#cb17-494"></a></span>
+<span id="cb17-495"><a href="#cb17-495"></a><span class="in">`r webexercises::longmcq(processing_data_quiz2)`</span></span>
+<span id="cb17-496"><a href="#cb17-496"></a></span>
+<span id="cb17-497"><a href="#cb17-497"></a></span>
+<span id="cb17-498"><a href="#cb17-498"></a>:::</span>
+<span id="cb17-499"><a href="#cb17-499"></a></span>
+<span id="cb17-500"><a href="#cb17-500"></a></span>
+<span id="cb17-501"><a href="#cb17-501"></a><span class="fu">## Draw the map</span></span>
+<span id="cb17-502"><a href="#cb17-502"></a></span>
+<span id="cb17-503"><a href="#cb17-503"></a>We are now ready to produce our map of homicides in downtown Atlanta. So that people viewing the map will understand where the homicides occurred, we will plot the homicides on top of a _base map_ showing streets, parks and other geographic features obtained from an online web mapping service. </span>
+<span id="cb17-504"><a href="#cb17-504"></a></span>
+<span id="cb17-505"><a href="#cb17-505"></a>The code needed to produce the map looks quite complicated, but we don't need to understand it all at this point -- we will go through this code in @sec-second-map. For now, copy the code into the <span class="in">`chapter_02a.R`</span> file, put the cursor somewhere on the line that includes the function <span class="in">`ggplot()`</span>, then click the <span class="in">`Run`</span> button or <span class="in">`Ctrl+Enter`</span>/<span class="in">`Command+Return`</span> on your keyboard.</span>
+<span id="cb17-506"><a href="#cb17-506"></a></span>
+<span id="cb17-507"><a href="#cb17-507"></a></span>
+<span id="cb17-510"><a href="#cb17-510"></a><span class="in">```{r}</span></span>
+<span id="cb17-511"><a href="#cb17-511"></a><span class="co">#| filename: chapter_02a.R</span></span>
+<span id="cb17-512"><a href="#cb17-512"></a></span>
+<span id="cb17-513"><a href="#cb17-513"></a><span class="co"># Create the map</span></span>
+<span id="cb17-514"><a href="#cb17-514"></a><span class="fu">ggplot</span>(homicides_sf_trans) <span class="sc">+</span> </span>
+<span id="cb17-515"><a href="#cb17-515"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"osm"</span>, <span class="at">zoom =</span> <span class="dv">15</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span> </span>
+<span id="cb17-516"><a href="#cb17-516"></a>  <span class="fu">geom_sf_label</span>(<span class="fu">aes</span>(<span class="at">label =</span> label), <span class="at">size =</span> <span class="fl">2.5</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">vjust =</span> <span class="dv">0</span>) <span class="sc">+</span> </span>
+<span id="cb17-517"><a href="#cb17-517"></a>  <span class="fu">geom_sf</span>(<span class="at">colour =</span> <span class="st">"orangered1"</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span> </span>
+<span id="cb17-518"><a href="#cb17-518"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb17-519"><a href="#cb17-519"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.2</span>)) <span class="sc">+</span></span>
+<span id="cb17-520"><a href="#cb17-520"></a>  <span class="fu">labs</span>(</span>
+<span id="cb17-521"><a href="#cb17-521"></a>    <span class="at">title =</span> <span class="st">"Homicides in Downtown Atlanta, 2019"</span>,</span>
+<span id="cb17-522"><a href="#cb17-522"></a>    <span class="at">caption =</span> <span class="st">"Background map by OpenStreetMap"</span></span>
+<span id="cb17-523"><a href="#cb17-523"></a>  ) <span class="sc">+</span></span>
+<span id="cb17-524"><a href="#cb17-524"></a>  <span class="fu">theme_void</span>()</span>
+<span id="cb17-525"><a href="#cb17-525"></a><span class="in">```</span></span>
+<span id="cb17-526"><a href="#cb17-526"></a></span>
+<span id="cb17-527"><a href="#cb17-527"></a>You can change the appearance of the map by changing various parts of the code above. For example, you could change the colour of the points that mark the homicides by changing the code <span class="in">`colour = "orangered1"`</span> to <span class="in">`colour = "mediumblue"`</span>, or change the base map to a different style by changing the code <span class="in">`type = "osm"`</span> to <span class="in">`type = "cartolight"`</span>. Try some of these out -- after you make each change, press the <span class="in">`Run`</span> button in RStudio or <span class="in">`Ctrl+Enter`</span>/<span class="in">`Command+Return`</span> on your keyboard to see how the map changes.</span>
+<span id="cb17-528"><a href="#cb17-528"></a></span>
+<span id="cb17-529"><a href="#cb17-529"></a></span>
+<span id="cb17-530"><a href="#cb17-530"></a></span>
+<span id="cb17-531"><a href="#cb17-531"></a><span class="fu">## Putting the code together</span></span>
+<span id="cb17-532"><a href="#cb17-532"></a></span>
+<span id="cb17-533"><a href="#cb17-533"></a>Now we have walked through the different parts of the code, we can create a map from scratch in a single block of code. In this example, we will map homicides from in Glenrose Heights neighbourhood of Atlanta, and a different style of base map. Since the area covered by the map is derived from the data itself, the extent of the map will update automatically.</span>
+<span id="cb17-534"><a href="#cb17-534"></a></span>
+<span id="cb17-535"><a href="#cb17-535"></a>Create a new script file in RStudio by clicking <span class="in">`File`</span>, <span class="in">`New File`</span> then <span class="in">`R Script`</span>. Paste the following code into this new file, then save the file as <span class="in">`chapter_02b.R`</span>.</span>
+<span id="cb17-536"><a href="#cb17-536"></a></span>
+<span id="cb17-539"><a href="#cb17-539"></a><span class="in">```{r}</span></span>
+<span id="cb17-540"><a href="#cb17-540"></a><span class="co">#| eval: false</span></span>
+<span id="cb17-541"><a href="#cb17-541"></a><span class="co">#| filename: chapter_02b.R</span></span>
+<span id="cb17-542"><a href="#cb17-542"></a></span>
+<span id="cb17-543"><a href="#cb17-543"></a><span class="co"># Load the R packages we need to analyse this data</span></span>
+<span id="cb17-544"><a href="#cb17-544"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, sf, tidyverse)</span>
+<span id="cb17-545"><a href="#cb17-545"></a></span>
+<span id="cb17-546"><a href="#cb17-546"></a><span class="co"># Download the data directly from a URL and store it as an object</span></span>
+<span id="cb17-547"><a href="#cb17-547"></a>homicides <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/glenrose_heights_homicides.csv"</span>)</span>
+<span id="cb17-548"><a href="#cb17-548"></a></span>
+<span id="cb17-549"><a href="#cb17-549"></a><span class="co"># Convert the data to a simple features object, which we can use in functions </span></span>
+<span id="cb17-550"><a href="#cb17-550"></a><span class="co"># that work on spatial data</span></span>
+<span id="cb17-551"><a href="#cb17-551"></a>homicides_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb17-552"><a href="#cb17-552"></a>  homicides, </span>
+<span id="cb17-553"><a href="#cb17-553"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), </span>
+<span id="cb17-554"><a href="#cb17-554"></a>  <span class="at">crs =</span> <span class="st">"EPSG:4326"</span></span>
+<span id="cb17-555"><a href="#cb17-555"></a>)</span>
+<span id="cb17-556"><a href="#cb17-556"></a></span>
+<span id="cb17-557"><a href="#cb17-557"></a><span class="co"># Transform the data to a co-ordinate reference system for the state of Georgia</span></span>
+<span id="cb17-558"><a href="#cb17-558"></a>homicides_sf_trans <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(homicides_sf, <span class="st">"EPSG:26967"</span>)</span>
+<span id="cb17-559"><a href="#cb17-559"></a></span>
+<span id="cb17-560"><a href="#cb17-560"></a><span class="co"># Plot the map</span></span>
+<span id="cb17-561"><a href="#cb17-561"></a><span class="fu">ggplot</span>(homicides_sf_trans) <span class="sc">+</span> </span>
+<span id="cb17-562"><a href="#cb17-562"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"osm"</span>, <span class="at">zoom =</span> <span class="dv">15</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span> </span>
+<span id="cb17-563"><a href="#cb17-563"></a>  <span class="fu">geom_sf_label</span>(<span class="fu">aes</span>(<span class="at">label =</span> label), <span class="at">size =</span> <span class="fl">2.5</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">vjust =</span> <span class="dv">0</span>) <span class="sc">+</span> </span>
+<span id="cb17-564"><a href="#cb17-564"></a>  <span class="fu">geom_sf</span>(<span class="at">colour =</span> <span class="st">"mediumblue"</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span> </span>
+<span id="cb17-565"><a href="#cb17-565"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">1.5</span>)) <span class="sc">+</span> </span>
+<span id="cb17-566"><a href="#cb17-566"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.2</span>)) <span class="sc">+</span> </span>
+<span id="cb17-567"><a href="#cb17-567"></a>  <span class="fu">labs</span>(</span>
+<span id="cb17-568"><a href="#cb17-568"></a>    <span class="at">title =</span> <span class="st">"Homicides in Glenrose Heights, 2019"</span>,</span>
+<span id="cb17-569"><a href="#cb17-569"></a>    <span class="at">caption =</span> <span class="st">"Background map by OpenStreetMap"</span></span>
+<span id="cb17-570"><a href="#cb17-570"></a>  ) <span class="sc">+</span></span>
+<span id="cb17-571"><a href="#cb17-571"></a>  <span class="fu">theme_void</span>()</span>
+<span id="cb17-572"><a href="#cb17-572"></a><span class="in">```</span></span>
+<span id="cb17-573"><a href="#cb17-573"></a></span>
+<span id="cb17-576"><a href="#cb17-576"></a><span class="in">```{r}</span></span>
+<span id="cb17-577"><a href="#cb17-577"></a><span class="co">#| echo: false</span></span>
+<span id="cb17-578"><a href="#cb17-578"></a></span>
+<span id="cb17-579"><a href="#cb17-579"></a><span class="co"># Download the data directly from a URL and store it as an object</span></span>
+<span id="cb17-580"><a href="#cb17-580"></a>homicides <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/glenrose_heights_homicides.csv"</span>)</span>
+<span id="cb17-581"><a href="#cb17-581"></a></span>
+<span id="cb17-582"><a href="#cb17-582"></a><span class="co"># Convert the data to a simple features object, which we can use in functions </span></span>
+<span id="cb17-583"><a href="#cb17-583"></a><span class="co"># that work on spatial data</span></span>
+<span id="cb17-584"><a href="#cb17-584"></a>homicides_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb17-585"><a href="#cb17-585"></a>  homicides, </span>
+<span id="cb17-586"><a href="#cb17-586"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), </span>
+<span id="cb17-587"><a href="#cb17-587"></a>  <span class="at">crs =</span> <span class="st">"EPSG:4326"</span></span>
+<span id="cb17-588"><a href="#cb17-588"></a>)</span>
+<span id="cb17-589"><a href="#cb17-589"></a></span>
+<span id="cb17-590"><a href="#cb17-590"></a><span class="co"># Transform the data to a co-ordinate reference system for the state of Georgia</span></span>
+<span id="cb17-591"><a href="#cb17-591"></a>homicides_sf_trans <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(homicides_sf, <span class="st">"EPSG:26967"</span>)</span>
+<span id="cb17-592"><a href="#cb17-592"></a></span>
+<span id="cb17-593"><a href="#cb17-593"></a><span class="co"># Plot the map</span></span>
+<span id="cb17-594"><a href="#cb17-594"></a><span class="fu">ggplot</span>(homicides_sf_trans) <span class="sc">+</span> </span>
+<span id="cb17-595"><a href="#cb17-595"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"osm"</span>, <span class="at">zoom =</span> <span class="dv">15</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span> </span>
+<span id="cb17-596"><a href="#cb17-596"></a>  <span class="fu">geom_sf_label</span>(<span class="fu">aes</span>(<span class="at">label =</span> label), <span class="at">size =</span> <span class="fl">2.5</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">vjust =</span> <span class="dv">0</span>) <span class="sc">+</span> </span>
+<span id="cb17-597"><a href="#cb17-597"></a>  <span class="fu">geom_sf</span>(<span class="at">colour =</span> <span class="st">"mediumblue"</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span> </span>
+<span id="cb17-598"><a href="#cb17-598"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">1.5</span>)) <span class="sc">+</span> </span>
+<span id="cb17-599"><a href="#cb17-599"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.2</span>)) <span class="sc">+</span> </span>
+<span id="cb17-600"><a href="#cb17-600"></a>  <span class="fu">labs</span>(</span>
+<span id="cb17-601"><a href="#cb17-601"></a>    <span class="at">title =</span> <span class="st">"Homicides in Glenrose Heights, 2019"</span>,</span>
+<span id="cb17-602"><a href="#cb17-602"></a>    <span class="at">caption =</span> <span class="st">"Background map by OpenStreetMap"</span></span>
+<span id="cb17-603"><a href="#cb17-603"></a>  ) <span class="sc">+</span></span>
+<span id="cb17-604"><a href="#cb17-604"></a>  <span class="fu">theme_void</span>()</span>
+<span id="cb17-605"><a href="#cb17-605"></a><span class="in">```</span></span>
+<span id="cb17-606"><a href="#cb17-606"></a></span>
+<span id="cb17-607"><a href="#cb17-607"></a>When we want to run all the code in a file, it would be tedious to run each chunk of code separately. Instead, we can run all the code in a file in one go by: </span>
+<span id="cb17-608"><a href="#cb17-608"></a></span>
+<span id="cb17-609"><a href="#cb17-609"></a><span class="ss">* </span>clicking the tiny downward arrow next to the <span class="in">`Source`</span> button in the script panel in RStudio (to the right of the <span class="in">`Run`</span> button) then clicking <span class="in">`Source with Echo`</span>, or </span>
+<span id="cb17-610"><a href="#cb17-610"></a><span class="ss">* </span>clicking anywhere in our code and pressing <span class="in">`Shift+Ctrl+Enter`</span> (Windows) or <span class="in">`Shift+Command+Return`</span> (Mac) on the computer keyboard.</span>
+<span id="cb17-611"><a href="#cb17-611"></a></span>
+<span id="cb17-612"><a href="#cb17-612"></a>This runs all the code in our script in one go. You should see some messages appear in the R Console, and the final map appear in the RStudio Plots panel.</span>
+<span id="cb17-613"><a href="#cb17-613"></a></span>
+<span id="cb17-614"><a href="#cb17-614"></a>Save the <span class="in">`chapter_02b.R`</span> file by hitting <span class="in">`Ctrl+S`</span> on Windows or <span class="in">`Command+S`</span> on Mac, then restart R to start a new session by clicking on the <span class="in">`Session`</span> menu and then clicking <span class="in">`Restart R`</span>. This creates a blank canvas for the next chapter.</span>
+<span id="cb17-615"><a href="#cb17-615"></a></span>
+<span id="cb17-616"><a href="#cb17-616"></a></span>
+<span id="cb17-617"><a href="#cb17-617"></a><span class="fu">## In summary</span></span>
+<span id="cb17-618"><a href="#cb17-618"></a></span>
+<span id="cb17-619"><a href="#cb17-619"></a></span>
+<span id="cb17-620"><a href="#cb17-620"></a>**Well done – you have created your first map!**</span>
+<span id="cb17-621"><a href="#cb17-621"></a></span>
+<span id="cb17-622"><a href="#cb17-622"></a>You may not have understood every line of code in this chapter, but we will cover them all in more detail over the rest of this course. By the end of this course, you will be able to write code like this to create many different types of crime map.</span>
+<span id="cb17-623"><a href="#cb17-623"></a></span>
+<span id="cb17-624"><a href="#cb17-624"></a></span>
+<span id="cb17-625"><a href="#cb17-625"></a>In this chapter you have learned how to load data into R, prepare it for use in making a map and then used it to make your first crime map of this course. </span>
+<span id="cb17-626"><a href="#cb17-626"></a></span>
+<span id="cb17-627"><a href="#cb17-627"></a>The map we have produced in this chapter is effective for showing the locations of just a few crimes, but is too limited to show more complicated patterns or larger datasets. In the following chapter, we will learn how to produce more sophisticated maps and spatial analysis. We will also learn how each of the functions that we have used in this chapter work.</span>
+<span id="cb17-628"><a href="#cb17-628"></a></span>
+<span id="cb17-629"><a href="#cb17-629"></a></span>
+<span id="cb17-630"><a href="#cb17-630"></a>::: {.callout-quiz .callout}</span>
+<span id="cb17-631"><a href="#cb17-631"></a></span>
+<span id="cb17-632"><a href="#cb17-632"></a><span class="fu">### Revision questions {.unnumbered}</span></span>
+<span id="cb17-633"><a href="#cb17-633"></a></span>
+<span id="cb17-634"><a href="#cb17-634"></a>Answer these questions to check you have understood the main points covered in this chapter. Write between 50 and 100 words to answer each question.</span>
+<span id="cb17-635"><a href="#cb17-635"></a></span>
+<span id="cb17-636"><a href="#cb17-636"></a><span class="ss">1. </span>Why is it important to differentiate between temporary and permanent code when working in R? Provide an example of each and explain how they are used in creating a crime map.</span>
+<span id="cb17-637"><a href="#cb17-637"></a><span class="ss">2. </span>Explain why it is useful to store spatial data as a simple features (SF) object. What steps are required to convert crime data into an SF object, and why is this conversion necessary?</span>
+<span id="cb17-638"><a href="#cb17-638"></a><span class="ss">3. </span>What are coordinate reference systems (CRS), and why might you need to transform the CRS of spatial data? Describe how this was applied in the chapter to map homicides in Atlanta.</span>
+<span id="cb17-639"><a href="#cb17-639"></a><span class="ss">4. </span>What steps are involved in creating a crime map in R from loading data to visualizing it? Highlight the key functions used and the purpose of each in the process.</span>
+<span id="cb17-640"><a href="#cb17-640"></a></span>
+<span id="cb17-641"><a href="#cb17-641"></a>:::</span>
+</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
 </div> <!-- /content -->
-<footer class="footer"><div class="nav-footer">
+<footer class="footer">
+  <div class="nav-footer">
     <div class="nav-footer-left">
       &nbsp;
     </div>   
     <div class="nav-footer-center">
       <ul class="footer-items list-unstyled">
-<li class="nav-item">
+    <li class="nav-item">
     <a class="nav-link" href="https://creativecommons.org/licenses/by/4.0/">
 <p>This book is available under a Creative Commons Attribution 4.0 International licence</p>
 </a>
   </li>  
 </ul>
-<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
@@ -1049,4 +2262,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </footer>
 
 
+
+
+<script src="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.js" defer="true"></script>
 </body></html>
