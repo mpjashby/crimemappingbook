@@ -353,15 +353,25 @@ quarto book
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">In this chapter</h2>
    
-  <ul class="collapse">
+  <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">12.1</span> Introduction</a></li>
-  <li><a href="#tidying-the-structure-of-data" id="toc-tidying-the-structure-of-data" class="nav-link" data-scroll-target="#tidying-the-structure-of-data"><span class="header-section-number">12.2</span> Tidying the structure of data</a></li>
-  <li><a href="#tidying-the-content-of-cells" id="toc-tidying-the-content-of-cells" class="nav-link" data-scroll-target="#tidying-the-content-of-cells"><span class="header-section-number">12.3</span> Tidying the content of cells</a></li>
+  <li><a href="#tidying-the-structure-of-data" id="toc-tidying-the-structure-of-data" class="nav-link" data-scroll-target="#tidying-the-structure-of-data"><span class="header-section-number">12.2</span> Tidying the structure of data</a>
+  <ul class="collapse">
+  <li><a href="#skipping-unwanted-rows-in-imported-data" id="toc-skipping-unwanted-rows-in-imported-data" class="nav-link" data-scroll-target="#skipping-unwanted-rows-in-imported-data"><span class="header-section-number">12.2.1</span> Skipping unwanted rows in imported data</a></li>
+  <li><a href="#separating-multiple-variables-stored-in-a-single-column" id="toc-separating-multiple-variables-stored-in-a-single-column" class="nav-link" data-scroll-target="#separating-multiple-variables-stored-in-a-single-column"><span class="header-section-number">12.2.2</span> Separating multiple variables stored in a single column</a></li>
+  </ul></li>
+  <li><a href="#tidying-the-content-of-cells" id="toc-tidying-the-content-of-cells" class="nav-link" data-scroll-target="#tidying-the-content-of-cells"><span class="header-section-number">12.3</span> Tidying the content of cells</a>
+  <ul class="collapse">
+  <li><a href="#converting-between-types-of-variable" id="toc-converting-between-types-of-variable" class="nav-link" data-scroll-target="#converting-between-types-of-variable"><span class="header-section-number">12.3.1</span> Converting between types of variable</a></li>
+  <li><a href="#recoding-categorical-variables" id="toc-recoding-categorical-variables" class="nav-link" data-scroll-target="#recoding-categorical-variables"><span class="header-section-number">12.3.2</span> Recoding categorical variables</a></li>
+  <li><a href="#missing-values" id="toc-missing-values" class="nav-link" data-scroll-target="#missing-values"><span class="header-section-number">12.3.3</span> Missing values</a></li>
+  <li><a href="#null-island" id="toc-null-island" class="nav-link" data-scroll-target="#null-island"><span class="header-section-number">12.3.4</span> Null Island</a></li>
+  </ul></li>
   <li><a href="#geocoding-locations" id="toc-geocoding-locations" class="nav-link" data-scroll-target="#geocoding-locations"><span class="header-section-number">12.4</span> Geocoding locations</a></li>
   <li><a href="#conflicts-between-function-names" id="toc-conflicts-between-function-names" class="nav-link" data-scroll-target="#conflicts-between-function-names"><span class="header-section-number">12.5</span> Conflicts between function names</a></li>
   <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="header-section-number">12.6</span> In summary</a></li>
   </ul>
-<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -1037,11 +1047,11 @@ returning NA</code></pre>
 <pre data-code-line-numbers=""><code># A tibble: 5 × 2
   date                value
   &lt;dttm&gt;              &lt;dbl&gt;
-1 2020-01-12 12:46:50  1320
-2 2020-01-16 09:25:57   653
-3 2020-01-04 03:09:11  2068
-4 2020-01-05 01:48:03    -1
-5 2020-01-13 06:55:44   580</code></pre>
+1 2020-01-28 14:35:47  1320
+2 2020-01-05 01:26:09   653
+3 2020-01-20 10:16:23  2068
+4 2020-01-19 23:07:07    -1
+5 2020-01-01 10:11:17   580</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb36" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="co"># Try to calculate the mean value -- no error, but the answer is wrong</span></span>
 <span id="cb36-2"><a href="#cb36-2"></a><span class="co"># `pull()` is used to extract the `value` column from `burglary_values`</span></span>
@@ -1192,23 +1202,23 @@ all geometries</code></pre>
 <p>To run a geocoding service an organisation has to maintain a database of many millions of addresses (which must be constantly updated) and handle addresses in many different formats, so organisations typically charge for these services or limit how many addresses you can geocode for free. Most services also require you to register, even if you are only making few-enough queries that you will not be charged. <code>tidygeocoder</code> supports several geocoding services:</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="amdxtrfhiq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#amdxtrfhiq table {
+<div id="yabpjibjgd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#yabpjibjgd table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#amdxtrfhiq thead, #amdxtrfhiq tbody, #amdxtrfhiq tfoot, #amdxtrfhiq tr, #amdxtrfhiq td, #amdxtrfhiq th {
+#yabpjibjgd thead, #yabpjibjgd tbody, #yabpjibjgd tfoot, #yabpjibjgd tr, #yabpjibjgd td, #yabpjibjgd th {
   border-style: none;
 }
 
-#amdxtrfhiq p {
+#yabpjibjgd p {
   margin: 0;
   padding: 0;
 }
 
-#amdxtrfhiq .gt_table {
+#yabpjibjgd .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1234,12 +1244,12 @@ all geometries</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#amdxtrfhiq .gt_caption {
+#yabpjibjgd .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#amdxtrfhiq .gt_title {
+#yabpjibjgd .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1251,7 +1261,7 @@ all geometries</code></pre>
   border-bottom-width: 0;
 }
 
-#amdxtrfhiq .gt_subtitle {
+#yabpjibjgd .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1263,7 +1273,7 @@ all geometries</code></pre>
   border-top-width: 0;
 }
 
-#amdxtrfhiq .gt_heading {
+#yabpjibjgd .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1275,13 +1285,13 @@ all geometries</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#amdxtrfhiq .gt_bottom_border {
+#yabpjibjgd .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#amdxtrfhiq .gt_col_headings {
+#yabpjibjgd .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1296,7 +1306,7 @@ all geometries</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#amdxtrfhiq .gt_col_heading {
+#yabpjibjgd .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1316,7 +1326,7 @@ all geometries</code></pre>
   overflow-x: hidden;
 }
 
-#amdxtrfhiq .gt_column_spanner_outer {
+#yabpjibjgd .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1328,15 +1338,15 @@ all geometries</code></pre>
   padding-right: 4px;
 }
 
-#amdxtrfhiq .gt_column_spanner_outer:first-child {
+#yabpjibjgd .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#amdxtrfhiq .gt_column_spanner_outer:last-child {
+#yabpjibjgd .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#amdxtrfhiq .gt_column_spanner {
+#yabpjibjgd .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1348,11 +1358,11 @@ all geometries</code></pre>
   width: 100%;
 }
 
-#amdxtrfhiq .gt_spanner_row {
+#yabpjibjgd .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#amdxtrfhiq .gt_group_heading {
+#yabpjibjgd .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1378,7 +1388,7 @@ all geometries</code></pre>
   text-align: left;
 }
 
-#amdxtrfhiq .gt_empty_group_heading {
+#yabpjibjgd .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1393,15 +1403,15 @@ all geometries</code></pre>
   vertical-align: middle;
 }
 
-#amdxtrfhiq .gt_from_md > :first-child {
+#yabpjibjgd .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#amdxtrfhiq .gt_from_md > :last-child {
+#yabpjibjgd .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#amdxtrfhiq .gt_row {
+#yabpjibjgd .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1420,7 +1430,7 @@ all geometries</code></pre>
   overflow-x: hidden;
 }
 
-#amdxtrfhiq .gt_stub {
+#yabpjibjgd .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1433,7 +1443,7 @@ all geometries</code></pre>
   padding-right: 5px;
 }
 
-#amdxtrfhiq .gt_stub_row_group {
+#yabpjibjgd .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1447,15 +1457,15 @@ all geometries</code></pre>
   vertical-align: top;
 }
 
-#amdxtrfhiq .gt_row_group_first td {
+#yabpjibjgd .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#amdxtrfhiq .gt_row_group_first th {
+#yabpjibjgd .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#amdxtrfhiq .gt_summary_row {
+#yabpjibjgd .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1465,16 +1475,16 @@ all geometries</code></pre>
   padding-right: 5px;
 }
 
-#amdxtrfhiq .gt_first_summary_row {
+#yabpjibjgd .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#amdxtrfhiq .gt_first_summary_row.thick {
+#yabpjibjgd .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#amdxtrfhiq .gt_last_summary_row {
+#yabpjibjgd .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1484,7 +1494,7 @@ all geometries</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#amdxtrfhiq .gt_grand_summary_row {
+#yabpjibjgd .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1494,7 +1504,7 @@ all geometries</code></pre>
   padding-right: 5px;
 }
 
-#amdxtrfhiq .gt_first_grand_summary_row {
+#yabpjibjgd .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1504,7 +1514,7 @@ all geometries</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#amdxtrfhiq .gt_last_grand_summary_row_top {
+#yabpjibjgd .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1514,11 +1524,11 @@ all geometries</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#amdxtrfhiq .gt_striped {
+#yabpjibjgd .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#amdxtrfhiq .gt_table_body {
+#yabpjibjgd .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1527,7 +1537,7 @@ all geometries</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#amdxtrfhiq .gt_footnotes {
+#yabpjibjgd .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1541,7 +1551,7 @@ all geometries</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#amdxtrfhiq .gt_footnote {
+#yabpjibjgd .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1550,7 +1560,7 @@ all geometries</code></pre>
   padding-right: 5px;
 }
 
-#amdxtrfhiq .gt_sourcenotes {
+#yabpjibjgd .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1564,7 +1574,7 @@ all geometries</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#amdxtrfhiq .gt_sourcenote {
+#yabpjibjgd .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1572,72 +1582,72 @@ all geometries</code></pre>
   padding-right: 5px;
 }
 
-#amdxtrfhiq .gt_left {
+#yabpjibjgd .gt_left {
   text-align: left;
 }
 
-#amdxtrfhiq .gt_center {
+#yabpjibjgd .gt_center {
   text-align: center;
 }
 
-#amdxtrfhiq .gt_right {
+#yabpjibjgd .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#amdxtrfhiq .gt_font_normal {
+#yabpjibjgd .gt_font_normal {
   font-weight: normal;
 }
 
-#amdxtrfhiq .gt_font_bold {
+#yabpjibjgd .gt_font_bold {
   font-weight: bold;
 }
 
-#amdxtrfhiq .gt_font_italic {
+#yabpjibjgd .gt_font_italic {
   font-style: italic;
 }
 
-#amdxtrfhiq .gt_super {
+#yabpjibjgd .gt_super {
   font-size: 65%;
 }
 
-#amdxtrfhiq .gt_footnote_marks {
+#yabpjibjgd .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#amdxtrfhiq .gt_asterisk {
+#yabpjibjgd .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#amdxtrfhiq .gt_indent_1 {
+#yabpjibjgd .gt_indent_1 {
   text-indent: 5px;
 }
 
-#amdxtrfhiq .gt_indent_2 {
+#yabpjibjgd .gt_indent_2 {
   text-indent: 10px;
 }
 
-#amdxtrfhiq .gt_indent_3 {
+#yabpjibjgd .gt_indent_3 {
   text-indent: 15px;
 }
 
-#amdxtrfhiq .gt_indent_4 {
+#yabpjibjgd .gt_indent_4 {
   text-indent: 20px;
 }
 
-#amdxtrfhiq .gt_indent_5 {
+#yabpjibjgd .gt_indent_5 {
   text-indent: 25px;
 }
 
-#amdxtrfhiq .katex-display {
+#yabpjibjgd .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#amdxtrfhiq div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#yabpjibjgd div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1808,7 +1818,7 @@ all geometries</code></pre>
 <pre data-code-line-numbers=""><code>Passing 8 addresses to the Nominatim single address geocoder</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre data-code-line-numbers=""><code>Query completed in: 8.1 seconds</code></pre>
+<pre data-code-line-numbers=""><code>Query completed in: 8 seconds</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb47" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>addresses_geocoded</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">

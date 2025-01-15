@@ -40,7 +40,7 @@ if (!file.exists(here::here("images/atlanta_downtown_homicides.jpg"))) {
     st_transform("EPSG:26967")
 
   downtown_homicides_map <- ggplot(downtown_homicides) + 
-    annotation_map_tile(type = "osm", zoom = 15, progress = "none") + 
+    annotation_map_tile(type = "osm", zoomin = 0, progress = "none") + 
     geom_sf_label(
       aes(label = label), 
       lineheight = 1, 
@@ -79,9 +79,9 @@ Atlanta in 2019:
 knitr::include_graphics("../images/atlanta_downtown_homicides.jpg")
 ```
 
-To start off with, watch this video that walks through the code needed to make this map. Don't worry if there are things in the video that you don't understand -- the rest of this chapter will explain each line of code in turn.
+<!-- To start off with, watch this video that walks through the code needed to make this map. Don't worry if there are things in the video that you don't understand -- the rest of this chapter will explain each line of code in turn. -->
 
-{{< video https://youtu.be/ipyKc7-ReTs >}}
+<!-- {{< video https://youtu.be/ipyKc7-ReTs >}} -->
 
 
 
@@ -482,7 +482,7 @@ processing_data_quiz2 <- c(
 :::
 
 
-## Draw the map
+## Drawing the map
 
 We are now ready to produce our map of homicides in downtown Atlanta. So that people viewing the map will understand where the homicides occurred, we will plot the homicides on top of a _base map_ showing streets, parks and other geographic features obtained from an online web mapping service. 
 
@@ -494,7 +494,7 @@ The code needed to produce the map looks quite complicated, but we don't need to
 
 # Create the map
 ggplot(homicides_sf_trans) + 
-  annotation_map_tile(type = "osm", zoom = 15, progress = "none") + 
+  annotation_map_tile(type = "osm", zoomin = 0, progress = "none") + 
   geom_sf_label(aes(label = label), size = 2.5, hjust = 1, vjust = 0) + 
   geom_sf(colour = "orangered1", size = 4) + 
   scale_x_continuous(expand = expansion(mult = 0.5)) +
@@ -539,7 +539,7 @@ homicides_sf_trans <- st_transform(homicides_sf, "EPSG:26967")
 
 # Plot the map
 ggplot(homicides_sf_trans) + 
-  annotation_map_tile(type = "osm", zoom = 15, progress = "none") + 
+  annotation_map_tile(type = "osm", zoomin = 0, progress = "none") + 
   geom_sf_label(aes(label = label), size = 2.5, hjust = 1, vjust = 0) + 
   geom_sf(colour = "mediumblue", size = 4) + 
   scale_x_continuous(expand = expansion(mult = 1.5)) + 
@@ -570,7 +570,7 @@ homicides_sf_trans <- st_transform(homicides_sf, "EPSG:26967")
 
 # Plot the map
 ggplot(homicides_sf_trans) + 
-  annotation_map_tile(type = "osm", zoom = 15, progress = "none") + 
+  annotation_map_tile(type = "osm", zoomin = 0, progress = "none") + 
   geom_sf_label(aes(label = label), size = 2.5, hjust = 1, vjust = 0) + 
   geom_sf(colour = "mediumblue", size = 4) + 
   scale_x_continuous(expand = expansion(mult = 1.5)) + 
