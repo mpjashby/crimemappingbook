@@ -31,7 +31,7 @@ A major step in using any data to make decisions or draw conclusions is *data wr
 
 To get started, open RStudio and check that you are working in the Crime Mapping project you created previously. To do this, looking on the top right-hand corner of the RStudio window. If you see the text `Crime Mapping`, all is well. If you see the text `Project: (None)`, click on the downward triangle next to that text and then select the Crime Mapping project -- this will cause RStudio to restart and open your project.
 
-Now create a new R script file by clicking the `File` menu, then `New File` and then `R Script`. A new file will open in the left-hand panel in RStudio. Click `File` then `Save As...` to save this file in the project directory you created when you completed the previous chapter. Save the file as `chapter_03.R`.
+Now create a new R script file by clicking the `File` menu, then `New File` and then `R Script`. A new file will open in the left-hand panel in RStudio. Click `File` then `Save As...` to save this file in the project directory you created when you completed the previous chapter. Save the file as `chapter_03a.R`.
 
 
 ### Functions
@@ -81,9 +81,7 @@ So to install (for example) the package called `tidyverse`, which we will use ex
 install.packages("tidyverse")
 ```
 
-We only have to _install_ a package once for each computer that we will use to 
-run R, although we would have to do it again if we updated to a new version of 
-R. 
+We only have to _install_ a package once for each computer that we will use to run R, although we would have to do it again if we updated to a new version of R. 
 
 
 ::: {.callout-important}
@@ -99,7 +97,7 @@ You should only ever use the `install.packages()` function in the R Console, nev
 Once a package is installed on our computer, we have to _load_ it so that we can use it in our code. We load packages using the `p_load()` function from the [pacman package](https://trinker.github.io/pacman_dev/). So to load the tidyverse package, we run the code:
 
 ```{r}
-#| filename: "chapter_03.R"
+#| filename: "chapter_03a.R"
 
 # Load packages
 pacman::p_load(tidyverse)
@@ -218,11 +216,11 @@ If we were to run this code, the object `one_to_ten` would not actually hold the
 
 Objects come in several different types, with tabular data typically being stored as a *data frame*. The `read_csv()` function actually produces a modern variation on the data frame called (slightly strangely) a *tibble*, which makes use of some advances in how R handles data since the data-frame format was set 20 years ago. Tibbles behave just like data frames almost all of the time (so much so that people working with tibbles often call them data frames) except for a few occasions where they behave in a more-convenient way. We will always use tibbles instead of data frames in this course.
 
-We can use `read_csv()` to load data from `https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv` and store it in an object called `san_fran_rob`. Add this code to the script file `chapter_03.R` and then run that code as you learned about in @sec-loading-packages.
+We can use `read_csv()` to load data from `https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv` and store it in an object called `san_fran_rob`. Add this code to the script file `chapter_03a.R` and then run that code as you learned about in @sec-loading-packages.
 
 
 ```{r}
-#| filename: "chapter_03.R"
+#| filename: "chapter_03a.R"
 
 # Load San Francisco robbery data
 san_fran_rob <- read_csv("https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv")
@@ -257,29 +255,39 @@ head(san_fran_rob)
 
 <a href="https://readxl.tidyverse.org/" title="readxl website"><img src="../images/readxl.png" class="right-side-image"></a>
 
-Loading data from Microsoft Excel files is very similar to loading CSV data,
-with a few important differences. Functions to load Excel data are contained in
-the `readxl` package, which was installed automatically when we installed the
-`tidyverse` package.
+Loading data from Microsoft Excel files is very similar to loading CSV data, with a few important differences. Functions to load Excel data are contained in the `readxl` package.
 
-There are two main things we must do to import Excel data that are not required
-for importing CSV data. The first is that the `readxl` package cannot directly
-load files from a URL, instead only loading files that are present on your 
-computer. To get round this, we will first download an Excel file and store it 
-in a temporary directory (to avoid cluttering up our computers).
+There are two main things we must do to import Excel data that are not required for importing CSV data. The first is that the `readxl` package cannot directly load files from a URL, instead only loading files that are present on your computer. To get round this, we will first download an Excel file and store it in a temporary directory (to avoid cluttering up our computers).
 
-::: {.box .notewell}
+To practice loading data from an Excel file, create a new R script file called `chapter_03b.R` and paste the following code into it, then run the code.
+
+```{r}
+#| filename: "chapter_03b.R"
+
+# Load packages
+pacman::p_load(readxl, tidyverse)
+
+# Specify the name of and location of our temporary file: it does not matter
+# what this file is called or where it is stored, so we use the tempfile()
+# function to create a file in the correct location automatically
+temp_file <- tempfile(fileext = ".xlsx")
+
+# Download the Excel file and store it in the temporary location
+download.file(
+  url = "https://mpjashby.github.io/crimemappingdata/aggravated_assaults.xlsx",
+  destfile = temp_file,
+  mode = "wb"
+)
+```
+
+The `download.file()` function does not produce any output if the file has been successfully downloaded, so you will not see any output when you run this code.
+
+
+::: {.callout-important}
 
 **Using `download.file()` on Windows**
 
-If you are using a Windows computer, you may find that the `download.file()`
-function in the code below does not work as expected. This is because Windows
-handles files in a way that distinguishes between *plain-text* files such as
-`.txt` and `.csv` files and *binary* files, which includes most other file types
-(including compressed files). Since `aggravated_assaults.xlsx` is not a 
-plain-text file, on Windows you need to specify that you want it to be 
-downloaded as a binary file. To do this, add the argument `mode = "wb"` to the
-`download.file()` function so that it reads:
+If you are using a Windows computer, you may find that the `download.file()` function in the code below does not work as expected. This is because Windows handles files in a way that distinguishes between *plain-text* files such as `.txt` and `.csv` files and *binary* files, which includes most other file types (including compressed files). Since Excel files are not plain-text files, on Windows you need to specify that you want them to be downloaded as a binary file. To do this, add the argument `mode = "wb"` to the `download.file()` function so that it reads:
 
 ```r
 download.file(
@@ -289,56 +297,15 @@ download.file(
 )
 ```
 
-If you are using a Mac or a Linux computer then you do not need to worry about
-this.
+If you are using a Mac or a Linux computer then you do not need to worry about this.
 
 :::
 
 
-```{r read-exercise3, exercise=TRUE, exercise.lines=12}
-# Specify the name of and location of our temporary file: it does not matter
-# what this file is called or where it is stored, so we use the tempfile()
-# function to create a file in the correct location automatically
-temp_file <- tempfile(fileext = ".xlsx")
+Now we have downloaded our data, we can load it into R. Since Excel files can contain multiple sheets, we need to specify which sheet we would like to load into a tibble. We can use the `excel_sheets()` function to get a list of sheets in an Excel file:
 
-# Download the Excel file and store it in the temporary location
-download.file(
-  url = "https://mpjashby.github.io/crimemappingdata/aggravated_assaults.xlsx",
-  destfile = temp_file,
-  mode = "wb"
-)
-```
-
-The `download.file()` function does not produce any output if the file has been
-successfully downloaded, so you will not see any output when you run this code.
-
-Now we have downloaded our data, we can load it into R. Since Excel files can 
-contain multiple sheets, we need to specify which sheet we would like to load
-into a tibble. We can use the `excel_sheets()` function to get a list of sheets
-in an Excel file:
-
-```{r read-exercise4-setup}
-#| echo: false
-
-# Load the readxl package
-library(readxl)
-
-# Specify the name of and location of our temporary file: it does not matter
-# what this file is called or where it is stored, so we use the tempfile()
-# function to create a file in the correct location automatically
-temp_file <- tempfile(fileext = ".xlsx")
-
-# Download the Excel file and store it in the temporary location
-download.file(
-  url = "https://mpjashby.github.io/crimemappingdata/aggravated_assaults.xlsx",
-  destfile = temp_file,
-  mode = "wb"
-)
-```
-
-```{r read-exercise4, exercise=TRUE}
-# Load the readxl package
-library(readxl)
+```{r}
+#| filename: "R Console"
 
 # Get a list of sheets in an Excel file
 excel_sheets(temp_file)
@@ -347,24 +314,25 @@ excel_sheets(temp_file)
 We can now load the sheet containing data for Austin and view the first few rows
 of the resulting object:
 
-```{r read-exercise5, exercise=TRUE, exercise.setup="read-exercise4-setup"}
-agg_assault_data <- read_excel(temp_file, sheet = "Austin")
+```{r}
+#| filename: "chapter_03b.R"
 
+agg_assault_data <- read_excel(temp_file, sheet = "Austin")
+```
+
+and, as usual, we can use the `head()` function to look at the data:
+
+```{r}
+#| filename: "R Console"
 head(agg_assault_data)
 ```
 
-Now we have learned how to load our data into an object, we can use other R 
-functions to work with that data in many different ways.
+Now we have learned how to load our data into an object, we can use other R functions to work with that data in many different ways.
 
 
-::: {.box .notewell}
+::: {.callout-important}
 
-Different types of data are loaded into R with different functions, e.g. CSV 
-files are loaded with the `read_csv()` function from the `readr` package and 
-Microsoft Excel files are loaded with the `read_excel()` function from the 
-`readxl` package. You can download a 
-[table of functions for reading data into R](http://books.lesscrime.info/learncrimemapping/appendices/read_functions.html) 
-to remind you of which function to use to load each type of file.
+Different types of data are loaded into R with different functions, e.g. CSV files are loaded with the `read_csv()` function from the `readr` package and Microsoft Excel files are loaded with the `read_excel()` function from the `readxl` package. @sec-load-functions has a list of which function to use to load each type of file.
 
 :::
 
@@ -374,9 +342,7 @@ to remind you of which function to use to load each type of file.
 [Learn more about how to read data into R](https://r4ds.had.co.nz/data-import.html) 
 by reading this chapter of the free online book [R for Data Science](https://r4ds.had.co.nz/).
 
-Excel data can often be messy and the `readxl` package contains various other 
-functions that can be used to deal with this. You can [learn more about how to
-handle messy Excel data in this online tutorial](http://lesscrime.info/post/cleaning-ons-data/).
+Excel data can often be messy and the `readxl` package contains various other functions that can be used to deal with this. You can [learn more about how to handle messy Excel data in this online tutorial](http://lesscrime.info/post/cleaning-ons-data/).
 
 :::
 
@@ -848,7 +814,7 @@ Data wrangling often involves multiple steps. For example, we might want to load
 
 ```{r}
 #| eval: false
-#| filename: "chapter_03.R"
+#| filename: "chapter_03a.R"
 
 # Select only the columns we need
 robbery2 <- select(san_fran_rob, date_time)
@@ -870,11 +836,11 @@ Whenever you write code that (a) consists of several sequential steps, and (b) e
 It may be useful to read the pipe operator as 'and then', since piped code does the first thing *and then* the second thing with the result *and then* the third thing with the 
 result of that, and so on. Piped code (sometimes called a *pipeline*) is a lot like the series of steps in a recipe.
 
-Delete all the code from the file `chapter_03.R`, since we are now going to replace it with a piped version of the same code. This pipeline of code is better because it is shorter than the previous code, is easier to maintain and (once you get used to the pipeline) is easier to understand.
+Delete all the code from the file `chapter_03a.R`, since we are now going to replace it with a piped version of the same code. This pipeline of code is better because it is shorter than the previous code, is easier to maintain and (once you get used to the pipeline) is easier to understand.
 
 ```{r}
 #| eval: false
-#| filename: "chapter_03.R"
+#| filename: "chapter_03a.R"
 
 # Load packages
 pacman::p_load(tidyverse)
@@ -920,7 +886,7 @@ You will still see the `%>%` pipe operator used in lots of R code examples onlin
 :::
 
 
-Save the `chapter_03.R` file, then restart R to start a new session by clicking on the `Session` menu and then clicking `Restart R`. This creates a blank canvas for the next chapter.
+Save the `chapter_03a.R` file, then restart R to start a new session by clicking on the `Session` menu and then clicking `Restart R`. This creates a blank canvas for the next chapter.
 
 
 
