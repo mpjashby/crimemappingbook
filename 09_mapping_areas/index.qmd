@@ -21,53 +21,6 @@ district_pop <- read_csv("https://mpjashby.github.io/crimemappingdata/uttar_prad
 ```
 
 
-```{r}
-#| eval: false
-#| echo: false
-#| include: false
-
-source(here::here("mask_learnr_functions.R"))
-
-
-# Load packages
-library(crsuggest)
-library(ggspatial)
-library(leaflet)
-library(sf)
-library(tidyverse)
-
-
-# Load data --------------------------------------------------------------------
-
-# Mexico City data ----
-cdmx_car_jacking <- read_sf("https://mpjashby.github.io/crimemappingdata/cdmx_car_jacking.gpkg")
-cdmx_alcaldias <- read_sf("https://mpjashby.github.io/crimemappingdata/cdmx_alcaldias.gpkg")
-car_jackings_in_alcaldias <- st_join(cdmx_car_jacking, cdmx_alcaldias)
-#   st_transform(cdmx_car_jacking, "EPSG:31975"),
-#   st_transform(cdmx_alcaldias, "EPSG:31975")
-# )
-car_jacking_counts <- car_jackings_in_alcaldias |> 
-  st_drop_geometry() |> 
-  count(nomgeo, name = "offences")
-borough_counts <- cdmx_alcaldias |> 
-  left_join(car_jacking_counts, by = "nomgeo") |> 
-  replace_na(list(offences = 0))
-
-# Uttar Pradesh data ----
-murders <- read_csv("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_murders.csv")
-districts <- read_sf("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_districts.gpkg")
-district_pop <- read_csv("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_population.csv")
-district_murders <- left_join(
-  districts, 
-  murders, 
-  by = c("district_name" = "district")
-)
-district_murders_pop <- district_murders |> 
-  left_join(district_pop, by = c("district_name" = "district")) |> 
-  mutate(murder_rate = murder / (population / 100000))
-colours_red <- colorNumeric(palette = "Reds", domain = NULL)
-```
-
 
 ## Introduction
 
@@ -309,7 +262,7 @@ By default, `hotspot_count()` produces counts of points in cells in a grid (we s
 #| eval: false
 #| filename: "chapter09a.R"
 
-alcaldia_counts <- hotspot_count(cdmx_car_jacking, grid = cdmx_alcaldias)
+car_jacking_counts <- hotspot_count(cdmx_car_jacking, grid = cdmx_alcaldias)
 ```
 
 Run this code now. When you run it, you will see warnings appear in the R Console:
@@ -333,7 +286,7 @@ Run this code in the R Console:
 ggplot(cdmx_car_jacking) + annotation_map_tile(progress = "none") + geom_sf()
 ```
 
-This map shows that the points in the `cdmx_car_jacking` dataset are located in two parts of the world, which is not what we would expect. Some points appear in Mexico as we would expect, but some appear in the Gulf of Guinea off the coast of West Africa. These points are located on 'Null Island', which we will learn more about in @null-island.
+This map shows that the points in the `cdmx_car_jacking` dataset are located in two parts of the world, which is not what we would expect. Some points appear in Mexico as we would expect, but some appear in the Gulf of Guinea off the coast of West Africa. These points are located on 'Null Island', which we will learn more about in @sec-null-island.
 
 For now, we can make a judgement that since only a small proportion of points are outside the boundary of Mexico City (`r nrow(cdmx_car_jacking) - sum(pull(car_jacking_counts, "n"))` out of `r nrow(cdmx_car_jacking)`, or `r scales::percent(1 - (sum(pull(car_jacking_counts, "n")) / nrow(cdmx_car_jacking)))`), they are unlikely to substantially affect the overall patterns of car jacking we are interested in. This means we can safely continue, ignoring the rows in the data that have locations of outside Mexico City.
 
@@ -501,7 +454,7 @@ ggplot(car_jacking_counts) +
   theme_void()
 ```
 
-We could build on this map in several ways. For example, in @calculating-rates we will learn how to show crime _rates_ on a map, as an alternative to crime counts. But in the next section, we will learn how to make interactive crime maps.
+We could build on this map in several ways. For example, in @sec-calculating-rates we will learn how to show crime _rates_ on a map, as an alternative to crime counts. But in the next section, we will learn how to make interactive crime maps.
 
 
 
@@ -536,6 +489,24 @@ districts <- read_sf("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_
 ```
 
 
+```{r}
+#| eval: false
+#| filename: "chapter09b.R"
+
+# This file creates an interactive map of counts of murders in Uttar Pradesh,
+# India, in 2014
+
+# Load packages
+pacman::p_load(leaflet, sf, tidyverse)
+
+# Load number of murders in each district
+murders <- read_csv("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_murders.csv")
+
+# Load district boundaries
+districts <- read_sf("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_districts.gpkg")
+```
+
+
 You can see from this code that we are loading two datasets:
 
 * a CSV file called `uttar_pradesh_murders.csv` containing counts of murders in each district, and
@@ -549,6 +520,12 @@ To start, let's look at the two datasets in the R Console:
 #| results: hold
 
 head(murders)
+```
+
+
+```{r}
+#| filename: "R Console"
+
 head(districts)
 ```
 
@@ -893,7 +870,7 @@ interactive_maps_quiz3 <- c(
 :::
 
 
-## Calculating crime rates {#calculating-rates}
+## Calculating crime rates {#sec-calculating-rates}
 
 The map of murders in Uttar Pradesh has a major limitation: it counts murders at district level, but it does not take into account that the number of people living in each district is different. For example, the district of `r pluck(slice_max(district_pop, order_by = population, n = 1), "district")` has a population of `r scales::number(pluck(slice_max(district_pop, order_by = population, n = 1), "population"), scale = 1/10^6, accuracy = 0.1, suffix = " million")` while the district of `r pluck(slice_min(district_pop, order_by = population, n = 1), "district")` has a population of `r scales::number(pluck(slice_min(district_pop, order_by = population, n = 1), "population"), scale = 1/10^6, accuracy = 0.1, suffix = " million")`. It's therefore not surprising that some districts have more murders than others.
 
