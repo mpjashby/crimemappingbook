@@ -434,6 +434,40 @@ do_something_very_complicated("that", requires, many, arguments,
                               )
 ```
 
+One exception to the 80-character rule is lines of code that contain URLs or file paths. Adding spaces or line breaks in the middle of URLs or file paths would mean the code was unable to find the file, so if a line contains a URL or file path then it can be allowed to extend beyond 80 characters:
+
+
+```r
+# Good
+read_csv("http://www.a-long-web-address.com/with-multiple-parts/that_mean_it_is_longer_than_80_characters.csv")
+
+# Bad
+read_csv("http://www.a-long-web-address.com/with-multiple-parts/
+          that_mean_it_is_longer_than_80_characters.csv")
+```
+
+
+::: {.callout-tip collapse="true"}
+#### Why do spaces in URLs break links?
+
+It's very uncommon for URLs to have spaces or line breaks in them, but both spaces and line breaks are perfectly valid characters in a URL. Because of that, when you use a piece of software (such as a web browser) to access a URL, that software will convert any spaces in the URL into a character code (`` `r URLencode(" ")` ``) representing a space. That means that if you run the R code:
+
+```r
+# Bad
+read_csv("http://www.a-long-web-address.com/with-multiple-parts/
+          that_mean_it_is_longer_than_80_characters.csv")
+```
+
+The URL that R tries to access is actually:
+
+```
+`r URLencode("http://www.a-long-web-address.com/with-multiple-parts/
+          that_mean_it_is_longer_than_80_characters.csv")`
+```
+
+Since no file exists at that URL, adding spaces or line breaks into a URL causes a 'file not found' error.
+:::
+
 
 ::: {.callout-important}
 
