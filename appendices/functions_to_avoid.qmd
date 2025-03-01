@@ -85,13 +85,13 @@ What to do instead
 
 
 
-### Avoid `as.numeric()`
+### Avoid `as.numeric()` for converting character values to numbers
 
 What it does
 : `as.numeric()`, `as.double()` and `as.integer()` convert non-numeric values to numbers.
 
 Why you should avoid it
-: These functions are commonly used either to convert numbers that have been stored as text to numeric values, or to convert [factors](https://r4ds.hadley.nz/factors.html) to numeric values. The problem is that converting factors to numeric values is (to quote the R documentation for `as.numeric()`) "often meaningless as it may not correspond to the factor levels". Meanwhile `as.numeric()` fails to convert numbers stored as text to numeric values if the text also includes non-numbers. For example, `as.numeric("$1")` returns a `` `r as.numeric("$1")` ``.
+: These functions are commonly used either to convert numbers that have been stored as text to numeric values, or to convert [factors](https://r4ds.hadley.nz/factors.html) to numeric values. The problem is that converting factors to numeric values is (to quote the R documentation for `as.numeric()`) "often meaningless as it may not correspond to the factor levels". Meanwhile `as.numeric()` fails to convert numbers stored as text to numeric values if the text also includes non-numbers. For example, `as.numeric("$1")` returns a `` `r as.numeric("$1")` ``. Note, though, that `as.numeric()` is useful for converting non-character values to numbers, e.g. using `as.numeric(TRUE)` to convert `TRUE`/`FALSE` values to `1`/`0`.
 
 What to do instead
 : To extract numbers from text and store them as a numeric value, use the [`parse_number()`](https://readr.tidyverse.org/reference/parse_number.html) function from the readr package. This is able to handle text that includes non-numeric characters, e.g. `parse_number("$1")` returns the value `` `r parse_number("$1")` `` rather than a missing value.

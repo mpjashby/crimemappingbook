@@ -356,7 +356,7 @@ quarto book
   <li><a href="#avoid-rmlist-ls" id="toc-avoid-rmlist-ls" class="nav-link" data-scroll-target="#avoid-rmlist-ls">Avoid <code>rm(list = ls())</code></a></li>
   <li><a href="#avoid-subset" id="toc-avoid-subset" class="nav-link" data-scroll-target="#avoid-subset">Avoid <code>subset()</code></a></li>
   <li><a href="#avoid" id="toc-avoid" class="nav-link" data-scroll-target="#avoid">Avoid <code>%&gt;%</code></a></li>
-  <li><a href="#avoid-as.numeric" id="toc-avoid-as.numeric" class="nav-link" data-scroll-target="#avoid-as.numeric">Avoid <code>as.numeric()</code></a></li>
+  <li><a href="#avoid-as.numeric-for-converting-character-values-to-numbers" id="toc-avoid-as.numeric-for-converting-character-values-to-numbers" class="nav-link" data-scroll-target="#avoid-as.numeric-for-converting-character-values-to-numbers">Avoid <code>as.numeric()</code> for converting character values to numbers</a></li>
   <li><a href="#avoid-ifelse" id="toc-avoid-ifelse" class="nav-link" data-scroll-target="#avoid-ifelse">Avoid <code>ifelse()</code></a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
@@ -487,8 +487,8 @@ In most cases it’s better to use the <code>|&gt;</code> pipe, although the dif
 </dd>
 </dl>
 </section>
-<section id="avoid-as.numeric" class="level3">
-<h3 class="anchored" data-anchor-id="avoid-as.numeric">Avoid <code>as.numeric()</code></h3>
+<section id="avoid-as.numeric-for-converting-character-values-to-numbers" class="level3">
+<h3 class="anchored" data-anchor-id="avoid-as.numeric-for-converting-character-values-to-numbers">Avoid <code>as.numeric()</code> for converting character values to numbers</h3>
 <dl>
 <dt>What it does</dt>
 <dd>
@@ -496,7 +496,7 @@ In most cases it’s better to use the <code>|&gt;</code> pipe, although the dif
 </dd>
 <dt>Why you should avoid it</dt>
 <dd>
-These functions are commonly used either to convert numbers that have been stored as text to numeric values, or to convert <a href="https://r4ds.hadley.nz/factors.html">factors</a> to numeric values. The problem is that converting factors to numeric values is (to quote the R documentation for <code>as.numeric()</code>) “often meaningless as it may not correspond to the factor levels”. Meanwhile <code>as.numeric()</code> fails to convert numbers stored as text to numeric values if the text also includes non-numbers. For example, <code>as.numeric("$1")</code> returns a <code>NA</code>.
+These functions are commonly used either to convert numbers that have been stored as text to numeric values, or to convert <a href="https://r4ds.hadley.nz/factors.html">factors</a> to numeric values. The problem is that converting factors to numeric values is (to quote the R documentation for <code>as.numeric()</code>) “often meaningless as it may not correspond to the factor levels”. Meanwhile <code>as.numeric()</code> fails to convert numbers stored as text to numeric values if the text also includes non-numbers. For example, <code>as.numeric("$1")</code> returns a <code>NA</code>. Note, though, that <code>as.numeric()</code> is useful for converting non-character values to numbers, e.g.&nbsp;using <code>as.numeric(TRUE)</code> to convert <code>TRUE</code>/<code>FALSE</code> values to <code>1</code>/<code>0</code>.
 </dd>
 <dt>What to do instead</dt>
 <dd>
@@ -1300,13 +1300,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-87"><a href="#cb1-87"></a></span>
 <span id="cb1-88"><a href="#cb1-88"></a></span>
 <span id="cb1-89"><a href="#cb1-89"></a></span>
-<span id="cb1-90"><a href="#cb1-90"></a><span class="fu">### Avoid `as.numeric()`</span></span>
+<span id="cb1-90"><a href="#cb1-90"></a><span class="fu">### Avoid `as.numeric()` for converting character values to numbers</span></span>
 <span id="cb1-91"><a href="#cb1-91"></a></span>
 <span id="cb1-92"><a href="#cb1-92"></a>What it does</span>
 <span id="cb1-93"><a href="#cb1-93"></a>: <span class="in">`as.numeric()`</span>, <span class="in">`as.double()`</span> and <span class="in">`as.integer()`</span> convert non-numeric values to numbers.</span>
 <span id="cb1-94"><a href="#cb1-94"></a></span>
 <span id="cb1-95"><a href="#cb1-95"></a>Why you should avoid it</span>
-<span id="cb1-96"><a href="#cb1-96"></a>: These functions are commonly used either to convert numbers that have been stored as text to numeric values, or to convert <span class="co">[</span><span class="ot">factors</span><span class="co">](https://r4ds.hadley.nz/factors.html)</span> to numeric values. The problem is that converting factors to numeric values is (to quote the R documentation for <span class="in">`as.numeric()`</span>) "often meaningless as it may not correspond to the factor levels". Meanwhile <span class="in">`as.numeric()`</span> fails to convert numbers stored as text to numeric values if the text also includes non-numbers. For example, <span class="in">`as.numeric("$1")`</span> returns a `<span class="in">` `</span>r as.numeric("$1")` ``.</span>
+<span id="cb1-96"><a href="#cb1-96"></a>: These functions are commonly used either to convert numbers that have been stored as text to numeric values, or to convert <span class="co">[</span><span class="ot">factors</span><span class="co">](https://r4ds.hadley.nz/factors.html)</span> to numeric values. The problem is that converting factors to numeric values is (to quote the R documentation for <span class="in">`as.numeric()`</span>) "often meaningless as it may not correspond to the factor levels". Meanwhile <span class="in">`as.numeric()`</span> fails to convert numbers stored as text to numeric values if the text also includes non-numbers. For example, <span class="in">`as.numeric("$1")`</span> returns a `<span class="in">` `</span>r as.numeric("$1")` `<span class="in">`. Note, though, that `</span>as.numeric()<span class="in">` is useful for converting non-character values to numbers, e.g. using `</span>as.numeric(TRUE)<span class="in">` to convert `</span>TRUE<span class="in">`/`</span>FALSE<span class="in">` values to `</span>1<span class="in">`/`</span>0`.</span>
 <span id="cb1-97"><a href="#cb1-97"></a></span>
 <span id="cb1-98"><a href="#cb1-98"></a>What to do instead</span>
 <span id="cb1-99"><a href="#cb1-99"></a>: To extract numbers from text and store them as a numeric value, use the <span class="co">[</span><span class="ot">`parse_number()`</span><span class="co">](https://readr.tidyverse.org/reference/parse_number.html)</span> function from the readr package. This is able to handle text that includes non-numeric characters, e.g. <span class="in">`parse_number("$1")`</span> returns the value `<span class="in">` `</span>r parse_number("$1")` `` rather than a missing value.</span>
