@@ -1,0 +1,64 @@
+---
+title: "Medellin homicides map"
+format:
+  html:
+    embed-resources: true
+    fig-cap-location: top
+execute:
+  echo: false
+---
+
+```{r setup}
+#| include: false
+
+# Load packages
+pacman::p_load(ggspatial, sf, sfhotspot, tidyverse)
+
+# Load homicide data
+medellin_homicides <- read_csv2("https://mpjashby.github.io/crimemappingdata/medellin_homicides.csv") |>
+  drop_na(longitud, latitud) |> 
+  st_as_sf(coords = c("longitud", "latitud"), crs = "EPSG:4326")
+
+# Load city boundary
+medellin_boundary <- read_sf("https://mpjashby.github.io/crimemappingdata/medellin_comunas.gpkg") |>
+  janitor::clean_names() |> 
+  st_transform("EPSG:3115")
+```
+
+```{r calculate_density}
+#| include: false
+
+# Calculate crime density
+medellin_homicide_density <- medellin_homicides |>
+  st_transform("EPSG:3115") |>
+  hotspot_kde(bandwidth_adjust = 0.33, quiet = TRUE) |> 
+  # The next line would produce a message if we hadn't used the chunk option
+  # `#| include: false`
+  st_intersection(medellin_boundary)
+```
+
+@fig-homicides shows the density of homicides in Medellin, Colombia, from 2010 to 2019.
+
+```{r}
+#| label: fig-homicides
+#| fig-cap: "Density of homicides in Medellin, 2010 to 2019"
+
+# Note we don't have to set `#| include: true` for this code chunk, because that
+# is the default
+
+# Plot a basic density map
+ggplot() +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") + 
+  geom_sf(
+    aes(fill = kde),
+    data = medellin_homicide_density,
+    alpha = 0.7,
+    colour = NA
+  ) +
+  scale_fill_distiller(direction = 1) +
+  labs(
+    caption = "Homicide data: Alcaldía de Medellin (CC-BY-SA)", 
+    fill = "homicide\ndensity"
+  ) +
+  theme_void()
+```

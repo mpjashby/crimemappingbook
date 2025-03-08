@@ -1,0 +1,25 @@
+---
+title: "An example Quarto document"
+format: 
+  html:
+    embed-resources: true
+editor: visual
+---
+
+
+```{r setup}
+# Load packages
+pacman::p_load(tidyverse)
+
+# Load crime data
+crimes <- read_csv("crime_data.csv")
+```
+
+```{r count-crimes}
+# Count number of crimes in February 2021
+crime_count <- crimes |> 
+  filter(year == 2021, month == "February") |> 
+  nrow()
+```
+
+There were `r scales::comma(crime_count)` crimes recorded in February 2021.
