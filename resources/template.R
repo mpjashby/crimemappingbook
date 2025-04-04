@@ -20,7 +20,8 @@
 
 ## Load packages ----
 # Use pacman to load *all* the packages you need for this script here. Do not
-# load packages anywhere else in the script.
+# load packages anywhere else in the script. Do not load packages that are not
+# needed to run your code.
 
 
 ## Load and clean data ----
@@ -44,3 +45,7 @@
 # Create your maps, charts, etc. here. If you need to create multiple graphics,
 # use header comments to keep this section organised. Remember to save the
 # graphics you make using `ggsave()`.
+
+
+# GENERATIVE AI DECLARATION ----------------------------------------------------
+# Place the appropriate generative AI declaration here.
