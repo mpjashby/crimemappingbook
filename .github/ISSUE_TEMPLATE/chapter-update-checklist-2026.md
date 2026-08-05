@@ -7,7 +7,7 @@ assignees: mpjashby
 
 ---
 
-- [ ] Check **Before you start** callout gives current instructions.
+- [ ] Check 'Before you start' callout gives current instructions.
 - [ ] `Cmd+F` 'RStudio'
 - [ ] Replace RStudio-specific instructions, e.g. menu names, shortcuts
 - [ ] Replace RStudio screenshots
@@ -30,6 +30,7 @@ assignees: mpjashby
 - [ ] Check chapter ends with a complete script where students are expected to produce one
 - [ ] Remove commented out obsolete sections
 - [ ] Spell check
+- [ ] Run accessibility checker `quarto preview 01_getting_started/index.qmd --profile accessibility`
 - [ ] Check chapter in rendered desktop layout.
 - [ ] Check chapter at narrow browser width.
 - [ ] Commit the revised chapter and its associated files.
