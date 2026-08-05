@@ -31,6 +31,7 @@ assignees: mpjashby
 - [ ] Remove commented out obsolete sections
 - [ ] Spell check
 - [ ] Run accessibility checker `quarto preview 01_getting_started/index.qmd --profile accessibility`
+- [ ] Render without freeze `quarto render --cache-refresh` to capture changes in external dependencies/resources
 - [ ] Check chapter in rendered desktop layout.
 - [ ] Check chapter at narrow browser width.
 - [ ] Commit the revised chapter and its associated files.
