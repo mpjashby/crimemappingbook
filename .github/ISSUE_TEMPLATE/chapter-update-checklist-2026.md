@@ -17,6 +17,7 @@ assignees: mpjashby
 - [ ] Run every executable code chunk and fix any errors
 - [ ] Add accurate alt text to every `<img>` element
 - [ ] Add `fig-alt` to figures produced directly by executable R chunks
+- [ ] Check chunk attributes are provided in Quarto not Rmarkdown style
 - [ ] Reduce unnecessarily large image files using `harmonise_image_sizes()`
 - [ ] Remove generated image files that are no longer used
 - [ ] Play every embedded video and check that it remains available
