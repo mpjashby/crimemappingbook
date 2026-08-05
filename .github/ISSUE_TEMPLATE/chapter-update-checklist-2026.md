@@ -12,6 +12,7 @@ assignees: mpjashby
 - [ ] Replace RStudio-specific instructions, e.g. menu names, shortcuts
 - [ ] Replace RStudio screenshots
 - [ ] Use Positron instructions for restarting R
+- [ ] Add instructions for putting code in a specific named file for each analysis
 - [ ] Use kbd shortcode e.g. `press {{< kbd win=Ctrl-Enter mac=Command-Return >}}`
 - [ ] Check chapter begins with the finished map, chart or other intended output where appropriate
 - [ ] Run every executable code chunk and fix any errors
