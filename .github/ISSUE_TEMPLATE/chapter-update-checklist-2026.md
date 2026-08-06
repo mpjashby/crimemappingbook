@@ -37,3 +37,4 @@ assignees: mpjashby
 - [ ] Check chapter in rendered desktop layout.
 - [ ] Check chapter at narrow browser width.
 - [ ] Commit the revised chapter and its associated files.
+- [ ] Change artwork citation URL to `https://allisonhorst.com/`
