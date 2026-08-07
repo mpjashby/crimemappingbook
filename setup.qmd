@@ -30,6 +30,8 @@ The first step is to download and install R, a programming language designed for
 
 ## macOS
 
+The latest version of R requires macOS 14 or later on a Mac with an Apple Silicon processor, or macOS 11 or later on a Mac with an Intel processor.
+
 1. Open your web browser and go to <https://cran.r-project.org/bin/macosx/>.
 2. Download the installer appropriate for your Mac:
    - **Apple Silicon (`arm64`)** for Macs with an M1 or newer processor.
@@ -46,31 +48,45 @@ The first step is to download and install R, a programming language designed for
 
 ## Ubuntu Linux
 
-1. Open your web browser and go to <https://cran.r-project.org/bin/linux/ubuntu/>.
-2. Follow the instructions on the page to add the official CRAN repository for your version of Ubuntu.
-3. Open the **Terminal** application.
-4. Update the package list by typing:
+These instructions work with currently supported long-term support (LTS) versions of Ubuntu: Ubuntu 22.04, 24.04 and 26.04.
+
+1. Open the **Terminal** application.
+2. Update the package list by typing:
 
    ```bash
-   sudo apt update
+   sudo apt update -qq
    ```
 
-5. Press **Enter**.
-6. Install R by typing:
+3. Press **Enter**.
+4. Install the software needed to add the official CRAN repository by typing:
 
    ```bash
-   sudo apt install r-base
+   sudo apt install --no-install-recommends software-properties-common dirmngr
+   ```
+
+5. Press **Enter**. If Ubuntu asks whether you want to continue, type `Y` and press **Enter**.
+6. Add the security key used to verify software downloaded from CRAN by typing:
+
+   ```bash
+   wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
    ```
 
 7. Press **Enter**.
-8. If Ubuntu asks whether you want to continue, type:
+8. Add the official CRAN repository for your version of Ubuntu by typing:
 
-   ```text
-   Y
+   ```bash
+   sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
    ```
 
-9. Press **Enter**.
-10. Wait for Ubuntu to download and install R.
+9. Press **Enter** and follow any instructions shown in the Terminal.
+10. Install R by typing:
+
+    ```bash
+    sudo apt install --no-install-recommends r-base
+    ```
+
+11. Press **Enter**. If Ubuntu asks whether you want to continue, type `Y` and press **Enter**.
+12. Wait for Ubuntu to download and install R.
 
 :::
 
@@ -89,13 +105,17 @@ The next step is to install Positron, an app that you can use to work with the R
 
 ## Windows
 
-1. Open your web browser and go to <https://positron.posit.co/download.html>.
-2. Click **Download for Windows**.
-3. If you are asked to accept the Positron licence agreement and privacy policy, select the checkbox to confirm that you agree.
-4. Click the download button.
+Positron requires Windows 10 or later on most PCs, or Windows 11 on a PC with an ARM64 processor. Before installing Positron, make sure you have installed the [latest Microsoft Visual C++ Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist).
+
+1. Open your web browser and go to <https://positron.posit.co/download/>.
+2. If you are asked to accept the Positron licence agreement and privacy policy, select the checkbox to confirm that you agree.
+3. Choose the installer appropriate for your computer:
+   - Choose **Windows x64** unless you know that your computer has an ARM64 processor.
+   - Choose **Windows ARM64** if your computer has an ARM64 processor.
+4. Choose the **User install** option. This installs Positron only for your Windows account and usually does not require administrator access.
 5. Wait for the installer to download.
 6. Open your **Downloads** folder.
-7. Double-click the downloaded `.exe` file. If Windows asks whether you want to allow the installer to make changes to your computer, click **Yes**.
+7. Double-click the downloaded `.exe` file.
 8. Follow the instructions shown by the installer. Leave the default installation options unchanged.
 9. Wait for the installation to complete.
 10. Open the **Start** menu.
@@ -106,7 +126,9 @@ The next step is to install Positron, an app that you can use to work with the R
 
 ## macOS
 
-1. Open your web browser and go to <https://positron.posit.co/download.html>.
+Positron requires macOS 11 or later.
+
+1. Open your web browser and go to <https://positron.posit.co/download/>.
 2. Download the installer appropriate for your Mac:
    - **macOS Apple Silicon** for Macs with an M1 or newer processor.
    - **macOS Intel** for older Intel-based Macs.
@@ -121,12 +143,14 @@ The next step is to install Positron, an app that you can use to work with the R
 11. Open the **Applications** folder.
 12. Double-click **Positron**.
 13. If macOS asks whether you are sure you want to open Positron, click **Open**.
-15. If Positron asks you to choose between R and Python, choose **R**.
-16. If Positron asks you to select an R installation, choose the latest version of R shown in the list.
+14. If Positron asks you to choose between R and Python, choose **R**.
+15. If Positron asks you to select an R installation, choose the latest version of R shown in the list.
 
 ## Ubuntu Linux
 
-1. Open your web browser and go to <https://positron.posit.co/download.html>.
+Positron requires Ubuntu 20.04 or later.
+
+1. Open your web browser and go to <https://positron.posit.co/download/>.
 2. Click **Download for Linux**.
 3. If you are asked to accept the Positron licence agreement and privacy policy, select the checkbox to confirm that you agree.
 4. Download the Debian or Ubuntu installer, which has a filename ending in `.deb`.
@@ -180,7 +204,7 @@ As we will learn in subsequent chapters, most of the mapping capabilities in R a
 #| filename: "R Console"
 #| code-line-numbers: false
 
-if (!require("remotes")) install.packages("remotes")
+if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
 remotes::install_github("mpjashby/learncrimemapping")
 ```
 
@@ -199,4 +223,3 @@ If you see a popup message appear asking `Do you want to install from sources th
 ::: {.callout-important}
 It will take a few minutes for the set-up process to finish. Once the process is complete, you will see the `>` symbol has appeared in the R Console again.
 :::
-
