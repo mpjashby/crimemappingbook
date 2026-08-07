@@ -30,6 +30,8 @@ assignees: mpjashby
 - [ ] Add or update further reading
 - [ ] Check chapter ends with an up-to-date summary
 - [ ] Check chapter ends with a complete script where students are expected to produce one
+- [ ] Use `title=""` attribute for callout titles
+- [ ] Change artwork citation URL to `https://allisonhorst.com/`
 - [ ] Remove commented out obsolete sections
 - [ ] Spell check
 - [ ] Run accessibility checker `quarto preview 01_getting_started/index.qmd --profile accessibility`
@@ -37,4 +39,3 @@ assignees: mpjashby
 - [ ] Check chapter in rendered desktop layout.
 - [ ] Check chapter at narrow browser width.
 - [ ] Commit the revised chapter and its associated files.
-- [ ] Change artwork citation URL to `https://allisonhorst.com/`
