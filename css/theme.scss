@@ -1,0 +1,25 @@
+/*-- scss:defaults --*/
+
+// Temporary workaround for:
+// https://github.com/quarto-dev/quarto-cli/issues/14678
+//
+// Quarto's default secondary-text colour in the Cosmo theme has
+// insufficient contrast against a white background. Quarto's
+// body-secondary mixin uses this variable when it is defined.
+//
+// #6a737b has a contrast ratio of approximately 4.83:1 on white.
+$body-secondary: #6a737b;
+
+/*-- scss:rules --*/
+
+// Quarto applies opacity: 0.9 to appendix content such as citations,
+// footnotes and credits. This can reduce otherwise accessible link
+// colours below the WCAG AA contrast threshold.
+//
+// Remove this rule when the underlying Quarto issue has been fixed.
+#quarto-appendix.default section {
+  *[role="doc-endnotes"],
+  > *:not(a) {
+    opacity: 1;
+  }
+}
