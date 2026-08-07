@@ -1,7 +1,7 @@
 # Getting started {#sec-getting-started}
 
 ::: {.abstract}
-Get started with crime mapping by learning about why putting crime on maps is useful, and get a tour of the Positron software we will use throughout this course.
+Get started with crime mapping by learning about why putting crime on maps is useful, get a tour of the Positron software we will use throughout this course and learn how to keep your files organised.
 :::
 
 
@@ -23,8 +23,7 @@ This course is about how we can use maps and other spatial analysis tools to hel
 {{< video https://youtu.be/-FQwFQ8e-O0 aria-label="Video: Crime doesn't happen at random" >}}
 
 
-::: {.callout-quiz .callout}
-#### Concentration of crime
+::: {.callout-quiz .callout title="Concentrations of crime"}
 
 ```{r}
 #| echo: false
@@ -107,8 +106,7 @@ Why is crime concentrated in space? Watch this video to find out more about how 
 {{< video https://youtu.be/SvfPGslMrcs aria-label="Video: Why does crime happen in some places more than others?" >}}
 
 
-::: {.callout-quiz .callout}
-#### Routine activities
+::: {.callout-quiz .callout title="Routine activities"}
 
 
 ```{r}
@@ -191,7 +189,7 @@ Cohen, L. E., and Felson, M. (1979). [Social Change and Crime Rate Trends: A Rou
 
 ## Finding your way around Positron
 
-We will use a piece of software called Positron for almost all of this course. Positron is designed specifically for data analysis. If you have previous used either VSCode or RStudio, you will probably find Positron quite familiar, but if you haven't used either of those before, don't worry -- we will guide you through the basics of using Positron in this course.
+We will use a piece of software called Positron for almost all of this course. Positron is designed specifically for data analysis. If you have previously used either VS Code or RStudio, you will probably find Positron quite familiar, but if you haven't used either of those before, don't worry -- we will guide you through the basics of using Positron in this course.
 
 Watch the _first three minutes_ of this video to find your way around the different panels in the Positron window. For now, don't worry about opening a folder -- we will cover that shortly. Also don't worry if you don't understand all the terms used in the video.
 
@@ -212,7 +210,7 @@ The main panels in the Positron interface are:
 
 ::: {.box .reading}
 
-The [Positron Cheat Sheet](https://rstudio.github.io/cheatsheets/positron.pdf) highlights some of the features available in Positron and gives a list of available keyboard short-cuts. You might want to keep this cheat sheet open in a separate window while you work through the course, or print off a version to keep with you.
+The [Positron Cheat Sheet](https://rstudio.github.io/cheatsheets/positron.pdf) highlights some of the features available in Positron and gives a list of available keyboard shortcuts. You might want to keep this cheat sheet open in a separate window while you work through the course, or print off a version to keep with you.
 
 :::
 
@@ -222,8 +220,7 @@ The [Positron Cheat Sheet](https://rstudio.github.io/cheatsheets/positron.pdf) h
 Throughout this course you will use and create several different types of file, for example data files, files containing R code and output files containing maps, charts and reports. It is very important that you keep these files organised in a way that makes it easy to find them again later. Getting into the habit of keeping your files well organised will help a lot later on when you have to deal with multiple files to achieve an objective.
 
 
-::: {.callout-important}
-#### Common mistake: bad file organisation
+::: {.callout-important title="Common mistake: bad file organisation"}
 
 One of the most common mistakes that people make when writing code is not keeping their files organised. This can make it much harder to find and fix problems with your code, something we will return to in chapter @sec-bugs. Make sure you organise your files well from the start (that's right now) to avoid problems later on.
 :::
@@ -231,13 +228,14 @@ One of the most common mistakes that people make when writing code is not keepin
 
 To keep your files organised, we will keep all the files used for this course in a single folder on your computer called `crime-mapping`, which we will then divide up into subfolders for storing different types of files. To create the `crime-mapping` folder in Positron:
 
-1. Click the **New Folder …** button in the Welcome panel.
+1. In the Welcome panel, open the **New** menu and choose **New Folder from Template …**.
 2. Choose **R Project** and click **Next**.
 3. Change **Folder Name** from `my-r-project` to `crime-mapping`. Note that the folder name is all lower-case letters with a hyphen between the two words. This is important because it makes it easier to use the folder name in R later on.
-4. Click **Browse** and choose a place on your computer to save the folder. You can choose any location you like, but the `Documents` folder in your computer is usually a good choice.
+4. Click **Browse** and choose a place on your computer to save the folder. You can choose any location you like, but the `Documents` folder on your computer is usually a good choice.
 5. Click **Next**.
-6. Leave the default options selected and click **Create**.
-7. Click **Current Window**.
+6. If Positron asks you to choose a version of R, choose the latest numbered version in the list. If no version of R is listed, R might not be installed correctly on your computer.
+7. If Positron offers options to use `renv` or initialise a Git repository, leave them unselected for now, then click **Create**.
+8. Click **Current Window**. Positron will open the new folder as your workspace and start an R session.
 
 Now that we have created a folder to store all the files for this course, we will create a few subfolders within it to keep different types of files separate. The structure of the `crime-mapping` folder will look like this:
 
@@ -263,26 +261,38 @@ The distinction between `data/raw/` and `data/processed/` is particularly import
 To create these folders in Positron:
 
 1. In the **Explorer** panel in the top-left corner, move the pointer over the `CRIME-MAPPING` folder.
-2. Click **New Folder …** icon (or right-click and choose `New Folder`) then name the new folder `data`.
+2. Click **New Folder …** icon (or right-click and choose **New Folder**) then name the new folder `data`.
 3. Repeat steps 1 and 2 to create the `output` and `R` folders.
 4. Right click on the name of the `data` folder in the Explorer panel, click on **New Folder …** then name the new folder `raw`. Right click again on the `data` folder to create the `processed` folder.
+
+::: {.callout-important title="Folder and file names should be lower case"}
+Folder and file names are easier to use in R when they contain only lower-case letters, numbers, hyphens and underscores. Avoid spaces and special characters where possible. For example, use `crime-mapping` rather than `Crime Mapping`.
+:::
 
 The explorer panel should now look like this:
 
 ![](../images/positron-workspace-structure.png){fig-alt="Screenshot of the Positron interface showing the Explorer panel. The workspace folder, named CRIME-MAPPING, is expanded and contains three items: a data folder, an output folder and an R folder. The data folder is also expanded to show two subfolders named processed and raw. The data folder is currently selected and the toolbar above the Explorer displays icons for creating a new file, creating a new folder, refreshing the Explorer and collapsing all folders. The screenshot illustrates the recommended folder structure for organising files in the course."}
 
 
-::: {.callout-important}
-Folder and file names are easier to use in R when they contain only lower-case letters, numbers, hyphens and underscores. Avoid spaces and special characters where possible. For example, use `crime-mapping` rather than `Crime Mapping`.
+::: {.callout-tip title="Check your work"}
+Before continuing, compare the Explorer panel in Positron with the screenshot above. Check that:
+
+- `crime-mapping` is the workspace folder shown at the top of the Explorer;
+- `data`, `output` and `R` are directly inside `crime-mapping`;
+- `raw` and `processed` are directly inside `data`; and
+- you have not accidentally created one of these folders inside another folder.
+
+If the folders are not in the right places, correct that now. Correcting the structure will make the instructions in later chapters much easier to follow.
 :::
+
 
 
 ## In summary
 
-Now that you know why crime mapping is useful for understanding crime, why crime is typically concentrated in space and how to find your way around Positron, in the next chapter we will produce our first crime map in R.
+Now that you know why crime mapping is useful for understanding crime, why crime is typically concentrated in space, how to find your way around Positron and how to keep your files organised, in the next chapter we will produce our first crime map in R.
 
 If you're not feeling too confident at this point in the course, don't worry – learning something new is always a bit of a roller coaster and there is lots of help available in subsequent chapters.
 
 <p class="full-width-image"><img src="../images/r_rollercoaster.png" alt="Cartoon line chart showing how you become more confident in using R over time, then less confident and then more confident again."></p>
 
-<p class="credits"><a href="https://allisonhorst.com/">Artwork by @allison_horst</a></p>
+<p class="credits"><a href="https://allisonhorst.com/">Artwork by Allison Horst</a></p>
