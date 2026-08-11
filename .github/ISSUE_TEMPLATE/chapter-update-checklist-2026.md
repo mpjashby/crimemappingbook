@@ -12,6 +12,8 @@ assignees: mpjashby
 - [ ] Replace RStudio-specific instructions, e.g. menu names, shortcuts
 - [ ] Replace RStudio screenshots
 - [ ] Use Positron instructions for restarting R
+- [ ] Add bullet-point list of skills learned in this chapter.
+- [ ] Add flow diagram showing process of producing code.
 - [ ] Add instructions for putting code in a specific named file for each analysis
 - [ ] Use kbd shortcode e.g. `press {{< kbd win=Ctrl-Enter mac=Command-Return >}}`
 - [ ] Check chapter begins with the finished map, chart or other intended output where appropriate
@@ -29,6 +31,7 @@ assignees: mpjashby
 - [ ] Add or update a multiple-choice quiz at the end of each substantive section
 - [ ] Add or update further reading
 - [ ] Check chapter ends with an up-to-date summary
+- [ ] Add bullet-point list of skills learned
 - [ ] Check chapter ends with a complete script where students are expected to produce one
 - [ ] Use `title=""` attribute for callout titles
 - [ ] Change artwork citation URL to `https://allisonhorst.com/`
