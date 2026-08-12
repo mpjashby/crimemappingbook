@@ -89,6 +89,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/bootstrap/bootstrap-28b3a635af6a38e0a0209d6ed3ccafbc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/diagrams-0.2.0/diagrams.css" rel="stylesheet">
+<script src="../site_libs/quarto-contrib/kbd/kbd.js"></script>
+<link href="../site_libs/quarto-contrib/kbd/kbd.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -393,9 +395,10 @@ quarto book
   <li><a href="#counting-rows" id="toc-counting-rows" class="nav-link" data-scroll-target="#counting-rows"><span class="header-section-number">3.6.1</span> Counting rows</a></li>
   </ul></li>
   <li><a href="#arranging-rows" id="toc-arranging-rows" class="nav-link" data-scroll-target="#arranging-rows"><span class="header-section-number">3.7</span> Arranging rows</a></li>
-  <li><a href="#saving-data" id="toc-saving-data" class="nav-link" data-scroll-target="#saving-data"><span class="header-section-number">3.8</span> Saving data</a></li>
+  <li><a href="#sec-saving-data" id="toc-sec-saving-data" class="nav-link" data-scroll-target="#sec-saving-data"><span class="header-section-number">3.8</span> Saving data</a></li>
   <li><a href="#sec-pipe-operator" id="toc-sec-pipe-operator" class="nav-link" data-scroll-target="#sec-pipe-operator"><span class="header-section-number">3.9</span> Stringing functions together</a></li>
-  <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="header-section-number">3.10</span> In summary</a></li>
+  <li><a href="#complete-scripts" id="toc-complete-scripts" class="nav-link" data-scroll-target="#complete-scripts"><span class="header-section-number">3.10</span> Complete scripts</a></li>
+  <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="header-section-number">3.11</span> In summary</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-chat-right"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -424,7 +427,7 @@ quarto book
 <div class="abstract">
 <p>This chapter introduces the essential skills of data wrangling, an important step in preparing data for analysis and presentation. You’ll learn to load, filter, manipulate, and save datasets using R. This chapter guides you through handling tabular and Excel data formats, selecting relevant data, and applying functions from powerful R packages like tidyverse. By the end of this chapter you will be able to confidently transform raw data into a format ready for meaningful insights. Let’s dive in!</p>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout callout-style-default callout-tip callout-titled" title="Before you start">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -434,22 +437,38 @@ quarto book
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Open RStudio or – if you already have RStudio open – click <code>Session</code> then <code>Restart R</code>. Make sure you’re working inside the Crime Mapping RStudio project you created in <a href="../01_getting_started/index.html#sec-create-project" class="quarto-xref"><span>Section 1.5</span></a>, then you’re ready to start mapping.</p>
+<ol type="1">
+<li>Open Positron or – if you already have Positron open – start a new R session by clicking the <strong>Restart R</strong> (<strong>⟳</strong>) button in the <strong>Console</strong> panel. This makes sure no code you ran previously will interfere with the work you do in this chapter.</li>
+<li>Make sure you are working in the crime mapping project workspace you created in <a href="../01_getting_started/index.html#sec-create-project" class="quarto-xref"><span>Section 1.5</span></a>. In the top-right corner of the Positron window, you should see a folder icon and the words <code>crime-mapping</code>. If not, click the <strong>File</strong> menu, then <strong>Open Folder …</strong> and choose the <code>crime-mapping</code> folder.</li>
+</ol>
 </div>
 </div>
 <section id="introduction" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">3.1</span> Introduction</h2>
 <p>A major step in using any data to make decisions or draw conclusions is <em>data wrangling</em>: the process of transforming data from the format in which we originally have it to the format needed to analyse and present it to our audience.</p>
 <p class="full-width-image">
-<img src="../images/datawrangling.jpg" alt="Cartoon of furry monsters putting boxes onto a conveyor belt with machines marked 'wrangle', 'vizualise' and 'model' adjusting the boxes as they move along the belt">
+<img src="../images/datawrangling.jpg" alt="Cartoon showing raw data passing through data-wrangling, visualisation and modelling stages to become useful analytical output.">
 </p>
-<!-- Start off by watching this video that walks through the different steps in wrangling a dataset. We will cover all the steps in the video in more detail during the rest of this chapter. -->
-<!--  -->
-<p>To get started, open RStudio and check that you are working in the Crime Mapping project you created previously. To do this, looking on the top right-hand corner of the RStudio window. If you see the text <code>Crime Mapping</code>, all is well. If you see the text <code>Project: (None)</code>, click on the downward triangle next to that text and then select the Crime Mapping project – this will cause RStudio to restart and open your project.</p>
-<p>Now create a new R script file by clicking the <code>File</code> menu, then <code>New File</code> and then <code>R Script</code>. A new file will open in the left-hand panel in RStudio. Click <code>File</code> then <code>Save As...</code> to save this file in the project directory you created when you completed the previous chapter. Save the file as <code>chapter_03a.R</code>.</p>
+<p>By the end of this chapter, you will have learned how to:</p>
+<ul>
+<li>download CSV and Excel files into a project;</li>
+<li>load and inspect tabular data;</li>
+<li>select columns and filter rows;</li>
+<li>create and transform columns;</li>
+<li>summarise, count and arrange rows;</li>
+<li>combine several operations using the pipe operator; and</li>
+<li>save processed data without changing the original file.</li>
+</ul>
+<p>To get started, create the first of two scripts used in this chapter:</p>
+<ol type="1">
+<li>Click the <strong>File</strong> menu in Positron, then click <strong>New File …</strong>.</li>
+<li>Type <code>chapter_03a.R</code> in the box marked <strong>Select File Type or Enter File Name…</strong>, then press <kbd title="Return" aria-hidden="true">Return</kbd><span class="visually-hidden">Return</span>.</li>
+<li>Save the file in the <code>R</code> folder inside your <code>crime-mapping</code> workspace.</li>
+</ol>
+<p>As we learned in <a href="../02_your_first_crime_map/index.html" class="quarto-xref"><span>Chapter 2</span></a>, permanent code needed to repeat the analysis belongs in this script. Temporary code that helps you inspect the data or develop the permanent code belongs in the R Console. Code chunks in this chapter are labelled to show where each piece of code belongs.</p>
 <section id="functions" class="level3" data-number="3.1.1">
 <h3 data-number="3.1.1" class="anchored" data-anchor-id="functions"><span class="header-section-number">3.1.1</span> Functions</h3>
-<p>In this chapter we will learn how to wrangle data in R using <em>functions</em> – specialised pieces of code that do something to the data we give it. The code to use a function (sometimes called <em>calling</em> the function) has two parts: the function name followed by a pair of parentheses, inside which are zero or more <em>arguments</em> separated by commas. Arguments are a way of providing input that a function works on, or to fine-tune the way the function works (we will see many examples of this later). Remember that you can identify a function in R because the name will always have parentheses after it.</p>
+<p>In this chapter we will learn how to wrangle data in R using <em>functions</em> – specialised pieces of code that <em>do</em> something to the data we give them. The code to use a function (sometimes called <em>calling</em> the function) has two parts: the function name followed by a pair of parentheses, inside which are zero or more <em>arguments</em> separated by commas. Arguments are a way of providing input that a function works on, or to fine-tune the way the function works (we will see many examples of this later). Remember that you can identify a function in R because the name will always have parentheses after it.</p>
 <p>One basic R function is <code>sqrt()</code>, which calculates the square root of a number. The <code>sqrt()</code> function has only one argument: the number that we want to find the square root of. If we typed the following code into the R Console, R would show us the square root of 2.</p>
 <div class="cell">
 <div class="code-with-filename">
@@ -464,52 +483,20 @@ quarto book
 <section id="packages" class="level3" data-number="3.1.2">
 <h3 data-number="3.1.2" class="anchored" data-anchor-id="packages"><span class="header-section-number">3.1.2</span> Packages</h3>
 <p>R contains thousands of different functions that do different things. A few functions are contained in the default installation of R that you have already installed (this is sometimes referred to as <em>base R</em>). But most functions are contained in <em>packages</em>, which are extensions to base R. Most packages focus on a particular type of data analysis, so that there are packages devoted to time-series analysis, testing whether events are clustered in particular places, network analysis and thousands of other tasks. Packages are often developed by experts in the field, and are typically updated to introduce new features.</p>
-<p>To use a package in R, we must do two things:</p>
-<ul>
-<li><em>install</em> the package, which we have to do just once on each computer we want to use, then</li>
-<li><em>load</em> the package, which we have to do each time we restart R (which happens when we open RStudio or switch between projects).</li>
-</ul>
-<p>The <code>install.packages()</code> function downloads and installs packages from the <a href="https://cran.r-project.org/">Comprehensive R Archive Network</a> (universally known as CRAN), which contains about 24,600 different packages. Some packages that are still in the early stages of development are not available on CRAN, but all the packages we will use are there.</p>
-<p><a href="https://tidyverse.org/" title="tidyverse website"><img src="../images/tidyverse.png" class="right-side-image"></a></p>
-<p>So to install (for example) the package called <code>tidyverse</code>, which we will use extensively in this chapter, we would run the R code:</p>
-<div class="cell">
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>R Console</strong></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a><span class="fu">install.packages</span>(<span class="st">"tidyverse"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-<p>We only have to <em>install</em> a package once for each computer that we will use to run R, although we would have to do it again if we updated to a new version of R.</p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Never add <code>install.packages()</code> to an R script
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>You should only ever use the <code>install.packages()</code> function in the R Console, never in an R script. There are two reasons for this:</p>
-<ul>
-<li>When you share your code with other people – which you will do often in this course – they may have their system set up in such a way that running <code>install.packages()</code> in a script file might cause other code on their computer to stop working.</li>
-<li>Since you don’t need to install a package every time you need it (you only need to install it once), your code will run much more slowly if you needlessly install packages every time you run your code.</li>
-</ul>
-</div>
-</div>
-<p>Once a package is installed on our computer, we have to <em>load</em> it so that we can use it in our code. We load packages using the <code>p_load()</code> function from the <a href="https://trinker.github.io/pacman_dev/">pacman package</a>. So to load the tidyverse package, we run the code:</p>
+<p>To use a function from a package we need to do two things: <em>install</em> that package on out computer, and then <em>load</em> the package into our R session. You may see code that does these two steps separately, using the <code>install.packages()</code> function to install a package and the <code>library()</code> function to load it. However, in this book we use the <code>p_load()</code> function from the <a href="https://trinker.github.io/pacman_dev/">pacman package</a> to do both steps in one line of code. <code>p_load()</code> checks whether a package is already installed on your computer, and if it is not, installs it automatically and then loads it. Do not add <code>install.packages()</code> to your scripts. Re-installing packages every time a script runs is unnecessary, slows the script down and can make it harder for someone else to run your code on their computer.</p>
+<p>In this chapter we will use functions from the here, httr2, readxl and tidyverse packages, so add this code to <code>chapter_03a.R</code>:</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_03a.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="co"># Load packages</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a><span class="co"># Load packages</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, readxl, tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<p>Now run this code by clicking anywhere on that line of code then pressing <kbd title="mac: Command-Return, windows: Ctrl-Enter" aria-hidden="true" data-mac="Command-Return" data-windows="Ctrl-Enter"></kbd><span class="visually-hidden"></span> on your keyboard.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Why does this line of code start with `pacman::`?">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -518,15 +505,15 @@ quarto book
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The pacman package is an R package that is used to manage other R packages. The <code>p_load()</code> function from that package is used to load packages. But we learned above that we must load a package before we can use it, which means we cannot use functions from the pacman package until we have loaded the pacman package. To get around that, instead of just using the function name <code>p_load()</code>, we can instead specify which package <code>p_load()</code> is from by prefixing the function name with the relevant package name, separated by <code>::</code>.</p>
 </div>
 </div>
 </div>
-<p>One major advantage of using <code>p_load()</code> to load packages is that before loading any packages, this function will first install them if they have not already been installed on the computer we are using. This means that once we have the pacman package installed we won’t need to worry about whether a package is installed or not – we can just load the package, knowing it will automatically be installed if necessary.</p>
-<p>Many packages are focused on specialist tasks and so are only used occasionally, but a few packages are likely to be useful in almost all the code we write. Fortunately, packages can themselves load other packages, and all the main packages we need are loaded by the <code>tidyverse</code> package. That is why you will often see <code>pacman::p_load(tidyverse)</code> at the top of R code in subsequent chapters – that short line of code loads several packages containing hundreds of functions that we can use in data analysis.</p>
-<div class="callout callout-style-default callout-quiz callout-titled">
+<p><a href="https://tidyverse.org/" aria-label="Visit the tidyverse website"><img src="../images/tidyverse.png" class="right-side-image" alt=""></a></p>
+<p>Many packages are focused on specialist tasks and so are only used occasionally, but a few packages are likely to be useful in almost all the code we write. Fortunately, packages can themselves load other packages, and all the main packages we need are loaded by the <a href="https://tidyverse.org/">tidyverse package</a>. That is why you will often see <code>pacman::p_load(tidyverse)</code> at the top of R code in subsequent chapters – that short line of code loads several packages containing hundreds of functions that we can use in data analysis.</p>
+<div class="callout callout-style-default callout-quiz callout-titled" title="Data wrangling">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -537,12 +524,12 @@ quarto book
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What is the purpose of data wrangling?</strong></p>
-<div id="radio_PSBSKOPEXQ" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_PSBSKOPEXQ" value=""> <span>The process of collecting data from multiple sources.</span></label><label><input type="radio" autocomplete="off" name="radio_PSBSKOPEXQ" value="answer"> <span>The process of transforming raw data into a format suitable for analysis.</span></label><label><input type="radio" autocomplete="off" name="radio_PSBSKOPEXQ" value=""> <span>The process of visualizing data on a map.</span></label><label><input type="radio" autocomplete="off" name="radio_PSBSKOPEXQ" value=""> <span>The process of cleaning corrupted data files.</span></label>
+<div id="radio_SRIJDFODLP" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_SRIJDFODLP" value=""> <span>The process of collecting data from multiple sources.</span></label><label><input type="radio" autocomplete="off" name="radio_SRIJDFODLP" value="answer"> <span>The process of transforming raw data into a format suitable for analysis.</span></label><label><input type="radio" autocomplete="off" name="radio_SRIJDFODLP" value=""> <span>The process of visualizing data on a map.</span></label><label><input type="radio" autocomplete="off" name="radio_SRIJDFODLP" value=""> <span>The process of cleaning corrupted data files.</span></label>
 </div>
 <p><strong>In general, what is a <em>function</em> in R?</strong></p>
-<div id="radio_ZRHYOAJNUI" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_ZRHYOAJNUI" value=""> <span>A visual representation of data.</span></label><label><input type="radio" autocomplete="off" name="radio_ZRHYOAJNUI" value=""> <span>A mathematical formula used in graphs.</span></label><label><input type="radio" autocomplete="off" name="radio_ZRHYOAJNUI" value=""> <span>A set of instructions for saving data.</span></label><label><input type="radio" autocomplete="off" name="radio_ZRHYOAJNUI" value="answer"> <span>A specialized piece of code that performs a task on data.</span></label>
+<div id="radio_HLZIBJTFNN" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_HLZIBJTFNN" value=""> <span>A visual representation of data.</span></label><label><input type="radio" autocomplete="off" name="radio_HLZIBJTFNN" value=""> <span>A mathematical formula used in graphs.</span></label><label><input type="radio" autocomplete="off" name="radio_HLZIBJTFNN" value=""> <span>A set of instructions for saving data.</span></label><label><input type="radio" autocomplete="off" name="radio_HLZIBJTFNN" value="answer"> <span>A specialized piece of code that performs a task on data.</span></label>
 </div>
 </div>
 </div>
@@ -566,17 +553,17 @@ quarto book
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">homicide</td>
-<td style="text-align: left;">15 Aug 2025</td>
+<td style="text-align: left;">22 Aug 2025</td>
 <td style="text-align: left;">274 Main St</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">non-residential burglary</td>
-<td style="text-align: left;">25 Mar 2026</td>
+<td style="text-align: left;">01 Apr 2026</td>
 <td style="text-align: left;">541 Station Rd</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">personal robbery</td>
-<td style="text-align: left;">28 Jul 2026</td>
+<td style="text-align: left;">04 Aug 2026</td>
 <td style="text-align: left;">10 North Av</td>
 </tr>
 </tbody>
@@ -586,53 +573,38 @@ quarto book
 <p>Almost all the data we will use in this course will be in this rectangular format, and most of the functions we will use expect data to be rectangular.</p>
 <section id="loading-csv-data" class="level3" data-number="3.2.1">
 <h3 data-number="3.2.1" class="anchored" data-anchor-id="loading-csv-data"><span class="header-section-number">3.2.1</span> Loading CSV data</h3>
-<p><a href="https://readr.tidyverse.org/" title="readr website"><img src="../images/readr.png" class="right-side-image"></a></p>
+<p><a href="https://readr.tidyverse.org/" aria-label="Visit the readr package website"><img src="../images/readr.png" class="right-side-image" alt=""></a></p>
 <p>Data stored in CSV format is easy to load with the <code>read_csv()</code> function from the <a href="https://readr.tidyverse.org">readr package</a>. readr is one of the packages loaded by the tidyverse package, so all we need to do to use this package is include the code <code>pacman::p_load(tidyverse)</code> on the first line of our R script. We will use comments (lines of code beginning with <code>#</code>) to help explain the code as we go.</p>
-<p><code>read_csv()</code> can handle data stored <em>locally</em> on your computer, as well as data stored <em>remotely</em> on an external website. During this course, most of the data we will use will be remote data stored on the <a href="https://pkgs.lesscrime.info/crimemappingdata/">crimemappingdata website</a>.</p>
-<div class="cell">
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>R Console</strong></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a><span class="co"># We can load data from a file in the same folder as our R script</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-label="2"></a>san_fran_rob <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"san_francisco_robbery.csv"</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-label="3"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-label="4"></a><span class="co"># Or another folder on your computer ('../' is short for the parent </span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-label="5"></a><span class="co"># folder of the current folder)</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-label="6"></a>san_fran_rob <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../san_francisco_robbery.csv"</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-label="7"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-label="8"></a><span class="co"># Or directly from a file online</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-label="9"></a>san_fran_rob <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"http://example.com/san_francisco_robbery.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-<p>In each of these examples, the code stores the result of the <code>read_csv()</code> function in an <em>object</em> named <code>san_fran_rob</code>. Objects are places where we can store data. To create an object and store our data in it, we use the assignment operator <code>&lt;-</code> (a less-than sign followed by a dash). Continually typing <code>&lt;-</code> can be tedious, so in RStudio we can use the keyboard short cut <code>Option+-</code> (on Mac) or <code>Alt+-</code> (on Windows or Linux) to insert the complete operator.</p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Object names can be overwritten
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>When choosing object names, it is important to remember that if you assign a value (such as the number <code>1</code> or the result of the function <code>read_csv()</code>) to an object name, R will overwrite any existing value of that object name. We can see this in a simple example:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a>one_to_ten <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-label="2"></a>one_to_ten <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>If we were to run this code, the object <code>one_to_ten</code> would not actually hold the numbers from one to ten, but instead the value 1.414214 (the square root of two). There is no way to undo assignment of a value to an object, so once you have run the code <code>one_to_ten &lt;- sqrt(2)</code> it is not possible to recover any previous value that was assigned to the object <code>one_to_ten</code>.</p>
-</div>
-</div>
-<p>Objects come in several different types, with tabular data typically being stored as a <em>data frame</em>. The <code>read_csv()</code> function actually produces a modern variation on the data frame called (slightly strangely) a <em>tibble</em>, which makes use of some advances in how R handles data since the data-frame format was set 20 years ago. Tibbles behave just like data frames almost all of the time (so much so that people working with tibbles often call them data frames) except for a few occasions where they behave in a more-convenient way. We will always use tibbles instead of data frames in this course.</p>
-<p>We can use <code>read_csv()</code> to load data from <code>https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv</code> and store it in an object called <code>san_fran_rob</code>. Add this code to the script file <code>chapter_03a.R</code> and then run that code as you learned about in <a href="../02_your_first_crime_map/index.html#sec-loading-packages" class="quarto-xref"><span>Section 2.3.1</span></a>.</p>
+<p>During this course, much of the data we use will come from the <a href="https://pkgs.lesscrime.info/crimemappingdata/">crimemappingdata website</a>. We will first download each original file to the <code>data/raw</code> folder and then load that local copy into R. Keeping a copy of the original data means that our analysis does not depend on repeatedly accessing a website, and that we can always return to the unchanged source file.</p>
+<p>Add this code to the <code>chapter_03a.R</code> file and run it.</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_03a.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-label="1"></a><span class="co"># Load San Francisco robbery data</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-label="2"></a>san_fran_rob <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="co"># Download the data from a URL and store it in a local file</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-label="2"></a><span class="fu">request</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-label="3"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-label="4"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-label="5"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"san_francisco_robbery.csv"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre data-code-line-numbers=""><code>&lt;httr2_response&gt;
+GET https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv
+Status: 200 OK
+Content-Type: text/csv
+Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/san_francisco_robbery.csv' (65580 bytes)</code></pre>
+</div>
+</div>
+<p>The <code>request()</code> and <code>req_perform()</code> functions from the httr2 (pronounced ‘hit-r two’) package download the file, following the same pattern used in <a href="../02_your_first_crime_map/index.html#sec-load-data" class="quarto-xref"><span>Section 2.3.2</span></a>. The <code>here()</code> function from the here package helps you specify where on your computer you want to store or retrieve a file inside the <code>crime-mapping</code> folder we created in <a href="../01_getting_started/index.html#sec-create-project" class="quarto-xref"><span>Section 1.5</span></a>. In this case, <code>here()</code> specifies that the file should be stored in a file called <code>san_francisco_robbery.csv</code> inside the <code>raw</code> folder that is itself inside the <code>data</code> folder.</p>
+<p>Now we’ve downloaded the data, we need to load it into R. Add this code to the script file and run it:</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter_03a.R</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a><span class="co"># Load the local file into R</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-label="2"></a>san_fran_rob <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"san_francisco_robbery.csv"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre data-code-line-numbers=""><code>Rows: 951 Columns: 5
@@ -646,9 +618,8 @@ dttm (1): date_time
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
 </div>
-<p>If the data are loaded successfully, R will list the columns in the data and the type of variable (numeric, date etc.) stored in each column. The format of this is somewhat esoteric, but if you are interested they are explained in the ‘Extra detail’ box below.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout callout-style-default callout-tip callout-titled" title="What do the messages produced by `read_csv()` mean?">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -657,7 +628,7 @@ dttm (1): date_time
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>By default, the <code>read_csv()</code> function prints a message when it loads data to summarise the format of each data column. In the case of the <code>san_fran_rob</code> dataset, <code>read_csv()</code> tells us that:</p>
 <ul>
@@ -665,11 +636,32 @@ dttm (1): date_time
 <li>there are three columns called <code>uid</code>, <code>longitude</code> and <code>latitude</code> containing numeric (<code>dbl</code>) values, and</li>
 <li>there is one column called <code>date_time</code> that contains values stored as dates and times (<code>dttm</code>).</li>
 </ul>
-<p>There are some other possible types of data, but we will learn about these later on. The numeric values are referred to as <code>dbl</code> values because they are stored in a format that can handle numbers that are not whole numbers (e.g.&nbsp;123.456). This format for storing numbers is called the double-precision floating-point format, which is often known as the double format for short. Most numbers in R are stored in double format, so you can think of the format code <code>dbl</code> as meaning ‘numeric’.</p>
+<p>There are some other possible types of data, but we will learn about these later on. The numeric values are referred to as <code>dbl</code> values because they are stored in a format that can handle numbers that are not whole numbers (e.g.&nbsp;123.456). This format for storing numbers is called the <em>double-precision floating-point format</em>, which is often known as the double format for short. Most numbers in R are stored in double format, so you can think of the format code <code>dbl</code> as meaning ‘numeric’. You don’t need to remember that ‘double’ is short for double-precision floating-point format, just that it represents a number.</p>
 </div>
 </div>
 </div>
-<p>To see the first few rows of data currently stored in an object, we can use the <code>head()</code> function.</p>
+<p>This code loads the data using the <code>read_csv()</code> function and stores the result in an object named <code>san_fran_rob</code>. Objects are places where we can store data. To create an object and store our data in it, we use the assignment operator <code>&lt;-</code> (a less-than sign followed by a dash). Rather than typing a less-than sign and a dash every time you need to assign a value to an object, you can instead use the keyboard shortcut <kbd title="mac: Option--, windows: Alt--" aria-hidden="true" data-mac="Option--" data-windows="Alt--"></kbd><span class="visually-hidden"></span> to type an assignment operator.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Object names can be overwritten">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Object names can be overwritten
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When choosing object names, it is important to remember that if you assign a value (such as the number <code>1</code> or the result of the function <code>read_csv()</code>) to an object name, R will overwrite any existing value of that object name. We can see this in a simple example:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-label="1"></a>one_to_ten <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-label="2"></a>one_to_ten <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>If we were to run this code, the object <code>one_to_ten</code> would not actually hold the numbers from one to ten, but instead the value 1.414214 (the square root of two). There is no way to undo assignment of a value to an object, so once you have run the code <code>one_to_ten &lt;- sqrt(2)</code> it is not possible to recover any previous value that was assigned to the object <code>one_to_ten</code>. For that reason, it is generally a bad idea to reuse object names to store different values in the same script.</p>
+</div>
+</div>
+<p>Objects come in several different types, with tabular data typically being stored as a <em>data frame</em>. The <code>read_csv()</code> function produces a modern variation on the data frame called a <em>tibble</em>. Tibbles behave like data frames most of the time, but are designed to work conveniently with tidyverse functions. We will use tibbles throughout this course.</p>
+<p>If the data are loaded successfully, R will list the columns in the data and the type of variable (numeric, date etc.) stored in each column.</p>
+<p>To see the first few rows of data currently stored in an object, we can use the <code>head()</code> function. Remember that we run functions such as <code>head()</code> in the R Console, not in the script file, because it is temporary code (see <a href="../02_your_first_crime_map/index.html#sec-permanent-code" class="quarto-xref"><span>Section 2.2</span></a>). Add this code to the R Console and run it by pressing <kbd title="mac: Return, windows: Enter" aria-hidden="true" data-mac="Return" data-windows="Enter"></kbd><span class="visually-hidden"></span>:</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -692,60 +684,39 @@ dttm (1): date_time
 </section>
 <section id="loading-excel-data" class="level3" data-number="3.2.2">
 <h3 data-number="3.2.2" class="anchored" data-anchor-id="loading-excel-data"><span class="header-section-number">3.2.2</span> Loading Excel data</h3>
-<p><a href="https://readxl.tidyverse.org/" title="readxl website"><img src="../images/readxl.png" class="right-side-image"></a></p>
+<p><a href="https://readxl.tidyverse.org/" aria-label="Visit the readxl package website"><img src="../images/readxl.png" class="right-side-image" alt=""></a></p>
 <p>Loading data from Microsoft Excel files is very similar to loading CSV data, with a few important differences. Functions to load Excel data are contained in the <code>readxl</code> package.</p>
-<p>There are two main things we must do to import Excel data that are not required for importing CSV data. The first is that the <code>readxl</code> package cannot directly load files from a URL, instead only loading files that are present on your computer. To get round this, we will first download an Excel file and store it in a temporary directory (to avoid cluttering up our computers).</p>
-<p>To practice loading data from an Excel file, create a new R script file called <code>chapter_03b.R</code> and paste the following code into it, then run the code.</p>
+<p>Create a second R script by repeating the Positron steps you used earlier. Name the file <code>chapter_03b.R</code> and save it in the <code>R</code> folder. Add the following code, then place the cursor on each statement and press <kbd title="mac: Command-Return, windows: Ctrl-Enter" aria-hidden="true" data-mac="Command-Return" data-windows="Ctrl-Enter"></kbd><span class="visually-hidden"></span> to run it.</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_03b.R</strong></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-label="1"></a><span class="co"># Load packages</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(readxl, tidyverse)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, readxl, tidyverse)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-label="3"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-label="4"></a><span class="co"># Specify the name of and location of our temporary file: it does not matter</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-label="5"></a><span class="co"># what this file is called or where it is stored, so we use the tempfile()</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-label="6"></a><span class="co"># function to create a file in the correct location automatically</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-label="7"></a>temp_file <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".xlsx"</span>)</span>
-<span id="cb10-8"><a href="#cb10-8" aria-label="8"></a></span>
-<span id="cb10-9"><a href="#cb10-9" aria-label="9"></a><span class="co"># Download the Excel file and store it in the temporary location</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-label="10"></a><span class="fu">download.file</span>(</span>
-<span id="cb10-11"><a href="#cb10-11" aria-label="11"></a>  <span class="at">url =</span> <span class="st">"https://mpjashby.github.io/crimemappingdata/aggravated_assaults.xlsx"</span>,</span>
-<span id="cb10-12"><a href="#cb10-12" aria-label="12"></a>  <span class="at">destfile =</span> temp_file,</span>
-<span id="cb10-13"><a href="#cb10-13" aria-label="13"></a>  <span class="at">mode =</span> <span class="st">"wb"</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-label="14"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb10-4"><a href="#cb10-4" aria-label="4"></a><span class="co"># Download the data from a URL and store it in a local file</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-label="5"></a><span class="fu">request</span>(</span>
+<span id="cb10-6"><a href="#cb10-6" aria-label="6"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/aggravated_assaults.xlsx"</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-label="7"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-label="8"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"aggravated_assaults.xlsx"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre data-code-line-numbers=""><code>&lt;httr2_response&gt;
+GET https://mpjashby.github.io/crimemappingdata/aggravated_assaults.xlsx
+Status: 200 OK
+Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/aggravated_assaults.xlsx' (383278 bytes)</code></pre>
 </div>
 </div>
-<p>The <code>download.file()</code> function does not produce any output if the file has been successfully downloaded, so you will not see any output when you run this code.</p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Using <code>download.file()</code> on Windows</strong></p>
-<p>If you are using a Windows computer, you may find that the <code>download.file()</code> function in the code below does not work as expected. This is because Windows handles files in a way that distinguishes between <em>plain-text</em> files such as <code>.txt</code> and <code>.csv</code> files and <em>binary</em> files, which includes most other file types (including compressed files). Since Excel files are not plain-text files, on Windows you need to specify that you want them to be downloaded as a binary file. To do this, add the argument <code>mode = "wb"</code> to the <code>download.file()</code> function so that it reads:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="fu">download.file</span>(</span>
-<span id="cb11-2"><a href="#cb11-2" aria-label="2"></a>  <span class="at">url =</span> <span class="st">"https://mpjashby.github.io/crimemappingdata/aggravated_assaults.xlsx"</span>,</span>
-<span id="cb11-3"><a href="#cb11-3" aria-label="3"></a>  <span class="at">destfile =</span> temp_file,</span>
-<span id="cb11-4"><a href="#cb11-4" aria-label="4"></a>  <span class="at">mode =</span> <span class="st">"wb"</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-label="5"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>If you are using a Mac or a Linux computer then you do not need to worry about this.</p>
-</div>
-</div>
-<p>Now we have downloaded our data, we can load it into R. Since Excel files can contain multiple sheets, we need to specify which sheet we would like to load into a tibble. We can use the <code>excel_sheets()</code> function to get a list of sheets in an Excel file:</p>
+<p>Now we have downloaded our data, we can load it into R. Excel files can contain multiple <em>sheets</em>, so we need to specify which sheet we would like to load into a tibble. We can use the <code>excel_sheets()</code> function in the R Console to get a list of sheets in an Excel file:</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-label="1"></a><span class="co"># Get a list of sheets in an Excel file</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-label="2"></a><span class="fu">excel_sheets</span>(temp_file)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb12-2"><a href="#cb12-2" aria-label="2"></a><span class="fu">excel_sheets</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"aggravated_assaults.xlsx"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>[1] "Austin"     "Fort Worth" "Seattle"   </code></pre>
@@ -757,7 +728,10 @@ Important
 <div class="code-with-filename-file">
 <pre><strong>chapter_03b.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-label="1"></a>agg_assault_data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(temp_file, <span class="at">sheet =</span> <span class="st">"Austin"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-label="1"></a>agg_assault_data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-label="2"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"aggravated_assaults.xlsx"</span>),</span>
+<span id="cb14-3"><a href="#cb14-3" aria-label="3"></a>  <span class="at">sheet =</span> <span class="st">"Austin"</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-label="4"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>and, as usual, we can use the <code>head()</code> function to look at the data:</p>
@@ -781,24 +755,24 @@ Important
 </div>
 </div>
 <p>Now we have learned how to load our data into an object, we can use other R functions to work with that data in many different ways.</p>
-<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout callout-style-default callout-important callout-titled" title="Use the right function for each file type">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Important
+<span class="screen-reader-only">Important</span>Use the right function for each file type
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Different types of data are loaded into R with different functions, e.g.&nbsp;CSV files are loaded with the <code>read_csv()</code> function from the <code>readr</code> package and Microsoft Excel files are loaded with the <code>read_excel()</code> function from the <code>readxl</code> package. <a href="../appendices/read_functions.html" class="quarto-xref"><span>Appendix A</span></a> has a list of which function to use to load each type of file.</p>
+<p>Different types of data are loaded into R with different functions, e.g.&nbsp;CSV files are loaded with the <code>read_csv()</code> function from the readr package and Microsoft Excel files are loaded with the <code>read_excel()</code> function from the readxl package. <a href="../appendices/read_functions.html" class="quarto-xref"><span>Appendix A</span></a> has a list of which function to use to load each type of file.</p>
 </div>
 </div>
 <div class="box reading">
-<p><a href="https://r4ds.had.co.nz/data-import.html">Learn more about how to read data into R</a> by reading this chapter of the free online book <a href="https://r4ds.had.co.nz/">R for Data Science</a>.</p>
+<p><a href="https://r4ds.hadley.nz/data-import.html">Learn more about importing data</a> in the current edition of the free online book <a href="https://r4ds.hadley.nz/">R for Data Science</a>.</p>
 <p>Excel data can often be messy and the <code>readxl</code> package contains various other functions that can be used to deal with this. You can <a href="http://lesscrime.info/post/cleaning-ons-data/">learn more about how to handle messy Excel data in this online tutorial</a>.</p>
 </div>
-<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout callout-style-default callout-quiz callout-titled" title="Reading data">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -810,16 +784,16 @@ Important
 <div class="callout-body-container callout-body">
 <p>Answer the following questions to check your understanding of what we’ve learned so far in this chapter. If you get a question wrong, you can keep trying until you get the right answer.</p>
 <p><strong>What R package contains the function <code>read_csv()</code> to read CSV data?</strong></p>
-<div id="radio_JDPLVUBRCH" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_JDPLVUBRCH" value=""> <span><code>readxl</code></span></label><label><input type="radio" autocomplete="off" name="radio_JDPLVUBRCH" value=""> <span><code>reader</code></span></label><label><input type="radio" autocomplete="off" name="radio_JDPLVUBRCH" value="answer"> <span><code>readr</code></span></label><label><input type="radio" autocomplete="off" name="radio_JDPLVUBRCH" value=""> <span><code>readcsv</code></span></label>
+<div id="radio_YKOCVYQBUJ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_YKOCVYQBUJ" value=""> <span><code>readxl</code></span></label><label><input type="radio" autocomplete="off" name="radio_YKOCVYQBUJ" value=""> <span><code>reader</code></span></label><label><input type="radio" autocomplete="off" name="radio_YKOCVYQBUJ" value="answer"> <span><code>readr</code></span></label><label><input type="radio" autocomplete="off" name="radio_YKOCVYQBUJ" value=""> <span><code>readcsv</code></span></label>
 </div>
 <p><strong>What R code prints the first few rows of the tibble called <code>san_fran_rob</code>?</strong></p>
-<div id="radio_ZFTLZZDDPK" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_ZFTLZZDDPK" value=""> <span><code>message(san_fran_rob)</code></span></label><label><input type="radio" autocomplete="off" name="radio_ZFTLZZDDPK" value=""> <span><code>summary(san_fran_rob)</code></span></label><label><input type="radio" autocomplete="off" name="radio_ZFTLZZDDPK" value=""> <span><code>peak_inside(san_fran_rob)</code></span></label><label><input type="radio" autocomplete="off" name="radio_ZFTLZZDDPK" value="answer"> <span><code>head(san_fran_rob)</code></span></label>
+<div id="radio_DVMRQGVDLN" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_DVMRQGVDLN" value=""> <span><code>message(san_fran_rob)</code></span></label><label><input type="radio" autocomplete="off" name="radio_DVMRQGVDLN" value=""> <span><code>summary(san_fran_rob)</code></span></label><label><input type="radio" autocomplete="off" name="radio_DVMRQGVDLN" value=""> <span><code>peak_inside(san_fran_rob)</code></span></label><label><input type="radio" autocomplete="off" name="radio_DVMRQGVDLN" value="answer"> <span><code>head(san_fran_rob)</code></span></label>
 </div>
 <p><strong>If we create an object using the code <code>number_ten &lt;- 10</code> and then run the code <code>number_ten &lt;- sqrt(2)</code>, what value will the object <code>number_ten</code> now have?</strong></p>
-<div id="radio_BOHLFMOXPW" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_BOHLFMOXPW" value=""> <span><code>10</code> (the number 10)</span></label><label><input type="radio" autocomplete="off" name="radio_BOHLFMOXPW" value="answer"> <span><code>1.414214</code> (the square root of 2)</span></label><label><input type="radio" autocomplete="off" name="radio_BOHLFMOXPW" value=""> <span><code>10.41421</code> (10 plus the square root of 2)</span></label><label><input type="radio" autocomplete="off" name="radio_BOHLFMOXPW" value=""> <span><code>14.14214</code> (10 times the square root of 2)</span></label>
+<div id="radio_KGDKVRJCIU" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_KGDKVRJCIU" value=""> <span><code>10</code> (the number 10)</span></label><label><input type="radio" autocomplete="off" name="radio_KGDKVRJCIU" value="answer"> <span><code>1.414214</code> (the square root of 2)</span></label><label><input type="radio" autocomplete="off" name="radio_KGDKVRJCIU" value=""> <span><code>10.41421</code> (10 plus the square root of 2)</span></label><label><input type="radio" autocomplete="off" name="radio_KGDKVRJCIU" value=""> <span><code>14.14214</code> (10 times the square root of 2)</span></label>
 </div>
 </div>
 </div>
@@ -829,7 +803,7 @@ Important
 <h2 data-number="3.3" class="anchored" data-anchor-id="selecting-columns"><span class="header-section-number">3.3</span> Selecting columns</h2>
 <p>In this section we will learn how to reduce the size of our data by selecting only the columns we need and discarding the rest. This can be particularly useful if we are working with a very-large dataset, or if we want to produce a table containing only some columns.</p>
 <p class="full-width-image">
-<img src="../images/dplyr.jpg" alt="Cartoon showing a furry monster with 'dplyr' written on it wrangling a bunch of smaller, unruly, monsters.">
+<img src="../images/dplyr.jpg" alt="Cartoon representing dplyr as a large creature organising several unruly smaller creatures, illustrating how the package helps organise data.">
 </p>
 <p>We can use the <code>select()</code> function from the <a href="https://dplyr.tidyverse.org/">dplyr package</a> (one of the packages that is loaded automatically when we call the <code>pacman::p_load(tidyverse)</code> function) to select columns.</p>
 <p>If we wanted to select just the <code>date</code> and <code>location_type</code> columns from the <code>agg_assault_data</code> we loaded in the previous section, we can use this code:</p>
@@ -857,10 +831,10 @@ Important
 # ℹ 8,686 more rows</code></pre>
 </div>
 </div>
-<p><a href="https://dplyr.tidyverse.org/" title="dplyr website"><img src="../images/dplyr.png" class="right-side-image"></a></p>
+<p><a href="https://dplyr.tidyverse.org/" aria-label="Visit the dplyr package website"><img src="../images/dplyr.png" class="right-side-image" alt=""></a></p>
 <p>In a previous section, we mentioned that the code needed to run (or <em>call</em>) a function in R has two parts: the function name followed by a pair of parentheses, inside which are zero or more <em>arguments</em> separated by commas. The arguments in the <code>select()</code> function (and many other functions in the <code>dplyr</code> package) work in a slightly different way to many other functions. Here, the first argument is the name of the data object that we want to select from. All the remaining arguments (here, <code>date</code> and <code>location_type</code>) are the names of the columns we want to select from the data.</p>
 <p>We can select as many columns as we want, by just adding the names of the columns separated by commas. The columns in our new dataset will appear in the order in which we specify them in the <code>select()</code> function.</p>
-<p>We can also use <code>select()</code> to rename columns at the same time as selecting them. For example, to select the columns <code>date</code> and <code>location_type</code> while also renaming <code>location_type</code> to be called <code>type</code>, can use:</p>
+<p>We can also use <code>select()</code> to rename columns at the same time as selecting them. For example, to select the columns <code>date</code> and <code>location_type</code> while also renaming <code>location_type</code> to be called <code>type</code>, we can use:</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -910,15 +884,19 @@ Important
 # ℹ 8,686 more rows</code></pre>
 </div>
 </div>
-<p>Remember that functions in R generally do not change existing objects, but instead produce (or <em>return</em>) new ones. This means if we want to store the result of this function so we can use it later, we have to assign the value returned by the function to a new object (or overwrite the existing object):</p>
+<p>Remember that functions in R generally do not change existing objects, but instead produce (or <em>return</em>) new ones. This means if we want to store the result of this function so we can use it later, we have to assign the value returned by the function to a new object (or overwrite the existing object, but this is a bad idea):</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-label="1"></a>agg_assault_locations <span class="ot">&lt;-</span> <span class="fu">select</span>(agg_assault_data, <span class="at">lon =</span> longitude, <span class="at">lat =</span> latitude)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-label="2"></a></span>
-<span id="cb23-3"><a href="#cb23-3" aria-label="3"></a><span class="fu">head</span>(agg_assault_locations)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-label="1"></a>agg_assault_locations <span class="ot">&lt;-</span> <span class="fu">select</span>(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-label="2"></a>  agg_assault_data,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-label="3"></a>  <span class="at">lon =</span> longitude,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-label="4"></a>  <span class="at">lat =</span> latitude</span>
+<span id="cb23-5"><a href="#cb23-5" aria-label="5"></a>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-label="6"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-label="7"></a><span class="fu">head</span>(agg_assault_locations)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 6 × 2
@@ -935,23 +913,23 @@ Important
 <div class="box reading">
 <p>You can learn more about selecting, filtering and arranging data using the functions in the <code>dplyr</code> package by reading this <a href="https://dplyr.tidyverse.org/articles/dplyr.html">Introduction to dplyr tutorial</a>.</p>
 </div>
-<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout callout-style-default callout-quiz callout-titled" title="Selecting and renaming columns">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Quiz</span><code>select()</code> and <code>rename()</code>
+<span class="screen-reader-only">Quiz</span>Selecting and renaming columns
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Which <code>dplyr</code> function allows you to change the name of columns while keeping all the columns in the original data</strong></p>
-<div id="radio_JRXLBYOXPJ" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_JRXLBYOXPJ" value="answer"> <span><code>rename()</code></span></label><label><input type="radio" autocomplete="off" name="radio_JRXLBYOXPJ" value=""> <span><code>select()</code></span></label>
+<div id="radio_JUWSSCTOOH" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_JUWSSCTOOH" value="answer"> <span><code>rename()</code></span></label><label><input type="radio" autocomplete="off" name="radio_JUWSSCTOOH" value=""> <span><code>select()</code></span></label>
 </div>
 <p><strong>Which <code>dplyr</code> function allows you to choose only some columns in the original data?</strong></p>
-<div id="radio_TTAXZMDVVF" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_TTAXZMDVVF" value=""> <span><code>rename()</code></span></label><label><input type="radio" autocomplete="off" name="radio_TTAXZMDVVF" value="answer"> <span><code>select()</code></span></label>
+<div id="radio_BPADZCSLOB" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_BPADZCSLOB" value=""> <span><code>rename()</code></span></label><label><input type="radio" autocomplete="off" name="radio_BPADZCSLOB" value="answer"> <span><code>select()</code></span></label>
 </div>
 </div>
 </div>
@@ -960,7 +938,7 @@ Important
 <h2 data-number="3.4" class="anchored" data-anchor-id="filtering-rows"><span class="header-section-number">3.4</span> Filtering rows</h2>
 <p>Often in crime mapping we will only be interested in part of a particular dataset. In the same way that we can <em>select</em> particular <em>columns</em> in our data, we can <em>filter</em> particular <em>rows</em> using the <code>filter()</code> function from the dplyr package.</p>
 <p class="full-width-image">
-<img src="../images/filter.jpg" alt="Cartoon showing monsters explaining how the filter() function works.">
+<img src="../images/filter.jpg" alt="Cartoon illustrating that filter keeps rows matching a condition while excluding rows that do not match.">
 </p>
 <p>If we were only interested in offences in the <code>agg_assault_data</code> dataset that occurred in residences, we could use <code>filter()</code>:</p>
 <div class="cell">
@@ -998,10 +976,11 @@ Important
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-label="1"></a><span class="fu">filter</span>(agg_assault_data, </span>
-<span id="cb27-2"><a href="#cb27-2" aria-label="2"></a>  location_category <span class="sc">==</span> <span class="st">"retail"</span>, </span>
-<span id="cb27-3"><a href="#cb27-3" aria-label="3"></a>  location_type <span class="sc">==</span> <span class="st">"convenience store"</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-label="4"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-label="1"></a><span class="fu">filter</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-label="2"></a>  agg_assault_data,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-label="3"></a>  location_category <span class="sc">==</span> <span class="st">"retail"</span>,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-label="4"></a>  location_type <span class="sc">==</span> <span class="st">"convenience store"</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-label="5"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 90 × 5
@@ -1020,13 +999,13 @@ Important
 # ℹ 80 more rows</code></pre>
 </div>
 </div>
-<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout callout-style-default callout-important callout-titled" title="`filter()` returns rows that meet all the criteria you specify">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span><code>filter()</code> returns rows that meet <em>all</em> the criteria you specify
+<span class="screen-reader-only">Important</span><code>filter()</code> returns rows that meet all the criteria you specify
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1040,8 +1019,8 @@ Important
 <pre><strong>R Console</strong></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-label="1"></a><span class="fu">filter</span>(</span>
-<span id="cb29-2"><a href="#cb29-2" aria-label="2"></a>  agg_assault_data, </span>
-<span id="cb29-3"><a href="#cb29-3" aria-label="3"></a>  location_type <span class="sc">==</span> <span class="st">"residence"</span>, </span>
+<span id="cb29-2"><a href="#cb29-2" aria-label="2"></a>  agg_assault_data,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-label="3"></a>  location_type <span class="sc">==</span> <span class="st">"residence"</span>,</span>
 <span id="cb29-4"><a href="#cb29-4" aria-label="4"></a>  date <span class="sc">&gt;=</span> <span class="fu">ymd</span>(<span class="st">"2019-07-01"</span>)</span>
 <span id="cb29-5"><a href="#cb29-5" aria-label="5"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -1062,8 +1041,8 @@ Important
 # ℹ 2,276 more rows</code></pre>
 </div>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout callout-style-default callout-tip callout-titled" title="What does the `ymd()` function do?">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1072,7 +1051,7 @@ Important
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The <code>ymd()</code> function from the lubridate package (which we will find out more about below) converts a date stored as a text value to a value that R understands represents a calendar date. The function is called <code>ymd()</code> because it processes dates that are stored in year-month-date format. We will learn more about working with dates in <a href="../16_mapping_time/index.html" class="quarto-xref"><span>Chapter 16</span></a>.</p>
 </div>
@@ -1085,8 +1064,8 @@ Important
 <pre><strong>R Console</strong></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-label="1"></a><span class="fu">filter</span>(</span>
-<span id="cb31-2"><a href="#cb31-2" aria-label="2"></a>  agg_assault_data, </span>
-<span id="cb31-3"><a href="#cb31-3" aria-label="3"></a>  location_category <span class="sc">==</span> <span class="st">"leisure"</span> <span class="sc">|</span> location_type <span class="sc">==</span> <span class="st">"mall"</span>, </span>
+<span id="cb31-2"><a href="#cb31-2" aria-label="2"></a>  agg_assault_data,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-label="3"></a>  location_category <span class="sc">==</span> <span class="st">"leisure"</span> <span class="sc">|</span> location_type <span class="sc">==</span> <span class="st">"mall"</span>,</span>
 <span id="cb31-4"><a href="#cb31-4" aria-label="4"></a>  date <span class="sc">&gt;=</span> <span class="fu">ymd</span>(<span class="st">"2019-07-01"</span>)</span>
 <span id="cb31-5"><a href="#cb31-5" aria-label="5"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -1106,7 +1085,7 @@ Important
 10 2019-11-27 14:14:00     -97.8     30.3 mall          retail           </code></pre>
 </div>
 </div>
-<p>If we want to filter offences that have any one of several different values of the same column, we can use the <code>%in%</code> (in) operator. To filter offences that occurred in either streets or publicly accessible open spaces:</p>
+<p>If we want to filter offences that have any one of several different values <em>in the same column</em>, we can use the <code>%in%</code> (in) operator. To filter offences that occurred in either streets <em>or</em> publicly accessible open spaces:</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -1186,28 +1165,35 @@ Important
 # ℹ 5,334 more rows</code></pre>
 </div>
 </div>
+<p>This might be slightly confusing, but what R is doing in this case is:</p>
+<ol type="1">
+<li>identifying whether each row in the <code>agg_assault_data</code> dataset has a missing value in the <code>location_type</code> column (using the <code>is.na()</code> function), returning either <code>TRUE</code> (if the value is missing) or <code>FALSE</code> (if the value is not missing) for each row, then</li>
+<li>reversing the <code>TRUE</code> and <code>FALSE</code> values (using the <code>!</code> operator), so that rows with missing values are now <code>FALSE</code> and rows without missing values are now <code>TRUE</code>, and finally</li>
+<li>returning only those rows for which the result of step 2 is <code>TRUE</code> (i.e.&nbsp;those rows that do not have missing values in the <code>location_type</code> column).</li>
+</ol>
+<p>The overall effect of this code is therefore to remove any rows that have missing values in the <code>location_type</code> column.</p>
 <p>We will see lots more examples of how to use <code>filter()</code> in future chapters.</p>
-<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout callout-style-default callout-quiz callout-titled" title="Filtering rows">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Quiz</span><code>filter()</code>
+<span class="screen-reader-only">Quiz</span>Filtering rows
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What is a vector (sometimes known as an atomic vector) in R?</strong></p>
-<div id="radio_WSFDGEDWFS" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_WSFDGEDWFS" value=""> <span>A type of object that stores a tibble or data frame</span></label><label><input type="radio" autocomplete="off" name="radio_WSFDGEDWFS" value="answer"> <span>A type of object that stores a one-dimensional sequence of values of the same type</span></label><label><input type="radio" autocomplete="off" name="radio_WSFDGEDWFS" value=""> <span>A type of object that stores a one-dimensional sequence of values that can be of different types</span></label><label><input type="radio" autocomplete="off" name="radio_WSFDGEDWFS" value=""> <span>There is no such thing as a vector in R</span></label>
+<div id="radio_OPKTCELGGJ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_OPKTCELGGJ" value=""> <span>A type of object that stores a tibble or data frame</span></label><label><input type="radio" autocomplete="off" name="radio_OPKTCELGGJ" value="answer"> <span>A type of object that stores a one-dimensional sequence of values of the same type</span></label><label><input type="radio" autocomplete="off" name="radio_OPKTCELGGJ" value=""> <span>A type of object that stores a one-dimensional sequence of values that can be of different types</span></label><label><input type="radio" autocomplete="off" name="radio_OPKTCELGGJ" value=""> <span>There is no such thing as a vector in R</span></label>
 </div>
 <p><strong>Which offences (rows) will be returned by the code <code>filter(agg_assault_data, location_type %in% c("restaurant", "mall"))</code>?</strong></p>
-<div id="radio_SHRNNAIVUS" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_SHRNNAIVUS" value=""> <span>Offences that occurred in both restaurants <em>and</em> in shopping malls (e.g.&nbsp;at restaurants inside shopping malls)</span></label><label><input type="radio" autocomplete="off" name="radio_SHRNNAIVUS" value=""> <span>Offences that occurred anywhere <em>except</em> restaurants or shopping malls (e.g.&nbsp;in homes)</span></label><label><input type="radio" autocomplete="off" name="radio_SHRNNAIVUS" value=""> <span>No offences, because the way the two criteria are combined is illogical</span></label><label><input type="radio" autocomplete="off" name="radio_SHRNNAIVUS" value="answer"> <span>Offences that occurred either in restaurants <em>or</em> in shopping malls</span></label>
+<div id="radio_NWTELFMWFU" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_NWTELFMWFU" value=""> <span>Offences that occurred in both restaurants <em>and</em> in shopping malls (e.g.&nbsp;at restaurants inside shopping malls)</span></label><label><input type="radio" autocomplete="off" name="radio_NWTELFMWFU" value=""> <span>Offences that occurred anywhere <em>except</em> restaurants or shopping malls (e.g.&nbsp;in homes)</span></label><label><input type="radio" autocomplete="off" name="radio_NWTELFMWFU" value=""> <span>No offences, because the way the two criteria are combined is illogical</span></label><label><input type="radio" autocomplete="off" name="radio_NWTELFMWFU" value="answer"> <span>Offences that occurred either in restaurants <em>or</em> in shopping malls</span></label>
 </div>
 <p><strong>What does the <code>&lt;=</code> operator mean?</strong></p>
-<div id="radio_UDVFZBOFHR" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_UDVFZBOFHR" value=""> <span>greater than</span></label><label><input type="radio" autocomplete="off" name="radio_UDVFZBOFHR" value=""> <span>less than</span></label><label><input type="radio" autocomplete="off" name="radio_UDVFZBOFHR" value="answer"> <span>less than or equal to</span></label><label><input type="radio" autocomplete="off" name="radio_UDVFZBOFHR" value=""> <span>greater than or equal to</span></label>
+<div id="radio_JSIWNAYUXM" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_JSIWNAYUXM" value=""> <span>greater than</span></label><label><input type="radio" autocomplete="off" name="radio_JSIWNAYUXM" value=""> <span>less than</span></label><label><input type="radio" autocomplete="off" name="radio_JSIWNAYUXM" value="answer"> <span>less than or equal to</span></label><label><input type="radio" autocomplete="off" name="radio_JSIWNAYUXM" value=""> <span>greater than or equal to</span></label>
 </div>
 </div>
 </div>
@@ -1216,9 +1202,9 @@ Important
 <h2 data-number="3.5" class="anchored" data-anchor-id="transforming-values"><span class="header-section-number">3.5</span> Transforming values</h2>
 <p>It is often useful to create new columns in our data, or change the values of existing columns. The <code>mutate()</code> function in the dplyr package gives us a way to transform existing columns in our dataset using almost any R function.</p>
 <p class="full-width-image">
-<img src="../images/mutate.jpg" alt="Cartoon showing furry monsters moving columns of data using a crane.">
+<img src="../images/mutate.jpg" alt="Cartoon illustrating mutate creating or changing columns in a table of data.">
 </p>
-<p><a href="https://lubridate.tidyverse.org/" title="lubridate website"><img src="../images/lubridate.png" class="right-side-image"></a></p>
+<p><a href="https://lubridate.tidyverse.org/" aria-label="Visit the lubridate package website"><img src="../images/lubridate.png" class="right-side-image" alt=""></a></p>
 <p>For example, say we wanted to create a new column in our aggravated-assault dataset specifying the day of the week on which each crime occurred. We can do this using the <code>wday()</code> function from the <a href="https://lubridate.tidyverse.org/">lubridate package</a> (using the <code>label = TRUE</code> argument to produce weekday names, rather than numbers):</p>
 <div class="cell">
 <div class="code-with-filename">
@@ -1252,7 +1238,7 @@ Important
 <pre><strong>R Console</strong></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-label="1"></a><span class="fu">mutate</span>(</span>
-<span id="cb41-2"><a href="#cb41-2" aria-label="2"></a>  agg_assault_data, </span>
+<span id="cb41-2"><a href="#cb41-2" aria-label="2"></a>  agg_assault_data,</span>
 <span id="cb41-3"><a href="#cb41-3" aria-label="3"></a>  <span class="at">date =</span> <span class="fu">as_date</span>(date),</span>
 <span id="cb41-4"><a href="#cb41-4" aria-label="4"></a>  <span class="at">weekday =</span> <span class="fu">wday</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb41-5"><a href="#cb41-5" aria-label="5"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1274,7 +1260,7 @@ Important
 # ℹ 8,686 more rows</code></pre>
 </div>
 </div>
-<p>You may sometimes want to change only some values in a column. With a categorical variable, we can change one value to another using the <code>case_match()</code> function from the dplyr package. Look at this code and use the comments (lines starting with <code>#</code>) to understand how it works.</p>
+<p>You may sometimes want to change only some values in a column. With a categorical variable, we can change one value to another using the <code>replace_values()</code> function from the dplyr package. Look at this code and use the comments (lines starting with <code>#</code>) to understand how it works.</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -1282,25 +1268,15 @@ Important
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-label="1"></a><span class="fu">mutate</span>(</span>
 <span id="cb43-2"><a href="#cb43-2" aria-label="2"></a>  agg_assault_data,</span>
-<span id="cb43-3"><a href="#cb43-3" aria-label="3"></a>  <span class="at">location_category =</span> <span class="fu">case_match</span>(</span>
-<span id="cb43-4"><a href="#cb43-4" aria-label="4"></a>    location_category, </span>
+<span id="cb43-3"><a href="#cb43-3" aria-label="3"></a>  <span class="at">location_category =</span> <span class="fu">replace_values</span>(</span>
+<span id="cb43-4"><a href="#cb43-4" aria-label="4"></a>    location_category,</span>
 <span id="cb43-5"><a href="#cb43-5" aria-label="5"></a>    <span class="co"># We specify which existing values we want to convert into which new values</span></span>
 <span id="cb43-6"><a href="#cb43-6" aria-label="6"></a>    <span class="co"># by providing the existing value on the left-hand side and the new value</span></span>
 <span id="cb43-7"><a href="#cb43-7" aria-label="7"></a>    <span class="co"># on the right hand side, separated by a tilde (~) character</span></span>
 <span id="cb43-8"><a href="#cb43-8" aria-label="8"></a>    <span class="st">"open space"</span> <span class="sc">~</span> <span class="st">"public open space"</span>,</span>
-<span id="cb43-9"><a href="#cb43-9" aria-label="9"></a>    <span class="st">"street"</span> <span class="sc">~</span> <span class="st">"street or road"</span>,</span>
-<span id="cb43-10"><a href="#cb43-10" aria-label="10"></a>    <span class="co"># If we want to keep the existing values for any values we have not</span></span>
-<span id="cb43-11"><a href="#cb43-11" aria-label="11"></a>    <span class="co"># specified, we can do that using the .default argument</span></span>
-<span id="cb43-12"><a href="#cb43-12" aria-label="12"></a>    <span class="at">.default =</span> location_category</span>
-<span id="cb43-13"><a href="#cb43-13" aria-label="13"></a>  )</span>
-<span id="cb43-14"><a href="#cb43-14" aria-label="14"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre data-code-line-numbers=""><code>Warning: There was 1 warning in `mutate()`.
-ℹ In argument: `location_category = case_match(...)`.
-Caused by warning:
-! `case_match()` was deprecated in dplyr 1.2.0.
-ℹ Please use `recode_values()` instead.</code></pre>
+<span id="cb43-9"><a href="#cb43-9" aria-label="9"></a>    <span class="st">"street"</span> <span class="sc">~</span> <span class="st">"street or road"</span></span>
+<span id="cb43-10"><a href="#cb43-10" aria-label="10"></a>  )</span>
+<span id="cb43-11"><a href="#cb43-11" aria-label="11"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 8,696 × 5
@@ -1319,23 +1295,40 @@ Caused by warning:
 # ℹ 8,686 more rows</code></pre>
 </div>
 </div>
+<p><code>replace_values()</code> keeps the existing value for any values that we have not specified.</p>
 <p>We could also make changes based on more-complicated sets of criteria using the <code>case_when()</code> function, but we will return to that in a future chapter.</p>
-<p>The R functions that you use inside <code>mutate()</code> must return the same number of values as there are rows in the dataset. This is true for most R functions (which are referred to as <em>vectorised</em> functions), but there are some – such as <code>mean()</code> and <code>max()</code> – that return a single value. These <em>summarising functions</em> cannot be used inside <code>mutate()</code> (you will see an error message if you try) but are instead used with the next data-wrangling function we will learn about: <code>summarise()</code>.</p>
+<p>Functions used inside <code>mutate()</code> usually return one value for every row in the dataset. These are known as <em>vectorised</em> functions. A function such as <code>mean()</code> or <code>max()</code> instead returns a single summary value. R can repeat that value in every row if it is used inside <code>mutate()</code>, but that is usually not what we want. To reduce several rows to one summary row, we use the next data-wrangling function: <code>summarise()</code>.</p>
+<div class="callout callout-style-default callout-quiz callout-titled" title="Transforming values">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Quiz</span>Transforming values
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>What does <code>mutate(agg_assault_data, weekday = wday(date, label = TRUE))</code> return?</strong></p>
+<div id="radio_BYKYPGAVNM" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_BYKYPGAVNM" value=""> <span>It permanently changes the original data, even if the result is not assigned.</span></label><label><input type="radio" autocomplete="off" name="radio_BYKYPGAVNM" value="answer"> <span>It returns a tibble containing a new or changed column.</span></label><label><input type="radio" autocomplete="off" name="radio_BYKYPGAVNM" value=""> <span>It keeps only rows that contain the new value.</span></label><label><input type="radio" autocomplete="off" name="radio_BYKYPGAVNM" value=""> <span>It changes only the name of an existing column.</span></label>
+</div>
+</div>
+</div>
 </section>
 <section id="sec-summarise" class="level2" data-number="3.6">
 <h2 data-number="3.6" class="anchored" data-anchor-id="sec-summarise"><span class="header-section-number">3.6</span> Summarising rows</h2>
 <p>Summarising data is often useful in crime analysis. We can use the <code>summarise()</code> function from the dplyr package to produce summaries of different columns in our data. There is an identical function called <code>summarize()</code> so that you do not have to remember whether to use the US or British spelling.</p>
-<p>By default, <code>summarise()</code> collapses data into a single row, with each column summarised using a function that you specify. For example, suppose you want to find out which police station a specialist squad should be based at to most easily respond to reports of serious assaults. You might do this by working out the weighted centre of all the offence locations, i.e.&nbsp;the means of the longitudes and latitudes for all the crimes. You could then base the squad at the police station that was closest to the weighted centre.</p>
+<p>By default, <code>summarise()</code> collapses data into a single row, with each column summarised using a function that you specify. For example, we can calculate the mean longitude and latitude of the aggravated-assault locations.</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-label="1"></a><span class="fu">summarise</span>(</span>
-<span id="cb46-2"><a href="#cb46-2" aria-label="2"></a>  agg_assault_data, </span>
-<span id="cb46-3"><a href="#cb46-3" aria-label="3"></a>  <span class="at">mean_lng =</span> <span class="fu">mean</span>(longitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb46-4"><a href="#cb46-4" aria-label="4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb46-5"><a href="#cb46-5" aria-label="5"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-label="1"></a><span class="fu">summarise</span>(</span>
+<span id="cb45-2"><a href="#cb45-2" aria-label="2"></a>  agg_assault_data,</span>
+<span id="cb45-3"><a href="#cb45-3" aria-label="3"></a>  <span class="at">mean_lng =</span> <span class="fu">mean</span>(longitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb45-4"><a href="#cb45-4" aria-label="4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb45-5"><a href="#cb45-5" aria-label="5"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 1 × 2
@@ -1344,8 +1337,8 @@ Caused by warning:
 1    -97.7     30.3</code></pre>
 </div>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout callout-style-default callout-tip callout-titled" title="What does the argument `na.rm = TRUE` do?">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1354,7 +1347,7 @@ Caused by warning:
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Lots of functions in R have an argument called <code>na.rm</code> that can be set to either <code>TRUE</code> or <code>FALSE</code>. Setting <code>na.rm = TRUE</code> in this case specifies that the <code>mean()</code> function should remove (<code>rm</code>) any missing (<code>NA</code>) values before calculating the mean.</p>
 <p>If we do not specify this and our data contain any missing values, the <code>mean()</code> function will return <code>NA</code>. Functions in R do this because it is not possible to completely answer the question ‘what is the mean of these values?’ if some of the values are missing.</p>
@@ -1368,12 +1361,12 @@ Caused by warning:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-label="1"></a><span class="fu">summarise</span>(</span>
-<span id="cb48-2"><a href="#cb48-2" aria-label="2"></a>  agg_assault_data,</span>
-<span id="cb48-3"><a href="#cb48-3" aria-label="3"></a>  <span class="at">mean_lng =</span> <span class="fu">mean</span>(longitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb48-4"><a href="#cb48-4" aria-label="4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb48-5"><a href="#cb48-5" aria-label="5"></a>  <span class="at">.by =</span> location_category</span>
-<span id="cb48-6"><a href="#cb48-6" aria-label="6"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-label="1"></a><span class="fu">summarise</span>(</span>
+<span id="cb47-2"><a href="#cb47-2" aria-label="2"></a>  agg_assault_data,</span>
+<span id="cb47-3"><a href="#cb47-3" aria-label="3"></a>  <span class="at">mean_lng =</span> <span class="fu">mean</span>(longitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb47-4"><a href="#cb47-4" aria-label="4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb47-5"><a href="#cb47-5" aria-label="5"></a>  <span class="at">.by =</span> location_category</span>
+<span id="cb47-6"><a href="#cb47-6" aria-label="6"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 12 × 3
@@ -1399,12 +1392,12 @@ Caused by warning:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-label="1"></a><span class="fu">summarise</span>(</span>
-<span id="cb50-2"><a href="#cb50-2" aria-label="2"></a>  agg_assault_data,</span>
-<span id="cb50-3"><a href="#cb50-3" aria-label="3"></a>  <span class="at">mean_lng =</span> <span class="fu">mean</span>(longitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb50-4"><a href="#cb50-4" aria-label="4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb50-5"><a href="#cb50-5" aria-label="5"></a>  <span class="at">.by =</span> <span class="fu">c</span>(location_category, location_type)</span>
-<span id="cb50-6"><a href="#cb50-6" aria-label="6"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-label="1"></a><span class="fu">summarise</span>(</span>
+<span id="cb49-2"><a href="#cb49-2" aria-label="2"></a>  agg_assault_data,</span>
+<span id="cb49-3"><a href="#cb49-3" aria-label="3"></a>  <span class="at">mean_lng =</span> <span class="fu">mean</span>(longitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb49-4"><a href="#cb49-4" aria-label="4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb49-5"><a href="#cb49-5" aria-label="5"></a>  <span class="at">.by =</span> <span class="fu">c</span>(location_category, location_type)</span>
+<span id="cb49-6"><a href="#cb49-6" aria-label="6"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 24 × 4
@@ -1431,7 +1424,7 @@ Caused by warning:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-label="1"></a><span class="fu">summarise</span>(agg_assault_data, <span class="at">n =</span> <span class="fu">n</span>(), <span class="at">.by =</span> <span class="fu">c</span>(location_category, location_type))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-label="1"></a><span class="fu">summarise</span>(agg_assault_data, <span class="at">n =</span> <span class="fu">n</span>(), <span class="at">.by =</span> <span class="fu">c</span>(location_category, location_type))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 24 × 3
@@ -1451,14 +1444,13 @@ Caused by warning:
 </div>
 </div>
 <p>In this code, the <code>n()</code> function simply returns the number of rows of data in each group, i.e.&nbsp;the number of rows with each unique combination of values of <code>location_category</code> and <code>location_type</code>.</p>
-<p>Since counting the number of rows in each group a dataset is a very common task, dplyr includes another function called <code>count()</code> that allows you to do the same thing as in the code above, but with slightly less typing:</p>
-<p>So if you wanted to know how many aggravated assaults had occurred in each location category and type, you could this code instead of using <code>summarise()</code>:</p>
+<p>Since counting the number of rows in each group in a dataset is a very common task, dplyr includes another function called <code>count()</code> that allows you to do the same thing as in the code above, but with slightly less typing. So if you wanted to know how many aggravated assaults had occurred in each location category and type, you could use this code instead of using <code>summarise()</code>:</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-label="1"></a><span class="fu">count</span>(agg_assault_data, location_category, location_type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-label="1"></a><span class="fu">count</span>(agg_assault_data, location_category, location_type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 24 × 3
@@ -1478,6 +1470,22 @@ Caused by warning:
 </div>
 </div>
 <p>Note that the first argument of <code>count()</code> is the dataset, and every subsequent argument specifies another variable that should be used to group the data.</p>
+<div class="callout callout-style-default callout-quiz callout-titled" title="Summarising and counting rows">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Quiz</span>Summarising and counting rows
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>What does <code>count(agg_assault_data, location_category, location_type)</code> return?</strong></p>
+<div id="radio_ZDZMZPKRLJ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_ZDZMZPKRLJ" value=""> <span>One row for every offence in the original data</span></label><label><input type="radio" autocomplete="off" name="radio_ZDZMZPKRLJ" value="answer"> <span>One row for each unique combination of location category and location type</span></label><label><input type="radio" autocomplete="off" name="radio_ZDZMZPKRLJ" value=""> <span>One column for each unique location category</span></label><label><input type="radio" autocomplete="off" name="radio_ZDZMZPKRLJ" value=""> <span>Only rows that contain no missing values</span></label>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="arranging-rows" class="level2" data-number="3.7">
@@ -1488,7 +1496,7 @@ Caused by warning:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-label="1"></a><span class="fu">arrange</span>(agg_assault_data, date)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-label="1"></a><span class="fu">arrange</span>(agg_assault_data, date)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 8,696 × 5
@@ -1513,7 +1521,7 @@ Caused by warning:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-label="1"></a><span class="fu">arrange</span>(agg_assault_data, <span class="fu">desc</span>(date))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-label="1"></a><span class="fu">arrange</span>(agg_assault_data, <span class="fu">desc</span>(date))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 8,696 × 5
@@ -1538,7 +1546,7 @@ Caused by warning:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-label="1"></a><span class="fu">arrange</span>(agg_assault_data, date, <span class="fu">desc</span>(location_type), location_category)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-label="1"></a><span class="fu">arrange</span>(agg_assault_data, date, <span class="fu">desc</span>(location_type), location_category)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 8,696 × 5
@@ -1557,7 +1565,7 @@ Caused by warning:
 # ℹ 8,686 more rows</code></pre>
 </div>
 </div>
-<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout callout-style-default callout-quiz callout-titled" title="Arranging rows in data">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -1567,6 +1575,10 @@ Caused by warning:
 </div>
 </div>
 <div class="callout-body-container callout-body">
+<p><strong>Which code arranges <code>agg_assault_data</code> from the latest date to the earliest?</strong></p>
+<div id="radio_YEBBPWXTBL" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_YEBBPWXTBL" value="answer"> <span><code>arrange(agg_assault_data, desc(date))</code></span></label><label><input type="radio" autocomplete="off" name="radio_YEBBPWXTBL" value=""> <span><code>arrange(agg_assault_data, date)</code></span></label><label><input type="radio" autocomplete="off" name="radio_YEBBPWXTBL" value=""> <span><code>filter(agg_assault_data, desc(date))</code></span></label><label><input type="radio" autocomplete="off" name="radio_YEBBPWXTBL" value=""> <span><code>arrange(desc(date), agg_assault_data)</code></span></label>
+</div>
 <p>In the R Console, type the code necessary to arrange <code>agg_assault_data</code> in order of latitude, in descending order (from largest to smallest). Once you’ve tried writing the code, if you need help you can click the ‘Solution’ button below.</p>
 <div class="webex-solution">
 <button>
@@ -1577,25 +1589,40 @@ Solution
 </div>
 </div>
 </section>
-<section id="saving-data" class="level2" data-number="3.8">
-<h2 data-number="3.8" class="anchored" data-anchor-id="saving-data"><span class="header-section-number">3.8</span> Saving data</h2>
+<section id="sec-saving-data" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="sec-saving-data"><span class="header-section-number">3.8</span> Saving data</h2>
 <p>Once we have finished wrangling a particular dataset, it is often useful to save it to a file so that we can use it again in future without going through all the steps of data wrangling again.</p>
 <p>Most R functions that begin with <code>read_</code> (like <code>read_csv()</code> and <code>read_excel()</code>) have equivalent functions that begin <code>write_</code> and which save data into a particular file format. In this example, we will use the <code>write_csv()</code> function from the readr package, which is loaded when we load the tidyverse package.</p>
-<p>Just as <code>read_csv()</code> can read files from a variety of different locations, so <code>write_csv()</code> can write files to different locations. Look at this code and use the comments (lines beginning with <code>#</code>) to understand the different options for saving data.</p>
+<p>In <a href="../01_getting_started/index.html#sec-create-project" class="quarto-xref"><span>Section 1.5</span></a> we learned that it is important to keep our original downloaded data files <em>sterile</em>, i.e.&nbsp;not to change them after we have downloaded them. That means we can always go back to the original data if we need to. To help with that, we will keep any files we save after wrangling in a separate sub-folder inside the <code>data</code> folder called <code>processed</code>. This is a common practice in data analysis, and it is good to get into the habit of doing it from the start.</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
-<pre><strong>R Console</strong></pre>
+<pre><strong>chapter_03b.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-label="1"></a><span class="co"># We can write data to a file in the same folder as our R script</span></span>
-<span id="cb62-2"><a href="#cb62-2" aria-label="2"></a><span class="fu">write_csv</span>(agg_assault_data, <span class="st">"fort_worth_agg_assault.csv"</span>)</span>
-<span id="cb62-3"><a href="#cb62-3" aria-label="3"></a></span>
-<span id="cb62-4"><a href="#cb62-4" aria-label="4"></a><span class="co"># Or another folder on your computer ('../../' is short for the parent folder of</span></span>
-<span id="cb62-5"><a href="#cb62-5" aria-label="5"></a><span class="co"># the parent folder of the current folder)</span></span>
-<span id="cb62-6"><a href="#cb62-6" aria-label="6"></a><span class="fu">write_csv</span>(agg_assault_data, <span class="st">"../../fort_worth_agg_assault.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-label="1"></a><span class="co"># Save the processed data without changing the original file</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-label="2"></a><span class="fu">write_csv</span>(</span>
+<span id="cb61-3"><a href="#cb61-3" aria-label="3"></a>  agg_assault_counts,</span>
+<span id="cb61-4"><a href="#cb61-4" aria-label="4"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"processed"</span>, <span class="st">"aggravated_assault_counts.csv"</span>)</span>
+<span id="cb61-5"><a href="#cb61-5" aria-label="5"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
-<p>There are corresponding write functions for other types of data (which we will come back to when we learn how to handle spatial data), but in this course we will store all non-spatial data in CSV format because it can be read by many different programs.</p>
+<p>There are corresponding write functions for other types of data (which we will come back to when we learn how to handle spatial data), but in this course we will store most non-spatial data in CSV format because it can be read by many different programs.</p>
+<div class="callout callout-style-default callout-quiz callout-titled" title="Saving processed data">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Quiz</span>Saving processed data
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Why should wrangled data be saved in <code>data/processed</code> rather than <code>data/raw</code>?</strong></p>
+<div id="radio_WRKXMXMAYL" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_WRKXMXMAYL" value=""> <span>It replaces the original downloaded file with the processed data.</span></label><label><input type="radio" autocomplete="off" name="radio_WRKXMXMAYL" value=""> <span>It saves the R script in the processed-data folder.</span></label><label><input type="radio" autocomplete="off" name="radio_WRKXMXMAYL" value="answer"> <span>It keeps derived data separate while preserving the original download.</span></label><label><input type="radio" autocomplete="off" name="radio_WRKXMXMAYL" value=""> <span>It allows <code>write_csv()</code> to save an Excel workbook.</span></label>
+</div>
+</div>
+</div>
 </section>
 <section id="sec-pipe-operator" class="level2" data-number="3.9">
 <h2 data-number="3.9" class="anchored" data-anchor-id="sec-pipe-operator"><span class="header-section-number">3.9</span> Stringing functions together</h2>
@@ -1606,58 +1633,67 @@ Solution
 <div class="code-with-filename-file">
 <pre><strong>chapter_03a.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-label="1"></a><span class="co"># Select only the columns we need</span></span>
-<span id="cb63-2"><a href="#cb63-2" aria-label="2"></a>robbery2 <span class="ot">&lt;-</span> <span class="fu">select</span>(san_fran_rob, date_time)</span>
-<span id="cb63-3"><a href="#cb63-3" aria-label="3"></a></span>
-<span id="cb63-4"><a href="#cb63-4" aria-label="4"></a><span class="co"># Filter only those offences that occurred in the first quarter of 2019</span></span>
-<span id="cb63-5"><a href="#cb63-5" aria-label="5"></a>robbery3 <span class="ot">&lt;-</span> <span class="fu">filter</span>(robbery2, <span class="fu">as_date</span>(date_time) <span class="sc">&lt;=</span> <span class="fu">ymd</span>(<span class="st">"2019-03-31"</span>))</span>
-<span id="cb63-6"><a href="#cb63-6" aria-label="6"></a></span>
-<span id="cb63-7"><a href="#cb63-7" aria-label="7"></a><span class="co"># Create a new weekday variable</span></span>
-<span id="cb63-8"><a href="#cb63-8" aria-label="8"></a>robbery4 <span class="ot">&lt;-</span> <span class="fu">mutate</span>(robbery3, <span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb63-9"><a href="#cb63-9" aria-label="9"></a></span>
-<span id="cb63-10"><a href="#cb63-10" aria-label="10"></a><span class="co"># Count how many offences occurred on each weekday</span></span>
-<span id="cb63-11"><a href="#cb63-11" aria-label="11"></a>q1_weekday_counts <span class="ot">&lt;-</span> <span class="fu">count</span>(robbery4, weekday)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-label="1"></a><span class="co"># Select only the columns we need</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-label="2"></a>robbery2 <span class="ot">&lt;-</span> <span class="fu">select</span>(san_fran_rob, date_time)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-label="3"></a></span>
+<span id="cb62-4"><a href="#cb62-4" aria-label="4"></a><span class="co"># Filter only those offences that occurred in the first quarter of 2019</span></span>
+<span id="cb62-5"><a href="#cb62-5" aria-label="5"></a>robbery3 <span class="ot">&lt;-</span> <span class="fu">filter</span>(robbery2, <span class="fu">as_date</span>(date_time) <span class="sc">&lt;=</span> <span class="fu">ymd</span>(<span class="st">"2019-03-31"</span>))</span>
+<span id="cb62-6"><a href="#cb62-6" aria-label="6"></a></span>
+<span id="cb62-7"><a href="#cb62-7" aria-label="7"></a><span class="co"># Create a new weekday variable</span></span>
+<span id="cb62-8"><a href="#cb62-8" aria-label="8"></a>robbery4 <span class="ot">&lt;-</span> <span class="fu">mutate</span>(robbery3, <span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb62-9"><a href="#cb62-9" aria-label="9"></a></span>
+<span id="cb62-10"><a href="#cb62-10" aria-label="10"></a><span class="co"># Count how many offences occurred on each weekday</span></span>
+<span id="cb62-11"><a href="#cb62-11" aria-label="11"></a>q1_weekday_counts <span class="ot">&lt;-</span> <span class="fu">count</span>(robbery4, weekday)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
-<p>This code works, but involves creating six new objects, even though we only need the final <code>q1_weekday_counts</code> object for our analysis. You may notice that the first argument expected by <code>select()</code>, <code>filter()</code>, <code>mutate()</code> and <code>count()</code> is always the data tibble produced by the previous step. For example, the <code>filter()</code> function on line 5 of this code uses the <code>robbery2</code> object created by line 2 of the code.</p>
-<p>Whenever you write code that (a) consists of several sequential steps, and (b) each step uses the data produced by the previous step, there is a better way to do it. This method uses the <code>|&gt;</code> (or <em>pipe</em>) operator. The pipe operator works by using the result of the code on the left-hand side of the pipe as the first argument to a function on the right-hand side. So the code <code>x  |&gt; fun1() |&gt; fun2()</code> starts with an object called <code>x</code>, uses that as the input to the function <code>fun1()</code>, then passes the result produced by <code>fun1()</code> and uses that as the input to <code>fun2()</code>.</p>
+<p>This code works, but creates three intermediate objects as well as the final <code>q1_weekday_counts</code> object. Intermediate objects can be useful when debugging a complicated analysis. However, they also create the substantial risk that you will accidentally use the wrong intermediate object in a later step, which can often cause errors in your code that are hard to fix. For that reason, it is generally better to avoid creating intermediate objects unless you actually need them.</p>
+<p>Notice that:</p>
+<ol type="1">
+<li>the first argument expected by <code>select()</code>, <code>filter()</code>, <code>mutate()</code> and <code>count()</code> is always the tibble produced by the previous step and</li>
+<li>once each of <code>robbery2</code>, <code>robbery3</code> and <code>robbery4</code> has been created, it is never used again in the code.</li>
+</ol>
+<p>For example, <code>filter()</code> uses the <code>robbery2</code> object created by <code>select()</code>, but after that <code>robbery2</code> is never used again. Whenever you write code that consists of several sequential steps in which (a) each step uses the data produced by the previous step and (b) the data produced by each step is only used once, there is a better way to do it. This method uses the <code>|&gt;</code> (or <em>pipe</em>) operator. The pipe operator works by using the result of the code on the left-hand side of the pipe as the first argument to a function on the right-hand side. So the code <code>x  |&gt; fun1() |&gt; fun2()</code> starts with an object called <code>x</code>, uses that as the input to the function <code>fun1()</code>, then passes the result produced by <code>fun1()</code> and uses that as the input to <code>fun2()</code>.</p>
 <p>It may be useful to read the pipe operator as ‘and then’, since piped code does the first thing <em>and then</em> the second thing with the result <em>and then</em> the third thing with the result of that, and so on. Piped code (sometimes called a <em>pipeline</em>) is a lot like the series of steps in a recipe.</p>
-<p>Delete all the code from the file <code>chapter_03a.R</code>, since we are now going to replace it with a piped version of the same code. This pipeline of code is better because it is shorter than the previous code, is easier to maintain and (once you get used to the pipeline) is easier to understand.</p>
+<p>For example, in the <code>chapter_03a.R</code> file, we can replace the four chunks of code that create the <code>robbery2</code>, <code>robbery3</code>, <code>robbery4</code> and <code>q1_weekday_counts</code> objects with a single code pipeline. Look at this code and the list below that explains what each line does.</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_03a.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-label="1"></a><span class="co"># Load packages</span></span>
-<span id="cb64-2"><a href="#cb64-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse)</span>
-<span id="cb64-3"><a href="#cb64-3" aria-label="3"></a></span>
-<span id="cb64-4"><a href="#cb64-4" aria-label="4"></a><span class="co"># Load data</span></span>
-<span id="cb64-5"><a href="#cb64-5" aria-label="5"></a>san_fran_rob <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"</span>)</span>
-<span id="cb64-6"><a href="#cb64-6" aria-label="6"></a></span>
-<span id="cb64-7"><a href="#cb64-7" aria-label="7"></a><span class="co"># Produce counts of robberies each weekday</span></span>
-<span id="cb64-8"><a href="#cb64-8" aria-label="8"></a>q1_weekday_counts <span class="ot">&lt;-</span> san_fran_rob <span class="sc">|&gt;</span> </span>
-<span id="cb64-9"><a href="#cb64-9" aria-label="9"></a>  <span class="fu">select</span>(<span class="sc">-</span>offense_type) <span class="sc">|&gt;</span> </span>
-<span id="cb64-10"><a href="#cb64-10" aria-label="10"></a>  <span class="fu">filter</span>(<span class="fu">as_date</span>(date_time) <span class="sc">&lt;=</span> <span class="fu">ymd</span>(<span class="st">"2019-03-31"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb64-11"><a href="#cb64-11" aria-label="11"></a>  <span class="fu">mutate</span>(<span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb64-12"><a href="#cb64-12" aria-label="12"></a>  <span class="fu">count</span>(weekday)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="annotated-cell-34" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-34-1"><a href="#annotated-cell-34-1" aria-label="1"></a><span class="co"># Produce counts of robberies each weekday</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-34" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-34-2" class="code-annotation-target"><a href="#annotated-cell-34-2" aria-label="2"></a>q1_weekday_counts <span class="ot">&lt;-</span> san_fran_rob <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-34-3"><a href="#annotated-cell-34-3" aria-label="3"></a>  <span class="fu">filter</span>(</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-34" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-34-4" class="code-annotation-target"><a href="#annotated-cell-34-4" aria-label="4"></a></span>
+<span id="annotated-cell-34-5"><a href="#annotated-cell-34-5" aria-label="5"></a>    <span class="fu">as_date</span>(date_time) <span class="sc">&gt;=</span> <span class="fu">ymd</span>(<span class="st">"2019-01-01"</span>),</span>
+<span id="annotated-cell-34-6"><a href="#annotated-cell-34-6" aria-label="6"></a>    <span class="fu">as_date</span>(date_time) <span class="sc">&lt;=</span> <span class="fu">ymd</span>(<span class="st">"2019-03-31"</span>)</span>
+<span id="annotated-cell-34-7"><a href="#annotated-cell-34-7" aria-label="7"></a>  ) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-34" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-34-8" class="code-annotation-target"><a href="#annotated-cell-34-8" aria-label="8"></a>  <span class="fu">mutate</span>(<span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-34" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-34-9" class="code-annotation-target"><a href="#annotated-cell-34-9" aria-label="9"></a>  <span class="fu">count</span>(weekday)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</div>
-<div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre data-code-line-numbers=""><code>Rows: 951 Columns: 5
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-chr  (1): offense_type
-dbl  (3): uid, longitude, latitude
-dttm (1): date_time
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<div class="cell-annotation">
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-34" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-34" data-code-lines="2" data-code-annotation="1">Take the <code>san_fran_rob</code> dataset, <em>and then</em></span>
+</dd>
+<dt data-target-cell="annotated-cell-34" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-34" data-code-lines="4,5,6,7" data-code-annotation="2">filter the rows to keep only those that occurred in the first quarter of 2019, <em>and then</em></span>
+</dd>
+<dt data-target-cell="annotated-cell-34" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-34" data-code-lines="8" data-code-annotation="3">create a new column called <code>weekday</code> that contains the day of the week on which each robbery occurred, <em>and then</em></span>
+</dd>
+<dt data-target-cell="annotated-cell-34" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-cell="annotated-cell-34" data-code-lines="9" data-code-annotation="4">count how many robberies occurred on each weekday.</span>
+</dd>
+</dl>
 </div>
 </div>
 <p>You might not find the pipe operator completely intuitive at the moment, but it will become easier as you see more examples in future chapters.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout callout-style-default callout-tip callout-titled" title="What about the `%>%` pipe operator?">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1666,28 +1702,142 @@ dttm (1): date_time
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>If you have learned any R coding before, you might have learned to use the <code>%&gt;%</code> pipe operator from the magrittr package. The <code>%&gt;%</code> pipe operator was introduced several years ago to allow people to construct pipelines of code in R. The <code>%&gt;%</code> operator was so widely used that the team that writes the R programming language decided to provide the <code>|&gt;</code> pipe operator in R itself, to avoid the need to load the magrittr package. You might sometimes see the <code>|&gt;</code> referred to as the <em>native</em> pipe operator.</p>
-<p>You will still see the <code>%&gt;%</code> pipe operator used in lots of R code examples online. In almost all cases, when you see <code>%&gt;%</code> you can replace it with the R pipe operator <code>|&gt;</code>, since they both work in very similar ways.</p>
+<p>You will still see the <code>%&gt;%</code> pipe operator used in lots of R code examples online, and in code produced by AI tools that were trained on old data. In many straightforward pipelines, <code>%&gt;%</code> can be replaced with the R pipe operator <code>|&gt;</code>, since they work in similar ways. There are some differences between them, so do not assume every advanced example can be converted without changes.</p>
 </div>
 </div>
 </div>
-<p>Save the <code>chapter_03a.R</code> file, then restart R to start a new session by clicking on the <code>Session</code> menu and then clicking <code>Restart R</code>. This creates a blank canvas for the next chapter.</p>
+<div class="callout callout-style-default callout-quiz callout-titled" title="Constructing pipelines">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Quiz</span>Constructing pipelines
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>What does the pipe operator <code>|&gt;</code> do?</strong></p>
+<div id="radio_ITBUKPALKE" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_ITBUKPALKE" value=""> <span>It saves each intermediate result as a separate file.</span></label><label><input type="radio" autocomplete="off" name="radio_ITBUKPALKE" value="answer"> <span>It passes the result of one step to the next function.</span></label><label><input type="radio" autocomplete="off" name="radio_ITBUKPALKE" value=""> <span>It automatically corrects errors in each function.</span></label><label><input type="radio" autocomplete="off" name="radio_ITBUKPALKE" value=""> <span>It changes temporary Console code into permanent code.</span></label>
+</div>
+</div>
+</div>
 </section>
-<section id="in-summary" class="level2" data-number="3.10">
-<h2 data-number="3.10" class="anchored" data-anchor-id="in-summary"><span class="header-section-number">3.10</span> In summary</h2>
-<p>In this chapter, you have learned how to wrangle data in R using functions from packages in the <code>tidyverse</code> suite of packages. You can now construct a complete pipeline of R code to take raw data and transform it into the format(s) we need to effectively map crimes.</p>
+<section id="complete-scripts" class="level2" data-number="3.10">
+<h2 data-number="3.10" class="anchored" data-anchor-id="complete-scripts"><span class="header-section-number">3.10</span> Complete scripts</h2>
+<p>As a final exercise, use the information in <a href="#sec-saving-data" class="quarto-xref"><span>Section 3.8</span></a> to add to <code>chapter_03a.R</code> the code needed to save the weekday counts in a new file called <code>q1_weekday_counts.csv</code> in the <code>processed</code> sub-folder within the <code>data</code> folder.</p>
+<p>Once you’ve done that, the <code>chapter_03a.R</code> script file should look like this:</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter_03a.R</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-label="1"></a><span class="co"># Load packages</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, readxl, tidyverse)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-label="3"></a></span>
+<span id="cb63-4"><a href="#cb63-4" aria-label="4"></a><span class="co"># Download the raw data</span></span>
+<span id="cb63-5"><a href="#cb63-5" aria-label="5"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb63-6"><a href="#cb63-6" aria-label="6"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"san_francisco_robbery.csv"</span>))</span>
+<span id="cb63-7"><a href="#cb63-7" aria-label="7"></a></span>
+<span id="cb63-8"><a href="#cb63-8" aria-label="8"></a><span class="co"># Load the raw data</span></span>
+<span id="cb63-9"><a href="#cb63-9" aria-label="9"></a>san_fran_rob <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"san_francisco_robbery.csv"</span>))</span>
+<span id="cb63-10"><a href="#cb63-10" aria-label="10"></a></span>
+<span id="cb63-11"><a href="#cb63-11" aria-label="11"></a><span class="co"># Produce counts of robberies each weekday</span></span>
+<span id="cb63-12"><a href="#cb63-12" aria-label="12"></a>q1_weekday_counts <span class="ot">&lt;-</span> san_fran_rob <span class="sc">|&gt;</span></span>
+<span id="cb63-13"><a href="#cb63-13" aria-label="13"></a>  <span class="fu">filter</span>(</span>
+<span id="cb63-14"><a href="#cb63-14" aria-label="14"></a>    <span class="fu">as_date</span>(date_time) <span class="sc">&gt;=</span> <span class="fu">ymd</span>(<span class="st">"2019-01-01"</span>),</span>
+<span id="cb63-15"><a href="#cb63-15" aria-label="15"></a>    <span class="fu">as_date</span>(date_time) <span class="sc">&lt;=</span> <span class="fu">ymd</span>(<span class="st">"2019-03-31"</span>)</span>
+<span id="cb63-16"><a href="#cb63-16" aria-label="16"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb63-17"><a href="#cb63-17" aria-label="17"></a>  <span class="fu">mutate</span>(<span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb63-18"><a href="#cb63-18" aria-label="18"></a>  <span class="fu">count</span>(weekday)</span>
+<span id="cb63-19"><a href="#cb63-19" aria-label="19"></a></span>
+<span id="cb63-20"><a href="#cb63-20" aria-label="20"></a><span class="co"># Save the processed data</span></span>
+<span id="cb63-21"><a href="#cb63-21" aria-label="21"></a><span class="fu">write_csv</span>(</span>
+<span id="cb63-22"><a href="#cb63-22" aria-label="22"></a>  q1_weekday_counts,</span>
+<span id="cb63-23"><a href="#cb63-23" aria-label="23"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"processed"</span>, <span class="st">"q1_weekday_counts.csv"</span>)</span>
+<span id="cb63-24"><a href="#cb63-24" aria-label="24"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<p>Now complete <code>chapter_03b.R</code> by:</p>
+<ol type="1">
+<li>adding a pipeline that counts aggravated assaults by location category and weekday, then</li>
+<li>adding the code needed to save the result in a new file called <code>aggravated_assault_counts.csv</code>, stored in the relevant folder.</li>
+</ol>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter_03b.R</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-label="1"></a><span class="co"># Load packages</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, readxl, tidyverse)</span>
+<span id="cb64-3"><a href="#cb64-3" aria-label="3"></a></span>
+<span id="cb64-4"><a href="#cb64-4" aria-label="4"></a><span class="co"># Download the raw data</span></span>
+<span id="cb64-5"><a href="#cb64-5" aria-label="5"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/aggravated_assaults.xlsx"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb64-6"><a href="#cb64-6" aria-label="6"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"aggravated_assaults.xlsx"</span>))</span>
+<span id="cb64-7"><a href="#cb64-7" aria-label="7"></a></span>
+<span id="cb64-8"><a href="#cb64-8" aria-label="8"></a><span class="co"># Load the Austin data from the Excel workbook</span></span>
+<span id="cb64-9"><a href="#cb64-9" aria-label="9"></a>agg_assault_data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(</span>
+<span id="cb64-10"><a href="#cb64-10" aria-label="10"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"aggravated_assaults.xlsx"</span>),</span>
+<span id="cb64-11"><a href="#cb64-11" aria-label="11"></a>  <span class="at">sheet =</span> <span class="st">"Austin"</span></span>
+<span id="cb64-12"><a href="#cb64-12" aria-label="12"></a>)</span>
+<span id="cb64-13"><a href="#cb64-13" aria-label="13"></a></span>
+<span id="cb64-14"><a href="#cb64-14" aria-label="14"></a><span class="co"># Count aggravated assaults by location category and weekday</span></span>
+<span id="cb64-15"><a href="#cb64-15" aria-label="15"></a>agg_assault_counts <span class="ot">&lt;-</span> agg_assault_data <span class="sc">|&gt;</span></span>
+<span id="cb64-16"><a href="#cb64-16" aria-label="16"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(location_category), <span class="sc">!</span><span class="fu">is.na</span>(date)) <span class="sc">|&gt;</span></span>
+<span id="cb64-17"><a href="#cb64-17" aria-label="17"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb64-18"><a href="#cb64-18" aria-label="18"></a>    <span class="at">date =</span> <span class="fu">as_date</span>(date),</span>
+<span id="cb64-19"><a href="#cb64-19" aria-label="19"></a>    <span class="at">weekday =</span> <span class="fu">wday</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb64-20"><a href="#cb64-20" aria-label="20"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb64-21"><a href="#cb64-21" aria-label="21"></a>  <span class="fu">count</span>(location_category, weekday) <span class="sc">|&gt;</span></span>
+<span id="cb64-22"><a href="#cb64-22" aria-label="22"></a>  <span class="fu">arrange</span>(location_category, weekday)</span>
+<span id="cb64-23"><a href="#cb64-23" aria-label="23"></a></span>
+<span id="cb64-24"><a href="#cb64-24" aria-label="24"></a><span class="co"># Save the processed data</span></span>
+<span id="cb64-25"><a href="#cb64-25" aria-label="25"></a><span class="fu">write_csv</span>(</span>
+<span id="cb64-26"><a href="#cb64-26" aria-label="26"></a>  agg_assault_counts,</span>
+<span id="cb64-27"><a href="#cb64-27" aria-label="27"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"processed"</span>, <span class="st">"aggravated_assault_counts.csv"</span>)</span>
+<span id="cb64-28"><a href="#cb64-28" aria-label="28"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<p>Save both scripts by pressing <kbd title="mac: Command-S, windows: Ctrl-S" aria-hidden="true" data-mac="Command-S" data-windows="Ctrl-S"></kbd><span class="visually-hidden"></span>. To check that the scripts are reproducible, restart R using the <strong>Restart R</strong> (<strong>⟳</strong>) button in Positron’s <strong>Console</strong> panel, then run each script from beginning to end.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Keep these files">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Keep these files
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Keep <code>chapter_03a.R</code> and <code>chapter_03b.R</code> in the <code>R</code> folder. Also keep the downloaded files in the <code>data/raw</code> folder and the two CSV files in the <code>data/processed</code> folder. The raw files should remain unchanged: if you want to alter the data, change the R code and create a new processed file.</p>
+</div>
+</div>
+</section>
+<section id="in-summary" class="level2" data-number="3.11">
+<h2 data-number="3.11" class="anchored" data-anchor-id="in-summary"><span class="header-section-number">3.11</span> In summary</h2>
+<p>You have learned a lot in this chapter! You now know how to:</p>
+<ul>
+<li>download CSV and Excel files into <code>data/raw</code>;</li>
+<li>load and inspect tabular data;</li>
+<li>select columns and filter rows;</li>
+<li>create and transform columns;</li>
+<li>summarise, count and arrange rows;</li>
+<li>combine several operations using the pipe operator; and</li>
+<li>save derived data in <code>data/processed</code> while preserving the original files.</li>
+</ul>
+<p><strong>Well done!</strong></p>
 <div class="box reading">
 <p>Developing your data wrangling skills will help you to produce better, faster analysis of crime (and other) data. If you would like to develop your skills further, you might be interested in:</p>
 <ul>
 <li><a href="https://cengel.github.io/R-data-wrangling/">Data Wrangling with R</a> by Claudia Engel, a free online book that explains the functions introduced in this tutorial (and some others) in more detail.</li>
-<li><a href="https://posit.co/wp-content/uploads/2022/10/data-transformation-1.pdf">Data transformation with dplyr cheat sheet</a> by the team that makes RStudio, which provides a handy two-page guide to the main functions in the <code>dplyr</code> package, which is very useful for reminding you of the code needed to run each of the functions we have used in this tutorial.</li>
-<li><a href="https://rstudio.com/resources/webinars/data-wrangling-with-r-and-rstudio/">Data wrangling with R and RStudio</a> by Garrett Grolemund, a recording of a webinar covering the data-wrangling functions introduced in this tutorial and some other very-useful related functions.</li>
-<li><a href="https://r4ds.had.co.nz/">R for Data Science</a> by Hadley Wickham and Garrett Grolemund, a free online book that is the bible for wrangling data in R.</li>
+<li><a href="https://opensource.posit.co/resources/cheatsheets/data-transformation/data-transformation.pdf">Data transformation with dplyr cheat sheet</a> by Posit, which provides a handy two-page guide to the main functions in the <code>dplyr</code> package, which is very useful for reminding you of the code needed to run each of the functions we have used in this tutorial.</li>
+<li><a href="https://r4ds.hadley.nz/">R for Data Science (second edition)</a> by Hadley Wickham, Mine Çetinkaya-Rundel and Garrett Grolemund, a widely used free introduction to data analysis with R.</li>
 </ul>
 </div>
-<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout callout-style-default callout-quiz callout-titled" title="Revision questions">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -1702,13 +1852,13 @@ dttm (1): date_time
 <li>What is data wrangling, and why is it an important step in data analysis?</li>
 <li>Describe the difference between loading data from a CSV file and an Excel file in R. What additional steps are required when working with Excel files?</li>
 <li>What is the purpose of the <code>select()</code> function in the dplyr package? How can it be used to both choose and rename columns? Include a brief example in your explanation.</li>
-<li>Explain why should should never include the function <code>install.packages()</code> in an R script file.</li>
+<li>Explain how <code>pacman::p_load()</code> makes packages available and why you should not include <code>install.packages()</code> in an R script file.</li>
 <li>What are the benefits of using the pipe (<code>|&gt;</code>) operator in R?</li>
 </ol>
 </div>
 </div>
 <p class="credits">
-<a href="https://twitter.com/allison_horst">Artwork by <span class="citation" data-cites="allison_horst">@allison_horst</span></a>
+<a href="https://allisonhorst.com/">Artwork by Allison Horst</a>
 </p>
 
 
