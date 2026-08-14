@@ -1,7 +1,7 @@
-# Wrangling data {#sec-wrangling-data}
+# Loading and selecting data {#sec-wrangling-data}
 
 ::: {.abstract}
-This chapter introduces the essential skills of data wrangling, an important step in preparing data for analysis and presentation. You'll learn to load, filter, manipulate, and save datasets using R. This chapter guides you through handling tabular and Excel data formats, selecting relevant data, and applying functions from powerful R packages like tidyverse. By the end of this chapter you will be able to confidently transform raw data into a format ready for meaningful insights. Let’s dive in!
+This chapter introduces the first essential skills of data wrangling: loading data into R and choosing the rows and columns needed for an analysis. You will learn how functions and packages work, how to read CSV and Excel files, how to give objects meaningful names and how to use the dplyr package to select and filter data.
 :::
 
 
@@ -35,13 +35,48 @@ A major step in using any data to make decisions or draw conclusions is *data wr
 
 By the end of this chapter, you will have learned how to:
 
-- download CSV and Excel files into a project;
+- download CSV and Excel files into a workspace;
 - load and inspect tabular data;
-- select columns and filter rows;
-- create and transform columns;
-- summarise, count and arrange rows;
-- combine several operations using the pipe operator; and
-- save processed data without changing the original file.
+- give R objects meaningful names; and
+- select columns and filter rows.
+
+The work in this chapter follows four main stages:
+
+::::: {.process}
+
+:::: {.item color="#3182bd"}
+Download data
+
+::: annotation
+into the `data/raw` folder
+:::
+::::
+
+:::: {.item color="#3182bd"}
+Load data
+
+::: annotation
+from a file into an R object
+:::
+::::
+
+:::: {.item color="#3182bd"}
+Select columns
+
+::: annotation
+to keep the variables we need
+:::
+::::
+
+:::: {.item color="#3182bd"}
+Filter rows
+
+::: annotation
+to keep the observations we need
+:::
+::::
+
+:::::
 
 To get started, create the first of two scripts used in this chapter:
 
@@ -73,7 +108,7 @@ When you run code in R, by default R prints the output of your code – in this 
 
 R contains thousands of different functions that do different things. A few functions are contained in the default installation of R that you have already installed (this is sometimes referred to as *base R*). But most functions are contained in *packages*, which are extensions to base R. Most packages focus on a particular type of data analysis, so that there are packages devoted to time-series analysis, testing whether events are clustered in particular places, network analysis and thousands of other tasks. Packages are often developed by experts in the field, and are typically updated to introduce new features.
 
-To use a function from a package we need to do two things: _install_ that package on out computer, and then _load_ the package into our R session. You may see code that does these two steps separately, using the `install.packages()` function to install a package and the `library()` function to load it. However, in this book we use the `p_load()` function from the [pacman package](https://trinker.github.io/pacman_dev/) to do both steps in one line of code. `p_load()` checks whether a package is already installed on your computer, and if it is not, installs it automatically and then loads it. Do not add `install.packages()` to your scripts. Re-installing packages every time a script runs is unnecessary, slows the script down and can make it harder for someone else to run your code on their computer.
+To use a function from a package we need to do two things: _install_ that package on our computer, and then _load_ the package into our R session. You may see code that does these two steps separately, using the `install.packages()` function to install a package and the `library()` function to load it. However, in this book we use the `p_load()` function from the [pacman package](https://trinker.github.io/pacman_dev/) to do both steps in one line of code. `p_load()` checks whether a package is already installed on your computer, and if it is not, installs it automatically and then loads it. Do not add `install.packages()` to your scripts. Re-installing packages every time a script runs is unnecessary, slows the script down and can make it harder for someone else to run your code on their computer.
 
 In this chapter we will use functions from the here, httr2, readxl and tidyverse packages, so add this code to `chapter_03a.R`:
 
@@ -106,7 +141,7 @@ Many packages are focused on specialist tasks and so are only used occasionally,
 data_wrangling_quiz1 <- c(
   "The process of collecting data from multiple sources.",
   answer = "The process of transforming raw data into a format suitable for analysis.",
-  "The process of visualizing data on a map.",
+  "The process of visualising data on a map.",
   "The process of cleaning corrupted data files."
 )
 
@@ -114,7 +149,7 @@ data_wrangling_quiz2 <- c(
   "A visual representation of data.",
   "A mathematical formula used in graphs.",
   "A set of instructions for saving data.",
-  answer = "A specialized piece of code that performs a task on data."
+  answer = "A specialised piece of code that performs a task on data."
 )
 ```
 
@@ -202,6 +237,58 @@ There are some other possible types of data, but we will learn about these later
 This code loads the data using the `read_csv()` function and stores the result in an object named `san_fran_rob`. Objects are places where we can store data. To create an object and store our data in it, we use the assignment operator `<-` (a less-than sign followed by a dash). Rather than typing a less-than sign and a dash every time you need to assign a value to an object, you can instead use the keyboard shortcut {{< kbd win="Alt--" mac="Option--" >}} to type an assignment operator.
 
 
+### Naming objects {#sec-naming-objects}
+
+Object names should briefly describe what an object contains. For example, `san_fran_rob` is more informative than a generic name such as `data`. Meaningful names make a script easier to understand and reduce the chance that you will accidentally use the wrong object. Using the wrong object is a common cause of errors in code, and those errors can be surprisingly hard to track down and fix, so it's best to avoid them by giving objects meaningful names in the first place.
+
+Another way to make object names easier to work with is to only use names containing lowercase letters, numbers and underscores. Object names that follow these rules are said to be written in *snake_case*. Giving all your objects names in `snake_case` means you never have to remember whether you used upper or lower-case letters in an object name, and makes it easier to read object names containing multiple words. This is particularly important because R distinguishes between upper- and lower-case letters, so `crime_data`, `Crime_Data` and `CRIME_DATA` would be three different objects. Using lower-case snake case consistently means that you do not have to remember which variation you chose.
+
+```{r snake-case}
+#| echo: false
+#| fig-align: center
+#| fig-alt: "A cartoon comparing naming conventions: snake_case separates lowercase words with underscores, kebab-case uses dashes, and camelCase capitalises each word after the first. It also shows upper-case variants of snake case and camel case."
+#| out.width: 80%
+
+knitr::include_graphics("../images/snake_case.jpeg")
+```
+
+This rule applies even when one of the words in an object name normally uses upper-case letters, such as a name or an abbreviation. For example, you should call an object containing data on homicides in Abu Dhabi something like `abu_dhabi_homicides`, **not** `Abu_Dhabi_Homicides` or `AbuDhabiHomicides`. Similarly, if you had a dataset of offences of grievous bodily harm (usually abbreviated to GBH), you should call the object `gbh_data`, **not** `GBH_data` or `GBHData`.
+
+```r
+# Good object names
+san_fran_rob
+aggravated_assault_data
+
+# Avoid these names
+Data
+sanFranRob
+san-fran-rob
+data
+```
+
+These conventions also apply to column names. Data obtained from elsewhere will not always follow them, but we can use the `janitor::clean_names()` function to convert column names to snake case. We will use that function in @sec-second-map.
+
+
+::: {.callout-quiz .callout title="Naming objects"}
+
+```{r naming-objects-quiz}
+#| echo: false
+
+naming_objects_quiz <- c(
+  "`abu-dhabi-homicides`",
+  "`Abu_Dhabi_homicides`",
+  "`data`",
+  answer = "`abu_dhabi_homicides`"
+)
+```
+
+**Which is the best name for an object containing data on homicides in Abu Dhabi?**
+
+`r webexercises::longmcq(naming_objects_quiz)`
+
+:::
+
+
 ::: {.callout-important title="Object names can be overwritten"}
 
 When choosing object names, it is important to remember that if you assign a value (such as the number `1` or the result of the function `read_csv()`) to an object name, R will overwrite any existing value of that object name. We can see this in a simple example:
@@ -215,6 +302,7 @@ one_to_ten <- sqrt(2)
 
 If we were to run this code, the object `one_to_ten` would not actually hold the numbers from one to ten, but instead the value `r format(sqrt(2), digits = 7)` (the square root of two). There is no way to undo assignment of a value to an object, so once you have run the code `one_to_ten <- sqrt(2)` it is not possible to recover any previous value that was assigned to the object `one_to_ten`. For that reason, it is generally a bad idea to reuse object names to store different values in the same script.
 :::
+
 
 
 Objects come in several different types, with tabular data typically being stored as a *data frame*. The `read_csv()` function produces a modern variation on the data frame called a *tibble*. Tibbles behave like data frames most of the time, but are designed to work conveniently with tidyverse functions. We will use tibbles throughout this course.
@@ -294,7 +382,7 @@ Different types of data are loaded into R with different functions, e.g. CSV fil
 
 [Learn more about importing data](https://r4ds.hadley.nz/data-import.html) in the current edition of the free online book [R for Data Science](https://r4ds.hadley.nz/).
 
-Excel data can often be messy and the `readxl` package contains various other functions that can be used to deal with this. You can [learn more about how to handle messy Excel data in this online tutorial](http://lesscrime.info/post/cleaning-ons-data/).
+Excel data can often be messy and the `readxl` package contains various other functions that can be used to deal with this. You can [learn more about how to handle messy Excel data in this online tutorial](https://lesscrime.info/post/cleaning-ons-data/).
 
 :::
 
@@ -407,7 +495,7 @@ select_quiz1 <- c(answer = "`rename()`", "`select()`")
 select_quiz2 <- c("`rename()`", answer = "`select()`")
 ```
 
-**Which `dplyr` function allows you to change the name of columns while keeping all the columns in the original data**
+**Which `dplyr` function allows you to change the name of columns while keeping all the columns in the original data?**
 
 `r webexercises::longmcq(select_quiz1)`
 
@@ -565,372 +653,13 @@ filter_quiz3 <- c(
 :::
 
 
-
-## Transforming values
-
-It is often useful to create new columns in our data, or change the values of existing columns. The `mutate()` function in the dplyr package gives us a way to transform existing columns in our dataset using almost any R function.
-
-<p class="full-width-image"><img src="../images/mutate.jpg" alt="Cartoon illustrating mutate creating or changing columns in a table of data."></p>
-
-<a href="https://lubridate.tidyverse.org/" aria-label="Visit the lubridate package website"><img src="../images/lubridate.png" class="right-side-image" alt=""></a>
-
-For example, say we wanted to create a new column in our aggravated-assault dataset specifying the day of the week on which each crime occurred. We can do this using the `wday()` function from the [lubridate package](https://lubridate.tidyverse.org/) (using the `label = TRUE` argument to produce weekday names, rather than numbers):
-
-```{r}
-#| filename: "R Console"
-
-mutate(agg_assault_data, weekday = wday(date, label = TRUE))
-```
-
-We can also change existing columns. However (as with objects) there is no way to undo this, so you should only replace columns if you are sure you will not need them. For example, if we wanted to remove the time portion of the `date` variable (which may sometimes be useful, as shown in the next section) using the `as_date()` function (also from the lubridate package) and at the same time create the weekday variable:
-
-```{r}
-#| filename: "R Console"
-
-mutate(
-  agg_assault_data,
-  date = as_date(date),
-  weekday = wday(date, label = TRUE)
-)
-```
-
-You may sometimes want to change only some values in a column. With a categorical variable, we can change one value to another using the `replace_values()` function from the dplyr package. Look at this code and use the comments (lines starting with `# `) to understand how it works.
-
-```{r}
-#| filename: "R Console"
-
-mutate(
-  agg_assault_data,
-  location_category = replace_values(
-    location_category,
-    # We specify which existing values we want to convert into which new values
-    # by providing the existing value on the left-hand side and the new value
-    # on the right hand side, separated by a tilde (~) character
-    "open space" ~ "public open space",
-    "street" ~ "street or road"
-  )
-)
-```
-
-`replace_values()` keeps the existing value for any values that we have not specified.
-
-We could also make changes based on more-complicated sets of criteria using the `case_when()` function, but we will return to that in a future chapter.
-
-Functions used inside `mutate()` usually return one value for every row in the dataset. These are known as *vectorised* functions. A function such as `mean()` or `max()` instead returns a single summary value. R can repeat that value in every row if it is used inside `mutate()`, but that is usually not what we want. To reduce several rows to one summary row, we use the next data-wrangling function: `summarise()`.
-
-
-::: {.callout-quiz .callout title="Transforming values"}
-
-```{r}
-#| label: transform-quiz
-#| echo: false
-
-transform_quiz1 <- c(
-  "It permanently changes the original data, even if the result is not assigned.",
-  answer = "It returns a tibble containing a new or changed column.",
-  "It keeps only rows that contain the new value.",
-  "It changes only the name of an existing column."
-)
-```
-
-**What does `mutate(agg_assault_data, weekday = wday(date, label = TRUE))` return?**
-
-`r webexercises::longmcq(transform_quiz1)`
-:::
-
-
-
-## Summarising rows {#sec-summarise}
-
-Summarising data is often useful in crime analysis. We can use the `summarise()` function from the dplyr package to produce summaries of different columns in our data. There is an identical function called `summarize()` so that you do not have to remember whether to use the US or British spelling.
-
-By default, `summarise()` collapses data into a single row, with each column summarised using a function that you specify. For example, we can calculate the mean longitude and latitude of the aggravated-assault locations.
-
-
-```{r}
-#| filename: "R Console"
-
-summarise(
-  agg_assault_data,
-  mean_lng = mean(longitude, na.rm = TRUE),
-  mean_lat = mean(latitude, na.rm = TRUE)
-)
-```
-
-
-::: {.callout-tip collapse="true" title="What does the argument `na.rm = TRUE` do?"}
-
-Lots of functions in R have an argument called `na.rm` that can be set to either `TRUE` or `FALSE`. Setting `na.rm = TRUE` in this case specifies that the  `mean()` function should remove (`rm`) any missing (`NA`) values before calculating the mean. 
-
-If we do not specify this and our data contain any missing values, the `mean()` function will return `NA`. Functions in R do this because it is not possible to completely answer the question 'what is the mean of these values?' if some of the values are missing. 
-
-This logic applies in lots of cases. For example, if you create an R object called `value` with the code `value <- 2` and then run the R code `value > 1`, you will get the answer `TRUE`. But if you set the object `value` to be `NA` using the code `value <- NA`, when you run the R code `value > 1` you will get the answer `NA`. This is because there is no way to know if the missing value represented by `NA` is greater than 1 or not. This is why it is often useful to calculate statistics such as a mean value after removing any missing values using the `na.rm = TRUE` argument.
-:::
-
-
-`summarise()` becomes more useful if we first divide our data into groups, since we then get a summary for each group separately. We can use the `.by` argument of the `summarise()` function to specify that we want separate summaries for each unique value of one or more columns in the data. For example, to produce a separate summary for each unique value of `location_category`, we can use this code:
-
-```{r}
-#| filename: "R Console"
-
-summarise(
-  agg_assault_data,
-  mean_lng = mean(longitude, na.rm = TRUE),
-  mean_lat = mean(latitude, na.rm = TRUE),
-  .by = location_category
-)
-```
-
-You can add multiple grouping variables using the `c()` (_combine_) function if you want to generate summary values for groups within groups:
-
-```{r}
-#| filename: "R Console"
-
-summarise(
-  agg_assault_data,
-  mean_lng = mean(longitude, na.rm = TRUE),
-  mean_lat = mean(latitude, na.rm = TRUE),
-  .by = c(location_category, location_type)
-)
-```
-
-
-
-### Counting rows
-
-One very common way of summarising data is to count the number of rows in a dataset that have each unique value of one or more columns. For example, if we have a dataset of crimes in which each row represents a single crime, we might want to count how many crimes happened on each day of the week, or how many crimes of each type are in the dataset. We can use `summarise()` to do that, together with the `n()` function (from the same dplyr package as `summarise()`). For example, if we wanted to count how many rows in the `agg_assault_data` dataset had each unique combination of `location_category` and `location_type`:
-
-```{r}
-#| filename: "R Console"
-
-summarise(agg_assault_data, n = n(), .by = c(location_category, location_type))
-```
-
-In this code, the `n()` function simply returns the number of rows of data in each group, i.e. the number of rows with each unique combination of values of `location_category` and `location_type`.
-
-Since counting the number of rows in each group in a dataset is a very common task, dplyr includes another function called `count()` that allows you to do the same thing as in the code above, but with slightly less typing. So if you wanted to know how many aggravated assaults had occurred in each location category and type, you could use this code instead of using `summarise()`:
-
-```{r}
-#| filename: "R Console"
-
-count(agg_assault_data, location_category, location_type)
-```
-
-Note that the first argument of `count()` is the dataset, and every subsequent argument specifies another variable that should be used to group the data.
-
-
-::: {.callout-quiz .callout title="Summarising and counting rows"}
-
-```{r}
-#| label: summarise-quiz
-#| echo: false
-
-summarise_quiz1 <- c(
-  "One row for every offence in the original data",
-  answer = "One row for each unique combination of location category and location type",
-  "One column for each unique location category",
-  "Only rows that contain no missing values"
-)
-```
-
-**What does `count(agg_assault_data, location_category, location_type)` return?**
-
-`r webexercises::longmcq(summarise_quiz1)`
-:::
-
-
-
-## Arranging rows
-
-It is sometimes useful to be able to place rows in a dataset into a particular order. We can do this using the `arrange()` function from the dplyr package. For example, we can sort the aggravated-assault data by date:
-
-```{r}
-#| filename: "R Console"
-
-arrange(agg_assault_data, date)
-```
-
-By default, `arrange()` sorts rows in ascending order, i.e. it sorts numeric values from the smallest to the largest, dates from earliest to latest and character values alphabetically. We can instead sort values in descending order by wrapping the name of a column in the `desc()` function:
-
-```{r}
-#| filename: "R Console"
-
-arrange(agg_assault_data, desc(date))
-```
-
-We can also sort the data based on multiple columns – the data are sorted first on the first column that you specify, with tied rows then sorted on the subsequent columns in order.
-
-```{r}
-#| filename: "R Console"
-
-arrange(agg_assault_data, date, desc(location_type), location_category)
-```
-
-
-::: {.callout-quiz .callout title="Arranging rows in data"}
-
-```{r}
-#| label: arrange-quiz
-#| echo: false
-
-arrange_quiz1 <- c(
-  answer = "`arrange(agg_assault_data, desc(date))`",
-  "`arrange(agg_assault_data, date)`",
-  "`filter(agg_assault_data, desc(date))`",
-  "`arrange(desc(date), agg_assault_data)`"
-)
-```
-
-**Which code arranges `agg_assault_data` from the latest date to the earliest?**
-
-`r webexercises::longmcq(arrange_quiz1)`
-
-In the R Console, type the code necessary to arrange `agg_assault_data` in order of latitude, in descending order (from largest to smallest). Once you've tried writing the code, if you need help you can click the 'Solution' button below.
-
-`r webexercises::hide()`
-
-`arrange(agg_assault_data, desc(latitude))`
-
-`r webexercises::unhide()`
-:::
-
-
-
-## Saving data {#sec-saving-data}
-
-Once we have finished wrangling a particular dataset, it is often useful to save it to a file so that we can use it again in future without going through all the steps of data wrangling again.
-
-Most R functions that begin with `read_` (like `read_csv()` and `read_excel()`) have equivalent functions that begin `write_` and which save data into a particular file format. In this example, we will use the `write_csv()` function from the readr package, which is loaded when we load the tidyverse package.
-
-In @sec-create-project we learned that it is important to keep our original downloaded data files _sterile_, i.e. not to change them after we have downloaded them. That means we can always go back to the original data if we need to. To help with that, we will keep any files we save after wrangling in a separate sub-folder inside the `data` folder called `processed`. This is a common practice in data analysis, and it is good to get into the habit of doing it from the start.
-
-
-```{r}
-#| eval: false
-#| filename: "chapter_03b.R"
-
-# Save the processed data without changing the original file
-write_csv(
-  agg_assault_counts,
-  here("data", "processed", "aggravated_assault_counts.csv")
-)
-```
-
-There are corresponding write functions for other types of data (which we will come back to when we learn how to handle spatial data), but in this course we will store most non-spatial data in CSV format because it can be read by many different programs.
-
-
-::: {.callout-quiz .callout title="Saving processed data"}
-
-```{r}
-#| label: saving-quiz
-#| echo: false
-
-saving_quiz1 <- c(
-  "It replaces the original downloaded file with the processed data.",
-  "It saves the R script in the processed-data folder.",
-  answer = "It keeps derived data separate while preserving the original download.",
-  "It allows `write_csv()` to save an Excel workbook."
-)
-```
-
-**Why should wrangled data be saved in `data/processed` rather than `data/raw`?**
-
-`r webexercises::longmcq(saving_quiz1)`
-:::
-
-
-
-## Stringing functions together {#sec-pipe-operator}
-
-In this chapter we have learned how to use the dplyr functions `select()`, `filter()`, `mutate()`, `summarise()` and `arrange()` to wrangle data from one format to another. Data wrangling is part of almost all data analysis, so these are skills we will use frequently.
-
-Data wrangling often involves multiple steps. For example, we might want to load some data, select certain columns, filter some rows, mutate some of the variables, summarise the dataset and save the result. We can do each of these steps separately, assigning the result of each step to a new object.
-
-```{r}
-#| eval: false
-#| filename: "chapter_03a.R"
-
-# Select only the columns we need
-robbery2 <- select(san_fran_rob, date_time)
-
-# Filter only those offences that occurred in the first quarter of 2019
-robbery3 <- filter(robbery2, as_date(date_time) <= ymd("2019-03-31"))
-
-# Create a new weekday variable
-robbery4 <- mutate(robbery3, weekday = wday(date_time, label = TRUE))
-
-# Count how many offences occurred on each weekday
-q1_weekday_counts <- count(robbery4, weekday)
-```
-
-This code works, but creates three intermediate objects as well as the final `q1_weekday_counts` object. Intermediate objects can be useful when debugging a complicated analysis. However, they also create the substantial risk that you will accidentally use the wrong intermediate object in a later step, which can often cause errors in your code that are hard to fix. For that reason, it is generally better to avoid creating intermediate objects unless you actually need them. 
-
-Notice that: 
-
-1. the first argument expected by `select()`, `filter()`, `mutate()` and `count()` is always the tibble produced by the previous step and
-2. once each of `robbery2`, `robbery3` and `robbery4` has been created, it is never used again in the code.
-
-For example, `filter()` uses the `robbery2` object created by `select()`, but after that `robbery2` is never used again. Whenever you write code that consists of several sequential steps in which (a) each step uses the data produced by the previous step and (b) the data produced by each step is only used once, there is a better way to do it. This method uses the `|>` (or _pipe_) operator. The pipe operator works by using the result of the code on the left-hand side of the pipe as the first argument to a function on the right-hand side. So the code `x  |> fun1() |> fun2()` starts with an object called `x`, uses that as the input to the function `fun1()`, then passes the result produced by `fun1()` and uses that as the input to `fun2()`.
-
-It may be useful to read the pipe operator as 'and then', since piped code does the first thing *and then* the second thing with the result *and then* the third thing with the result of that, and so on. Piped code (sometimes called a *pipeline*) is a lot like the series of steps in a recipe.
-
-For example, in the `chapter_03a.R` file, we can replace the four chunks of code that create the `robbery2`, `robbery3`, `robbery4` and `q1_weekday_counts` objects with a single code pipeline. Look at this code and the list below that explains what each line does.
-
-```{r}
-#| eval: false
-#| filename: "chapter_03a.R"
-
-# Produce counts of robberies each weekday
-q1_weekday_counts <- san_fran_rob |> # <1>
-  filter(
-    # <2>
-    as_date(date_time) >= ymd("2019-01-01"), # <2>
-    as_date(date_time) <= ymd("2019-03-31") # <2>
-  ) |> # <2>
-  mutate(weekday = wday(date_time, label = TRUE)) |> # <3>
-  count(weekday) # <4>
-```
-1. Take the `san_fran_rob` dataset, _and then_
-2. filter the rows to keep only those that occurred in the first quarter of 2019, _and then_
-3. create a new column called `weekday` that contains the day of the week on which each robbery occurred, _and then_
-4. count how many robberies occurred on each weekday.
-
-You might not find the pipe operator completely intuitive at the moment, but it will become easier as you see more examples in future chapters.
-
-
-::: {.callout-tip collapse="true" title="What about the `%>%` pipe operator?"}
-
-If you have learned any R coding before, you might have learned to use the `%>%` pipe operator from the magrittr package. The `%>%` pipe operator was introduced several years ago to allow people to construct pipelines of code in R. The `%>%` operator was so widely used that the team that writes the R programming language decided to provide the `|>` pipe operator in R itself, to avoid the need to load the magrittr package. You might sometimes see the `|>` referred to as the _native_ pipe operator.
-
-You will still see the `%>%` pipe operator used in lots of R code examples online, and in code produced by AI tools that were trained on old data. In many straightforward pipelines, `%>%` can be replaced with the R pipe operator `|>`, since they work in similar ways. There are some differences between them, so do not assume every advanced example can be converted without changes.
-:::
-
-
-::: {.callout-quiz .callout title="Constructing pipelines"}
-
-```{r}
-#| label: pipe-quiz
-#| echo: false
-
-pipe_quiz1 <- c(
-  "It saves each intermediate result as a separate file.",
-  answer = "It passes the result of one step to the next function.",
-  "It automatically corrects errors in each function.",
-  "It changes temporary Console code into permanent code."
-)
-```
-
-**What does the pipe operator `|>` do?**
-
-`r webexercises::longmcq(pipe_quiz1)`
-:::
-
-
 ## Complete scripts
 
-As a final exercise, use the information in @sec-saving-data to add to `chapter_03a.R` the code needed to save the weekday counts in a new file called `q1_weekday_counts.csv` in the `processed` sub-folder within the `data` folder. 
+::: {.callout-quiz .callout title="Check your complete scripts"}
 
-Once you've done that, the `chapter_03a.R` script file should look like this:
+Before finishing the chapter, check that `chapter_03a.R` contains all the permanent code needed to download and load the San Francisco robbery data. Compare your script with the model answer after checking it yourself.
+
+`r webexercises::hide("Solution")`
 
 ```{r}
 #| eval: false
@@ -938,10 +667,13 @@ Once you've done that, the `chapter_03a.R` script file should look like this:
 #| filename: "chapter_03a.R"
 ```
 
-Now complete `chapter_03b.R` by: 
+`r webexercises::unhide()`
 
-1. adding a pipeline that counts aggravated assaults by location category and weekday, then
-2. adding the code needed to save the result in a new file called `aggravated_assault_counts.csv`, stored in the relevant folder.
+----
+
+Now check that `chapter_03b.R` contains all the permanent code needed to download and load the Austin aggravated-assault data.
+
+`r webexercises::hide("Solution")`
 
 ```{r}
 #| eval: false
@@ -949,58 +681,34 @@ Now complete `chapter_03b.R` by:
 #| filename: "chapter_03b.R"
 ```
 
-Save both scripts by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. To check that the scripts are reproducible, restart R using the **Restart R** (**&#10227;**) button in Positron's **Console** panel, then run each script from beginning to end.
+`r webexercises::unhide()`
 
-
-::: {.callout-note title="Keep these files"}
-
-Keep `chapter_03a.R` and `chapter_03b.R` in the `R` folder. Also keep the downloaded files in the `data/raw` folder and the two CSV files in the `data/processed` folder. The raw files should remain unchanged: if you want to alter the data, change the R code and create a new processed file.
 :::
+
+Save both scripts by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}.
 
 
 ## In summary
 
-You have learned a lot in this chapter! You now know how to:
+In this chapter you learned how to:
 
-- download CSV and Excel files into `data/raw`;
+- download original CSV and Excel files into `data/raw`;
 - load and inspect tabular data;
-- select columns and filter rows;
-- create and transform columns;
-- summarise, count and arrange rows;
-- combine several operations using the pipe operator; and
-- save derived data in `data/processed` while preserving the original files.
+- distinguish functions, arguments, packages, objects and tibbles;
+- choose meaningful snake-case object names;
+- select or rename columns with `select()` and `rename()`; and
+- choose rows that meet particular conditions with `filter()`.
 
-**Well done!**
-
-
-::: {.box .reading}
-
-Developing your data wrangling skills will help you to produce better, faster
-analysis of crime (and other) data. If you would like to develop your skills
-further, you might be interested in:
-
-  * [Data Wrangling with R](https://cengel.github.io/R-data-wrangling/) by
-    Claudia Engel, a free online book that explains the functions introduced in
-    this tutorial (and some others) in more detail.
-  * [Data transformation with dplyr cheat sheet](https://opensource.posit.co/resources/cheatsheets/data-transformation/data-transformation.pdf) 
-    by Posit, which provides a handy two-page guide to the
-    main functions in the `dplyr` package, which is very useful for reminding 
-    you of the code needed to run each of the functions we have used in this 
-    tutorial.
-  * [R for Data Science (second edition)](https://r4ds.hadley.nz/) by Hadley Wickham, Mine Çetinkaya-Rundel and Garrett Grolemund, a widely used free introduction to data analysis with R.
-    
-:::
+Keep `chapter_03a.R` and `chapter_03b.R` in the `R` folder, together with the original downloaded files in `data/raw`. In @sec-transforming-data we will continue working with these datasets to create new columns, produce summaries and save processed data.
 
 
 ::: {.callout-quiz .callout title="Revision questions"}
 
-Answer these questions to check you have understood the main points covered in this chapter. Write between 50 and 100 words to answer each question.
+1. What is data wrangling, and why is it usually needed before analysis?
+2. What is the difference between a function, an argument and a package?
+3. Why should R objects have meaningful names written in snake case?
+4. How do `select()` and `filter()` reduce a dataset in different ways?
 
-1. What is data wrangling, and why is it an important step in data analysis?
-2. Describe the difference between loading data from a CSV file and an Excel file in R. What additional steps are required when working with Excel files?
-3. What is the purpose of the `select()` function in the dplyr package? How can it be used to both choose and rename columns? Include a brief example in your explanation.
-4. Explain how `pacman::p_load()` makes packages available and why you should not include `install.packages()` in an R script file.
-5. What are the benefits of using the pipe (`|>`) operator in R?
 :::
 
 
