@@ -1,5 +1,7 @@
 # Your first crime map {#sec-first-map}
 
+![](../images/chapter_02_first_crime_map_illustration.png){fig-alt=""}
+
 ::: {.abstract}
 This chapter provides a beginner-friendly introduction to creating crime maps in R. We will walk through the essential steps, including loading pre-prepared crime data, processing it into a usable format, and visualising it on a map. This chapter introduces key R concepts like working with spatial data and using simple features (SF) objects. You’ll learn to distinguish between temporary and permanent code, understand the basics of coordinate reference systems, and produce a basic map. Let’s get started!
 :::
@@ -41,11 +43,10 @@ By the end of the chapter, you will have two R script files and will have produc
 
 # Save the map
 ggsave(
-  here("images", "atlanta_downtown_homicides.jpg"), 
-  width = 800 / 150, 
+  here("images", "atlanta_downtown_homicides.jpg"),
+  width = 800 / 150,
   dpi = 150
 )
-
 ```
 
 ```{r}
@@ -238,7 +239,7 @@ Copy these lines of code into your R script file. Now click anywhere on either l
 #| filename: "chapter_02a.R"
 
 # Download the data from a URL and store it in a local file
-request("https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv") |> 
+request("https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv") |>
   req_perform(path = here("data", "raw", "downtown_homicides.csv"))
 ```
 
@@ -341,7 +342,7 @@ loading_data_quiz2 <- c(
 :::
 
 
-## Processing the data
+## Processing the data {#sec-processing-spatial-data}
 
 Before we can plot the data on a map, we have to complete some pre-processing steps -- step 2 in our recipe. Having to process data before being able to analyse or visualise it is common in all types of data analysis, but spatial analysis often involves additional processing that takes account of the special features of spatial
 data.
@@ -385,11 +386,11 @@ Copy this code into the `chapter_02a.R` file, then click anywhere on the new lin
 ```{r}
 #| filename: "chapter_02a.R"
 
-# Convert the data to a simple features object, which we can use in functions 
+# Convert the data to a simple features object, which we can use in functions
 # that work on spatial data
 homicides_sf <- st_as_sf(
-  homicides, 
-  coords = c("longitude", "latitude"), 
+  homicides,
+  coords = c("longitude", "latitude"),
   crs = "EPSG:4326"
 )
 ```

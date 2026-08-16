@@ -1,5 +1,7 @@
 # Mapping crime patterns {#sec-mapping-patterns}
 
+![](../images/chapter_06_mapping_crime_patterns_illustration.png){fig-alt=""}
+
 ::: {.abstract}
 This chapter introduces techniques for mapping concentrations of recorded crime using a technique called kernel density estimation (KDE). By the end of this chapter, you will be able to produce a clear density map that shows where crime is most concentrated.
 :::
@@ -189,7 +191,7 @@ kde_explanation[["2"]] <- ggplot(random_points_kde) +
     aes(label = label_n),
     na.rm = TRUE,
     fill = NA,
-    label.size = NA,
+    linewidth = 0,
     size = 2.25
   ) +
   labs(
@@ -226,7 +228,7 @@ kde_explanation[["3"]] <- ggplot() +
     ),
     na.rm = TRUE,
     fill = NA,
-    label.size = NA,
+    linewidth = 0,
     size = 2.25
   ) +
   geom_circle(
@@ -334,7 +336,7 @@ kde_explanation[["4"]] <- ggplot(random_points_kde) +
     aes(label = label_kde),
     na.rm = TRUE,
     fill = NA,
-    label.size = NA,
+    linewidth = 0,
     size = 2.25
   ) +
   labs(
@@ -927,7 +929,7 @@ which we have data.
 :::::
 
 
-To clip the KDE layer to the boundary of the area for which we have data, we need a new dataset that contains the boundary of the City of Vancouver. Fortunately this dataset is available online in a spatial format known as a [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) file. GeoJSON is a spatial file format, so we can load it in R using the `read_sf()` function from the sf package.
+You might see from these maps that there is another problem: some areas _within_ the City of Vancouver are not covered by the KDE layer. We'll deal with that problem in @sec-map-context. But for now, to clip the KDE layer to the boundary of the area for which we have data, we need a new dataset that contains the boundary of the City of Vancouver. Fortunately this dataset is available online in a spatial format known as a [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) file. GeoJSON is a spatial file format, so we can load it in R using the `read_sf()` function from the sf package.
 
 As we did for the theft data in Chapter 5, we will first download the boundary data into `data/raw`, then read the local copy. This records where the data came from while keeping the analysis available if the website is temporarily unavailable later. Add this code immediately after the existing code that downloads the theft data but _above_ the code that loads and wrangles the data.
 
