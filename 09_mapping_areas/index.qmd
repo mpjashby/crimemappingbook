@@ -6,24 +6,19 @@ In this chapter, you will learn how to create crime maps that display data for g
 :::
 
 
-::: {.callout-tip}
-#### Before you start
+::: {.callout-tip title="Before you start"}
 
-Open RStudio or -- if you already have RStudio open -- click `Session` then `Restart R`. Make sure you're working inside the Crime Mapping RStudio project you created in @sec-create-project, then you're ready to start mapping.
+1. Open Positron or -- if you already have Positron open -- start a new R session by clicking the **Restart R** (**&#10227;**) button in the **Console** panel. This makes sure no code you ran previously will interfere with the work you do in this chapter.
+2. Make sure you are working in the crime mapping project workspace you created in @sec-create-project. In the top-right corner of the Positron window, you should see a folder icon and the words `crime-mapping`. If not, click the **File** menu, then **Open Folder ...** and choose the `crime-mapping` folder.
 :::
 
 
 ```{r}
+#| label: setup
+#| echo: false
 #| include: false
 
-pacman::p_load(sf, tidyverse)
-
-# CDMX data
-cdmx_car_jacking <- read_sf("https://mpjashby.github.io/crimemappingdata/cdmx_car_jacking.gpkg")
-cdmx_alcaldias <- read_sf("https://mpjashby.github.io/crimemappingdata/cdmx_alcaldias.gpkg")
-
-# Uttar Pradesh data (only loaded here if needed outside code chunks below)
-district_pop <- read_csv("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_population.csv")
+pacman::p_load(ggspatial, here, httr2, leaflet, sf, sfhotspot, tidyverse)
 ```
 
 
@@ -38,133 +33,92 @@ Another type of crime data is _area data_. The most common type of area data use
   * We might want to estimate the relative risk of a crime occurring in different places by calculating crime rates using counts of crimes and population data for local areas.
   * We might only have been given access to counts of crimes for different areas, rather than the location of each crime, perhaps in order to protect the privacy of crime victims.
     
-In all these cases we need to make maps of crimes for _areas_, rather than showing the locations of individual crimes or the density of crimes generated from datasets of individual crime locations. 
+In all these cases we need to make maps of crimes for _areas_, rather than showing the locations of individual crimes or the density of crimes generated from datasets of individual crime locations. A map in which areas are shaded according to data values is called a *choropleth map* (in English, 'choropleth' is usually pronounced 'kor-o-pleth'). A choropleth map is one type of *thematic map*: a map designed to show a particular topic or theme.
 
-Maps that show data for areas are called *thematic maps* or *choropleth maps* (in English the word 'choropleth' is usually pronounced 'kor-o-pleth'). 
+In the first analysis in this chapter, you will produce this map of carjacking offences in Mexico City:
 
-```{r make-map-types}
-#| eval: false
-#| echo: false
-
-cdmx_north_boroughs <- cdmx_alcaldias |> 
-  filter(nomgeo %in% c("Gustavo A. Madero", "Azcapotzalco", "Miguel Hidalgo", "Venustiano Carranza", "Cuauhtémoc")) |> 
-  st_transform("EPSG:31975")
-cdmx_north_buffer <- cdmx_north_boroughs |> 
-  st_union() |> 
-  st_centroid() |> 
-  st_buffer(4000)
-cdmx_north_car_jacking <- cdmx_car_jacking |> 
-  st_transform("EPSG:31975") |> 
-  st_intersection(cdmx_north_boroughs)
-cdmx_north_car_jacking_kde <- cdmx_north_car_jacking |> 
-  sfhotspot::hotspot_kde(
-    grid = sfhotspot::hotspot_grid(cdmx_north_boroughs, cell_size = 500), 
-    bandwidth_adjust = 0.25
-  ) |> 
-  st_intersection(cdmx_north_boroughs)
-cdmx_north_car_jacking_count <- cdmx_north_car_jacking |> 
-  st_drop_geometry() |> 
-  count(nomgeo) |> 
-  right_join(cdmx_north_boroughs, by = "nomgeo") |> 
-  st_as_sf()
-
-cdmx_north_maps <- list()
-
-cdmx_north_maps$point <- ggplot() +
-  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
-  annotation_spatial(data = cdmx_north_boroughs, colour = "grey50", fill = NA) +
-  annotation_spatial(
-    data = cdmx_north_car_jacking, 
-    alpha = 0.25, 
-    colour = "darkred", 
-    size = 0.5
-  ) +
-  # geom_sf_label(
-  #   aes(label = str_wrap(nomgeo, 10)), 
-  #   data = cdmx_north_boroughs, 
-  #   alpha = 0.67,
-  #   colour = "grey25",
-  #   fill = "white",
-  #   fontface = "bold",
-  #   label.size = NA,
-  #   lineheight = 1,
-  #   size = 2
-  # ) +
-  geom_sf(data = cdmx_north_buffer, colour = NA, fill = NA) +
-  fixed_plot_aspect(ratio = 3/1) +
-  labs(subtitle = "Point map") +
-  # coord_sf(crs = "EPSG:4326") +
-  theme_void() +
-  theme(
-    panel.border = element_rect(fill = NA),
-    plot.margin = margin(6, 6, 6, 6),
-    plot.subtitle = element_text(margin = margin(b = 3))
-  )
-
-cdmx_north_maps$density <- ggplot() +
-  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
-  annotation_spatial(cdmx_north_car_jacking_kde, aes(fill = kde), colour = NA, alpha = 0.65) +
-  annotation_spatial(data = cdmx_north_boroughs, colour = "grey50", fill = NA) +
-  # geom_sf_text(
-  #   aes(label = str_wrap(nomgeo, 10)), 
-  #   data = cdmx_north_boroughs, 
-  #   colour = "grey25",
-  #   fontface = "bold",
-  #   lineheight = 1,
-  #   size = 2
-  # ) +
-  geom_sf(data = cdmx_north_buffer, colour = NA, fill = NA) +
-  fixed_plot_aspect(ratio = 3/1) +
-  scale_fill_gradient(low = "white", high = "darkred") +
-  labs(subtitle = "Density map") +
-  # coord_sf(crs = "EPSG:4326") +
-  theme_void() +
-  theme(
-    panel.border = element_rect(fill = NA),
-    plot.margin = margin(6, 6, 6, 6),
-    plot.subtitle = element_text(margin = margin(b = 3)),
-    legend.position = "none"
-  )
-
-cdmx_north_maps$count <- ggplot() +
-  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
-  annotation_spatial(cdmx_north_car_jacking_count, aes(fill = n), alpha = 0.65, colour = "grey50") +
-  # geom_sf_text(
-  #   aes(colour = n >= quantile(n, 0.9), label = str_wrap(nomgeo, 10)), 
-  #   fontface = "bold",
-  #   lineheight = 1,
-  #   size = 2
-  # ) +
-  geom_sf(data = cdmx_north_buffer, colour = NA, fill = NA) +
-  scale_colour_manual(values = c(`TRUE` = "grey75", `FALSE` = "grey25")) +
-  scale_fill_gradient(low = "white", high = "darkred") +
-  fixed_plot_aspect(ratio = 3/1) +
-  labs(subtitle = "Thematic/choropleth map") +
-  # coord_sf(crs = "EPSG:4326") +
-  theme_void() +
-  theme(
-    panel.border = element_rect(fill = NA),
-    plot.margin = margin(6, 6, 6, 6),
-    plot.subtitle = element_text(margin = margin(b = 3)),
-    legend.position = "none"
-  )
-
-cdmx_north_map <- patchwork::wrap_plots(cdmx_north_maps, ncol = 1)
-
-ggsave(
-  here::here("../images/cdmx_north_map.jpg"), 
-  cdmx_north_map,
-  width = 800 / 150,
-  height = 1000 / 150,
-  dpi = 150
-)
+```{r}
+#| label: make-final-carjacking-map
+#| include: false
+#| file: "../R/chapter_09a.R"
 ```
 
-<p class="full-width-image"><img src="../images/cdmx_north_map.jpg" alt="Three maps: a point map, a density map and a thematic/choropleth map" style="max-height: 1000px;"></p>
+```{r}
+#| label: prepare-uttar-pradesh-analysis
+#| include: false
+#| file: "../R/chapter_09b.R"
+```
+
+```{r}
+#| label: show-final-carjacking-map
+#| echo: false
+#| fig-alt: "A choropleth map of carjacking offences in Mexico City in 2019. Darker orange boroughs have more recorded offences, with Gustavo A. Madero having the highest count."
+#| out-width: 90%
+
+car_jacking_map
+```
+
+Gustavo A. Madero has the highest count, with 545 recorded offences. The map allows us to compare borough totals, but it hides the variation in offence locations within each borough. The following comparison shows how the same underlying data can look very different depending on the type of map we choose.
+
+<p class="full-width-image"><img src="../images/cdmx_north_map.jpg" alt="Three maps of the same carjacking data in northern Mexico City. The point map shows individual offences, the density map smooths those points to show local concentrations, and the choropleth map shades each entire borough according to its total count. The choropleth map hides variation within each borough." style="max-height: 1000px;"></p>
+
+By the end of this chapter, you will have learned how to:
+
+- count points within predefined areas using `hotspot_count()`;
+- create static and interactive choropleth maps;
+- join tabular data to area boundaries and check the result;
+- calculate and map crime rates;
+- distinguish incidence, prevalence and concentration rates; and
+- recognise the ecological fallacy and the modifiable areal unit problem.
+
+The process we will use has five main stages:
+
+::::::: {.process}
+
+::::: {.item color="#3182bd"}
+Download
+
+::: annotation
+source data into the `data/raw` folder
+:::
+:::::
+
+::::: {.item color="#3182bd"}
+Load
+
+::: annotation
+crime, boundary and population data into R
+:::
+:::::
+
+::::: {.item color="#3182bd"}
+Combine
+
+::: annotation
+count points within areas or join datasets using district names
+:::
+:::::
+
+::::: {.item color="#3182bd"}
+Check
+
+::: annotation
+unmatched records, missing values and unexpected results
+:::
+:::::
+
+::::: {.item color="#3182bd"}
+Visualise
+
+::: annotation
+counts or rates using a static or interactive choropleth map
+:::
+:::::
+
+:::::::
 
 
-::: {.callout-important}
-#### Don't create area maps unless you need to
+::: {.callout-important title="Don't create area maps unless you need to"}
 
 **Do not aggregate point-level crime data to counts of crimes for areas unless you have a good reason to do so**.
 
@@ -182,44 +136,37 @@ To calculate counts of crimes for areas, we need
   1. a dataset representing the crime locations and 
   2. a dataset representing the boundaries of the areas that we want to calculate counts for. 
 
-In this chapter, we will count how many car-jacking offences occurred in each alcaldía (borough) of Mexico City in 2019. The result of this will be an SF object containing the outlines of each borough boundary and the count of car-jacking offences in each borough:
+In this chapter, we will count how many carjacking offences occurred in each alcaldía (borough) of Mexico City in 2019. The result will be an SF object containing the outline of each borough and its carjacking count:
 
 ```{r car-jacking_table}
 #| echo: false
 #| fig-align: "center"
 
-cdmx_car_jacking |> 
+cdmx_car_jacking |>
   sfhotspot::hotspot_count(grid = cdmx_alcaldias, quiet = TRUE) |>
-  sf::st_drop_geometry() |> 
-  head() |> 
+  sf::st_drop_geometry() |>
+  head() |>
   knitr::kable()
 ```
 
 
-::: {.callout-tip collapse="true"}
-#### What is car jacking?
+::: {.callout-tip collapse="true" title="What is carjacking?"}
 
-Car jacking is robbery in which a vehicle is stolen using violence or the threat of violence. If differs from other types of car theft because it involves taking the vehicle from the owner while they are using it, rather than breaking into a car that has been left unattended. Because car jacking involves violence, it is considered more serious than other vehicle-related theft.
+Carjacking is robbery in which a vehicle is stolen using violence or the threat of violence. It differs from other types of vehicle theft because it involves taking the vehicle from the owner while they are using it, rather than breaking into a vehicle that has been left unattended. Because carjacking involves violence, it is considered more serious than other vehicle-related theft.
 
-[Find out more about car jacking](https://doi.org/10.1146/annurev-criminol-030421-042141)
+[Find out more about carjacking](https://doi.org/10.1146/annurev-criminol-030421-042141)
 :::
-
-
-<!--
-To get started, watch this video walk-through of the code we need to write to
-produce this dataset:
-
-{{< video https://youtu.be/Hro7HtNS-6k >}}
--->
 
 
 ### Load the data
 
-Open RStudio and make sure you are working inside your Crime Mapping project. Create a new R script file and save it as `chapter09a.R` file. Write a comment at the top of the file explaining that the script will show the number of car-jacking offences in each alcaldía in Mexico City in 2019.
+Create a new R script in Positron and save it as `chapter_09a.R` in the `R` folder. Write a comment at the top explaining that the script will show the number of carjacking offences in each alcaldía in Mexico City in 2019. Keep all the permanent code for this first analysis in this file.
 
-Add a line to the script file (with an appropriate comment above it) to load the ggspatial, sf, sfhotspot and tidyverse packages. If you need help with that code, look back to @sec-loading-packages.
+Add a line to the script file (with an appropriate comment above it) to load the ggspatial, here, httr2, sf, sfhotspot and tidyverse packages. If you need help with that code, look back to @sec-loading-packages.
 
-We need two datasets for this script: a dataset of car jackings and one of alcaldía boundaries. In your script file, write the code need to load this dataset into an object called `cdmx_car_jacking` (CDMX is a common Spanish-language abbreviation for Mexico City, short for Ciudad de México).
+We need two datasets for this script: a dataset of carjackings and one of alcaldía boundaries. First download both original files into `data/raw`, then load the local files. Keeping the source files in `data/raw` makes the analysis easier to repeat and ensures that we do not accidentally edit the original data.
+
+In your script file, write the code needed to download this dataset, then load it into an object called `cdmx_car_jacking` (CDMX is a common Spanish-language abbreviation for Mexico City, short for Ciudad de México).
 
 ```
 https://mpjashby.github.io/crimemappingdata/cdmx_car_jacking.gpkg
@@ -227,31 +174,43 @@ https://mpjashby.github.io/crimemappingdata/cdmx_car_jacking.gpkg
 
 When you are writing this code, think about what sort of file you are trying to load and which function you should use to do it. If you need help, look at @sec-load-functions. Make sure your code has comments that explain what it does.
 
-Now write the code needed to load this dataset and store it in an object called `cdmx_alcaldias`:
+Now write the code needed to download this dataset, then load it and store it in an object called `cdmx_alcaldias`:
 
 ```
 https://mpjashby.github.io/crimemappingdata/cdmx_alcaldias.gpkg
 ```
 
-Once you have written the code to load the packages and data, click the 'Solution' button below to check you code.
+Once you have written the code to load the packages and data, click the **Solution** button below to check your code.
 
 
 `r webexercises::hide()`
 
 ```{r}
-#| filename: "chapter09a.R"
+#| filename: "chapter_09a.R"
 
-# This file creates a choropleth map of counts of car-jacking offences in Mexico
-# City in 2019
+# This script counts carjacking offences in each alcaldía in Mexico City in
+# 2019 and produces a choropleth map of those counts.
 
 # Load packages
-pacman::p_load(ggspatial, sf, sfhotspot, tidyverse)
+pacman::p_load(ggspatial, here, httr2, sf, sfhotspot, tidyverse)
 
-# Load CDMX car-jacking data
-cdmx_car_jacking <- read_sf("https://mpjashby.github.io/crimemappingdata/cdmx_car_jacking.gpkg")
+# Download the raw data
+request(
+  "https://mpjashby.github.io/crimemappingdata/cdmx_car_jacking.gpkg"
+) |>
+  req_perform(path = here("data", "raw", "cdmx_car_jacking.gpkg"))
 
-# Load CDMX borough boundaries
-cdmx_alcaldias <- read_sf("https://mpjashby.github.io/crimemappingdata/cdmx_alcaldias.gpkg")
+request(
+  "https://mpjashby.github.io/crimemappingdata/cdmx_alcaldias.gpkg"
+) |>
+  req_perform(path = here("data", "raw", "cdmx_alcaldias.gpkg"))
+
+# Load carjacking and alcaldía data
+cdmx_car_jacking <- here("data", "raw", "cdmx_car_jacking.gpkg") |>
+  read_sf()
+
+cdmx_alcaldias <- here("data", "raw", "cdmx_alcaldias.gpkg") |>
+  read_sf()
 ```
 
 `r webexercises::unhide()`
@@ -266,7 +225,7 @@ By default, `hotspot_count()` produces counts of points in cells in a grid (we s
 
 ```{r}
 #| eval: false
-#| filename: "chapter09a.R"
+#| filename: "chapter_09a.R"
 
 car_jacking_counts <- hotspot_count(cdmx_car_jacking, grid = cdmx_alcaldias)
 ```
@@ -287,6 +246,7 @@ Run this code in the R Console:
 
 ```{r}
 #| fig-asp: 0.3
+#| fig-alt: "A world map showing most carjacking records clustered in Mexico City and a smaller group at latitude and longitude zero in the Gulf of Guinea, a location known as Null Island."
 #| filename: "R Console"
 
 ggplot(cdmx_car_jacking) + annotation_map_tile(progress = "none") + geom_sf()
@@ -294,11 +254,10 @@ ggplot(cdmx_car_jacking) + annotation_map_tile(progress = "none") + geom_sf()
 
 This map shows that the points in the `cdmx_car_jacking` dataset are located in two parts of the world, which is not what we would expect. Some points appear in Mexico as we would expect, but some appear in the Gulf of Guinea off the coast of West Africa. These points are located on 'Null Island', which we will learn more about in @sec-null-island.
 
-For now, we can make a judgement that since only a small proportion of points are outside the boundary of Mexico City (`r nrow(cdmx_car_jacking) - sum(pull(car_jacking_counts, "n"))` out of `r nrow(cdmx_car_jacking)`, or `r scales::percent(1 - (sum(pull(car_jacking_counts, "n")) / nrow(cdmx_car_jacking)))`), they are unlikely to substantially affect the overall patterns of car jacking we are interested in. This means we can safely continue, ignoring the rows in the data that have locations of outside Mexico City.
+There are `r nrow(cdmx_car_jacking) - sum(pull(car_jacking_counts, "n"))` points outside the boundary of Mexico City out of `r nrow(cdmx_car_jacking)` in total (`r scales::percent(1 - (sum(pull(car_jacking_counts, "n")) / nrow(cdmx_car_jacking)), accuracy = 0.1)`). All these points are excluded from the borough counts. We can continue with this example, but we should document the exclusion rather than assuming it has no effect. In a real analysis, we would also investigate how the errors arose and whether excluded records differ systematically from the records with valid locations.
 
 
-::: {.callout-quiz .callout}
-#### Check your knowledge: Counting crimes
+::: {.callout-quiz .callout title="Counting crimes"}
 
 ```{r counting-crimes-quiz}
 #| echo: false
@@ -320,7 +279,7 @@ counting_crimes_quiz2 <- c(
 counting_crimes_quiz3 <- c(
   "Errors in data recording",
   "Errors in data processing",
-  "All incidents in a crime series being recorded by one agency, wherever each incident occurrred",
+  "All incidents in a crime series being recorded by one agency, wherever each incident occurred",
   answer = "To preserve victim privacy"
 )
 ```
@@ -346,12 +305,12 @@ counting_crimes_quiz3 <- c(
 
 ## Mapping areas
 
-Maps showing data (such as counts of crimes) for different _areas_ are extremely common in all types of spatial analysis. Watch this video to find out introduce yourself to some of the issues you should be aware of when mapping areas.
+Maps showing data (such as counts of crimes) for different _areas_ are extremely common in all types of spatial analysis. Watch this video for an introduction to some of the issues you should be aware of when mapping areas.
 
-{{< video https://youtu.be/0gRJ_dzKTmM >}}
+{{< video https://youtu.be/0gRJ_dzKTmM aria-label="Video explaining how boundaries affect the interpretation of area-based maps" >}}
 
 
-::: {.callout-quiz .callout}
+::: {.callout-quiz .callout title="Mapping areas"}
 
 ```{r boundaries-quiz}
 #| echo: false
@@ -371,7 +330,7 @@ boundaries_quiz2 <- c(
 )
 
 boundaries_quiz3 <- c(
-  answer = "The assumption that data for an area applies equally to every part of that area",
+  answer = "Drawing a conclusion about individuals from data that describes an area as a whole",
   "The assumption that environmental factors affect statistical data",
   "The assumption that all choropleth maps are inaccurate",
   "The assumption that larger areas always contain more people"
@@ -408,23 +367,58 @@ boundaries_quiz4 <- c(
 :::
 
 
-Because so much of the data that we might use in crime mapping is only available for pre-defined areas, we often have no choice as to what types of area we use to produce our maps. But whether we choose the areas or not, we have to be mindful that data for areas can only tell us about the area as a whole, not individual people or places within that area. Assuming information about areas applies to individual people or places within them is known as the *ecological fallacy*, a type of logical error that can be dangerous when we try to draw conclusions from choropleth maps. 
+Because so much of the data that we might use in crime mapping is only available for pre-defined areas, we often have no choice about which areas to use. But whether we choose the areas or not, area data can only tell us about each area as a whole. It cannot tell us that every person or place within an area has the area's average characteristics.
+
+Drawing a conclusion about individuals from data that describes groups or areas is known as the *ecological fallacy*. For example, a map might show that boroughs with more poverty have higher crime rates, but that does not prove that the people who experience poverty are the people committing those crimes. The map describes relationships between boroughs, not relationships between individuals.
 
 
-::: {.callout-important}
+::: {.callout-important title="Area data cannot describe individuals"}
 
-The ecological fallacy is not a problem that we can solve -- it is inherent to choropleth maps. For this reason, whenever we plan to show some spatial data using a choropleth map, it is worth stopping and thinking about whether another type of map (such as a density map) might show the data more effectively and without the problems that choropleth maps have. 
+The ecological fallacy is an error in how we interpret data, rather than something that every choropleth map automatically commits. Nevertheless, choropleth maps create a particular risk of this error because they visually emphasise differences between whole areas. Whenever we plan to use a choropleth map, it is worth asking whether another type of map would represent the data more effectively.
 
 Nevertheless, in some circumstances a choropleth map will be the best choice either because we only have data for pre-defined areas or because we are specifically interested in comparing areas (e.g. in working out if there is more crime in one neighbourhood or police district than another).
 
 :::
 
 
-We have already loaded the data we need to create a map of car jackings in Mexico City, and counted how many offences occurred in each alcaldía. The `car_jacking_counts` object we created is an SF object, which means we can use `geom_sf()` to plot it on a map.
+### Boundaries can change the pattern
+
+The pattern shown on a choropleth map also depends on the boundaries used to divide the study area. If the same point data were counted using neighbourhoods, police districts or a regular grid, each set of areas would group the points differently and could produce a different-looking pattern. Results can also change when small areas are combined into larger ones.
+
+This is known as the *modifiable areal unit problem* (MAUP). It has two related parts:
+
+- the *scale effect*: results change when we use larger or smaller areas; and
+- the *zoning effect*: results change when boundaries are drawn in different places, even if the areas remain roughly the same size.
+
+The MAUP cannot be removed from an analysis that uses area data. We should therefore explain which boundaries we used, avoid treating them as natural divisions between communities and, where possible, check whether our conclusions change when we use a different set of areas.
+
+
+::: {.callout-quiz .callout title="The modifiable areal unit problem"}
+
+```{r maup-quiz}
+#| echo: false
+
+maup_quiz1 <- c(
+  "It proves that choropleth maps should never be used",
+  "It occurs only when boundary data contain errors",
+  answer = "A spatial pattern can change when the same data are grouped using different boundaries",
+  "It means every person in an area has the same level of risk"
+)
+```
+
+**What does the modifiable areal unit problem mean for a choropleth map?**
+
+`r webexercises::longmcq(maup_quiz1)`
+
+:::
+
+
+We have already loaded the data we need to create a map of carjackings in Mexico City, and counted how many offences occurred in each alcaldía. The `car_jacking_counts` object we created is an SF object, which means we can use `geom_sf()` to plot it on a map.
 
 ```{r}
-#| filename: "chapter09a.R"
+#| filename: "chapter_09a.R"
 #| fig-asp: 1
+#| fig-alt: "A basic map of Mexico City alcaldía boundaries. Every borough has the same grey fill, so the map does not yet show the number of carjacking offences."
 #| out-width: "90%"
 
 ggplot(car_jacking_counts) +
@@ -435,14 +429,15 @@ ggplot(car_jacking_counts) +
 
 There are at least two problems with this map: 
 
-  1. we cannot tell how many murders there were in each alcaldía, and
+  1. we cannot tell how many carjacking offences there were in each alcaldía, and
   2. we cannot see the base map under the polygons representing the alcaldías.
 
-We can solve these two problems by changing the aesthetics for the `geom_sf()` layer in our code. Specifically, we can make the alcaldía polygons semi-transparent by setting the `alpha` argument to `geom_sf()` to a value of less than one, while also using `aes(fill = n)` to specify that the fill colour of the polygons should depend on the number of car jackings in each alcaldía. At the same time we will use `scale_fill_distiller()` to use a colour scheme that is accessible to the widest range of users.
+We can solve these two problems by changing the aesthetics for the `geom_sf()` layer in our code. Specifically, we can make the alcaldía polygons semi-transparent by setting the `alpha` argument to `geom_sf()` to a value of less than one, while also using `aes(fill = n)` to specify that the fill colour of the polygons should depend on the number of carjackings in each alcaldía. We will use `scale_fill_distiller()` to apply a sequential colour scheme, in which darker shades represent larger counts. The legend is essential because colour alone does not tell a reader the values.
 
 ```{r}
-#| filename: "chapter09a.R"
+#| filename: "chapter_09a.R"
 #| fig-asp: 1
+#| fig-alt: "A choropleth map of carjacking offences in Mexico City in 2019. Darker orange boroughs have more recorded offences, with Gustavo A. Madero having the highest count."
 #| out-width: "90%"
 
 ggplot(car_jacking_counts) +
@@ -453,14 +448,28 @@ ggplot(car_jacking_counts) +
   scale_fill_distiller(palette = "Oranges", direction = 1) +
   # Add some labels
   labs(
-    title = "Car jacking incidents in alcaldías in Mexico City, 2019",
+    title = "Carjacking offences in Mexico City, 2019",
     fill = "number of\noffences",
-    caption = "Data from OpenStreetMap"
+    caption = str_glue(
+      "Carjacking data: Mexico City Attorney General's Office (2019)\n",
+      "Basemap: © CARTO; © OpenStreetMap contributors (ODbL),\n",
+      "https://carto.com/attribution | https://openstreetmap.org/copyright"
+    )
   ) +
   theme_void()
 ```
 
 We could build on this map in several ways. For example, in @sec-calculating-rates we will learn how to show crime _rates_ on a map, as an alternative to crime counts. But in the next section, we will learn how to make interactive crime maps.
+
+Your complete script for this analysis should now look like this:
+
+```{r}
+#| eval: false
+#| file: "../R/chapter_09a.R"
+#| filename: "chapter_09a.R"
+```
+
+Save `chapter_09a.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Keep this script in the `R` folder and the original downloaded files in `data/raw`.
 
 
 
@@ -469,47 +478,42 @@ We could build on this map in several ways. For example, in @sec-calculating-rat
 
 So far in this course, all the maps we have made using `ggplot()` have been static images. These are useful for lots of different circumstances, and are usually the only choice if we want to produce a written report as a Word document or PDF. But in some circumstances it may be useful to produce a map that you can interact with by zooming in or panning around different areas. This can be useful when readers might want to look at areas of the map in more detail than is possible without zooming in.
 
-In this section we will make an interactive map of counts of murders in each district in the state of Uttar Pradesh in northern India in 2014. Uttar Pradesh is the largest state in India, with more than 200 million residents.
+In this section we will make an interactive map of counts of murders in each district in the state of Uttar Pradesh in northern India in 2014. Uttar Pradesh is India's most populous state, with more than 200 million residents.
 
 
 ### Combining datasets
 
-Restart R by opening the `Session` menu in RStudio and clicking `Restart R`. Open a new R script file in RStudio and save it as `chapter09b.R`. Paste the following code into this file and run it.
+Restart R using the **Restart R** (**&#10227;**) button in Positron's **Console** panel. Create a new R script and save it as `chapter_09b.R` in the `R` folder. Keep all the permanent code for the Uttar Pradesh analysis in this file.
 
-
-```{r}
-#| include: false
-#| filename: "chapter09b.R"
-
-# This file creates an interactive map of counts of murders in Uttar Pradesh,
-# India, in 2014
-
-# Load packages
-pacman::p_load(leaflet, sf, tidyverse)
-
-# Load number of murders in each district
-murders <- read_csv("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_murders.csv")
-
-# Load district boundaries
-districts <- read_sf("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_districts.gpkg")
-```
-
+Paste the following code into `chapter_09b.R`, then run it by pressing {{< kbd win="Ctrl-A" mac="Command-A" >}} followed by {{< kbd win="Ctrl-Enter" mac="Command-Return" >}}. The code downloads untouched copies of the source data into `data/raw`, then loads those local files.
 
 ```{r}
 #| eval: false
-#| filename: "chapter09b.R"
+#| filename: "chapter_09b.R"
 
-# This file creates an interactive map of counts of murders in Uttar Pradesh,
-# India, in 2014
+# This script produces interactive maps of murder counts and murder rates in
+# districts in Uttar Pradesh, India, in 2014.
 
 # Load packages
-pacman::p_load(leaflet, sf, tidyverse)
+pacman::p_load(here, httr2, leaflet, sf, tidyverse)
 
-# Load number of murders in each district
-murders <- read_csv("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_murders.csv")
+# Download the raw data
+request(
+  "https://mpjashby.github.io/crimemappingdata/uttar_pradesh_murders.csv"
+) |>
+  req_perform(path = here("data", "raw", "uttar_pradesh_murders.csv"))
 
-# Load district boundaries
-districts <- read_sf("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_districts.gpkg")
+request(
+  "https://mpjashby.github.io/crimemappingdata/uttar_pradesh_districts.gpkg"
+) |>
+  req_perform(path = here("data", "raw", "uttar_pradesh_districts.gpkg"))
+
+# Load murder counts and district boundaries
+murders <- here("data", "raw", "uttar_pradesh_murders.csv") |>
+  read_csv(show_col_types = FALSE)
+
+districts <- here("data", "raw", "uttar_pradesh_districts.gpkg") |>
+  read_sf()
 ```
 
 
@@ -517,6 +521,8 @@ You can see from this code that we are loading two datasets:
 
 * a CSV file called `uttar_pradesh_murders.csv` containing counts of murders in each district, and
 * a geopackage file called `uttar_pradesh_districts.gpkg` containing the boundaries of each district.
+
+The murder counts were published by the Government of India, while the boundary data were compiled by Hindustan Times Labs. Identifying the organisations responsible for source data helps readers assess how the data were produced and what limitations they may have.
 
 To start, let's look at the two datasets in the R Console:
 
@@ -536,19 +542,41 @@ head(districts)
 ```
 
 
-This output shows us that both datasets include a column that contains the name of each district in Uttar Pradesh. In the `murders` dataset that column is called `district` while in the `districts` dataset that column is called `district_name`. We can also see that only the `murders` object contains a count of murders in each state (in the `murder` column) and only the `districts` object contains the outlines of each district boundary (in the `geom` column). To make a choropleth map of the murder counts, we will need to _join_ the two datasets so we have a single SF object that contains all the data we need.
+This output shows us that both datasets include a column that contains the name of each district in Uttar Pradesh. In the `murders` dataset that column is called `district` while in the `districts` dataset that column is called `district_name`. We can also see that only the `murders` object contains a count of murders in each district (in the `murder` column) and only the `districts` object contains the outlines of each district boundary (in the `geom` column). To make a choropleth map of the murder counts, we will need to _join_ the two datasets so we have a single SF object that contains all the data we need.
 
 There are several ways to join data in R. In this case, we want to join the two datasets based on the value of a column in both datasets that stores the same information (in this case, the district names). To do that we use the `left_join()` function, one of a family of joining functions in the `dplyr` package that join two objects together based on the values of particular columns. 
 
 To understand how left-joins work, imagine we had two datasets called `x` and `y`:
 
-<p class="full-width-image"><img src="../images/x_and_y.png" alt="Two datasets, x and y, with three rows each" style="max-height: 300px;"></p>
+| `key` | `x_value` |
+|------:|:----------|
+| 1     | x1        |
+| 2     | x2        |
+| 3     | x3        |
 
-We could use `left_join(x, y)` to merge them into one combined dataset. This function has _left_ in the name because it joins the two datasets by adding matching rows from the right-hand dataset (`y`) to each row in the left-hand dataset (`x`). This means the combined dataset will include _all_ the rows from `x` (the left-hand dataset), but only the rows from `y` that match rows in `x`. Rows in `y` that do not match any rows in `x` will be discarded.
+: Dataset `x`
 
-<p class="full-width-image"><img src="../images/left_join.gif" alt="Two datasets, x and y, being merged based on the values of x" style="max-height: 300px;"></p>
+| `key` | `y_value` |
+|------:|:----------|
+| 1     | y1        |
+| 2     | y2        |
+| 4     | y4        |
 
-In our case, we want to join the `murders` and `districts` objects so that the combined dataset includes exactly one row for each district in `districts`, even if no murders occurred in that district (which might mean that district is not present in the `murders` dataset). Since we want to keep all the rows from `districts`, we use that object as the first argument to `left_join()`, i.e. `left_join(districts, murders)`. If there are any rows in the right-hand object `murders` that do not match any rows in the left-hand object `districts`, those rows will be discarded from the result. 
+: Dataset `y`
+
+We could use `left_join(x, y, by = "key")` to merge them into one combined dataset. This function has _left_ in the name because it joins the two datasets by adding matching rows from the right-hand dataset (`y`) to each row in the left-hand dataset (`x`). The result would be:
+
+| `key` | `x_value` | `y_value` |
+|------:|:----------|:----------|
+| 1     | x1        | y1        |
+| 2     | x2        | y2        |
+| 3     | x3        | `NA`      |
+
+: Result of `left_join(x, y, by = "key")`
+
+The result includes all the rows from `x`. Key 3 has no match in `y`, so its `y_value` is missing (`NA`). Key 4 appears only in `y`, so it is not included in the result.
+
+In our case, we want the combined dataset to include exactly one row for each district in `districts`. Since we want to keep all those rows, we use `districts` as the first argument to `left_join()`, i.e. `left_join(districts, murders)`. If a district has no matching row in `murders`, the resulting murder count will be `NA`. This means “no matching information”, not automatically “zero murders”. We should only replace that value with zero if the data documentation confirms that omitted districts represent genuine zero counts.
 
 By default, `left_join()` will match the rows in the `districts` and `murders` objects using all the column names that are present in both datasets. This can sometimes have unexpected results, so it is safer to specify which columns we want to match to be based on using the `by` argument to `left_join()`. There are lots of ways we could join two datasets, so we will use the `join_by()` helper function to assist with this.
 
@@ -556,12 +584,12 @@ Copy this code into your script file and run it.
 
 
 ```{r}
-#| filename: "chapter09b.R"
+#| filename: "chapter_09b.R"
 
 # Join murder counts to district boundaries
 district_murders <- left_join(
-  districts, 
-  murders, 
+  districts,
+  murders,
   by = join_by(district_name == district)
 )
 ```
@@ -578,13 +606,18 @@ head(district_murders)
 If you want to view the whole dataset, run `View(district_murders)` in the R Console instead. You can see that `district_murders` contains all the columns from the `districts` object and the `murder` column from the `murders` dataset. It does _not_ contain the `district` column from the `murders` dataset, since this has been merged into the existing
 `district_name` column.
 
-Joining datasets in any programming language (or even using functions like `VLOOKUP()` in Microsoft Excel) can be complicated. It is particularly important that you understand in each case (a) which dataset you are going to merge data into (in this case, `districts`), (b) which dataset columns are going to be taken from (in this case, `murders`) and (c) which columns are going to be used as the basis for the join (in this case, `district_name` and `district`). Thinking about what you are trying to achieve when joining datasets before you write the necessary code will save a lot of issues later on.
+Joining datasets in any programming language (or even using functions like `VLOOKUP()` in Microsoft Excel) can be complicated. It is particularly important that you understand in each case (a) which dataset you are going to merge data into (in this case, `districts`), (b) which dataset columns are going to be taken from (in this case, `murders`) and (c) which columns are going to be used as the basis for the join (in this case, `district_name` and `district`). Thinking about what you are trying to achieve before writing the code will prevent many problems later.
 
 
-::: {.callout-important}
-#### Do not ignore warnings produced by `left_join()`
+::: {.callout-important title="Always check a join"}
 
-Because joining datasets can be complicated, `left_join()` will produce warning messages when it detects that you might have made a mistake in specifying how two datasets should be joined. It is _not_ safe to ignore these warnings. If `left_join()` produces a warning, make sure you understand exactly what the warning is about and if you cannot fix it then get help using the techniques we learned about in @sec-bugs.
+`left_join()` warns about some potential problems, such as an unexpected many-to-many relationship, but it does not detect every mistake. An unmatched row can produce `NA` without any warning. After every join, check:
+
+- whether the result has the expected number of rows;
+- whether the joining columns contain duplicate values; and
+- whether important columns contain unexpected missing values.
+
+For the current data, the result has 75 rows (one for each district), no duplicated district names and no missing murder counts. If you receive a warning or a check gives an unexpected result, investigate it before continuing. See @sec-bugs if you need help.
 :::
 
 
@@ -597,18 +630,20 @@ To make maps with leaflet, we create a stack of functions in a similar way to th
 
 We can create a very basic leaflet map using the `leaflet()` function to create the stack, the `addProviderTiles()` function to add a base map and the `addPolygons()` function to add the district outlines. We have already loaded the leaflet package in our script file, so we can run this code in the R Console to create our first interactive map.
 
+::: {aria-label="Basic interactive map showing district boundaries in Uttar Pradesh"}
 ```{r}
 #| filename: "R Console"
 #| fig-asp: 1
 #| out-width: "100%"
 
 # Create interactive map
-leaflet(district_murders) |> 
+leaflet(district_murders) |>
   # Add base map
-  addProviderTiles("CartoDB.Voyager") |> 
+  addProviderTiles("CartoDB.Voyager") |>
   # Add district polygons
   addPolygons(fillOpacity = 0.75)
 ```
+:::
 
 
 You can interact with this map by clicking the buttons to zoom in and out, and by moving around the map area. For example, you can zoom out to see where Uttar Pradesh is relative to other places, or zoom in to see where particular cities are within Uttar Pradesh. This could be very useful in helping people understand the context of crime data.
@@ -617,19 +652,20 @@ In this map we use the CartoDB.Voyager style of base map, but leaflet can use a 
 
 However, this map isn't very useful because it doesn't show how many murders there were in each district. To do that, we need to specify that each district should be coloured according to the values in the `murder` column of the `district_murders` object. With a `ggplot()` map, we would do this with a function such as `scale_fill_distiller()`, but with a leaflet map the code we need is slightly more complicated and has two separate stages.
 
-The first stage is to create a custom function that converts the values in the `murder` column of the `district_murders` objects into colours. To do this, we use the `colorNumeric()` function from the leaflet package. Yes, this means that we are using a function to create a function, which we will then later use to set an argument of another function -- programming languages are very powerful, but that sometimes means they are complicated.
+The first stage is to create a custom function that converts the values in the `murder` column of the `district_murders` object into colours. To do this, we use the `colorNumeric()` function from the leaflet package. Yes, this means that we are using a function to create a function, which we will then later use to set an argument of another function -- programming languages are very powerful, but that sometimes means they are complicated.
 
-The `colorNumeric()` function (note the spelling of "color") allows us to specify the colour scheme we want using the `palette` argument. We also have to set the `domain` argument to be `NULL`. The `palette` argument to the `colorNumeric()`function accepts the same values as the palette argument to the `scale_fill_distiller()` function from ggplot2:
+The `colorNumeric()` function (note the spelling of "color") allows us to specify the colour scheme using the `palette` argument. The `domain` argument specifies the values to which that scheme will be applied. Setting an explicit domain makes sure a particular value is always assigned the same colour. The `palette` argument accepts the same values as the palette argument to the `scale_fill_distiller()` function from ggplot2:
 
 
 ```{r}
 #| echo: false
+#| fig-alt: "Nine horizontal sequential colour palettes suitable for colour-vision deficiencies. Each palette progresses from a very light shade to a dark shade of one or more colours."
 #| out-width: "100%"
 
-RColorBrewer::brewer.pal.info |> 
-  rownames_to_column(var = "name") |> 
-  filter(colorblind, category == "seq") |> 
-  pmap(function (...) {
+RColorBrewer::brewer.pal.info |>
+  rownames_to_column(var = "name") |>
+  filter(colorblind, category == "seq") |>
+  pmap(function(...) {
     current <- tibble(...)
     ggplot() +
       geom_raster(aes(x = 1:9, y = 1, fill = as.factor(1:9))) +
@@ -637,50 +673,54 @@ RColorBrewer::brewer.pal.info |>
       labs(subtitle = current$name) +
       theme_void() +
       theme(
-        legend.position = "none", 
+        legend.position = "none",
         plot.subtitle = element_text(size = 8)
       )
-  }) |> 
+  }) |>
   patchwork::wrap_plots()
 ```
 
 
-To create the custom colour palette function, we use the `<-` operator to assign the result produced by `colorNumeric()` to a name, just as we would with an object. We can give this custom function any name we like, but in the code below we'll call it `colours_red`.
+To create the custom colour palette function, we use the `<-` operator to assign the result produced by `colorNumeric()` to a name, just as we would with an object. We can give this custom function any name we like, but in the code below we'll call it `murder_colours`.
 
-Once we have created a custom colour palette function using `colorNumeric()`, we can use that function to create the appropriate values for the `fillColor` argument of the `addPolygons()` function in our existing `leaflet` stack. Since we want the map colours to be controlled by the `murder` column in the `district_murders` object, we specify `murder` as the only argument to the `colours_red()` palette function we have created.
+Once we have created a custom colour palette function using `colorNumeric()`, we can use that function to create the appropriate values for the `fillColor` argument of the `addPolygons()` function in our existing `leaflet` stack. Since we want the map colours to be controlled by the `murder` column in the `district_murders` object, we specify `murder` as the only argument to the `murder_colours()` palette function we have created.
 
-Let's see this in action: add this code to the `chapter09b.R` script file:
+Let's see this in action: add this code to the `chapter_09b.R` script file:
 
+::: {aria-label="Interactive map with districts in Uttar Pradesh shaded by murder count, without a legend or labels"}
 ```{r}
-#| filename: "chapter09b.R"
+#| filename: "chapter_09b.R"
 #| fig-asp: 1
 #| out-width: 100%
 
 # Create a custom colour palette function
-colours_red <- colorNumeric(palette = "Reds", domain = NULL)
+murder_colours <- colorNumeric(
+  palette = "Reds",
+  domain = district_murders$murder
+)
 
 # Create interactive map
-leaflet(district_murders) |> 
+leaflet(district_murders) |>
   # Add base map
-  addProviderTiles("CartoDB.Voyager") |> 
+  addProviderTiles("CartoDB.Voyager") |>
   # Add district polygons coloured by number of murders
   addPolygons(
-    fillColor = ~ colours_red(murder),
+    fillColor = ~ murder_colours(murder),
     fillOpacity = 0.75,
     weight = 2,
     color = "black"
   )
 ```
+:::
 
 
-::: {.callout-tip}
-#### `fillColor` needs a tilde
+::: {.callout-tip title="`fillColor` needs a tilde"}
 
-One slight quirk of `leaflet` is that in order for `colours_red()` to have access to the columns in the `district_murders` object, we need to add a tilde (`~`) symbol before the function name, so that the `fillColor` argument is `fillColor = ~ colours_red(murder)` rather than `fillColor = colours_red(murder)`. If you forget add do the `~`, you will see 
+One slight quirk of `leaflet` is that in order for `murder_colours()` to have access to the columns in the `district_murders` object, we need to add a tilde (`~`) symbol before the function name, so that the `fillColor` argument is `fillColor = ~ murder_colours(murder)` rather than `fillColor = murder_colours(murder)`. If you forget to add the `~`, you will see
 an error saying:
 
 ```r
-Error in colours_red(murder) : object 'murder' not found
+Error in murder_colours(murder) : object 'murder' not found
 ```
 :::
 
@@ -694,143 +734,95 @@ Change the code in your script file to add the `addLegend()` function to the end
 
 ```{r}
 #| eval: false
-#| filename: "chapter09b.R"
+#| filename: "chapter_09b.R"
 
 # Create interactive map
-leaflet(district_murders) |> 
+leaflet(district_murders) |>
   # Add base map
-  addProviderTiles("CartoDB.Voyager") |> 
+  addProviderTiles("CartoDB.Voyager") |>
   # Add district polygons coloured by number of murders
   addPolygons(
-    fillColor = ~ colours_red(murder),
+    fillColor = ~ murder_colours(murder),
     fillOpacity = 0.75,
     weight = 2,
     color = "black"
-  ) |> 
+  ) |>
   # Add legend
-  addLegend(pal = colours_red, values = ~ murder, title = "number of murders")
+  addLegend(
+    pal = murder_colours,
+    values = ~murder,
+    title = "number of murders"
+  )
 ```
 
 Next, we can add an inset map in the corner of the main map. This is useful for interactive maps because if we zoom in to show only a small area, we will be able to use the inset map to stay aware of the wider context.
 
 We can do this by adding the `addMiniMap()` function to the leaflet stack. We will add the argument `toggleDisplay = TRUE` to add the ability to minimise the inset map if necessary.
 
-Update the leaflet stack in `chapter09b.R` again to add the call to `addMiniMap()`:
+Update the leaflet stack in `chapter_09b.R` again to add the call to `addMiniMap()`:
 
 ```{r}
 #| eval: false
-#| filename: "chapter09b.R"
+#| filename: "chapter_09b.R"
 
 # Create interactive map
-leaflet(district_murders) |> 
+leaflet(district_murders) |>
   # Add base map
-  addProviderTiles("CartoDB.Voyager") |> 
+  addProviderTiles("CartoDB.Voyager") |>
   # Add district polygons coloured by number of murders
   addPolygons(
-    fillColor = ~ colours_red(murder),
+    fillColor = ~ murder_colours(murder),
     fillOpacity = 0.75,
     weight = 2,
     color = "black"
-  ) |> 
+  ) |>
   # Add legend
   addLegend(
-    pal = colours_red, 
-    values = ~ murder, 
+    pal = murder_colours,
+    values = ~murder,
     title = "number of murders"
-  ) |> 
+  ) |>
   # Add inset map
   addMiniMap(toggleDisplay = TRUE)
 ```
 
-Finally, we can add labels to the districts, which will appear when we move the pointer on a screen over a particular district. We do this by adding the `label` argument to the existing `addPolygons()` function. As with the previous sections, we can specify that the labels should be based on the `district_name` column in the `district_murders` data using the `~` operator, by setting `label = ~ district_name`.
+Finally, we can add labels to the districts, which will appear when we move the pointer over a district or select it on some touchscreens. We do this by adding the `label` argument to the existing `addPolygons()` function. The label will contain both the district name and murder count, so readers are not expected to estimate values from colour alone.
 
 Change the existing call to `addPolygons()` to add the district labels:
 
+::: {aria-label="Interactive choropleth map of murder counts in districts in Uttar Pradesh in 2014"}
 ```{r}
-#| filename: "chapter09b.R"
+#| filename: "chapter_09b.R"
 #| fig-asp: 1
 #| out-width: "100%"
 
 # Create interactive map
-leaflet(district_murders) |> 
+leaflet(district_murders) |>
   # Add base map
-  addProviderTiles("CartoDB.Voyager") |> 
+  addProviderTiles("CartoDB.Voyager") |>
   # Add district polygons coloured by number of murders
   addPolygons(
-    fillColor = ~ colours_red(murder),
+    fillColor = ~ murder_colours(murder),
     fillOpacity = 0.75,
-    label = ~ district_name,
+    label = ~ paste0(district_name, ": ", murder, " murders"),
     weight = 2,
     color = "black"
-  ) |> 
+  ) |>
   # Add legend
   addLegend(
-    pal = colours_red, 
-    values = ~ murder, 
+    pal = murder_colours,
+    values = ~murder,
     title = "number of murders"
-  ) |> 
+  ) |>
   # Add inset map
   addMiniMap(toggleDisplay = TRUE)
 ```
+:::
 
 
-Now we have added the extra layers to the map, it is easy to see which district had the highest number of murders and (by clicking on it) what the name of that district is. 
+Now we have added the extra layers to the map, we can compare districts and use the labels to read their names and values. Meerut has the highest count in this dataset, with 226 murders. Stating this in the text ensures the main result is available even to someone who cannot use the interactive map.
 
-The script file `chapter09b.R` should look like this:
-
-
-```{r}
-#| eval: false
-#| filename: "chapter09b.R"
-
-# This file creates an interactive map of counts of murders in Uttar Pradesh,
-# India, in 2014
-
-# Load packages
-pacman::p_load(leaflet, sf, tidyverse)
-
-# Load number of murders in each district
-murders <- read_csv("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_murders.csv")
-
-# Load district boundaries
-districts <- read_sf("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_districts.gpkg")
-
-# Join murder counts to district boundaries
-district_murders <- left_join(
-  districts, 
-  murders, 
-  by = join_by(district_name == district)
-)
-
-# Create a custom colour palette function
-colours_red <- colorNumeric(palette = "Reds", domain = NULL)
-
-# Create interactive map
-leaflet(district_murders) |> 
-  # Add base map
-  addProviderTiles("CartoDB.Voyager") |> 
-  # Add district polygons coloured by number of murders
-  addPolygons(
-    fillColor = ~ colours_red(murder),
-    fillOpacity = 0.75,
-    label = ~ district_name,
-    weight = 2,
-    color = "black"
-  ) |> 
-  # Add legend
-  addLegend(
-    pal = colours_red, 
-    values = ~ murder, 
-    title = "number of murders"
-  ) |> 
-  # Add inset map
-  addMiniMap(toggleDisplay = TRUE)
-```
-
-
-
-::: {.callout-quiz .callout}
-#### Check your knowledge: Interactive maps
+::: {.callout-quiz .callout title="Interactive maps"}
 
 ```{r interactive-maps-quiz}
 #| echo: false
@@ -880,24 +872,25 @@ interactive_maps_quiz3 <- c(
 
 The map of murders in Uttar Pradesh has a major limitation: it counts murders at district level, but it does not take into account that the number of people living in each district is different. For example, the district of `r pluck(slice_max(district_pop, order_by = population, n = 1), "district")` has a population of `r scales::number(pluck(slice_max(district_pop, order_by = population, n = 1), "population"), scale = 1/10^6, accuracy = 0.1, suffix = " million")` while the district of `r pluck(slice_min(district_pop, order_by = population, n = 1), "district")` has a population of `r scales::number(pluck(slice_min(district_pop, order_by = population, n = 1), "population"), scale = 1/10^6, accuracy = 0.1, suffix = " million")`. It's therefore not surprising that some districts have more murders than others.
 
-When we have crime counts for areas of different sizes, it is often more useful to map crime _rates_ instead of crime _counts_. A crime rate is an expression of the frequency of crime that in some way controls for the population that is exposed to crime. We often use choropleth maps for this because we typically only have population counts for areas, rather having access to data on where each individual person lives.
+When we have crime counts for areas with populations of different sizes, it is often more useful to map crime _rates_ instead of crime _counts_. A crime rate is an expression of the frequency of crime that in some way controls for the population that is exposed to crime. We often use choropleth maps for this because we typically only have population counts for areas, rather than having access to data on where each individual person lives.
 
 
 ### Types of crime rate
 
-There are three common types of crime rate, each of which measures risk in a different way. The most common, and the type of rate that people almost always mean if they talk about a 'crime rate' without specifying another type, is the *incidence rate*. This is the number of crimes in an area divided by the number of people, households or places against which a crime could occur. For example, the incidence rate of burglary in an area might be calculated as the number of crimes per 1,000 households, while the incident rate of homicide might be expressed as the number of homicides per 100,000 people.
+There are three common types of crime rate, each of which measures risk in a different way. The most common, and the type of rate that people almost always mean if they talk about a 'crime rate' without specifying another type, is the *incidence rate*. This is the number of crimes in an area divided by the number of people, households or places against which a crime could occur. For example, the incidence rate of burglary in an area might be calculated as the number of crimes per 1,000 households, while the incidence rate of homicide might be expressed as the number of homicides per 100,000 people.
 
 $$
-\textrm{incidence} = \frac{\textrm{crimes}}{\textrm{population}}
+\textrm{incidence per } k = \frac{\textrm{crimes}}{\textrm{population}} \times k
 $$
 
-Incidence rates and counts are each useful in different circumstances. For example, if you were advising a police commander on which district to allocated more homicide detectives to, the _number_ of murders in a district is probably more useful than the incidence rate. But the opposite would be true if you were advising a politician on which district to add extra funding to for homicide prevention, since in that case you would probably want to focus on areas with the highest risk of homicide.
+Here, $k$ is the scale used to make the result easy to understand, such as 1,000 households or 100,000 residents.
+
+Incidence rates and counts are each useful in different circumstances. For example, if you were advising a police commander on which district to allocate more homicide detectives to, the _number_ of murders in a district is probably more useful than the incidence rate. But the opposite would be true if you were advising a politician on which district to add extra funding to for homicide prevention, since in that case you would probably want to focus on areas with the highest risk of homicide.
 
 
-::: {.callout-important}
-#### 'Incidence' vs 'incident'
+::: {.callout-important title="'Incidence' vs 'incident'"}
 
-In crime analysis, you will hear people use two very similar terms that have different meanings. When a crime analyst talks about 'incidence' they almost always mean 'incidence rate' as defined above. But when they talk about 'incidents' they are usually talking about the _count_ of offences. So when you hear a crime analyst say 'which area has the highest incidents?', they mean which has the highest _number_, not the highest rate. But if they say 'which area has the highest incidence?', they mean the highest _rate_.
+In crime analysis, you will hear people use two very similar terms that have different meanings. When a crime analyst talks about 'incidence' they almost always mean 'incidence rate' as defined above. But when they talk about 'incidents' they are usually talking about the _count_ of offences. “Which area has the most incidents?” asks about the number of offences, while “which area has the highest incidence?” asks about the rate.
 :::
 
 
@@ -914,8 +907,7 @@ $$
 $$
 
 
-::: {.callout-important}
-#### Crime rates are averages
+::: {.callout-important title="Crime rates are averages"}
 
 All three types of crime rate are average values for an area as a whole, so we are always at risk of committing the ecological fallacy. Remember that while rates are useful for describing areas, that does not imply everyone in an area faces the same risk from crime.
 :::
@@ -934,39 +926,39 @@ In all these cases, the residential population is a poor measure of the populati
 
 ### Calculating murder rates in Uttar Pradesh
 
-In the case of murder in Uttar Pradesh, residential population is likely to be an acceptable (although not perfect) denominator to use in calculating an incidence rate. This is because Indian districts are relatively large areas and so we can expect that most murder victims will be killed in the district where they live (because people everywhere tend to spend most of their time close to where they live). However, there will definitely be exceptions to this, with people being murdered in a different district to where they live. Working out the extent of this problem would be an important question for a detailed investigation into murder in Uttar Pradesh, but we will not consider it any further here.
+Residential population is a conventional denominator for homicide rates and is a reasonable starting point for this example, but it is not perfect. Some victims will be killed in a different district from the one in which they live, and population counts may refer to a different year from the crime data. A detailed investigation should assess both issues before interpreting small differences between districts.
 
-To calculate an incidence rate, we once again need to join two datasets together. This time, we need to add a dataset of population data for districts in Uttar Pradesh. Add this code to your script file just after the lines that load the other two datasets:
+The murder counts used here are for 2014, while the population dataset contains counts from India's 2011 census, published by the Registrar General and Census Commissioner of India. The resulting rates therefore use the closest population data available in this example, rather than the exact population in 2014. This limitation should be reported alongside the map.
 
-
-```{r}
-#| include: false
-#| filename: "chapter09b.R"
-
-# Load district population counts
-district_pop <- read_csv("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_population.csv")
-```
+To calculate an incidence rate, we once again need to join two datasets together. This time, we need to add population data for districts in Uttar Pradesh. Add this code to `chapter_09b.R` alongside the code that downloads and loads the other two datasets:
 
 
 ```{r}
 #| eval: false
-#| filename: "chapter09b.R"
+#| filename: "chapter_09b.R"
+
+# Download district population counts
+request(
+  "https://mpjashby.github.io/crimemappingdata/uttar_pradesh_population.csv"
+) |>
+  req_perform(path = here("data", "raw", "uttar_pradesh_population.csv"))
 
 # Load district population counts
-district_pop <- read_csv("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_population.csv")
+district_pop <- here("data", "raw", "uttar_pradesh_population.csv") |>
+  read_csv(show_col_types = FALSE)
 ```
 
 
-If we look at the column names in this new dataset, we will see that includes a column called `district` that contains the district names. Just as we did before, we can use the `left_join()` function to add the columns from the `district_pop` dataset to the combined dataset we have already produced. To do that, let's create a pipeline that combines all the datasets one after the other:
+If we look at the column names in this new dataset, we will see that it includes a column called `district` that contains the district names. Just as we did before, we can use the `left_join()` function to add the columns from the `district_pop` dataset to the combined dataset we have already produced. To do that, let's create a pipeline that combines all the datasets one after the other:
 
 
 ```{r}
-#| filename: "chapter09b.R"
+#| filename: "chapter_09b.R"
 
 # Join murder counts and population to district boundaries
-district_murders <- districts |> 
+district_murders <- districts |>
   # Join murder counts
-  left_join(murders, by = join_by(district_name == district)) |> 
+  left_join(murders, by = join_by(district_name == district)) |>
   # Join population counts
   left_join(district_pop, by = join_by(district_name == district))
 ```
@@ -986,16 +978,16 @@ Now that we have a single dataset containing all the variables we need, we can c
 
 
 ```{r}
-#| filename: "chapter09b.R"
+#| filename: "chapter_09b.R"
 
 # Join murder counts and population to district boundaries
-district_murders <- districts |> 
+district_murders <- districts |>
   # Join murder counts
-  left_join(murders, by = join_by(district_name == district)) |> 
+  left_join(murders, by = join_by(district_name == district)) |>
   # Join population counts
-  left_join(district_pop, by = join_by(district_name == district)) |> 
+  left_join(district_pop, by = join_by(district_name == district)) |>
   # Calculate murder rate
-  mutate(murder_rate = murder / (population / 100000))
+  mutate(murder_rate = murder / population * 100000)
 ```
 
 
@@ -1005,8 +997,7 @@ district_murders <- districts |>
 To create a choropleth map of the murder rate using `leaflet`, we simply use the code from our previous interactive map but specify that the `murder_rate` column be used to determine the colour of each district polygon rather than the `murder` column. We will also change the base map to a different style.
 
 
-::: {.callout-important}
-#### Be clear about how you have calculated the crime rate shown on a map
+::: {.callout-important title="Be clear about how you calculated a crime rate"}
 
 Whenever we map a crime _rate_, it is important that we are explicit about how that rate was calculated. For example, using a legend title such as "rate of murders" would not give enough information to allow readers to understand how to interpret the map. A much better legend title would be "murders per 100,000 residents" or something similar.
 :::
@@ -1014,37 +1005,50 @@ Whenever we map a crime _rate_, it is important that we are explicit about how t
 
 Whenever we need to use a longer legend title, or other text, it can be useful to break the text over multiple lines. Since leaflet maps are built using the same technologies as web pages, the way we wrap text is slightly different to how we do it for maps created with ggplot2. Rather than using the new-line character (`\n`) or the `str_wrap()` function, we will instead use the HTML new-line separator `<br>` and wrap the whole legend title in the `HTML()` function from the `htmltools` package.
 
-Replace the existing map code in the `chapter09b.R` script file with this code. Then read through the notes below this code to understand how it is different from the code that produced the previous interactive map.
+Add this code to `chapter_09b.R`. Then read through the notes below it to understand how it differs from the map of murder counts.
 
+::: {aria-label="Interactive choropleth map of murder rates in districts in Uttar Pradesh in 2014"}
 ```{r}
-#| filename: "chapter09b.R"
+#| filename: "chapter_09b.R"
 #| fig-asp: 1
 #| out-width: "100%"
 
-# Create interactive map
-leaflet(district_murders) |> 
+# Create a colour palette for murder rates
+murder_rate_colours <- colorNumeric(
+  palette = "Reds",
+  domain = district_murders$murder_rate
+)
+
+# Create an interactive map of murder rates
+leaflet(district_murders, elementId = "murder-rate-map") |>
   # Add base map
   addProviderTiles(
-    "Esri.WorldImagery",                                                    #<1>
-    options = providerTileOptions(opacity = 0.3)                            #<2>
-  ) |> 
+    "Esri.WorldImagery", #<1>
+    options = providerTileOptions(opacity = 0.3) #<2>
+  ) |>
   # Add district polygons coloured by number of murders
   addPolygons(
-    fillColor = ~ colours_red(murder_rate),                                 #<3>
+    fillColor = ~ murder_rate_colours(murder_rate), #<3>
     fillOpacity = 0.75,
-    label = ~ district_name,
+    label = ~ paste0(
+      district_name,
+      ": ",
+      round(murder_rate, 1),
+      " murders per 100,000 residents"
+    ),
     weight = 2,
     color = "black"
-  ) |> 
+  ) |>
   # Add legend
   addLegend(
-    pal = colours_red, 
-    values = ~ murder_rate, 
-    title = htmltools::HTML("murders per<br>100,000 residents")             #<4>
-  ) |> 
+    pal = murder_rate_colours,
+    values = ~murder_rate,
+    title = htmltools::HTML("murders per<br>100,000 residents") #<4>
+  ) |>
   # Add inset map
   addMiniMap(toggleDisplay = TRUE)
 ```
+:::
 1. This map uses a different style of base map to the previous map.
 2. The base map style used in this map is quite colourful, so we will make it semi-transparent to reduce its visual prominence.
 3. We want the map colour scheme to be controlled by the `murder_rate` column in the `district_murders` dataset.
@@ -1053,10 +1057,24 @@ leaflet(district_murders) |>
 We now have all the code we need to load the necessary data, calculate crime
 rates and make an interactive map of murders in districts in Uttar Pradesh.
 
+Meerut has the highest rate in this dataset, at about 6.6 murders per 100,000 residents, followed by Baghpat at about 6.4. These values are stated in the text so that the main finding does not depend on a reader being able to distinguish colours or operate the interactive map.
 
 
-::: {.callout-quiz .callout}
-#### Check your knowledge: Mapping crime rates
+### Publishing crime maps ethically
+
+Crime maps can help people understand patterns and make decisions, but publishing them can also cause harm. Before sharing a map, consider:
+
+- **Privacy:** could a point, label or small count allow someone to identify a victim, suspect or address? Aggregating data can reduce this risk, although very small counts may still be revealing.
+- **Stigma:** could the title, labels or accompanying text unfairly portray everyone in an area as dangerous? Describe recorded events and avoid making claims about individual residents from area-level data.
+- **Data limitations:** could patterns reflect reporting, recording, missing locations or the population measure used? State these limitations and avoid presenting uncertain differences as facts.
+- **Purpose and proportionality:** is publishing a detailed map necessary for the intended purpose, or would a less detailed map communicate the result with less risk?
+- **Accessibility:** can readers obtain the main information without relying only on colour, pointer movement or an interactive control? Provide clear legends, descriptive text and, where useful, an accompanying table.
+
+An ethical map does more than avoid disclosing identities. It gives readers enough context to interpret the pattern fairly and does not imply that an area-level result describes every person or place within the area.
+
+
+
+::: {.callout-quiz .callout title="Mapping crime rates and publishing maps"}
 
 ```{r rates-quiz}
 #| echo: false
@@ -1095,6 +1113,13 @@ rates_quiz5 <- c(
   "To make the crime rates as high as possible",
   "Accurate crime rates should always be the same regardless of the population measure chosen"
 )
+
+rates_quiz6 <- c(
+  "Remove the legend so that the map takes up less space",
+  "Publish exact victim addresses whenever they are available",
+  answer = "Explain data limitations and consider whether the map could identify or stigmatise people",
+  "Assume an area-level rate applies equally to every resident"
+)
 ```
 
 
@@ -1123,87 +1148,51 @@ rates_quiz5 <- c(
 `r webexercises::longmcq(rates_quiz5)`
 
 
+**Which action is part of publishing a crime map ethically?**
+
+`r webexercises::longmcq(rates_quiz6)`
+
+
 :::
 
 
 ## In summary
 
-In this chapter we have learned how to calculate the number of points in different areas, join different sources of data together, and map both crime counts and crime rates on both static and interactive maps.
+In this chapter you learned how to calculate the number of points in different areas, join different sources of data together, and map both crime counts and crime rates using static and interactive maps. Choropleth maps can be useful, but their interpretation depends on the chosen boundaries and they only describe areas as a whole.
 
-We have also learned about two disadvantages of choropleth maps: the ecological fallacy and the modifiable areal unit problem.
+You can now:
 
-Your script file `chapter09b.R` should now look like this. Save this file so that you can use it as a template when you want to create interactive maps in future.
+- count points within predefined areas using `hotspot_count()`;
+- create static and interactive choropleth maps;
+- join tabular data to area boundaries and check for missing or duplicated matches;
+- calculate and clearly label incidence rates;
+- choose a population measure while recognising the denominator dilemma;
+- explain the ecological fallacy and modifiable areal unit problem; and
+- identify privacy, stigma, data-quality and accessibility issues before publishing a crime map.
+
+Your complete `chapter_09b.R` script should now look like this:
 
 ```{r}
 #| eval: false
-#| filename: "chapter09b.R"
-
-# This file creates an interactive map of counts of murders in Uttar Pradesh,
-# India, in 2014
-
-# Load packages
-pacman::p_load(leaflet, sf, tidyverse)
-
-# Load number of murders in each district
-murders <- read_csv("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_murders.csv")
-
-# Load district boundaries
-districts <- read_sf("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_districts.gpkg")
-
-# Load district population counts
-district_pop <- read_csv("https://mpjashby.github.io/crimemappingdata/uttar_pradesh_population.csv")
-
-# Join murder counts and population to district boundaries
-district_murders <- districts |> 
-  # Join murder counts
-  left_join(murders, by = join_by(district_name == district)) |> 
-  # Join population counts
-  left_join(district_pop, by = join_by(district_name == district)) |> 
-  # Calculate murder rate
-  mutate(murder_rate = murder / (population / 100000))
-
-# Create a custom colour palette function
-colours_red <- colorNumeric(palette = "Reds", domain = NULL)
-
-# Create interactive map
-leaflet(district_murders) |> 
-  # Add base map
-  addProviderTiles(
-    "Esri.WorldImagery",
-    options = providerTileOptions(opacity = 0.3)
-  ) |> 
-  # Add district polygons coloured by number of murders
-  addPolygons(
-    fillColor = ~ colours_red(murder_rate),
-    fillOpacity = 0.75,
-    label = ~ district_name,
-    weight = 2,
-    color = "black"
-  ) |> 
-  # Add legend
-  addLegend(
-    pal = colours_red, 
-    values = ~ murder_rate, 
-    title = htmltools::HTML("murders per<br>100,000 residents")
-  ) |> 
-  # Add inset map
-  addMiniMap(toggleDisplay = TRUE)
+#| file: "../R/chapter_09b.R"
+#| filename: "chapter_09b.R"
 ```
 
+Save `chapter_09b.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. To check that both analyses are reproducible, restart R using the **Restart R** (**&#10227;**) button in Positron's **Console** panel, then run `chapter_09a.R` and `chapter_09b.R` from beginning to end. Keep the scripts in the `R` folder and the downloaded source files in `data/raw`.
 
 
-::: {.reading}
+
+::: {.box .reading}
 
 To find out more about the topics covered in this chapter:
 
-  * Read the article [Crime seen through a cone of resolution](https://journals.sagepub.com/doi/pdf/10.1177/000276427602000207) by Paul Brantingham, Delmar Dyreson and Patricia Brantingham for more detail about the ecological fallacy in studying crime.
+  * Read the article [Crime seen through a cone of resolution](https://doi.org/10.1177/000276427602000207) by Paul Brantingham, Delmar Dyreson and Patricia Brantingham for more detail about how the spatial units used in an analysis affect what we see.
   * Read the article [Smallest is Better? The Spatial Distribution of Arson and the Modifiable Areal Unit Problem](https://doi.org/10.1007/s10940-016-9297-6) for an example of the modifiable areal unit problem in studying crime.
 
 :::
 
 
-::: {.callout-quiz .callout}
-#### Check your knowledge: Revision questions
+::: {.callout-quiz .callout title="Revision questions"}
 
 Answer these questions to check you have understood the main points covered in this chapter. Write between 50 and 100 words to answer each question.
 
@@ -1212,9 +1201,4 @@ Answer these questions to check you have understood the main points covered in t
 3. How can crime rates provide more useful insights than simple crime counts when comparing crime levels across different areas?
 4. How does choosing an appropriate population measure affect crime rate calculations?
 5. Discuss the ethical considerations involved in publishing crime maps.
-:::
-
-
-::: {.credits}
-[Tidy Animated Verbs](https://github.com/gadenbuie/tidyexplain) licensed under the [Creative Commons Zero licence](https://creativecommons.org/publicdomain/zero/1.0/).
 :::

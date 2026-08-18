@@ -1,16 +1,42 @@
 # Checklist: handling code errors {#sec-checklist-errors}
 
 ::: {.abstract}
-When you run some code in R and it produces an error, follow the steps learned in this checklist to identify and fix the problem.
+When R code produces an error, warning or unexpected result, follow this detailed version of the four-step debugging process introduced in @sec-bugs.
 :::
 
-1. **Read the error message** and fix any obvious problems.
-2. Make sure your code **follows the good practices summarised in @sec-preventing-bugs**, which make problems -- especially those caused by typos -- easier to see. Save the script so that Air formats it, and keep each function in a pipeline on a separate line so that you can comment out individual steps.
-3. Comment out all the lines of your code. **Uncomment each line in turn** (starting with the first line), re-running the code each time until you see the error you're trying to understand. Now you know which line is likely to be causing the problem.
-4. If the error message is one of the **common errors listed in @sec-common-errors**, follow the steps outlined in @sec-common-errors to fix it.
-5. If that does not fix the problem, **read the manual page** for the function that you think is causing the problem. Check that the values you have passed to each argument are what the function needs in order to work.
-6. If that does not fix the problem, **create a reproducible example** (also called a reprex or a minimal working example) as explained in @sec-reprex. Often, the act of creating a reproducible example will help you fix the problem, but if not then you can use it to get help from others.
+The chapter introduces four main steps: **understand**, **isolate**, **inspect** and **get help**. This checklist adds more detail to each step so that you can use it whenever you encounter a problem in your own code.
 
-You will be able to fix almost all the errors in your code by following the early steps in this list. Only quite rarely will you need to post a reprex online to get help.
+Before starting, remember the three main categories of bug:
+
+- A syntax error means R cannot interpret the code, often because of a missing comma, quote mark or closing parenthesis.
+- A runtime error means R can interpret the code but cannot complete the operation, for example because a file or column is missing.
+- A logic error means the code runs but produces the wrong result. R might not display any error or warning, so compare the output with what you expected.
+
+## Step 1: Understand the problem
+
+1. Reproduce the problem. Save the script, restart R and run the code again from the beginning. Note the first place where you see an error, warning or unexpected result.
+2. Read the complete output from R. Identify the function involved, any argument mentioned and the immediate cause. If there is no error or warning, describe how the result differs from what you expected.
+3. Classify the bug, if possible, as a syntax error, runtime error or logic error. Fix any obvious typo or incomplete expression.
+4. Check whether the message appears in @sec-common-errors. Read the manual page for the function involved and check the type of input it expects, every argument you supplied and the value it should return.
+
+## Step 2: Isolate the code that produces the problem
+
+1. Make sure the code follows the good practices summarised in @sec-preventing-bugs. Save the script so that Air formats it, and keep each function in a pipeline on a separate line.
+2. Find the smallest piece of code that produces the same problem. Comment out later lines, then uncomment one line at a time and run the code after each change.
+3. If the error or result changes, restore the line you just removed. Change only one thing at a time so that you know which change affected the problem.
+
+## Step 3: Inspect the data used and produced by each step
+
+1. Check the input and output at every important stage. Use functions such as `names()`, `nrow()`, `count()`, `glimpse()` and `summary()`, or open a dataset using `view()`.
+2. Check that objects have the columns, values and type you expect. Look for zero rows, unexpected missing values, incorrectly spelled categories and other results that R might not identify as errors.
+3. After making a change, verify the fix. Restart R and run the complete script from beginning to end. Inspect the final output rather than assuming that code without an error is correct.
+
+## Step 4: Get help using a reproducible example
+
+1. If the problem remains, create a reproducible example as explained in @sec-reprex. Keep only the code and data needed to produce the same problem.
+2. Check the reprex in a new R session before sharing it. Include the exact error, warning or unexpected result and explain what you expected to happen.
+3. Remove confidential or personal information, sensitive crime data, passwords, API keys and other credentials before sharing the reprex with an instructor, colleague, online community or AI service.
+
+You will be able to fix many bugs before reaching Step 4. Creating a reprex often reveals the cause even if you do not ultimately need to share it.
 
 You can find more details about how to deal with bugs in your code in @sec-bugs.

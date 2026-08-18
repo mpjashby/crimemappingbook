@@ -1,51 +1,105 @@
 # Handling bugs in your code {#sec-bugs}
 
 ::: {.abstract}
-This chapter will teach you how to identify and fix bugs in your R code. You'll learn how to interpret error messages, warnings, and messages, distinguishing between minor issues and critical problems that halt code execution. The chapter also covers systematic debugging techniques, such as isolating problematic lines and checking data structures, with practical examples using a dataset on frauds. You'll explore the differences between syntax and logical errors and gain tools to resolve them effectively. By the end of this chapter, you'll feel more confident tackling errors in your code, an invaluable skill for any programming project.
+This chapter will teach you how to identify and fix bugs in your R code. You will learn how to interpret messages, warnings and errors, and how to distinguish between different types of error. The chapter also introduces a systematic debugging process that you can use to find a fix problems. By the end of the chapter, you will be better prepared to diagnose problems in your code and to ask others for help when you need it.
 :::
 
 
-::: {.callout-tip}
-#### Before you start
+::: {.callout-tip title="Before you start"}
 
-Open RStudio or -- if you already have RStudio open -- click `Session` then `Restart R`. Make sure you're working inside the Crime Mapping RStudio project you created in @sec-create-project, then you're ready to start mapping.
+1. Open Positron or -- if you already have Positron open -- start a new R session by clicking the **Restart R** (**&#10227;**) button in the **Console** panel. This makes sure no code you ran previously will interfere with the work you do in this chapter.
+2. Make sure you are working in the crime mapping project workspace you created in @sec-create-project. In the top-right corner of the Positron window, you should see a folder icon and the words `crime-mapping`. If not, click the **File** menu, then **Open Folder ...** and choose the `crime-mapping` folder.
 :::
 
 
 ## Introduction
 
-In this chapter we will learn how to deal with bugs in the R code that we write. It's inevitable that you will make mistakes in the R code that you write. Everyone types the wrong command every now and again, just as everyone sometimes clicks the wrong button in other pieces of software. Learning how to identify and fix bugs is part of the process of learning to code.
+In this chapter we will learn how to deal with bugs in the R code that we write. Bugs in code are inevitable. Everyone who writes code makes mistakes. But even when no-one has made a mistake, there are lots of other reasons why code that previously worked well eventually does not. Learning how to identify and fix bugs is part of the process of learning to code.
+
+By the end of this chapter, you will have learned how to:
+
+- distinguish messages, warnings and errors;
+- recognise syntax errors, runtime errors and logic errors;
+- find the smallest piece of code that produces a problem;
+- inspect the data used and produced by each step in an analysis;
+- use R manual pages to understand functions;
+- create a reproducible example when asking for help; and
+- assess suggestions from online sources and generative AI critically.
+
+
+::: {.callout-tip title="But can't I just use AI to fix my code?"}
+Whether an AI tool such as ChatGPT or Gemini can fix your code depends on the nature of the problem, the information you provide and the features available to you. AI tools can solve many problems well, but they can also produce plausible suggestions that are wrong.
+
+It's not always possible to rely on AI to fix problems with our code, and even when it is possible, it is still useful to understand the solution the AI is suggesting. We'll come back to using AI to help us fix bugs in our code later in this chapter.
+:::
 
 
 ## Preventing bugs {#sec-preventing-bugs}
 
 The easiest bug to fix is one that never reaches your code. Good working habits cannot prevent every mistake, but they make mistakes less likely and make the remaining bugs much easier to find.
 
-- **Keep files organised.** Work inside the `crime-mapping` workspace, store original data in `data/raw`, processed data in `data/processed`, scripts in `R` and analytical output in `output`. Use relative paths rather than paths that work only on your computer. Review the workspace structure in @sec-create-project if necessary.
+- **Keep files organised.** Work inside the `crime-mapping` workspace, store original data in `data/raw`, processed data in `data/processed`, scripts in `R` and analytical output in `output` (see @sec-create-project to remind yourself about this if necessary). Use relative paths rather than paths that work only on your computer (see @sec-spatial-data).
 - **Give files informative names.** Use lower-case letters, numbers and underscores, and add padded numbers where several scripts must run in order. See @sec-file-names.
 - **Give objects meaningful names.** Use lower-case snake case and choose a name that describes what the object contains. Do not reuse the names of functions or overwrite an existing object with unrelated contents. See @sec-naming-objects.
 - **Write readable scripts.** Use comments to explain the purpose of a script and its main stages, and use blank lines or section headings to separate distinct tasks. See @sec-comments.
 - **Use consistent formatting.** Air formats R code automatically when you save it, making inconsistent spacing and indentation easier to avoid. If Air cannot format a file, check first for an incomplete expression or syntax error. See the Air setup in @sec-create-project.
 - **Keep the complete analysis in a script.** Permanent code belongs in a named script, while temporary inspection code belongs in the Console. Restart R and run the complete script from beginning to end before relying on its results. See @sec-permanent-code.
 
-These practices do not merely make code look tidy. They reduce ambiguity: when files, objects and stages have predictable names and structure, unexpected code stands out and the source of a problem is easier to isolate.
+These practices do not merely make code look tidy. They reduce ambiguity and complexity in your code, both of which are common underlying causes of code bugs. When files, objects and stages have predictable names and structure, unexpected code stands out and the source of a problem is easier to isolate.
 
-In this chapter we will look at examples of errors using a dataset of frauds in Kansas City in the United States. We can load this dataset with this code:
+::: {.callout-quiz .callout title="Preventing bugs"}
+
+```{r}
+#| label: preventing-bugs-quiz
+#| echo: false
+
+preventing_bugs_quiz1 <- c(
+  "Run each permanent line directly in the Console and do not save it",
+  "Use a different naming style for each object so that names stand out",
+  answer = "Keep permanent code in a named script and run the complete script from a new R session",
+  "Store downloaded data in the same folder as R scripts"
+)
+
+preventing_bugs_quiz2 <- c(
+  "It prevents every possible bug",
+  answer = "It makes unusual or incomplete code easier to notice",
+  "It allows R to guess what incomplete code should do",
+  "It automatically corrects logic errors"
+)
+```
+
+**Which habit makes an analysis easier to check and reproduce?**
+
+`r webexercises::longmcq(preventing_bugs_quiz1)`
+
+**Why does consistent formatting help with debugging?**
+
+`r webexercises::longmcq(preventing_bugs_quiz2)`
+
+:::
+
+In this chapter we will look at examples of errors using a dataset of frauds in Kansas City in the United States. To get started, download the file and load it into R:
 
 
 ```{r}
 #| filename: "R Console"
+#| output: false
 
 # Load packages
-pacman::p_load(tidyverse)
+pacman::p_load(here, httr2, tidyverse)
 
-# Load data
-frauds <- read_csv("https://mpjashby.github.io/crimemappingdata/kansas_city_frauds.csv.gz")
+# Download the data and store the original file
+request(
+  "https://mpjashby.github.io/crimemappingdata/kansas_city_frauds.csv.gz"
+) |>
+  req_perform(path = here("data", "raw", "kansas_city_frauds.csv.gz"))
+
+# Load the local file
+frauds <- read_csv(here("data", "raw", "kansas_city_frauds.csv.gz"))
 ```
 
 
-::: {.callout-tip collapse="true"}
-#### Why did we run this code in the R Console?
+::: {.callout-tip collapse="true" title="Why did we run this code in the R Console?"}
 
 Normally when we load packages and data, we do it in an R script file. We do that because this code is needed as part of the complete script that produces a particular map. In this chapter we won't be creating a map, just looking at examples of errors, so we won't need to keep any of the code for later.
 :::
@@ -56,41 +110,11 @@ This is what the first few lines of the dataset look like:
 ```{r}
 #| echo: false
 
-frauds |> 
-  knitr::kable()
+frauds |>
+  knitr::kable(caption = "Example rows from the Kansas City fraud dataset")
 ```
 
-If you were to try to run this code:
-
-```{r}
-#| eval: false
-#| filename: "R Console"
-
-select(frauds, offense_category)
-```
-
-
-You can see that R produces an error message saying something like:
-
-```{r}
-#| echo: false
-#| error: true
-
-select(frauds, offense_category)
-```
-
-In this case it is fairly easy to identify that one of the columns you have tried to select does not exist. Maybe you mis-remembered the name of the column. To find out what the correct column name is, you can either print the first few rows of the object (by typing the code `head(frauds)` into the R console) or use the `names()` function to print a list of column names present in the data:
-
-```{r}
-#| filename: "R Console"
-
-names(frauds)
-```
-
-
-From this, we can see that the column we want to select is called `offense_type`, not `offense_category`.
-
-Other errors will be harder to identify and fix. In this chapter we will go through the process of debugging -- identifying, understanding and fixing errors in your code. Sometimes fixing issues with your code can feel like a bit of a roller coaster, but (like most things) it becomes much easier with practice, and if you approach errors in a systematic way.
+In this chapter we will go through the process of debugging -- identifying, understanding and fixing errors in your code. Sometimes fixing issues with your code can feel like a bit of a roller coaster, but (like most things) it becomes much easier with practice, and if you approach errors in a systematic way.
 
 <p class="full-width-image"><img src="../images/debugging.jpg" alt="Cartoon showing 10 furry monsters showing different stages of learning to debug code. The monsters are marked '1. I got this', '2. Huh, really though that was it', '3. (...)', '4. Fine. Restarting.', '5. OH WTF', '6. Zombie meltdown', '7. [crying]', '8. A NEW HOPE!', '9. [insert awesome theme song]' and '10. I LOVE CODING!'"></p>
 
@@ -98,29 +122,29 @@ Other errors will be harder to identify and fix. In this chapter we will go thro
 
 ## Errors, warnings and messages
 
-When something is not quite right, or just when there is an issue in your code that you should be aware of, R has three ways of communicating with you: messages, warnings and errors. 
+When something is not quite right, or just when there is an issue in your code that you should be aware of, R has three ways of communicating with you: messages, warnings and errors (these are collectively sometimes called _conditions_).
 
 
 ### Messages
 
 *Messages* are usually for information only and typically don't require you to take any action. For example, the function `get_crime_data()` from the `crimedata` package issues a message to tell you what data it is downloading. It does this because downloading data sometimes takes a few seconds and without a message you might wonder if the code was working.
 
-By default, messages are displayed in RStudio in <span style="color: rgb(197, 6, 11); background-color: #FFFFFF; font-family: monospace; font-weight: normal;">dark red text</span>, although this might vary if you have changed any settings in the Appearance tab of the RStudio Options dialogue. You can generate a message for yourself using the `message()` function. This is useful if you are writing code and you want to remind yourself of something, or record a particular value. For example, if your code is likely to take a long time to run, you might want to record the time your code started running by generating a message on the first line of your code:
-
 ```{r}
-#| filename: "R Console"
+#| label: crimedata-example
+#| filename: "Don't run this code"
 
-message(str_glue("Code started: {now()}"))
+mesa_crimes <- crimedata::get_crime_data(cities = "Mesa", quiet = FALSE)
 ```
 
-When R prints a message about your code, any code underneath the code that generated the message will still run. For example, if you run these three lines of code (the second of which prints a message), the line after the message will run as expected:
+Messages appear in the **Console** panel along with other output from R. When R prints a message about your code, any code underneath the code that generated the message will still run. For example, if you run these three lines of code (the second of which prints a message, using the `message()` function), the line after the message will run as expected:
 
 ```{r}
+#| label: messages-still-run
 #| eval: false
 #| filename: "R Console"
 
 2 * 2
-message("This is a message. It might be important so make sure you understand it.")
+message("This is a message. Make sure you understand it.")
 2 / 2
 ```
 
@@ -128,7 +152,7 @@ message("This is a message. It might be important so make sure you understand it
 #| echo: false
 
 2 * 2
-message("This is a message. It might be important so make sure you understand it.")
+message("This is a message. Make sure you understand it.")
 2 / 2
 ```
 
@@ -140,8 +164,7 @@ message("This is a message. It might be important so make sure you understand it
 Warnings are important and you should take time to read and understand them, but it is _possible_ that having done so it will be safe to not take any action. *Whether* it is safe to take no action will often depend on exactly what you are trying to do, which is why it is important that you understand each warning that you see. For example, if you already know that some rows in your data contain missing values and are happy to plot the remaining values, it will be safe to ignore the warning produced by `geom_point()`. But if your dataset should not have any missing values in it, you will need to investigate why `geom_point()` is warning you about missing values and whether those values have been accidentally introduced by some part of your code.
 
 
-::: {.callout-important}
-#### It is not safe to ignore warnings
+::: {.callout-important title="It is not safe to simply ignore warnings"}
 
 **It is not safe to ignore warnings** unless you are sure why they occurred and certain that you don't need to take any action. If your code produces a warning, it is not safe to 'leave it until later' and carry on writing the rest of your code: work out straight away if you need to take any action.
 
@@ -149,59 +172,66 @@ One particularly dangerous scenario is where your code produces warnings but sti
 
 :::
 
-
-Warnings are displayed in the same font as messages, but with the text `Warning:` at the start. You can generate your own warning messages using the `warning()` function:
-
-```{r}
-#| filename: "R Console"
-
-warning("Something might be wrong. Check to make sure.")
-```
-
 As with messages, warnings will not stop your code running. This means that if the warning signalled a genuine problem with your code, the results of the lines underneath the warning might not be reliable. That is why it is important to understand warnings when you see them.
 
 
 ### Errors
 
-*Errors* are generated when there is something wrong with your code or the results it produces that means the code cannot continue running any further. An error might occur, for example, because the function `read_csv()` could not open the requested file (maybe because the file does not exist). In this case, it would make no sense for the rest of the code to run because it probably depends on the data that `read_csv()` was supposed to load but could not.
+*Errors* are generated when R cannot complete the current operation. An error might occur, for example, because `read_csv()` could not open a requested file. Errors are generally used for more-serious issues that prevent an operation from running successfully, so an error occurring stops the code being run at that point. When you run a complete script that has an error in it, R will stop running the script at the point where the error occurred. That means any code above the error will still have run, but code below the error will not have done.
 
-It would make sense to be able to generate your own errors using the `error()` function, but this is one of those times when the function to do something in R has a different name from that you might be expecting. In fact, you can generate an error using the `stop()` function:
 
-```{r}
-#| error: true
-#| filename: "R Console"
+## Types of code bugs
 
-stop("Something is defintely wrong. Don't go any further until you've fixed it.")
-```
+Much like their animal namesakes, bugs in code come in many different varieties. We can divide bugs into three categories to make them easier to think about: _syntax errors_, _runtime errors_ and _logic errors_.
 
-There are two types of errors in R: _syntax_ errors and _logical_ errors. Syntax errors happen when R cannot read your code because of a mistake in how it has been typed out. For example, if you forget to put a comma between the arguments of a function, you will get this error:
+### Syntax errors
+
+Syntax errors happen when R cannot interpret your code because of a mistake in how it has been typed. For example, if you forget to put a comma between the arguments of a function, you will get this error:
 
 ```{r}
 #| error: true
 #| filename: "R Console"
 
-message("A" "B")
+c("A" "B")
 ```
 
-This error is caused by a missing comma between `"A"` and `"B"`.
+This error is caused by a missing comma between the two arguments `"A"` and `"B"` -- the code should have been `c("A", "B")`.
 
-When you run R code, R reads all the code and checks if it can be interpreted as valid R code. If not, R will produce a syntax error. Because all of your code is checked for syntax errors before any code is actually run, a syntax error _anywhere_ in your code will stop _all_ of your code running. Syntax errors are typically fairly easy to fix, because they are usually caused by typos.
+When you run a complete script, R first checks whether the script can be interpreted as valid R code. A syntax error can therefore stop the script before any of it runs. When you run one expression at a time in Positron, code above a later syntax error may still run. Positron will often underline syntax errors in the **Editor**. Another indication there is a syntax error in your code is that a syntax error will usually mean the Air formatter is unable to format a script. Syntax errors are often caused by missing commas, quote marks or closing parentheses. Since syntax errors stop your script from running entirely, it's usually immediately apparent that a syntax error has occurred. Syntax errors are usually quite quick to fix, since they are usually caused by typos.
 
-The second type of error that can happen is a logical error. This happens when R is able to interpret what you have written, but something is wrong with what you have asked it to do. These are called logical errors because there is usually some problem with the logic of what you are asking R to do. Like syntax errors, logical errors can be caused by typos, but logical errors can also have many other causes.
+### Runtime errors
 
-There is a saying in programming that a computer will do exactly what you tell it to do, which may not be the same thing as what you _wanted_ it do. Logical errors happen when you have told R to do something that it cannot do. For example, you might be asking R to multiply together a numeric value and a character value (e.g. `3 * "A"`), which is illogical.
+Runtime errors happen when R can read the code (i.e. there are no syntax errors) but cannot complete the steps that the code sets out. For example, R can read the code `3 * "A"` (`*` in R means 'multiply by'). But R cannot multiply the number `3` by the character value `"A"` -- trying to multiply a number by a letter makes no sense.
 
-Since every step in your code depends on the steps that went before it, it is only possible to identify a logical error during the process of running the code. This means that a lot of your code might run successfully before an error occurs.
+```{r}
+#| error: true
+#| filename: "R Console"
 
-Logical errors are typically harder to fix than syntax errors are, because fixing a logical error involves understanding (a) what you have asked R to do and (b) the current state of everything in your code at the moment when the error occurs. Fortunately, there are lots of ways to identify and fix logical errors.
+3 * "A"
+```
 
-Now we know what errors, warning and messages are, we need to find out how to deal with them when they happen.
+::: {.callout-tip collapse="true" title="What is a 'binary operator', and what are its arguments?"}
+The phrase "non-numeric argument to binary operator" might be a bit confusing. A binary operator is an operator that takes two arguments, such as `+`, `-`, `*` or `/`. Operators in R don't look like functions, but they act a lot like them. But whereas the arguments to a function are specified within parentheses, the arguments to a binary operator are specified on either side of the operator. In this case, the two arguments to the `*` operator are `3` and `"A"`. The error message is telling us that one of the arguments is not numeric, so R cannot complete the calculation.
+:::
+
+Trying to load data from a missing file, trying to refer to a non-existent column name or trying to use a function on the wrong type of object are other issues that can cause runtime errors.
+
+When R runs a complete script file, it checks the syntax before evaluating the expressions in that script. But since every step in your code depends on the steps before it, R cannot tell whether a particular expression may cause a runtime error until the expressions before it have run successfully. That's why these are called _runtime_ errors -- they only happen when your code is run. If your code contains multiple issues that will cause runtime errors, R will typically only tell you about the first one because it cannot reach any later errors until the first has been fixed. That makes runtime errors harder to manage than syntax errors.
 
 
-::: {.callout-quiz .callout}
-#### Messages, warnings and errors
+### Logic errors
 
-```{r messages-quiz}
+There is a saying in programming that a computer will do exactly what you tell it to do, but that that may not be the same as what you _wanted_ it to do. A logic error happens when the code runs but produces a result that is incorrect in some way. For example, we might inadvertently write code that accidentally filters out some rows in a dataset that we actually needed to keep. There is no way for R to know that you didn't intend to filter out those rows, so it will happily follow your instructions even though they will lead to the wrong result. For that reason, logic errors often don't cause an R error message. They are often only visible because they cause unexpected results later on in a script.
+
+Logic errors are often the hardest bugs to find because there may be no error messages in the R console and the output produced by a script can look plausible, even if it's wrong. To identify logic errors, you must inspect the data produced at each important stage and compare the result with what you expected. Simple checks using functions such as `head()`, `nrow()`, `count()` and `summary()` can expose unexpected results before they affect later parts of an analysis.
+
+Now we know what messages, warnings and errors are, we need to find out how to deal with them when they happen.
+
+
+::: {.callout-quiz .callout title="Messages, warnings and errors"}
+
+```{r}
+#| label: messages-quiz
 #| echo: false
 
 messages_quiz1 <- c(
@@ -215,6 +245,20 @@ messages_quiz2 <- c(
   "It is generally okay not to worry about warnings produced by R code -- in most cases you won't need to take any action anyway",
   answer = "While you will often not need to take any action in response to a warning produced by your R code, it is still important to understand what caused the warning just in case you need to take action"
 )
+
+messages_quiz3 <- c(
+  "A syntax error",
+  "A runtime error",
+  answer = "A logic error",
+  "A message"
+)
+
+messages_quiz4 <- c(
+  answer = "A syntax error stops R interpreting the code, while a runtime error occurs when R cannot complete an operation",
+  "A syntax error produces an incorrect result, while a runtime error always produces a warning",
+  "A syntax error occurs only in the Console, while a runtime error occurs only in scripts",
+  "There is no difference between syntax errors and runtime errors"
+)
 ```
 
 
@@ -227,53 +271,189 @@ messages_quiz2 <- c(
 
 `r webexercises::longmcq(messages_quiz2)`
 
+**What type of bug occurs when code runs but produces the wrong result?**
+
+`r webexercises::longmcq(messages_quiz3)`
+
+**What is the difference between a syntax error and a runtime error?**
+
+`r webexercises::longmcq(messages_quiz4)`
+
 
 :::
 
 
 
-## Finding problems
+## Tracking down bugs {#sec-finding-bugs}
 
-If an error or warning has a simple cause, such as the example of the incorrect column name in the previous section, you can just fix the problem and re-run the code. For problems that are more difficult to handle, you will need to follow a step-by-step process to find and fix them. Think of this as like being a mechanic fixing a car -- first you work out what the problem is, then you fix it.
+If an error or warning has a simple cause, such as trying to multiply a number by a character value, you can just fix the problem and re-run the code. Or if your code only has one line, it will probably be obvious where any problem lies.
 
-If you code only has one line, it will probably be obvious where any problem lies. But most of your code does several things to achieve a particular goal, such as making a map. The first task in dealing with a problem is therefore to work out exactly which function or other piece of code has caused it. For example, take this data-wrangling code to reduce the size of a dataset and sort it in date order:
+For problems that are more difficult to handle, you will need to follow a step-by-step process to find and fix them. Think of this as like being a mechanic fixing a car -- first you work out what the problem is, then you fix it.
+
+To identify the cause of bugs in our code we will use a four-step process:
+
+::::::::: {.process}
+
+::::: {.item color="#3182bd"}
+Understand
+
+::: annotation
+messages, warnings and unexpected results
+:::
+:::::
+
+::::: {.item color="#3182bd"}
+Isolate
+
+::: annotation
+the smallest piece of code that produces the problem
+:::
+:::::
+
+::::: {.item color="#3182bd"}
+Inspect
+
+::: annotation
+the data used and produced by that code
+:::
+:::::
+
+::::: {.item color="#3182bd"}
+Get help
+
+::: annotation
+using a reproducible example
+:::
+:::::
+
+:::::::::
+
+Sometimes it won't be necessary to go through all the steps because the problem will be easy to fix, but it's still useful to follow the process from the start until we reach a solution.
+
+
+### Step 1: Understand the problem
+
+The first step in diagnosing a problem with our code is to reproduce it, then read _and understand_ any errors, warnings or messages produced. For simple bugs this will often be enough to solve the problem. For example, if you were to try to run this code with the `frauds` dataset we loaded earlier:
+
+```{r}
+#| eval: false
+#| filename: "R Console"
+
+select(frauds, offense_category)
+```
+
+
+You would see that R produced an error message saying something like:
+
+```{r}
+#| echo: false
+#| error: true
+
+select(frauds, offense_category)
+```
+
+In this case it is fairly easy to identify that the error message is telling us that one of the columns we have tried to select does not exist. Maybe we misremembered the name of the column. To find out what the correct column name is, the easiest thing to do is to print the first few rows of the object in the R Console:
+
+```{r}
+#| filename: "R Console"
+
+head(frauds)
+```
+
+From this, we can see that the column we want to select is called `offense_type`, not `offense_category`.
+
+In other cases, error messages will be harder to interpret. Imagine we wanted to break a long string of text into multiple lines. To do that we might use the `str_wrap()` function, which we previously used to format text in @sec-map-context. But if we run this code, we get a runtime error:
 
 ```{r}
 #| error: true
 #| filename: "R Console"
 
-frauds |> 
-  select(offense_type, date, longitude, latitude) |> 
-  filter(offence_type == "impersonation") |> 
+str_wrap("A line of text that we want to break into shorter lines", length = 20)
+```
+
+From the error message, it looks like there's nothing wrong with the string of text, but that there is an issue with the argument `length = 20`. One possibility is that we've got the name of this argument wrong. To understand the problem, we can check the manual page for the `str_wrap()` function. Functions provided by R and R packages normally have a manual page that explains what the function does, what arguments it takes and what value it returns. You can get a lot of help in understanding each function by referring to its manual page. You can access the manual page for a function in Positron by:
+
+- typing a question mark followed by the function name (e.g. `?str_wrap`) into the R Console;
+- typing the function name into the search box in the **Help** panel; or
+- placing the cursor on the function name in your R code and pressing {{< kbd win="F1" mac="F1" >}} on your keyboard.
+
+Any of these options opens the manual page in Positron's **Help** panel. For example, you can load the manual page for `str_wrap()` from the stringr package by typing `?str_wrap` in the R Console.
+
+All manual pages have the same format.
+
+Description
+: This section gives a short description of what the function does. If multiple related functions are described in a single manual page, this section will explain the differences between them.
+
+Usage
+: This section shows how to write a call to the function, including the names and default values of its arguments. For example, the manual page for `str_wrap()` shows that the default value of the `width` argument is `width = 80`.
+
+Arguments
+: This section gives a list of arguments and the values they can take. It is particularly important to note the type of value expected. For example, the `st_transform()` function from the sf package expects a spatial object, such as an SF object, as its first argument -- if you provide a non-spatial object such as a tibble, this will cause an error.
+
+Value
+: This section explains the type of value that the function will return, and whether this value might be of a different type depending on the values of particular arguments.
+
+Examples
+: This section gives more examples of how the function can be used.
+
+Checking the manual page for a function can often help you understand why a particular piece of code is not working. In this case, we can see that `str_wrap()` doesn't have a `length` argument, which is why our code produced an error. The correct argument name is `width`, so we can fix the code by changing `length = 20` to `width = 20`.
+
+```{r}
+#| filename: "R Console"
+
+str_wrap("A line of text that we want to break into shorter lines", width = 20)
+```
+
+::: {.callout-tip collapse="true" title="What should I do if an error mentions `rlang::last_trace()`?"}
+
+Some errors produced by tidyverse packages suggest running `rlang::last_trace()`. This command shows the sequence of function calls that led to the error. The output can be long, so first look for a line that refers to your script or to a function you called. You do not need to understand the internal package functions listed in the trace.
+
+:::
+
+
+### Step 2: Isolate the code that produces the problem
+
+If Step 1 isn't enough to resolve the issue, the second task is to work out exactly which function or other piece of code has caused the problem. For example, take this data-wrangling code that is designed to reduce the size of a dataset and sort it in date order:
+
+```{r}
+#| error: true
+#| filename: "R Console"
+
+frauds |>
+  select(offense_type, date, longitude, latitude) |>
+  filter(offence_type == "impersonation") |>
   arrange(date)
 ```
 
-This code produces a fairly complicated error message. As is often the case, the
-most useful part of the error message is the last part: 
+This code produces a structured error message. The first line tells us that the error occurred in `filter()`, the information line identifies the argument that caused the problem and the final line describes the immediate cause:
 
 ```
 ! object 'offence_type' not found
 ```
 
-This suggests the error is on line 3 of the code, since that is the only line containing reference to the object `offence_type`. To check this, we can *comment out* that line by placing a `#` symbol at the start of the line. Do this and re-run the code above -- it should now run without a problem.
+This suggests the error is on line 3 of the code, since that is the only line containing a reference to `offence_type`. To check this, we can *comment out* that line by placing a `#` symbol at the start of the line. One easy way to do that is to click anywhere on the line and then type {{< kbd win="Ctrl+/" mac="Command+/" >}}. Do this and re-run the code above -- it should now run without a problem.
 
 Now we know the problem is on the line `filter(offence_type == "impersonation")`, we can look at that line in more detail. Can you spot the problem with that line?
 
-The error message in this case has been caused by a typo -- the code `offence_type == "impersonation"` uses the British spelling of the word 'offence' but in the dataset the variable is spelled using the American English 'offense' (you can see the US spelling in the line of code above the line that is causing the error). Fix the typo and re-run the code above in RStudio.
+The error message in this case has been caused by a typo -- the code `offence_type == "impersonation"` uses the British spelling of the word 'offence' but in the dataset the variable is spelled using the American English 'offense' (you can see the US spelling in the line of code above the line that is causing the error). Fix the typo and re-run the code above in Positron.
 
-Sometimes it will not be as clear as this where to start in looking for the problem. In particular, some errors can be _caused_ by a problem on one line of code, but only actually have a negative _effect_ on a subsequent line of code. For example, if you run this code you will see an error:
+Sometimes a bug is introduced on one line but only becomes visible later. Consider this separate example, in which `select()` removes a column that is needed by `arrange()` later in the pipeline:
 
 ```{r}
 #| error: true
 #| filename: "R Console"
 
-frauds |> 
-  select(offense_code, longitude, latitude) |> 
-  filter(offense_code == "26E") |> 
+frauds |>
+  select(offense_code, longitude, latitude) |>
+  filter(offense_code == "26A") |>
   arrange(date)
 ```
 
-The error message produced suggests the problem is with the `arrange()` function, but everything is correct with that function since `arrange()` is a correct function name and we already know that `date` is a column in the tibble named `frauds`. So the problem must lie elsewhere. In cases like this, it can be helpful to comment out all the lines of code except the first one and then uncomment one line at a time until you find the one that causes the problem. 
+The message seems to tell us that the error occurs in `arrange()`. But looking at that line of code, there is nothing obviously wrong. `arrange()` is a function in a package that we've loaded (`arrange()` is in the dplyr package, which was loaded automatically when we loaded the tidyverse package), and `date` is a column in the original `frauds` dataset. So why is R producing an error message? We could look at the manual page by typing `?arrange` in the R Console, but let's imagine we've done that already and it didn't help.
+
+A useful next step in these circumstances is to look at the _inputs_ a function is receiving. This can be important because while the error message suggests the problem is in `arrange()`, it's possible that the _cause_ of the error is some problem with a previous part of our code and that `arrange()` is just the first function to notice the problem. In cases like that, an error message can be technically correct but somewhat misleading.
+
+A good way to identify which line of a code pipeline is causing the problem is to comment out all the lines except the first one, then run the code and see if it produces an error. If no error appears and the result produced by that line looks reasonable, then we continue to uncomment one line at a time until we find the problem.
 
 Re-run the code above, but comment out all the lines except the first one by putting `# ` at the start of each line. Remember to remove the `|>` from the end of the last _uncommented_ line of code, since otherwise you will find the code does not run as expected. Your code should now look like this:
 
@@ -282,9 +462,9 @@ Re-run the code above, but comment out all the lines except the first one by put
 #| filename: "R Console"
 
 frauds
-  # select(offense_code, longitude, latitude) |> 
-  # filter(offense_code == "26E") |> 
-  # arrange(date)
+# select(offense_code, longitude, latitude) |>
+# filter(offense_code == "26A") |>
+# arrange(date)
 ```
 
 If you run this code, it will simply print the first few lines of the dataset. Remove the `# ` comment symbol from the second line of the code and run it again, remembering to replace the pipe operator (`|>`) at the end of line 1 and remove the `|>` at the end of line 2.
@@ -293,27 +473,25 @@ If you run this code, it will simply print the first few lines of the dataset. R
 #| eval: false
 #| filename: "R Console"
 
-frauds |> 
+frauds |>
   select(offense_code, longitude, latitude)
-  # filter(offense_code == "26E") |> 
-  # arrange(date)
+# filter(offense_code == "26A") |>
+# arrange(date)
 ```
 
-Again, the code does not produce an error -- the result is the same as before, except now the dataset has only three columns.
+Again, the code does not produce an error -- but the result now has only three columns. Checking the output at this stage shows that the `date` column has been removed. Add `date` to the list of columns that are included in `select()` before continuing.
 
-Repeat the process again by removing the comment symbol from the start of line three, replacing the pipe operators as before.
+Uncommenting one line at a time is useful for runtime errors, but it is equally important to look for unexpected output. The following code runs without an error:
 
 ```{r}
-#| results: hold
 #| filename: "R Console"
 
-frauds |> 
-  select(offense_code, longitude, latitude) |> 
+frauds |>
+  select(offense_code, date, longitude, latitude) |>
   filter(offense_code == "26E")
-  # arrange(date)
 ```
 
-There is still no error message, but you can see the problem: there are no rows left in the data. That's because there are no rows in the data for which the column `offense_code` has the value "26E". If we use the `count()` function from the dplyr package to list all the unique values of the `offense_code` column, we'll see the only values are `r knitr::combine_words(map_chr(sort(unique(pull(frauds, "offense_code"))), \(x) str_glue('"{x}"')))`:
+There is no error message, but there are no rows left in the result. This is a logic error because we expected the result to contain frauds. There are no rows for which `offense_code` has the value `"26E"`. If we use `count()` to list the unique values of `offense_code`, we can see that the only values are `r knitr::combine_words(map_chr(sort(unique(pull(frauds, "offense_code"))), \(x) str_glue('"{x}"')))`:
 
 ```{r}
 #| filename: "R Console"
@@ -321,171 +499,99 @@ There is still no error message, but you can see the problem: there are no rows 
 count(frauds, offense_code)
 ```
 
-Uncommenting one line at a time until you find an error or output that is not what you expected is a useful way to isolate problems, but it will not always work. In particular, it will not work if the problem is caused by some code that should have been included but is missing from your code entirely. For example, if you try to run the function `st_transform()` on a tibble without first changing it into an SF object:
+Uncommenting one line at a time until you find an error or unexpected output is a useful way to isolate problems, but it will not always work. In particular, it will not identify code that is missing entirely. For example, the following pipeline omits the step that changes the tibble into an SF object before using `st_transform()`:
 
 ```{r}
 #| error: true
 #| filename: "R Console"
 
-frauds |> 
-  select(offense_code, longitude, latitude) |> 
-  filter(offense_code == "26A") |> 
+frauds |>
+  select(offense_code, longitude, latitude) |>
+  filter(offense_code == "26A") |>
   sf::st_transform("EPSG:3603")
 ```
 
-In these cases it is particularly useful to check every argument that you have used in a function to track down the error. We will look at this later in this chapter.
+In these cases it is particularly useful to check every argument that you have used in a function, using its manual page as described in Step 1.
 
 
-### Errors caused by data problems
+### Step 3: Inspect the data used and produced by each step
 
-Many logical errors will be caused by problems with the code you have written, such as when you try to use a function (e.g. `st_intersection()`) that only works on an SF object but specify that it should use an object of another type. But sometimes logical errors are caused not by your code, but by a mis-match between the structure that your data actually has and the structure you think your data has. We have already seen an example of this in this chapter, in the code that tried to refer to a column called `offense_category` in a dataset that did not have a column with that name.
+Not all runtime errors are caused by problems with the code itself. Some bugs are caused by a mismatch between the structure your data actually has and the structure you thought it had when you wrote the code. We have already seen this in the code that referred to a column called `offense_category` in a dataset without that column.
 
-Errors caused by a mismatch between the data you think you have and the data you actually have can be particularly frustrating, because there is no way to identify them from just looking at your code. For this reason, it is often important when trying to identify problems in your code to _look_ at the data that is used as the input for your code, _and_ the data that is produced by each step in your code. We used this technique to find the error in our code above that was caused by `filter()` removing all the rows from a dataset because we had told `filter()` to only keep rows containing a value that was not present in the dataset. There were no obvious problems with the code we had written, so the only way to find the cause of this problem was to view the dataset returned by the `filter()` function.
+Bugs caused by a mismatch between the data you think you have and the data you actually have can be particularly frustrating because you cannot identify them by looking only at your code. Look at both the data used as input and the data produced by each important step. We used this technique above to find that `filter()` had removed every row because the value we specified was not present.
 
 Finding data problems is one of the reasons why we have used the `head()` function so often in previous chapters to look at the data at each step in writing a block of code. Looking at the results of a particular block of code before moving on to writing the next block can often save you from frustrating errors later on.
 
-`head()` only shows us the first few rows of a dataset, which will not always be enough to identify a problem if the problem is caused by values that are only present in a few rows in the data. For small datasets, we can use the `View()` function (note the capital letter) to open the entire dataset in a new tab in RStudio. 
+`head()` only shows the first few rows of a dataset, so it will not reveal every possible problem. You can use the `view()` function instead to open a complete version of the dataset in Positron's **Data Explorer**. The Data Explorer lets you inspect values, sort and temporarily filter rows, and see summaries for each column. These changes affect only the view and do not alter the object in R.
 
-For bigger datasets, this will not work. In that case, we can use the `sample_n()` or `sample_frac()` functions from the dplyr package to return a random sample of rows from the data. This can be useful to let us look at a representative sample of a large dataset. `sample_n()` returns a specific number of rows, e.g. `sample_n(frauds, 10)` returns 10 rows at random from the `frauds` dataset. `sample_frac()` returns a specific proportion of the dataset, e.g. `sample_frac(frauds, 0.1)` returns a sample of 10% of rows from
-the data.
+There are many other functions available for inspecting data. For a large dataset, functions such as `count()`, `distinct()`, `glimpse()` and `summary()` are often more useful than trying to inspect every row. You can use `slice_sample(frauds, n = 10)` to inspect ten random rows or `slice_sample(frauds, prop = 0.1)` to inspect 10% of the rows. However, a random sample can miss rare values, including the value causing a bug, so do not assume that a sample represents every part of the data.
 
+::: {.callout-quiz .callout title="Finding and understanding bugs"}
 
-
-## Understanding a problem
-
-So far, we have tried two ways to deal with errors:
-
-  1. reading a simple error message that makes the problem obvious,
-  2. commenting out all the code and then uncommenting one line a time until the error appears.
-
-Sometimes you will encounter an error that is still not simple to solve. In this case, it is still important to identify the line of code causing the problem, either by working it out from the text of the error message or commenting out lines of code in turn.
-
-Once you know what line is causing the problem, you should focus on understanding exactly what that line of code does. In particular:
-
-  1. What data do any functions on that line expect to work on?
-  2. What are the values of any arguments to the functions on that line?
-  3. What value do the functions on that line produce?
-  
-You can get a lot of help in understanding each function by referring to its manual page. You can access the manual page for a function by:
-
-  * typing a question mark followed by the function name without parentheses (e.g. `?mutate`) into the R console,
-  * typing the function name without parentheses into the search box in the Help panel in RStudio, or
-  * clicking on the function name anywhere in your R code to place the cursor on the function name, then pressing `F1` on your keyboard.
-
-Any of these options opens up a manual page for that function in the Help panel in RStudio. For example, this is the manual page for the `str_wrap()` function from the `stringr` package. You can load it by typing `?str_wrap` in the R console.
-
-
-<p class="full-width-image"><img src="../images/man_page.png" alt="Screenshot of the R manual page for the "></p>
-
-
-All manual pages have the same format.
-
-Description 
-: This section gives a short description of what the function does. If multiple related functions are described in a single manual page, this section will explain the differences between them. For example, the manual page for the `mutate()` function from the `dplyr` package explains the difference between the `mutate()` function and the closely related `transmute()` function.
-
-Usage 
-: This section shows a single example of how the function works. If there are any optional arguments to the function, this section will show what the default values of those optional arguments are. For example, the manual page for the `str_wrap()` function from the `stringr` package show that the default value of the `width` argument is `width = 80`.
-
-Arguments
-: This section gives a list of arguments and the values they can take. It is particularly important to note the type of value expected. So the `st_transform()` function from the `sf` package expects an SF object as its first argument -- if you provide another sort of object (such as a tibble), this will cause an error.
-
-Value
-: This section explains the type of value that the function will return, and whether this value might be of a different type depending on the values of particular arguments. For example, the `mean()` function in base R returns the arithmetic mean of a vector of numbers. However, if any of the numbers is `NA` then mean will return `NA` *unless* the argument `na.rm = TRUE` is used. In that case, `mean()` will ignore the missing values and return the mean of the values that are present.
-
-Examples
-: This section gives more examples of how the function can be used.
-
-Checking the manual page for a function can often help you understand why a particular piece of code is not working. If you have set any optional arguments for a function that is producing an error, it may help to reset those arguments to their default values (as shown in the Usage section of the manual page) one by one to understand what effect this has on your code.
-
-By reading the error message, isolating the error by commenting out and then reading the manual page, you will be able to fix almost all the errors you will come across in writing R code. Occasionally, however, you will find an error that you just can't understand. In that case, you will need to get some help from others.
-
-
-
-## How to fix some common errors
-
-There are some mistakes that it is common for people to make when writing code. As you get more experience in writing R code and dealing with error messages, you are likely to start to recognise some simple errors (especially those caused by typos) and know how to fix them quickly. One useful way to quickly find help on common errors is to check if the error (and the corresponding solution) appears in @sec-common-errors. Use the information in @sec-common-errors to answer these questions.
-
-
-::: {.callout-quiz .callout}
-#### Fixing common errors
-
-```{r common-errors-quiz}
+```{r}
+#| label: understanding-bugs-quiz
 #| echo: false
 
-common_errors_quiz1 <- c(
-  "You have loaded packages in the wrong order",
-  "You have mis-typed the name of the `blah` object",
-  answer = "You have not loaded the package that contains the `blah()` function",
-  "You have tried to use a generic function with a type of object the function does not know how to use"
+understanding_bugs_quiz1 <- c(
+  "Change several arguments at once so that one of them is likely to work",
+  "Inspect only the final result because intermediate results do not matter",
+  answer = "Run the code one stage at a time and inspect the result after each stage",
+  "Ignore a result with zero rows if R did not produce an error"
 )
 
-common_errors_quiz2 <- c(
-  "You have tried to use a function as if it is an object",
-  answer = "You have tried to use a mathematical operator such as `+` or `-` with a non-numeric value such as a character value",
-  "You have used an argument name in a function that does not understand it",
-  "You have either mis-typed the function name or the package containing that function is not loaded"
+understanding_bugs_quiz2 <- c(
+  "Only the name of the package containing the function",
+  answer = "The inputs a function expects, its arguments and the value it returns",
+  "A guarantee that the function is suitable for your analysis",
+  "A list of every bug that the function can produce"
 )
 ```
 
+**What is a useful way to find where a bug was introduced?**
 
-**What might cause the error message `could not find function "blah"`?**
+`r webexercises::longmcq(understanding_bugs_quiz1)`
 
-`r webexercises::longmcq(common_errors_quiz1)`
+**What can a function's manual page help you check?**
 
-
-**What might cause the error message `non-numeric argument to binary operator`?**
-
-`r webexercises::longmcq(common_errors_quiz2)`
-
+`r webexercises::longmcq(understanding_bugs_quiz2)`
 
 :::
 
 
 
-## Getting external help using a reproducible example {#sec-reprex}
+### Step 4: Get help using a reproducible example {#sec-reprex}
 
-If you cannot fix an error using any of the techniques we have already covered, it is probably time to get some help from others. Fortunately, one of the big benefits of using R is that there is a friendly, welcoming community of R coders online who are willing to help fix problems. Almost everyone in this community will remember when they were knew to using R and so will be gentle with people who are asking their first question.
+If you cannot fix a bug using the techniques we have already covered, it may be time to get some help from someone else. R has a large online community and generative AI tools can provide a lot of help, but people and bots can only help if they have enough information.
 
-<img src="../images/code_hero.jpg" style="width: 60%; max-width: 500px; float: right; margin: 0 0 2em 2em;">
+<img src="../images/code_hero.jpg" alt="A person wearing a 'code hero' cape and holding a laptop says 'I'm doing a thing all on my own', while labelled hot-air balloons and a trampoline show the maintainers, teachers, bloggers, mentors, friends, developers, contributors, support and community helping them" style="width: 60%; max-width: 500px; float: right; margin: 0 0 2em 2em;">
 
-One of the things that makes it much more likely that you will find help with your problem in the R community is if you phrase your plea for help in a way that makes it easier to help you. We can do this by providing a *reproducible example* of our problem (also sometimes called a *reprex* or a *minimum working example*).
+One of the things that makes it much more likely that you will find useful help with your problem is if you phrase your plea for help in a way that makes it easier to help you. We can do this by providing a *reproducible example* of our problem (also sometimes called a *reprex* or a *minimum working example*).
 
-Producing a reprex makes it much easier for someone to understand your issue. This not only makes it easier for someone to help you, but also shows that you know it will make it easier for them and that you value their time:
+Producing a reprex makes it much easier for someone (or an AI tool) to understand your issue. Asking why some code did not work without showing the code and data is like asking why your attempts to bake a cake failed without providing a copy of the recipe. A reprex provides the equivalent of the recipe and the result, allowing someone else to investigate the same problem.
 
-> [Imagine that you’ve made a cake](https://www.jessemaegan.com/post/so-you-ve-been-asked-to-make-a-reprex/), and for some reason it’s turned out absolutely awful – we’re talking completely inedible. Asking a question without a reprex is like asking, “Why didn’t my cake turn out right?” – there are hundreds of possible answers to that question, and it’s going to take a long time to narrow in on the exact cause for your inedible cake creation. 
->
-> Asking a question with a reprex is like asking, “My cake didn’t turn out, and here’s the recipe I used and the steps that I followed. Where did I go wrong?” Using this method is going to significantly increase the likelihood of you getting a helpful response, faster!
+To make a reprex, we have to do three things:
 
-To make a reprex, we have to do two things:
+1. Remove everything from the code that does not contribute to the problem. Keep only the code needed to produce the same error or unexpected result -- this is why a reproducible example is sometimes called a *minimal* working example.
+2. Make sure someone can run the example on their computer. This might involve using a dataset built into an R package or creating a small example dataset that has the same relevant structure as your data.
+3. Remove confidential, personal or otherwise sensitive information. Never share sensitive crime data, passwords, API keys or other credentials in a reprex.
 
-  1. Remove everything from our code that does not contribute to causing the error. We do this by removing each line from our code in turn and only keeping those lines that are necessary to produce the specific error you are asking for help with -- this is why a reproducible example is sometimes called a *minimum* working example.
-  2. Make sure that someone trying to help us can reproduce the issue on their own computer even if they don't have access to the particular dataset we are using. We do this by replacing our own dataset with a publicly available one, preferably one of the datasets that are built into R for exactly this purpose.
-
-<!-- Watch this video to see the process of making a reprex in RStudio: -->
-
-<!-- {{< video https://youtu.be/hlcftgeTAyY >}} -->
-
-
-To practice making a reproducible example, let's create a new R script that we know will produce an error. Create a new R script file (`File > New File > R Script` in RStudio), save it as `chapter_08.R`, then paste the following code into it:
+To practise making a reproducible example, create a new R script that we know will produce an error. Click **File**, then **New File ...** and choose **R File**. Save the file as `chapter_08.R` in the `R` folder of your crime mapping workspace, then paste the following code into it:
 
 ```{r}
 #| echo: false
 
-# This code creates a CSV file that users can download and then reference in 
-# their code as a local file (which is important in the narrative, since it 
+# This code creates a CSV file that users can download and then reference in
+# their code as a local file (which is important in the narrative, since it
 # makes the example non-reproducible)
-Seatbelts |> 
-  as_tibble() |> 
+Seatbelts |>
+  as_tibble() |>
   mutate(
     year = 1969 + floor(row_number() / 12.0001),
     month = rep(1:12, 16),
     month_beginning = as.Date(str_glue("{year}-{month}-01"))
-  ) |> 
-  select(month_beginning, everything(), -year, -month) |> 
-  # Save a copy that students can load
-  write_csv("../data/road_deaths_data.csv") |> 
-  # Save a copy that is used to render this chapter
-  write_csv("road_deaths_data.csv")
+  ) |>
+  select(month_beginning, everything(), -year, -month) |>
+  write_csv(here::here("data", "road_deaths_data.csv"))
 ```
 
 ```{r}
@@ -493,30 +599,30 @@ Seatbelts |>
 #| filename: "chapter_08.R"
 
 # Load packages
-pacman::p_load(tidyverse)
+pacman::p_load(here, tidyverse)
 
 # Load a dataset from your computer and wrangle it
-road_deaths <- read_csv("road_deaths_data.csv") |> 
-  janitor::clean_names() |> 
-  rename(ksi_drivers = drivers, ksi_pass_front = front, ksi_pass_rear = rear) |> 
-  select(-petrol_price, -van_killed) |> 
+road_deaths <- read_csv(here("data", "raw", "road_deaths_data.csv")) |>
+  janitor::clean_names() |>
+  rename(ksi_drivers = drivers, ksi_pass_front = front, ksi_pass_rear = rear) |>
+  select(-petrol_price, -van_killed) |>
   mutate(
     law = as.logical(law),
     ksi_driver_rate = ksi_drivers / (kms / 1000)
   )
 
-# Make a time-series chart of two continuous variables, coloured by a 
+# Make a time-series chart of two continuous variables, coloured by a
 # categorical variable, then add a trend line
-road_deaths + 
-  ggplot(aes(x = month_beginning, y = ksi_driver_rate)) + 
-  geom_point(aes(colour = law)) + 
+road_deaths +
+  ggplot(aes(x = month_beginning, y = ksi_driver_rate)) +
+  geom_point(aes(colour = law)) +
   geom_smooth() +
   scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
   scale_y_continuous(labels = scales::comma_format(), limits = c(0, NA)) +
   scale_colour_brewer(type = "qual") +
   labs(
-    x = NULL, 
-    y = "drivers killed or seriously injured per 1,000km travelled", 
+    x = NULL,
+    y = "drivers killed or seriously injured per 1,000km travelled",
     colour = "after seat belts made mandatory"
   ) +
   theme_minimal() +
@@ -529,7 +635,7 @@ road_deaths +
   )
 ```
 
-At the moment, you can't run this code because you don't have the `road_deaths_data.csv` file. Download that file by clicking this link and saving the file into the same directory (folder) as the `chapter_08.R` file.
+At the moment, you can't run this code because you don't have the `road_deaths_data.csv` file. Download the file using the following link and save it in the `data/raw` folder. Keeping the downloaded file separate from the script follows the workspace structure introduced in @sec-create-project.
 
 <p class="center"><a href="../data/road_deaths_data.csv" download class="btn btn-info">Download the road deaths data file</a></p>
 
@@ -540,30 +646,33 @@ Now run all the code in the `chapter_08.R` file. You should see this error:
 #| error: true
 
 # Load packages
-pacman::p_load(tidyverse)
+pacman::p_load(here, tidyverse)
 
 # Load a dataset from your computer and wrangle it
-road_deaths <- read_csv("road_deaths_data.csv", show_col_types = FALSE) |> 
-  janitor::clean_names() |> 
-  rename(ksi_drivers = drivers, ksi_pass_front = front, ksi_pass_rear = rear) |> 
-  select(-petrol_price, -van_killed) |> 
+road_deaths <- read_csv(
+  here("data", "road_deaths_data.csv"),
+  show_col_types = FALSE
+) |>
+  janitor::clean_names() |>
+  rename(ksi_drivers = drivers, ksi_pass_front = front, ksi_pass_rear = rear) |>
+  select(-petrol_price, -van_killed) |>
   mutate(
     law = as.logical(law),
     ksi_driver_rate = ksi_drivers / (kms / 1000)
   )
 
-# Make a time-series chart of two continuous variables, coloured by a 
+# Make a time-series chart of two continuous variables, coloured by a
 # categorical variable, then add a trend line
-road_deaths + 
-  ggplot(aes(x = month_beginning, y = ksi_driver_rate)) + 
-  geom_point(aes(colour = law)) + 
+road_deaths +
+  ggplot(aes(x = month_beginning, y = ksi_driver_rate)) +
+  geom_point(aes(colour = law)) +
   geom_smooth() +
   scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
   scale_y_continuous(labels = scales::comma_format(), limits = c(0, NA)) +
   scale_colour_brewer(type = "qual") +
   labs(
-    x = NULL, 
-    y = "drivers killed or seriously injured per 1,000km travelled", 
+    x = NULL,
+    y = "drivers killed or seriously injured per 1,000km travelled",
     colour = "after seat belts made mandatory"
   ) +
   theme_minimal() +
@@ -580,7 +689,7 @@ As you can see, this error is not easy to decipher, so we might need help to dea
 
 
 
-### Reproducible code
+#### Reproducible code
 
 The first step in producing a reprex is to remove every line from our code that isn't necessary to produce the error. To do that, we start with the _last_ line of code and remove it, then re-run the code. If the code produces _the same error_, we know that the error wasn't caused or affected by anything on the line that we have removed. In that case, we don't need to include that line of code in the reprex. On the other hand, if the error message disappears and the code runs successfully, _or_ the error message changes to a different error, we know that the line of code we removed influenced the error in some way. In that case, we need to include that line of code in the reprex.
 
@@ -591,10 +700,10 @@ Following this process line by line, it is actually possible to remove a lot of 
 #| filename: "chapter_08.R"
 
 # Load packages
-pacman::p_load(tidyverse) #<<
+pacman::p_load(here, tidyverse) #<<
 
 # Load a dataset from your computer and wrangle it
-road_deaths <- read_csv("road_deaths_data.csv") |> #<<
+road_deaths <- read_csv(here("data", "raw", "road_deaths_data.csv")) |> #<<
   janitor::clean_names() |>
   rename(ksi_drivers = drivers, ksi_pass_front = front, ksi_pass_rear = rear) |>
   select(-petrol_price, -van_killed) |>
@@ -603,18 +712,18 @@ road_deaths <- read_csv("road_deaths_data.csv") |> #<<
     ksi_driver_rate = ksi_drivers / (kms / 1000)
   )
 
-# Make a time-series chart of two continuous variables, coloured by a 
+# Make a time-series chart of two continuous variables, coloured by a
 # categorical variable, then add a trend line
-road_deaths +  #<<
-  ggplot(aes(x = month_beginning, y = ksi_driver_rate)) +  #<<
-  geom_point(aes(colour = law)) +  #<<
+road_deaths + #<<
+  ggplot(aes(x = month_beginning, y = ksi_driver_rate)) + #<<
+  geom_point(aes(colour = law)) + #<<
   geom_smooth() +
   scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
   scale_y_continuous(labels = scales::comma_format(), limits = c(0, NA)) +
   scale_colour_brewer(type = "qual") +
   labs(
-    x = NULL, 
-    y = "drivers killed or seriously injured per 1,000km travelled", 
+    x = NULL,
+    y = "drivers killed or seriously injured per 1,000km travelled",
     colour = "after seat belts made mandatory"
   ) +
   theme_minimal() +
@@ -632,57 +741,55 @@ That means we can remove:
 1. The comments (lines 1, 4, 14 and 15, above).
 2. The code that wrangles the data in ways that don't affect the error (lines 6--12).
 3. The code that adds a trend line to the chart (line 19).
-4. The code that fine-tune the appearance of the chart (lines 20--35).
+4. The code that fine-tunes the appearance of the chart (lines 20--35).
 
 We cannot remove the code that loads necessary packages (line 2), loads the data (line 5) or produces the basic unformatted chart (lines 16--18), because if we remove any of those then the error message either changes or disappears.
 
-This leaves us with the following code, which produces the same error message but is much easier for someone to check for errors because it is much shorter. Because we have removed the data-wrangling code, we have had to change the name of the argument on line 17 of the code above from `y = ksi_driver_rate` to
-`y = drivers`, since the column `ksi_driver_rate` is no longer in the data (because we have removed line 7 of the code above). We also have to remove the pipe operator (`|>`) at the end of line 5 and the `+` operator at the end of line 18, since they are no longer needed because we have removed the lines of code that follow them.
+This leaves us with much shorter code that produces the same error. Because we have removed the data-wrangling code, we must use the original column name `drivers` instead of the new name `ksi_driver_rate`. We also remove pipe and `+` operators that no longer connect to another line of code.
 
-
-::: {.callout-important}
-#### If the error message changes, keep that line of code
-
-If we forgot to change `y = ksi_driver_rate` to `y = drivers`, or to remove `|>` on line 7, then the code would still produce an error, _but it would be a different error_. The purpose of producing a reprex is to find the minimum code that still produces _the same error_ we are interested in. If you remove a line of code and the error message you see changes, put that line of code back.
-
-:::
-
+Removing the lines we don't need to reproduce the error leaves `chapter_08.R` looking like this:
 
 ```{r}
 #| error: true
 #| message: false
 #| filename: "R Console"
 
-pacman::p_load(tidyverse)
+pacman::p_load(here, tidyverse)
 
-road_deaths <- read_csv("road_deaths_data.csv")
+road_deaths <- read_csv(here("data", "raw", "road_deaths_data.csv"))
 
 road_deaths +
-  ggplot(aes(x = month_beginning, y = ksi_driver_rate)) +
+  ggplot(aes(x = month_beginning, y = drivers)) +
   geom_point(aes(colour = law))
 ```
 
 
-You can see that even though we have removed 80% of the previous code, this shorter code still produces the same error message. That means the problem must be on line of these 5 lines of code. This makes the problem much easier to find and fix, since we only have to understand what is happening (on what might be going wrong) on 5 lines of code, not in the 35 lines of our original code.
+::: {.callout-important title="If the error message changes, keep that line of code"}
+
+If we forgot to change `y = ksi_driver_rate` to `y = drivers`, or to remove an operator at the end of a shortened expression, the code could produce a different error. The purpose of producing a reprex is to find the minimum code that still produces _the same problem_ we are interested in. If you remove a line and the problem changes, put that line back.
+
+:::
 
 
-::: {.callout-tip collapse="true"}
-#### But wouldn't this map look very different?
+Even though we have removed most of the previous code, this shorter code still produces the same error message. The bug must therefore be in one of the few remaining expressions. This makes the problem much easier to understand than it was in the original script.
+
+
+::: {.callout-tip collapse="true" title="But wouldn't this chart look very different?"}
 
 If this shortened code ran successfully rather than producing an error, the resulting chart would look very different to the original chart we wanted. But that does not matter, because what we are interested in is isolating the lines of code that produce the specific error we want to find and fix.
 :::
 
 
 
-### Reproducible data
+#### Reproducible data
 
-Our shortened code would make a great reproducible example except for one thing: the data file `road_deaths_data.csv` only exists on your computer. This means the example is not actually *reproducible*, since anyone trying to run this code on their computer to identify the error would find that they instead got a different error saying that the file `road_deaths_data.csv` was not found.
+Our shortened code would make a useful example except for one thing: the data file `road_deaths_data.csv` only exists on your computer. Someone trying to run the code elsewhere would instead get an error saying that the file could not be found.
 
-You could deal with this by uploading your dataset to a website and then having the `read_csv()` function read it from that URL. But you might not want to share your data (perhaps it is sensitive in some way), or your dataset might be too large to post online. For this reason, many R packages come with toy datasets that can be used in learning or in testing for errors. You can see a list of all the toy datasets available in the packages you have loaded by typing `data()` in the R console. This will produce a file that gives the name and description of each available dataset.
+You might not be able to share the original data that your code uses, for example if it is sensitive or too large to share. Fortunately, many R packages include small datasets for learning and testing. You can see a list of the datasets available in loaded packages by typing `data()` in the R Console.
 
-To use one of these toy datasets, you just use the the name of the dataset as you would use any other R object (like the `road_deaths` object we created above). One commonly used toy dataset is the `mpg` dataset from the ggplot2 package, which contains fuel economy data for 38 models of car. 
+To use one of these datasets, refer to its name as you would any other R object. One commonly used example is `mpg` from the ggplot2 package, which contains fuel-economy data for 38 models of car.
 
-The data in this dataset are on a completely different topic to the data we were trying to use, but this does not matter as long as the data contains variables of the same type (numeric, character, etc.) as the original data. We can see what variables are in the `mpg` dataset using the `head()` function as usual.
+The data are on a different topic, but that does not matter for this particular error because the bug is in the way we combine the data and `ggplot()`. For a data-dependent bug, a substitute dataset must preserve the relevant column types and problematic values or the bug might disappear. We can inspect `mpg` using `head()` as usual.
 
 ```{r}
 #| filename: "R Console"
@@ -692,9 +799,9 @@ head(mpg)
 
 From this, we can see that there is: 
 
-* a `year` variable that we can use as a substitute for the `month_beginning` variable in our original code, 
-* a variable called `hwy` that is numeric and so can be substituted for the `drivers` variable in our code, and 
-* a categorical variable called `trans` that we can substitute for the `law` variable in our data. 
+- a `year` variable that we can use instead of `month_beginning`;
+- a numeric variable called `hwy` that we can use instead of `drivers`; and
+- a categorical variable called `trans` that we can use instead of `law`.
 
 This means we can use this data instead of our own data, knowing that anyone on any computer with the ggplot2 package installed can run the code and should get the same result. It also makes our code slightly shorter still, since we no longer need to load the data from a file with `read_csv()`. All we need to do is load the ggplot2 package and replace the reference to the `road_deaths` object on line 5 of our shortened code to a reference to the built-in `mpg` object:
 
@@ -703,71 +810,188 @@ This means we can use this data instead of our own data, knowing that anyone on 
 #| error: true
 #| filename: "R Console"
 
-pacman::p_load(ggplot2)
+library(ggplot2)
 
 mpg +
-  ggplot(aes(x = year, y = hwy)) + 
+  ggplot(aes(x = year, y = hwy)) +
   geom_point(aes(colour = trans))
 ```
 
-We have now managed to reduce our original 37 lines of code down to 4 lines, as well as making the example reproducible by using a widely available toy dataset. The shorter code still produces the same error while being much easier to read, so we are much more likely to get help quickly than if we had just sent someone our original code.
+We have reduced the original script to four lines and made the example reproducible using a widely available dataset. The shorter code still produces the same error but is much easier to read.
 
 Most of the time, the act of producing a reprex will be enough for us to find and fix the error without any external help. Can you see the problem with our code that is making this error happen? If not, we will reveal it at the end of this chapter.
 
 
-### Checking your reprex is reproducible
+#### Checking your reprex is reproducible
 
 Now that you have the minimum code needed to reproduce the error, it's almost time to share it with people who can help you. But before you do that, it's worth checking that the code is truly reproducible. To do this we will use the reprex package, which is part of the tidyverse suite of packages you already have installed.
 
-<p class="full-width-image"><img src="../images/reprex-cartoon.jpg" alt="Cartoon of furry monsters celebrating, with the caption 'reprex: make reproducible examples'"></p>
+<p class="full-width-image"><img src="../images/reprex-cartoon.jpg" alt="Cartoon explaining that 'reprex' means 'reproducible example', showing small monsters using a reprex to help other people understand and support their work"></p>
 
-<a href="https://reprex.tidyverse.org/" title="reprex website"><img src="../images/reprex.png" class="right-side-image"></a>
+<a href="https://reprex.tidyverse.org/" aria-label="Visit the reprex package website"><img src="../images/reprex.png" class="right-side-image" alt=""></a>
 
-To use the reprex package, first put your code in a separate R document in the Source panel in RStudio. Open a new R script in RStudio now and paste the final three-line reprex code above into it. Once you've done that, select all the code in that document. Now click the `Addins` button in RStudio and scroll down until you can choose `Reprex selection`.
+Make sure the `chapter_08.R` file now only contains the four-line minimal working example above, then save the file. Now run this command in the R Console:
 
-After a few seconds, some code should appear in the RStudio Viewer panel showing your code and the error message that it produces. This code has also been copied to your computer clipboard so that you can paste it into an email or web form when you are asking for help.
+```{r}
+#| eval: false
+#| filename: "R Console"
 
-If the error message that you see along with the code in the Viewer panel is not the error message you were expecting, your example is not yet reproducible. For example if you tried to run the `Reprex selection` command on the original code that we started this section with, we would get an error message `'road_deaths_data.csv' does not exist in current working directory`.
+reprex::reprex(input = here("R", "chapter_08.R"))
+```
 
-Once your reprex produces _the same error_ as the code you originally had the issue with, you're ready to share it to get help.
+The reprex package runs the example in a separate R session (to avoid conflicts with your current workspace) and produces a preview containing both the code and its output. If clipboard support is available on your computer, it also copies the formatted code to your clipboard so that you can paste it into a message, web form or chat bot.
+
+::: {.callout-important title="Check for sensitive information before sharing"}
+
+Read the complete reprex before sharing it. Check the code, data, file paths, output and error message for personal information, confidential crime data, usernames, credentials or any other information that should not be public.
+
+:::
+
+::: {.callout-quiz .callout title="Reproducible examples and asking for help"}
+
+```{r}
+#| label: reprex-help-quiz
+#| echo: false
+
+reprex_help_quiz1 <- c(
+  "The complete analysis and the original confidential dataset",
+  answer = "The smallest code and non-sensitive data needed to reproduce the same problem",
+  "Only a screenshot of the error message",
+  "Every package installed on your computer"
+)
+
+reprex_help_quiz2 <- c(
+  "Post the question on as many websites as possible",
+  "Use a title such as 'R problem' so that it applies broadly",
+  answer = "Explain the expected result and include a checked reprex",
+  "Remove the error message because it might distract readers"
+)
+```
+
+**What should a reprex contain?**
+
+`r webexercises::longmcq(reprex_help_quiz1)`
+
+**What makes a request for debugging help easier to answer?**
+
+`r webexercises::longmcq(reprex_help_quiz2)`
+
+:::
+
+
+::: {.box .reading}
+
+For more information on writing reproducible examples, see:
+
+- Watch the webinar [Creating reproducible examples with reprex](https://reprex.tidyverse.org/articles/learn-reprex.html) by Jenny Bryan.
+- Read the [Reprex do's and don'ts](https://reprex.tidyverse.org/articles/reprex-dos-and-donts.html) on the reprex package website.
+
+:::
+
+
+## Using generative AI to help with debugging
+
+
+Now we've created a reprex, the next step is to share it with someone who can help. If you are being taught R by an instructor, use the support routes provided for your course first. But in many cases, the easiest way to get help will be by using a generative AI tool based on a large language model (LLM).
+
+One useful application for tools such as ChatGPT, Gemini and Claude that are based on LLMs is helping to write and debug code. Having access to an AI tool doesn't mean that you don't need to know how to code. No AI tool is perfect, so you need to know enough to check that its suggestions are correct for your data and analytical goal. But LLMs can be very helpful in many circumstances.
+
+There are many different LLM services available, and they are constantly changing. Some are free to use, while others require a paid subscription. Some are designed for general-purpose use, while others are specifically designed for coding. Some are designed to be used in a web browser, while others can be integrated directly into software such as Positron.
+
+Most people's starting point with AI tools will be a web-based chat bot service such as ChatGPT or Microsoft Copilot. These services are designed to be easy to use. They can only use the code, files or connected sources that you make available to them. Some services can run code or inspect uploaded files, but these capabilities vary by service, account and configuration.
+
+Much more useful for helping write and debug code are AI tools that are specifically designed for that purpose. There are many of these available, such as Open AI Codex, Claude Code and GitHub Copilot. Once set up, these tools have access to the code and data in a project, so they can base their answers on much more information. The way all LLM tools work means that the more information you provide, the more likely it is that the tool will give you a useful answer, so these tools can be much more helpful than a general-purpose chat bot. The main limitation of these tools is that they are not free (some are very expensive!) and that they often require some technical skill to set up and use.
+
+
+::: {.callout-tip title="Eligible students can use GitHub Copilot without paying"}
+Verified students can apply for GitHub Copilot Student. The features and usage allowances may change, so check the [current GitHub instructions for student access](https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-students) before signing up.
+:::
+
+The rest of this section focuses on using a web-based chat bot service to help with debugging, since this is likely to be the most familiar option. The same principles apply to other LLM services, but the details of how you use them will differ.
+
+### Protecting sensitive information
+
+Never submit sensitive crime data, personal information, passwords, API keys or other credentials to a generative-AI service. The service might send information to an external provider or retain it according to terms that you have not checked. If you are not certain that sharing particular information is authorised, do not share it.
+
+Crime mapping can influence decisions about people and places, so analytical accuracy matters. If you use an LLM to support debugging, you remain responsible for understanding the code, checking the results and ensuring that the analysis is appropriate.
+
+AI tools are more likely to provide a useful answer if you give them the same information that would make a good question for a person:
+
+- what you were trying to achieve;
+- the smallest code that produces the problem (i.e. a reprex);
+- the exact text of the error, warning or unexpected result;
+- what you expected to happen; and
+- relevant package versions, if you know them.
+
+For example, a useful prompt might be:
+
+> I am learning R and using ggplot2. I want this code to make a scatter plot, but it produces the error pasted below. Explain the cause in beginner-friendly language, then suggest one change for me to test. Do not rewrite the whole script.
+>
+> ```
+> library(ggplot2)
+>
+> mpg +
+>   ggplot(aes(x = year, y = hwy)) +
+>   geom_point(aes(colour = trans))
+> ```
+>
+> `Error in mpg + ggplot(...): non-numeric argument to binary operator`
+
+Asking for an explanation and one change helps you remain in control of the debugging process. Read the explanation, check it against the relevant R manual page, make the change yourself and then inspect the result. Do not accept code merely because it looks convincing or runs without an error: it could still contain a logic error.
+
+
+### Why AI suggestions can be wrong
+
+LLMs generate responses from patterns learned from large collections of text and code. They can produce plausible explanations and code without verifying that these are correct for your data, package versions or analytical goal. Different services -- or the same service on different occasions -- can also return different responses to the same prompt.
+
+Treat an AI suggestion in the same way as advice from an unfamiliar online tutorial. Make sure you understand it, check the relevant documentation, change one thing at a time and verify the result from a new R session.
+
+::: {.callout-quiz .callout title="Using generative AI for debugging"}
+
+```{r}
+#| label: ai-debugging-quiz
+#| echo: false
+
+ai_debugging_quiz1 <- c(
+  "Ask the LLM to replace the complete analysis without explaining its changes",
+  answer = "Provide a non-sensitive reprex, the expected result and the exact problem",
+  "Upload the original crime dataset so that the LLM has maximum context",
+  "Accept any suggestion that runs without an error"
+)
+
+ai_debugging_quiz2 <- c(
+  "An LLM checks every suggestion against the current package documentation",
+  "Code that runs cannot contain a logic error",
+  answer = "An LLM can produce a plausible suggestion that is wrong for your analysis",
+  "Different LLMs always return the same answer to a prompt"
+)
+```
+
+**What is the safest way to ask an LLM for debugging help?**
+
+`r webexercises::longmcq(ai_debugging_quiz1)`
+
+**Why must you verify code suggested by an LLM?**
+
+`r webexercises::longmcq(ai_debugging_quiz2)`
+
+:::
 
 
 
-## Sources of help
 
-If you are being taught R by a formal instructor, or you have friends or colleagues who can help, they will probably be the first people that you go to for help. 
+<p class="full-width-image"><img src="../images/need_a_minute.png" alt="A frustrated little monster sits on the ground with a hat beside it, saying 'I just need a minute'. The R logo looks on empathetically while the word 'Error' appears repeatedly in the background."></p>
 
-If this doesn't work, or if you are the most proficient R user that you know, you might need another place to turn to. Fortunately, R has a large community of volunteers who will help you. Before you ask people online for help, it's important to check that someone hasn't already asked the same question and had it answered. Duplicate questions increase the workload of the volunteers who answer questions and slow everything down, so if your question has frequently been answered already it's possible your question will just be ignored.
+### Why AI suggestions can be out of date
 
-To find out if there is an answer to your question, the easiest thing to do is to search the error message online. Google, or another search engine of your choice, is definitely your friend. If you search online for the error message that was produced by our reprex code, you will see that there are over 100 pages discussing this error message and how to fix it.
+AI tools are trained on large collections of text and code, for example blog posts and forum discussions about how to fix problems with R code. However, some of the information that these tools have learned is now out of date. R and its packages change over time, so advice that was correct when it was written may no longer be correct. This can cause problems with your code, either now or if you adapt the code in the future. @sec-functions-to-avoid explains some obsolete R functions that you should avoid using if you see them suggested by AI tools or elsewhere.
 
-Let's imagine, though, that there were no relevant hits when we searched for the error message, or that none of the results was useful. In that case, we need to pose a new question to the R community. The place to find the largest slice of that community is probably the website [Stack Overflow](https://stackoverflow.com/). This is a website for people who are writing code in any programming language imaginable to get help. It is part of the larger [Stack Exchange Network](https://stackexchange.com/) of question-and-answer websites covering everything from [travel](https://travel.stackexchange.com/) to [veganism](https://vegetarianism.stackexchange.com/).
+Before answering the following questions, read @sec-functions-to-avoid. Use that appendix to check why each function is discouraged and which alternative is recommended.
 
-To ask a new question on Stack Overflow, go to [stackoverflow.com/questions/ask](https://stackoverflow.com/questions/ask) and create an account or log in. You will now be asked to complete a short form with your question. Questions are more likely to get an answer faster if you:
+::: {.callout-quiz .callout title="Some R functions to avoid"}
 
-* Give the question a specific title. Over 20 million questions have been asked on Stack Overflow since it launched, so a generic title like 'Help', 'R error' or even 'ggplot error' will not help other people find your question. [Look at some recent questions about R on Stack Overflow](https://stackoverflow.com/questions/tagged/r) to get some ideas on what title to give for your question.
-* In the body of your question, *briefly* (2--3 lines should do it) explain what you were trying to do, then paste the reprex output that the `Reprex selection` addin copied to your clipboard into the question body box underneath your brief explanation. You will see that Stack Overflow recognises the format of your code and shows you a preview of it underneath the question box.
-* Finally, add the tag `r` to the Tags box so that people know your question is about coding in R. This is crucial -- if you do not tag your question as being about R, it is very unlikely that volunteers who know about R will be able to find your question.
-
-Submit your question and wait for an answer. As soon as someone answers your question, or comments on it to ask for more detail, you will get an email alert. Many questions are typically answered within a few hours. Hopefully this will help you get to the final stage of the emotional roller coaster of debugging:
-
-<p class="full-width-image"><img src="../images/debugging.jpg" alt="Cartoon showing 10 furry monsters showing different stages of learning to debug code. The monsters are marked '1. I got this', '2. Huh, really though that was it', '3. (...)', '4. Fine. Restarting.', '5. OH WTF', '6. Zombie meltdown', '7. [crying]', '8. A NEW HOPE!', '9. [insert awesome theme song]' and '10. I LOVE CODING!'"></p>
-
-
-
-## Getting help from online tutorials and blogs
-
-One of the nice things about learning R is that there is a large online community of people who write about how to get things done using R. The [R-Bloggers](https://www.r-bloggers.com/) website hosts thousands of tutorials on different R topics, written by hundreds of different authors, while institutions such as the UCLA Statistical Consulting group provide [detailed tutorials on statistical analysis using R](https://stats.oarc.ucla.edu/r/). There are also many free online books and websites on how to get different things done in R, many of which are linked as further reading throughout this book. One example of this is the [R Graph Gallery](https://r-graph-gallery.com/) that gives examples of many different types of visualisations you can make in R.
-
-Many online tutorials are very helpful. But the R language has developed over time, so some older tutorials may use methods that have since been replaced by better ones. Occasionally, older tutorials might even you bad advice. So how can you know which tutorials you can trust? Generally, online posts from the past 3 years or so are more likely to use methods that are reasonably up to date. You might also want to consider who wrote the tutorial. For example, is the tutorial hosted on the website of an R package you are using? If so, it's likely to have been written by the author of the package and so is likely to be reliable.
-
-@sec-functions-to-avoid explains some obsolete R functions that you should avoid using if you see them suggested in online tutorials or blog posts.
-
-
-::: {.callout-quiz .callout}
-#### Some R functions to avoid
-
-```{r functions-to-avoid-quiz}
+```{r}
+#| label: functions-to-avoid-quiz
 #| echo: false
 
 functions_to_avoid_quiz1 <- c(
@@ -812,148 +1036,115 @@ functions_to_avoid_quiz3 <- c(
 
 
 
-## Coding with AI
+::: {.box .reading}
 
-One topic that we haven't covered yet is using artificial intelligence (AI) to help us produce R code. The type of AI that can be used to help produce code is called a _large language model_ (LLM), sometimes known as a _generative AI_ model. The best known of these among the public is probably [ChatGPT](https://chat.openai.com/), but there are lots of similar services available (and new ones being released all the time).
-
-
-### Coding with AI: an example
-
-Generative AI services can help you to write code, especially code that does very common tasks like loading data. For example, say that I want to load the Vancouver thefts dataset that we used in a previous chapter and convert the column names in the data to `snake_case`. As a reminder, the code we previously used to do that looked like this:
-
-```r
-pacman::p_load(tidyverse)
-
-vancouver_thefts <- read_csv("https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz") |> 
-  janitor::clean_names()
-```
-
-To ask ChatGPT to write some code that will do this task, I need to tell it what I want. For example, you might use this _prompt_ text to give instructions to ChatGPT:
-
-> Show me the R code needed to load the CSV dataset at https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz and make the column names into snake case
-
-When I give this prompt to ChatGPT version 4o in January 2025 it produced this response:
-
-```r
-# Install required packages if not already installed
-if (!require("janitor")) install.packages("janitor")
-if (!require("readr")) install.packages("readr")
-
-# Load required libraries
-library(janitor)
-library(readr)
-
-# Define the URL of the dataset
-url <- "https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"
-
-# Read the dataset directly from the URL
-thefts_data <- read_csv(url)
-
-# Convert column names to snake_case
-thefts_data <- clean_names(thefts_data)
-
-# View the first few rows of the dataset
-head(thefts_data)
-```
-
-ChatGPT also produces a short explanation of what the code does:
-
-> Explanation: 
-> 
-> 1. **`read_csv()`**: Reads the compressed `.csv.gz` file directly from the URL. The `readr` package handles the compressed file format automatically.
-> 2. **`clean_names()`**: Converts column names to snake_case. This function is provided by the `janitor` package and is useful for making column names consistent and easier to work with in R.
-> 3. **`head()`**: Displays the first few rows of the dataset to confirm that the column names have been converted successfully. 
-
-This code works, in that it produces the desired result. However, it takes 12 lines of code and creates three objects to do the same work as our original 3 lines of code (lines 1--7 of the ChatGPT code replicate what `pacman::p_load(tidyverse)` does on the first line of our original code). This might not seem like a problem, and for this simple example it's not. However, if you wanted to combine this code with other code written with the help of a large language model, the code could quickly get so complicated that it would be hard to understand.
-
-
-::: {.callout-tip collapse="true"}
-#### Why did I get a different result when I put the same prompt into ChatGPT?
-
-If you put the text "Show me the R code needed to load the CSV dataset at https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz and make the column names into snake case" into ChatGPT, it is possible that you will get a slightly different response to the one shown above. This is because large language models are _stochastic_ or _non-deterministic_ models, which means that there is some element of chance involved in exactly what response the model will produce for a particular input. In fact, if you provide exactly the same input to ChatGPT multiple times, it is likely you will get a slightly different answer each time.
+For more detailed guidance, read [Twelve quick tips for AI-assisted coding in science](https://doi.org/10.1371/journal.pcbi.1014428).
 
 :::
 
 
-### Why does ChatGPT sometimes produce code that doesn't work?
+## What caused the error in our reproducible example? {.unnumbered}
 
-In the example above, ChatGPT 4o produced code that works (the previous version, ChatGPT 3.5, generated code that produced an error). However, there are lots of examples of large language models producing code that doesn't work in various ways. 
+The error in our reproducible example was very simple, but quite difficult to spot. On line 3 of the code below, we try to add the `ggplot()` function to the `mpg` object using the `+` operator when what we wanted to do was pass the `mpg` object to the `ggplot()` function using the `|>` operator. R does not know how to add a dataset to a function in this way, so it produced an error message.
 
-To understand why that happens, we need to know just a little bit about how large language models such as ChatGPT work. LLMs work by looking for patterns in very large datasets (e.g. all the pages on the world wide web) and then using those patterns to predict what the most likely answer is to questions or requests that include particular words and phrases. To give a very simple example, an LLM might be able to identify that if the first few words in a sentence are 'Today was Sunday, which meant that tomorrow …' then it is likely (but not certain) that the next words would be 'is Monday'. 
-
-Because they are trained on very large samples of data, LLMs can produce answers that are sophisticated enough that they almost look like magic. But behind the scenes, what models like ChatGPT are doing is predicting what the most likely combination of words a response will contain, based on the input that it is given. It is important to remember that models such as ChatGPT do not know the _correct_ answer to a question, since they do not actually understand the question in the way that humans do. This means that ChatGPT cannot give you any indication of how confident it is about the answer it has given: it will be equally confident in its answer whether it is right or wrong. This unjustified confidence can easily lead you to accept an answer from ChatGPT that is actually wrong, so always be careful in using the results produced by LLMs.
-
-<p class="full-width-image"><img src="../images/need_a_minute.png" alt="A frustrated little monster sits on the ground with his hat next to him, saying 'I just need a minute.' Looking on empathetically is the R logo, with the word 'Error' in many different styles behind it."></p>
-
-
-
-### Should I use AI to help me code?
-
-So given these issues, does that mean that we shouldn't use LLMs to help us write code? Not necessarily. Lots of programmers find LLMs useful for helping them write code. However, LLMs like ChatGPT are useful for _supporting_ humans to write effective code, not for replacing humans writing code. Even if you asked an LLM to write every part of your code for you, it is likely you would need to make some changes to the code it produced to make it work. 
-
-That means that to use an LLM effectively to help you write code, you need to understand the code that the LLM produces. That's why this course teaches you to understand how to write code to produce crime maps in R, rather than just how to use an LLM to write the code for you.
-
-Whether to use an LLM to help you write code is up to you. Some people find it saves them time and helps them get started on how to produce a particular bit of code, while others find that they spend just as much time fixing the code produced by an LLM as it would take them to write the code themselves. You might want to experiment with getting help from an LLM so you can see what works for you.
-
-
-### Using AI to help map crime
-
-There are two further important points to make about using LLMs in the context of crime mapping. First, it is vital that you do not upload any sensitive data to an LLM that is hosted online, since it is likely that the company that runs the LLM will have reserved the right to use any data you submit to improve the model in future. You must make sure that sensitive data such as victim details are not posted online or shared unlawfully.
-
-The second important point is that the analysis that we use crime mapping for is usually done to answer important questions such as where crime-prevention initiatives should be focused or where a serial offender might live. It is vital that the answers we produce to these questions are accurate. Part of making sure the results of our analysis are accurate is to make sure that we understand exactly how our code produces a particular result. If you use an LLM to support your coding, it is vital that you still understand what the code does.
-
-Restart R to start a new session by clicking on the `Session` menu and then clicking `Restart R`. This creates a blank canvas for the next chapter.
-
-
-## In summary
-
-In this chapter we have learned how to handle messages, warnings and errors in R. We have learned to take time to understand error messages, to isolate errors so that we can better understand them, to use manual pages for functions to check that every argument is correct, and how to write reproducible examples so
-that we can get help online. This will help you become a more independent coder. You can the the checklist in @sec-checklist-errors to help you deal with any problems in your code.
-
-
-### What caused the error in our reproducible example? {.unnumbered}
-
-The error in our reproducible example was very simple, but quite difficult to spot. On line 1 of the code below, we try to add the `ggplot()` function to the `mpg` object using the `+` operator when what we wanted to do was pass the `mpg` object to the `ggplot()` function using the `|>` operator. R does not know how to add a dataset to a function in this way, so it produced an error message.
-
-If you replaced `+` with `|>` on line 1 of the code below, the code would now run normally. Since we have removed almost all of our original code to make a reproducible example, the resulting plot looks nothing like what we wanted. This does not matter -- when we are producing a reprex we only care about reliably producing *the same* error. Now that we have fixed the error, we could go back and fix the original code to produce the chart we wanted.
+If you replaced `+` with `|>` on line 3 of the code below, the code would now run normally. Since we have removed almost all of our original code to make a reproducible example, the resulting plot looks nothing like what we wanted. This does not matter -- when we are producing a reprex we only care about reliably producing *the same* error. Now that we have fixed the error, we could go back and fix the original code to produce the chart we wanted.
 
 ```{r}
 #| eval: false
 #| filename: "R Console"
 
-pacman::p_load(ggplot2)
+library(ggplot2)
 
 mpg + # <---- THE `+` OPERATOR HERE SHOULD BE A `|>` OPERATOR INSTEAD
-  ggplot(aes(x = year, y = hwy)) + 
+  ggplot(aes(x = year, y = hwy)) +
   geom_point(aes(colour = trans))
 ```
 
-The mistake in this code is a very easy one to make, because what `+` does inside a `ggplot()` stack is so similar to what `|>` does in passing the result of one function to the next function in an data-wrangling pipeline. Remember that we only use `+` to combine functions inside a `ggplot()` stack, and use `|>` to combine functions everywhere else.
+The mistake in this code is easy to make because what `+` does inside a `ggplot()` stack is similar to what `|>` does in passing the result of one function to the next function in a data-wrangling pipeline. Remember that we use `+` to combine layers inside a `ggplot()` stack and `|>` to pass an object to a function.
 
 
-::: {.box .reading}
 
-For more information on writing reproducible examples, see:
 
-  * Watch the webinar [Creating reproducible examples with reprex](https://reprex.tidyverse.org/articles/articles/learn-reprex.html) by
-    Jenny Bryan.
-  * Read the [Reprex do’s and don’ts](https://reprex.tidyverse.org/articles/reprex-dos-and-donts.html) 
-    on the `reprex` package website.
-  * Learn more about how to use  [Six tips for better coding with ChatGPT](https://doi.org/10.1038/d41586-023-01833-0)
+## How to fix some common errors
+
+There are some mistakes that it is common for people to make when writing code. As you get more experience in writing R code and dealing with error messages, you are likely to start to recognise some simple errors (especially those caused by typos) and know how to fix them quickly. One useful way to quickly find help on common errors is to check if the error appears in the list of common errors and how to fix them at @sec-common-errors.
+
+Before answering the following questions, read @sec-common-errors and use it to identify the likely cause of each error message.
+
+
+::: {.callout-quiz .callout title="Fixing common errors"}
+
+```{r}
+#| label: common-errors-quiz
+#| echo: false
+
+common_errors_quiz1 <- c(
+  "You have loaded packages in the wrong order",
+  "You have mis-typed the name of the `blah` object",
+  answer = "You have not loaded the package that contains the `blah()` function",
+  "You have tried to use a generic function with a type of object the function does not know how to use"
+)
+
+common_errors_quiz2 <- c(
+  "You have tried to use a function as if it is an object",
+  answer = "You have tried to use a mathematical operator such as `+` or `-` with a non-numeric value such as a character value",
+  "You have used an argument name in a function that does not understand it",
+  "You have either mis-typed the function name or the package containing that function is not loaded"
+)
+```
+
+
+**What might cause the error message `could not find function "blah"`?**
+
+`r webexercises::longmcq(common_errors_quiz1)`
+
+
+**What might cause the error message `non-numeric argument to binary operator`?**
+
+`r webexercises::longmcq(common_errors_quiz2)`
+
 
 :::
 
 
-::: {.callout-quiz .callout}
-### Revision questions {.unnumbered}
+## In summary
+
+In this chapter, you've learned how to find and fix a wide range of bugs in your code. Remember that bugs are inevitable in all programming. Often you can prevent bugs with good coding practice, but it's also important to know how to find and fix them when they occur.
+
+You can now:
+
+- distinguish messages, warnings and errors;
+- recognise syntax errors, runtime errors and logic errors;
+- reproduce and isolate a problem systematically;
+- inspect intermediate data and compare results with what you expected;
+- use manual pages and common-error guidance;
+- create and check a non-sensitive reprex; and
+- assess debugging suggestions from people, online resources and generative AI critically.
+
+You can use the checklist in @sec-checklist-errors whenever you encounter a problem in your code.
+
+The corrected complete script from the reprex exercise is shown below. Replace the contents of `chapter_08.R` with this script. It uses the pipe operator to pass `road_deaths` to `ggplot()`.
+
+```{r}
+#| label: complete-script
+#| eval: false
+#| file: "../R/chapter_08.R"
+#| filename: "chapter_08.R"
+```
+
+Save `chapter_08.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. To check that the analysis is reproducible, restart R using the **Restart R** (**&#10227;**) button in Positron's **Console** panel and run the complete script from beginning to end.
+
+
+::: {.callout-quiz .callout title="Revision questions"}
 
 Answer these questions to check you have understood the main points covered in this chapter. Write between 50 and 100 words to answer each question.
 
 1. What are the key differences between messages, warnings, and errors in R? Provide an example of each and explain how they affect the execution of code.
-2. Explain the difference between syntax errors and logical errors in R. Why are logical errors often harder to identify and fix?
+2. Explain the differences between syntax errors, runtime errors and logic errors in R. Why can logic errors be particularly difficult to identify?
 3. Why is it important to check each line of code when debugging a block of R code? Describe a method for systematically isolating problematic lines.
 4. What role do R manual pages play in understanding and fixing errors? How can you access these pages, and what key sections should you focus on?
 5. Why is it dangerous to ignore warnings in your R code? Provide an example of how a warning could indicate a significant problem with your analysis.
+6. What information should you include in a reprex or an AI prompt when asking for debugging help? Explain how you would protect sensitive information and verify any suggested code.
 :::
 
-<p class="credits"><a href="https://twitter.com/allison_horst">Artwork by @allison_horst</a></p>
+<p class="credits"><a href="https://allisonhorst.com/">Artwork by Allison Horst</a></p>
