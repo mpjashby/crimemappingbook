@@ -8,7 +8,7 @@
 
 <meta name="description" content="An introductory textbook on using R to understand and visualise spatial and spatio-temporal patterns of crime.">
 
-<title>Contents – Learn Crime Mapping with R</title>
+<title>12&nbsp; Using data about places – Learn Crime Mapping with R</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -27,33 +27,68 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./setup.html" rel="next">
-<link href="./index.html" rel="prev">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/quarto-axe/axe.min.js"></script>
-<script src="site_libs/quarto-axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../13_mapping_hotspots/index.html" rel="next">
+<link href="../11_writing_reports/index.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/quarto-axe/axe.min.js"></script>
+<script src="../site_libs/quarto-axe/axe-check.js" type="module"></script>
 <script id="quarto-axe-checker-options" type="text/plain">eyJzdGFuZGFyZCI6IndjYWcyMmFhIiwib3V0cHV0IjoiY29uc29sZSJ9</script>
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-28b3a635af6a38e0a0209d6ed3ccafbc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
-<link href="site_libs/quarto-contrib/diagrams-0.2.0/diagrams.css" rel="stylesheet">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-28b3a635af6a38e0a0209d6ed3ccafbc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/diagrams-0.2.0/diagrams.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -93,16 +128,16 @@ quarto book
 <!-- END OF INCLUDED HEADER -->
 
 
-<link rel="stylesheet" href="css/styles.css">
-<link rel="stylesheet" href="include/webex.css">
-<meta property="og:title" content="Contents – Learn Crime Mapping with R">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../include/webex.css">
+<meta property="og:title" content="12&nbsp; Using data about places – Learn Crime Mapping with R">
 <meta property="og:description" content="An introductory textbook on using R to understand and visualise spatial and spatio-temporal patterns of crime.">
 <meta property="og:image" content="https://books.lesscrime.info/learncrimemapping/images/cover_image.png">
 <meta property="og:site_name" content="Learn Crime Mapping with R">
 <meta property="og:image:alt" content="Cover of Learn Crime Mapping with R">
 <meta property="og:image:height" content="600">
 <meta property="og:image:width" content="600">
-<meta name="twitter:title" content="Contents – Learn Crime Mapping with R">
+<meta name="twitter:title" content="12&nbsp; Using data about places – Learn Crime Mapping with R">
 <meta name="twitter:description" content="An introductory textbook on using R to understand and visualise spatial and spatio-temporal patterns of crime.">
 <meta name="twitter:image" content="https://books.lesscrime.info/learncrimemapping/images/cover_image.png">
 <meta name="twitter:image:alt" content="Cover of Learn Crime Mapping with R">
@@ -120,7 +155,7 @@ quarto book
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./contents.html">Contents</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../08_handling_bugs/index.html">Part III: Crime maps for different purposes</a></li><li class="breadcrumb-item"><a href="../12_place_data/index.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Using data about places</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -134,12 +169,12 @@ quarto book
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="./index.html" class="sidebar-logo-link">
-      <img src="./images/cover_image.png" alt="Cover of Learn Crime Mapping with R" class="sidebar-logo light-content py-0 d-lg-inline d-none">
-      <img src="./images/cover_image.png" alt="Cover of Learn Crime Mapping with R" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      <a href="../12_place_data/index.html" class="sidebar-logo-link">
+      <img src="../images/cover_image.png" alt="Cover of Learn Crime Mapping with R" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/cover_image.png" alt="Cover of Learn Crime Mapping with R" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
       </a>
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Learn Crime Mapping with R</a> 
+      <a href="../">Learn Crime Mapping with R</a> 
         <div class="sidebar-tools-main tools-wide">
     <div class="dropdown">
       <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
@@ -177,13 +212,13 @@ quarto book
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Welcome!</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./contents.html" class="sidebar-item-text sidebar-link active">
+  <a href="../contents.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Contents</span></a>
   </div>
 </li>
@@ -198,19 +233,19 @@ quarto book
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./setup.html" class="sidebar-item-text sidebar-link">
+  <a href="../setup.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Install the software needed for this book</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01_getting_started/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../01_getting_started/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting started</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02_your_first_crime_map/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../02_your_first_crime_map/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span></span></a>
   </div>
 </li>
@@ -227,31 +262,31 @@ quarto book
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03_data_wrangling/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../03_data_wrangling/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Loading and selecting data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_transforming_data/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../04_transforming_data/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Transforming and summarising data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./05_your_second_crime_map/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../05_your_second_crime_map/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Your second crime map</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./06_mapping_crime_patterns/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../06_mapping_crime_patterns/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Mapping crime patterns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07_map_context/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../07_map_context/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Giving a map context</span></span></a>
   </div>
 </li>
@@ -259,64 +294,64 @@ quarto book
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
  <span class="menu-text">Part III: Crime maps for different purposes</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./08_handling_bugs/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../08_handling_bugs/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09_mapping_areas/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../09_mapping_areas/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Mapping area data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./10_messy_data/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../10_messy_data/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Handling messy data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./11_writing_reports/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../11_writing_reports/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Writing reports in R</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./12_place_data/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../12_place_data/index.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Using data about places</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./13_mapping_hotspots/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../13_mapping_hotspots/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Mapping hotspots</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./14_crime_series/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../14_crime_series/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Mapping crime series</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./15_no_maps/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../15_no_maps/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Presenting spatial data without maps</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./16_mapping_time/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../16_mapping_time/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Mapping crime over time</span></span></a>
   </div>
 </li>
@@ -333,31 +368,31 @@ quarto book
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./appendices/read_functions.html" class="sidebar-item-text sidebar-link">
+  <a href="../appendices/read_functions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Functions for reading data into R</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./appendices/map_checklist.html" class="sidebar-item-text sidebar-link">
+  <a href="../appendices/map_checklist.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Checklist: Making a good crime map</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./appendices/common_errors.html" class="sidebar-item-text sidebar-link">
+  <a href="../appendices/common_errors.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Common R errors and how to fix them</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./appendices/functions_to_avoid.html" class="sidebar-item-text sidebar-link">
+  <a href="../appendices/functions_to_avoid.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Some R functions you should avoid</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./appendices/handling_errors.html" class="sidebar-item-text sidebar-link">
+  <a href="../appendices/handling_errors.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">Checklist: handling code errors</span></span></a>
   </div>
 </li>
@@ -373,16 +408,24 @@ quarto book
     <h2 id="toc-title">In this chapter</h2>
    
   <ul>
-  <li><a href="#features-used-in-this-book" id="toc-features-used-in-this-book" class="nav-link active" data-scroll-target="#features-used-in-this-book">Features used in this book</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">12.1</span> Introduction</a></li>
+  <li><a href="#finding-data" id="toc-finding-data" class="nav-link" data-scroll-target="#finding-data"><span class="header-section-number">12.2</span> Finding data</a>
+  <ul class="collapse">
+  <li><a href="#open-data" id="toc-open-data" class="nav-link" data-scroll-target="#open-data"><span class="header-section-number">12.2.1</span> Open data</a></li>
+  <li><a href="#citing-data" id="toc-citing-data" class="nav-link" data-scroll-target="#citing-data"><span class="header-section-number">12.2.2</span> Citing data</a></li>
+  </ul></li>
+  <li><a href="#shapefiles" id="toc-shapefiles" class="nav-link" data-scroll-target="#shapefiles"><span class="header-section-number">12.3</span> Shapefiles</a></li>
+  <li><a href="#data-from-openstreetmap" id="toc-data-from-openstreetmap" class="nav-link" data-scroll-target="#data-from-openstreetmap"><span class="header-section-number">12.4</span> Data from OpenStreetMap</a></li>
+  <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="header-section-number">12.5</span> In summary</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-chat-right"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../08_handling_bugs/index.html">Part III: Crime maps for different purposes</a></li><li class="breadcrumb-item"><a href="../12_place_data/index.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Using data about places</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Contents</h1>
+<h1 class="title"><span id="sec-place-data" class="quarto-section-identifier"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Using data about places</span></span></h1>
 </div>
 
 
@@ -399,103 +442,579 @@ quarto book
 </header>
 
 
-<p>This book is divided into 16 chapters, each covering a different topic related to crime mapping with R. Some chapters focus on mapping skills, while others focus on data wrangling or on how good coding practice can make your life easier. The chapters build on one another, so the easiest way to go through the book is to work through the chapters in order. But if you already know some R coding, and something about mapping, you might want to jump into a specific chapter to get what you need.</p>
-<p><strong>Before you start, make sure you <a href="./setup.html">install the software you need for this book</a>.</strong></p>
-<dl>
-<dt><a href="01_getting_started/">Chapter 1: Getting Started</a></dt>
+<div class="abstract">
+<p>Understanding the spatial context of crime is essential for effective crime mapping and analysis. This chapter explores how to make crime maps more informative by incorporating additional data about places. It covers sources of spatial data, including open data repositories and OpenStreetMap, and explains how to use shapefiles to add context to crime patterns.</p>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Before you start
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Open RStudio or – if you already have RStudio open – click <code>Session</code> then <code>Restart R</code>. Make sure you’re working inside the Crime Mapping RStudio project you created in <a href="#sec-create-project" class="quarto-xref"><span class="quarto-unresolved-ref">sec-create-project</span></a>, then you’re ready to start mapping.</p>
+</div>
+</div>
+<section id="introduction" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">12.1</span> Introduction</h2>
+<p>The purpose of most crime maps is to help people make decisions, be they professionals working out how best to respond to crime problems or citizens holding local leaders to account. We can make it easier for people to make decisions by putting crime data into a relevant context. We have already started to do this by adding base maps, titles, legends and so on to our maps.</p>
+<p>Since crime is concentrated in a few places, readers of our crime maps will often be interested in understanding what features of the environment are related to specific concentrations of crime in particular places. Where patterns of crime are related to particular facilities – such as late-night violence being driven by the presence of bars selling alcohol – it can be useful to highlight specific features on our maps.</p>
+<p>As an example, imagine you are the manager responsible for security on the metro network in Medellin, Colombia. There are several mountains within Medellin, so the city metro network consists of both railway lines in the valley and cable cars up the mountains. The security manager for the metro company will certainly analyse violence on the company’s stations and vehicles, but may also be interested in which stations are in neighbourhoods that themselves have high levels of violence.</p>
+<p>To help with this, you might produce a map showing the density of homicides recorded by local police.</p>
+<p class="full-width-image">
+<img src="../images/medellin_homicides_map1.jpg" alt="Map of homicides in Medellin from 2010 to 2019" style="max-height: 600px;">
+</p>
+<p>This is an acceptable crime map: it shows the data in a reasonable way, places the data layer at the top of the visual hierarchy and provides suitable context in the title, legend etc. But it is a much less useful map than it could be because it doesn’t show where the metro stations are and this information is not included in the base map. A much better map would add extra layers of data showing the metro stations and the line connecting them.</p>
+<p class="full-width-image">
+<img src="../images/medellin_homicides_map2.jpg" alt="Map of homicides in Medellin from 2010 to 2019 with metro stations and lines highlighted" style="max-height: 600px;">
+</p>
+<p>From this second map, it is much easier to see that Parque Berrío and Prado stations are closest to an area with relatively high numbers of homicides.</p>
+<p>To get started, open RStudio and make sure you are working inside the RStudio project you created in <a href="#sec-create-project" class="quarto-xref"><span class="quarto-unresolved-ref">sec-create-project</span></a>. Now open a new R script file and save it as <code>chapter10.R</code>. Add a note to the top of this file explaining that the code will create a map of homicides in Medellin, Colombia, then add the code needed to load the packages we will use in this chapter:</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter10.R</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="co"># This script produces a map of the density of homicides in the La Candelaria</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a><span class="co"># area of Medellin, Colombia, together with the locations of local bus stops</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a><span class="co"># Load packages</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, osmdata, sf, sfhotspot, tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<p>Run this line of code to load the packages. You will note that as well as the packages we have used in previous chapters, this code loads a new package – osmdata – that we will learn about in this chapter. If you want to remind yourself about the packages we have already used, see <a href="#sec-wrangling-data" class="quarto-xref"><span class="quarto-unresolved-ref">sec-wrangling-data</span></a> for the tidyverse package, <a href="#sec-second-map" class="quarto-xref"><span class="quarto-unresolved-ref">sec-second-map</span></a> for sf, and <a href="#sec-mapping-patterns" class="quarto-xref"><span class="quarto-unresolved-ref">sec-mapping-patterns</span></a> for ggspatial and sfhotspot.</p>
+<p>Data on the locations of homicides in Medellin from 2010 to 2019 is available at <code>https://mpjashby.github.io/crimemappingdata/medellin_homicides.csv</code>. In previous chapters, we have used the <code>read_csv()</code> function from the readr package to load data from CSV files. The <code>read_csv()</code> function assumes that (as the name ‘comma-separated values’ suggests) the columns in a CSV file are separated by commas (<code>,</code>). But not all countries use commas as the column separator in CSV files: some countries use semi-colons (<code>;</code>) instead. This is usually because those countries also use commas instead of periods as the decimal separator inside numbers (so that the number three-point-one-four is written <code>3,14</code> instead of <code>3.14</code> as in English). If commas are used as decimal separators in numbers in a file, commas cannot also be used to separate columns from one another – otherwise there would be no way to know if a comma represented the decimal mark in a number or the boundary between two columns.</p>
+<p>If we try to load a CSV file that uses semi-colon separators using the <code>read_csv()</code> function, all the data on each row will be loaded as a single column. Run this code in the R Console to see this for yourself:</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>R Console</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a><span class="fu">read_csv</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/medellin_homicides.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre data-code-line-numbers=""><code>Warning: One or more parsing issues, call `problems()` on your data frame for details,
+e.g.:
+  dat &lt;- vroom(...)
+  problems(dat)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre data-code-line-numbers=""><code>Rows: 9360 Columns: 1
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (1): fecha_hecho;longitud;latitud;sexo;edad;modalidad
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre data-code-line-numbers=""><code># A tibble: 9,360 × 1
+   `fecha_hecho;longitud;latitud;sexo;edad;modalidad`                           
+   &lt;chr&gt;                                                                        
+ 1 2019-04-23T12:30:00Z;-75,56985400000;6,25722555000;Mujer;50;Ahorcamiento o e…
+ 2 2019-05-12T00:51:00Z;-75,61036800000;6,22280611000;Hombre;24;Arma de fuego   
+ 3 2019-05-12T02:36:00Z;-75,62039100000;6,26238217000;Hombre;34;Arma de fuego   
+ 4 2019-05-12T03:03:00Z;-75,56176640000;6,26958878000;Hombre;20;Arma de fuego   
+ 5 2019-05-12T22:40:00Z;-75,53268500000;6,23627692000;Hombre;34;Arma de fuego   
+ 6 2019-05-12T19:30:00Z;-75,64195830000;6,19619536500;Hombre;25;Arma de fuego   
+ 7 2019-05-12T04:00:00Z;-75,55531860000;6,29015449800;Hombre;37;Cortopunzante   
+ 8 2019-05-13T05:34:00Z;-75,55719600000;6,27162258000;Hombre;22;Arma de fuego   
+ 9 2019-05-12T04:50:00Z;-75,56665500000;6,24002322000;Mujer;21;Ahorcamiento o e…
+10 2019-05-14T01:00:00Z;-75,56219630000;6,24926189200;Hombre;29;Arma de fuego   
+# ℹ 9,350 more rows</code></pre>
+</div>
+</div>
+<p>This is obviously not what we want, so we need to use a different function to load this data. Fortunately, the <code>readr</code> package has another function that can handle CSV files created using the conventions of countries that use semi colons to separate columns: <code>read_csv2()</code>.</p>
+<p>How should you know when to use <code>read_csv2()</code> rather than <code>read_csv()</code>? If you don’t know whether a file uses commas or semi colons to separate columns, the easiest thing is probably to use <code>read_csv()</code> first. Now load the file and use <code>head()</code> to look at the first few rows: if you see all the data has appeared in a single column that contains several semi colons, then you’ll know to change your code to use <code>read_csv2()</code> instead.</p>
+<p>For this dataset, if you load it with <code>read_csv2()</code> you should find that the structure of the data is more as you’d expect it to be.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter10.R</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="annotated-cell-3" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-3-1"><a href="#annotated-cell-3-1" aria-label="1"></a><span class="co"># LOAD DATA --------------------------------------------------------------------</span></span>
+<span id="annotated-cell-3-2"><a href="#annotated-cell-3-2" aria-label="2"></a></span>
+<span id="annotated-cell-3-3"><a href="#annotated-cell-3-3" aria-label="3"></a><span class="do">## Load Medellin homicide data ----</span></span>
+<span id="annotated-cell-3-4"><a href="#annotated-cell-3-4" aria-label="4"></a><span class="co"># Note: this dataset uses ';' as the column separator</span></span>
+<span id="annotated-cell-3-5"><a href="#annotated-cell-3-5" aria-label="5"></a>medellin_homicides <span class="ot">&lt;-</span> <span class="fu">read_csv2</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/medellin_homicides.csv"</span>) <span class="sc">|&gt;</span> </span>
+<span id="annotated-cell-3-6"><a href="#annotated-cell-3-6" aria-label="6"></a>  <span class="co"># Remove rows with missing co-ordinates</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-3-7" class="code-annotation-target"><a href="#annotated-cell-3-7" aria-label="7"></a>  <span class="fu">drop_na</span>(longitud, latitud) <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-3-8"><a href="#annotated-cell-3-8" aria-label="8"></a>  <span class="co"># Convert the data to an SF object</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-3-9" class="code-annotation-target"><a href="#annotated-cell-3-9" aria-label="9"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitud"</span>, <span class="st">"latitud"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell-annotation">
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-3" data-target-annotation="1">1</dt>
 <dd>
-Get started with crime mapping by learning about why putting crime on maps is useful, and get a tour of the Positron software we will use throughout this course.
+<span data-code-cell="annotated-cell-3" data-code-lines="7" data-code-annotation="1">Some rows in this dataset have missing co-ordinates. <code>st_as_sf()</code> will produce an error if there are missing co-ordinates, so we use <code>drop_na()</code> to remove them first.</span>
 </dd>
-<dt><a href="02_your_first_crime_map/">Chapter 2: Your first crime map</a></dt>
+<dt data-target-cell="annotated-cell-3" data-target-annotation="2">2</dt>
 <dd>
-Quickly walk (or jog) through the process of creating a complete crime map in R.
-</dd>
-<dt><a href="03_data_wrangling/">Chapter 3: Loading and selecting data</a></dt>
-<dd>
-Learn how to load tabular data, name objects and choose the rows and columns needed for an analysis.
-</dd>
-<dt><a href="04_transforming_data/">Chapter 4: Transforming and summarising data</a></dt>
-<dd>
-Learn how to create new values, summarise and arrange rows, build pipelines and save processed data.
-</dd>
-<dt><a href="05_your_second_crime_map/">Chapter 5: Your second crime map</a></dt>
-<dd>
-Walk through each specific stage in the process of creating a crime map, while learning how to name files and organise scripts with comments.
-</dd>
-<dt><a href="06_mapping_crime_patterns/">Chapter 6: Mapping crime patterns</a></dt>
-<dd>
-Learn how to use maps to identify patterns of crime in cities.
-</dd>
-<dt><a href="07_map_context/">Chapter 7: Giving a map context</a></dt>
-<dd>
-Learn how to make your maps easier to understand using supporting elements such as titles and legends.
-</dd>
-<dt><a href="08_handling_bugs/">Chapter 8: Handling bugs in your code</a></dt>
-<dd>
-Learn how to find and fix problems with the R code that you write.
-</dd>
-<dt><a href="09_mapping_areas/">Chapter 9: Mapping area data</a></dt>
-<dd>
-Learn how to make thematic (choropleth) maps that use data for areas to accomplish tasks such as mapping crime rates.
-</dd>
-<dt><a href="10_messy_data/">Chapter 10: Handling messy data</a></dt>
-<dd>
-Learn how to handle different types of messy data and transform them into tidy data that is easier to analyse.
-</dd>
-<dt><a href="11_writing_reports/">Chapter 11: Writing reports in R</a></dt>
-<dd>
-Learn how to use Markdown and Quarto to write reports in Positron, and how writing reproducible reports makes your analysis more reliable.
-</dd>
-<dt><a href="12_place_data/">Chapter 12: Using data about places</a></dt>
-<dd>
-Learn how to find and use additional spatial data to improve your crime maps, for example by adding the locations of local facilities that might be important in generating patterns of crime.
-</dd>
-<dt><a href="13_mapping_hotspots/">Chapter 13: Mapping hotspots</a></dt>
-<dd>
-Learn how to identify which areas have more crime than we would expect by chance, and how to map the density of crime risk.
-</dd>
-<dt><a href="14_crime_series/">Chapter 14: Mapping crime series</a></dt>
-<dd>
-Learn how to map serial crimes and spree crimes, as well as how to combine multiple maps in R.
-</dd>
-<dt><a href="15_no_maps/">Chapter 15: Presenting spatial data without maps</a></dt>
-<dd>
-Learn how to use tables and different types of charts to communicate spatial information about crime in circumstances where maps are not the best choice.
-</dd>
-<dt><a href="16_mapping_time/">Chapter 16: Mapping crime over time</a></dt>
-<dd>
-Learn how spatial concentrations of crime vary over time, how to analyse spatio-temporal crime patterns and how to make animated maps.
+<span data-code-cell="annotated-cell-3" data-code-lines="9" data-code-annotation="2">Since the column names are called <code>longitud</code> and <code>latitud</code>, we know that we should use the WGS84 co-ordinate reference system, which has the CRS code EPSG:4326.</span>
 </dd>
 </dl>
-<section id="features-used-in-this-book" class="level2">
-<h2 class="anchored" data-anchor-id="features-used-in-this-book">Features used in this book</h2>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre data-code-line-numbers=""><code>ℹ Using "','" as decimal and "'.'" as grouping mark. Use `read_delim()` for more control.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre data-code-line-numbers=""><code>Rows: 9360 Columns: 6
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ";"
+chr  (2): sexo, modalidad
+dbl  (3): longitud, latitud, edad
+dttm (1): fecha_hecho
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<p>In the rest of this chapter we will use data from different sources to better understand clusters of homicides in the La Candelaria neighbourhood of downtown Medellin.</p>
+<!--
+
+Use this map (created with the `leaflet` package) to look around the
+La Candelaria neighbourhood -- the markers show the locations of the metro
+stations inside the neighbourhood boundary.
+
+-->
+<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Quiz</span>Loading CSV data
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Which function should you use to load a CSV file of crime locations that uses semi-colons to separate the columns?</strong></p>
+<div id="radio_IOJWRIUSIL" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_IOJWRIUSIL" value=""> <span><code>read_sf()</code> from the sf package</span></label><label><input type="radio" autocomplete="off" name="radio_IOJWRIUSIL" value=""> <span><code>read_csv()</code> from the readr package</span></label><label><input type="radio" autocomplete="off" name="radio_IOJWRIUSIL" value=""> <span><code>read.csv2()</code> from the base package</span></label><label><input type="radio" autocomplete="off" name="radio_IOJWRIUSIL" value="answer"> <span><code>read_csv2()</code> from the readr package</span></label>
+</div>
+</div>
+</div>
+</section>
+<section id="finding-data" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="finding-data"><span class="header-section-number">12.2</span> Finding data</h2>
+<p>If you are producing crime maps on behalf of a particular organisation such as a police agency or a body responsible for managing a place, it is likely that they will hold spatial data that is relevant to the local area. For example, many city governments will hold records of local businesses. It will sometimes be necessary to track down which department or individual holds this data, and it may also be necessary to convert data into formats that are useful for spatial analysis.</p>
+<p>Some organisations may also have agreements to share data with others. For example, both universities and public agencies such as police forces in the United Kingdom have agreements with the national mapping agency Ordnance Survey to share a wide variety of spatial data. If you are producing maps on behalf of an organisation, it will often be useful to ask what data they hold that might be relevant, or ask for a specific dataset you think would help improve a map.</p>
+<section id="open-data" class="level3" data-number="12.2.1">
+<h3 data-number="12.2.1" class="anchored" data-anchor-id="open-data"><span class="header-section-number">12.2.1</span> Open data</h3>
+<p><em>Open data</em> is data that is released by organisations or individuals that can be freely used by others. Organisations such as local governments increasingly release data about their areas as open data – almost all of the data we have seen so far in this book is open data released by different local and national governments.</p>
+<p>Open data is extremely useful because you can skip the often lengthy and painful process of getting access to data and wrangling it into a format you can use. This means you can move on much more quickly to analysing data, reaching conclusions and making decisions. Watch this video to find out more about the value of open data.</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/bwX5MAZ6zKI" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>Open data is published in a wide variety of formats and distributed in different ways. Some data might only be distributed by an organisation sending you a DVD or memory stick. Most of the time, however, data will be released online.</p>
+<p>Many cities (especially but not only in developed countries) now maintain open-data websites that act as a repository for all their open data. For example, the City of Bristol in England publishes the <a href="https://opendata.bristol.gov.uk/">Open Data Bristol website</a>. Anyone can use this website to download data on everything from population estimates to politicians’ expenses. Many of these datasets can be useful for crime mapping. For example, you can download the locations of <a href="https://opendata.bristol.gov.uk/datasets/bcc::council-cctv-cameras/about">CCTV cameras</a> (useful in criminal investigations), or the <a href="https://opendata.bristol.gov.uk/datasets/bcc::childrens-centres/about">locations of childrens centres</a> (helpful if a crime-prevention strategy includes visits to such facilities).</p>
+<p>Different local governments may use different terms for the same types of information, so it sometimes takes some trial and error to find if a particular dataset is available. Some data might also be held by organisations other than the main local government agency for a particular place. For example, data on the locations of electricity substations (useful if you are trying to prevent metal thefts from infrastructure networks) might be held by a power company. All this means that tracking down a particular dataset might require some detective work.</p>
+<p>To try to make this process easier, some countries have established national open-data portals such as <a href="https://open.canada.ca/">Open Data in Canada</a>, <a href="https://data.gov.in/">Open Government Data Platform India</a>, <a href="https://data.gov.uk/">data.gov.uk in the United Kingdom</a> and <a href="https://www.data.gov/">data.gov in the United States</a>. There are also international repositories such as the <a href="https://dataportal.opendataforafrica.org/">African Development Bank Data Portal</a>, <a href="https://open.africa/">openAfrica</a> and <a href="https://dataportals.org/">Data Portals</a>, which seeks to list all the open data portals run by different governments and other organisations.</p>
+</section>
+<section id="citing-data" class="level3" data-number="12.2.2">
+<h3 data-number="12.2.2" class="anchored" data-anchor-id="citing-data"><span class="header-section-number">12.2.2</span> Citing data</h3>
+<p>Organisations that provide data often do so on condition that users of the data follow certain rules. For example, you can use data on the Open Data Bristol website as long as you follow the conditions of the <a href="http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">Open Government Licence</a>. The most-common requirement of an open-data licence is that anyone using the data acknowledges the data source in any maps, reports or other outputs they produce. In the case of the Open Government Licence, users of the data are required to add a declaration to any outputs declaring:</p>
+<blockquote class="blockquote">
+<p>Contains public sector information licensed under the Open Government Licence v3.0.</p>
+</blockquote>
+<p>Complying with open-data licences is a legal requirement, so it is important to make sure you understand what obligations you are accepting when you use a particular dataset. You can typically find the conditions for using a dataset on the website that you download the data from. If you are required to add an attribution statement to your maps, a good place to do this is by adding it to any other information you place in the <code>caption</code> argument of the <code>labs()</code> function in a <code>ggplot()</code> stack.</p>
+<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Quiz</span>Open data
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Which one of these statements about open data is true?</strong></p>
+<div id="radio_LQQIZEZOKH" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_LQQIZEZOKH" value=""> <span>We can use open data for any purpose – there is no need to acknowledge the source of the data</span></label><label><input type="radio" autocomplete="off" name="radio_LQQIZEZOKH" value=""> <span>We can use open data, but only for non-commercial purposes</span></label><label><input type="radio" autocomplete="off" name="radio_LQQIZEZOKH" value="answer"> <span>We can use open data for any purpose as long as we comply with the requirements of the licence the data is released under</span></label><label><input type="radio" autocomplete="off" name="radio_LQQIZEZOKH" value=""> <span>We can download open data but we cannot use it for any project that will be published online</span></label>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="shapefiles" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="shapefiles"><span class="header-section-number">12.3</span> Shapefiles</h2>
+<p>In this course we have used spatial data provided in different formats including geopackages (<code>.gpkg</code>) and geoJSON (<code>.geojson</code>) files, as well as creating spatial objects from tabular data in formats like CSV and Excel files. But there is one spatial-data format that we haven’t yet learned to use: the <em>shapefile</em>.</p>
+<p>The shapefile format was created by Esri, the company that makes the ArcGIS suite of mapping software. It was perhaps the first spatial format that could be read by a wide variety of mapping software, which meant that lots of providers of spatial data began to provide data in shapefile format. Shapefiles are limited in various ways that mean they are unlikely to be a good choice for storing your own data, but it is important to know how to use them because many spatial datasets are still provided as shapefiles for historical reasons.</p>
+<p>One of the complications of using shapefiles (and why they’re not a good choice for storing your own data) is that different parts of the data are stored in separate files. So while the co-ordinates of the points, line or polygons are stored in a file with a <code>.shp</code> extension, the non-spatial attributes of each spatial feature (such as the date on which a crime occurred or the name of a neighbourhood) are stored in a separate file with a <code>.dbf</code> extension and details of the co-ordinate reference system are stored in a <code>.prj</code> file – a single dataset might be held in up to 16 separate files on a computer. All the files that make up a shapefile have the same file name, differing only in the file extension (e.g.&nbsp;<code>.shp</code>, <code>.dbf</code>, etc.). For example, if a <code>.shp</code> file is called <code>robberies.shp</code> then it will be accompanied by a file called <code>robberies.dbf</code> and one called <code>robberies.prj</code>, as well as a <code>robberies.shx</code> index file and possibly several others. All these separate files make it more-complicated to manage shapefiles than other spatial file formats such as the geopackage.</p>
+<p>Because storing spatial data in a shapefile requires multiple different files, shapefile data is usually distributed in a <code>.zip</code> file that contains all the component files. This means that to access a shapefile will have to add a step to our usual routine for downloading and opening a data file. To minimise the hassle associated with using shapefiles, in general we will:</p>
+<ol type="1">
+<li>download the <code>.zip</code> file if we don’t have a local copy already,</li>
+<li>create a temporary directory where we can store the unzipped shapefile, so we can save space on our computers by only permanently keeping the (often much smaller) <code>.zip</code> file,</li>
+<li>unzip the <code>.zip</code> file into the temporary directory,</li>
+<li>load the shapefile data from the temporary directory.</li>
+</ol>
+<p>For example, the routes of metro lines in Medellin are available in shapefile format at:</p>
+<pre data-code-line-numbers=""><code>https://mpjashby.github.io/crimemappingdata/medellin_metro_lines.zip</code></pre>
+<p>To load the data from this file, we can use the process outlined above. Add this code to your <code>chapter10.R</code> script file. Read through the notes below this code to understand what each part of the code does.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter10.R</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="annotated-cell-5" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-5-1"><a href="#annotated-cell-5-1" aria-label="1"></a><span class="do">## Load metro lines ----</span></span>
+<span id="annotated-cell-5-2"><a href="#annotated-cell-5-2" aria-label="2"></a></span>
+<span id="annotated-cell-5-3"><a href="#annotated-cell-5-3" aria-label="3"></a><span class="co"># Download zip file</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-5-4" class="code-annotation-target"><a href="#annotated-cell-5-4" aria-label="4"></a>metro_lines_file <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".zip"</span>)</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-5-5" class="code-annotation-target"><a href="#annotated-cell-5-5" aria-label="5"></a><span class="fu">download.file</span>(</span>
+<span id="annotated-cell-5-6"><a href="#annotated-cell-5-6" aria-label="6"></a>  <span class="at">url =</span> <span class="st">"https://mpjashby.github.io/crimemappingdata/medellin_metro_lines.zip"</span>, </span>
+<span id="annotated-cell-5-7"><a href="#annotated-cell-5-7" aria-label="7"></a>  <span class="at">destfile =</span> metro_lines_file</span>
+<span id="annotated-cell-5-8"><a href="#annotated-cell-5-8" aria-label="8"></a>)</span>
+<span id="annotated-cell-5-9"><a href="#annotated-cell-5-9" aria-label="9"></a></span>
+<span id="annotated-cell-5-10"><a href="#annotated-cell-5-10" aria-label="10"></a><span class="co"># Set the name for a temporary directory</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-5-11" class="code-annotation-target"><a href="#annotated-cell-5-11" aria-label="11"></a>metro_lines_dir <span class="ot">&lt;-</span> <span class="fu">str_glue</span>(<span class="st">"{tempdir()}/metro_lines"</span>)</span>
+<span id="annotated-cell-5-12"><a href="#annotated-cell-5-12" aria-label="12"></a></span>
+<span id="annotated-cell-5-13"><a href="#annotated-cell-5-13" aria-label="13"></a><span class="co"># Unzip file</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-5-14" class="code-annotation-target"><a href="#annotated-cell-5-14" aria-label="14"></a><span class="fu">unzip</span>(metro_lines_file, <span class="at">exdir =</span> metro_lines_dir)</span>
+<span id="annotated-cell-5-15"><a href="#annotated-cell-5-15" aria-label="15"></a></span>
+<span id="annotated-cell-5-16"><a href="#annotated-cell-5-16" aria-label="16"></a><span class="co"># Load the data</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-5-17" class="code-annotation-target"><a href="#annotated-cell-5-17" aria-label="17"></a>metro_lines <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="fu">str_glue</span>(<span class="st">"{metro_lines_dir}/medellin_metro_lines.shp"</span>))</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell-annotation">
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-5" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="4" data-code-annotation="1">Create a temporary zip file that we can download the zipped data to.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="5" data-code-annotation="2">Download the zipped data to the temporary file.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="11" data-code-annotation="3">The <code>tempdir()</code> function returns a location on your computer that is used for storing temporary files. <em>Any files stored in this temporary directory will be deleted when you restart your computer</em>, so it’s a useful place to put files that you will only need for a short time so they won’t clutter up your computer. Since we want to store the shapefile in a sub-directory of the temporary directory, we will use <code>str_glue()</code> to add a relevant sub-directory name to the end of the temporary directory name – <code>unzip()</code> will then create this directory in the background at Step 4.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="14" data-code-annotation="4">Unzip the zipped data to the temporary directory we have just created.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="5">5</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="17" data-code-annotation="5">Load the correct file (see below) from the temporary directory into an R object.</span>
+</dd>
+</dl>
+</div>
+</div>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Important things you should know
+Important
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Throughout the book you will see boxes marked with an exclamation mark that contain information that it is particularly important for you to know to avoid common mistakes in writing code or making maps. Pay special attention to these points and remember to ask questions if anything isn’t clear.</p>
+<p>Note that although a shapefile consists of several different files, we only need to load the file with the extension <code>.shp</code> – the <code>read_sf()</code> function will find all the data it needs from the other files.</p>
+<p>Once we have loaded a shapefile into R using <code>read_sf()</code>, we can treat it in the same way as any other spatial dataset – it is only loading shapefiles that is different from other spatial data formats.</p>
 </div>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<p>One question you might have when reading the code above is how did we know that the shapefile we wanted to load was called <code>medellin_metro_lines.shp</code>? To find out the name of the file we want to load, we need a bit of temporary code (if you want to remind yourself about the difference between permanent and temporary code, look back at <a href="#sec-permanent-code" class="quarto-xref"><span class="quarto-unresolved-ref">sec-permanent-code</span></a>).</p>
+<p>We can find out the name of files within a zip file using the <code>unzip()</code> function together with the argument <code>list = TRUE</code>. This produces a list of files that are inside the zip file, rather than actually unzipping any files. For example, run this code in the R Console to see a list of files in the zip file we downloaded.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>R Console</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="fu">unzip</span>(metro_lines_file, <span class="at">list =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre data-code-line-numbers=""><code>                      Name Length                Date
+1 medellin_metro_lines.dbf   2299 2023-02-06 22:46:00
+2 medellin_metro_lines.prj    145 2023-02-06 22:46:00
+3 medellin_metro_lines.shp  16076 2023-02-06 22:46:00
+4 medellin_metro_lines.shx    172 2023-02-06 22:46:00</code></pre>
+</div>
+</div>
+<p>From this, you can see that the file with the file extension <code>.shp</code> (which is what we need to load) is called <code>medellin_metro_lines.shp</code>. We can convert that file name into the correct file path using <code>str_glue()</code> and the <code>metro_lines_dir</code> object we have already created, which is why the final line of the code above loads the file using the code <code>str_glue("{metro_lines_dir}/medellin_metro_lines.shp")</code>.</p>
+<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Click on this line of text
+<span class="screen-reader-only">Quiz</span>Shapefiles
 </div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>In this book you will also see lines of text marked by a light-bulb symbol that you can click on to find out more information about a particular issue. This is generally information that you do not need to know to complete a task, but which might be useful in other circumstances or which might answer some questions that you have. You can skip these boxes if you want to, or come back to them later if you have a question.</p>
+<p><strong>What is a shapefile?</strong></p>
+<div id="radio_FDXMCEVLKK" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_FDXMCEVLKK" value=""> <span>A single file that contains both spatial and non-spatial data</span></label><label><input type="radio" autocomplete="off" name="radio_FDXMCEVLKK" value=""> <span>A file format used exclusively by OpenStreetMap</span></label><label><input type="radio" autocomplete="off" name="radio_FDXMCEVLKK" value="answer"> <span>A collection of files that store spatial data</span></label><label><input type="radio" autocomplete="off" name="radio_FDXMCEVLKK" value=""> <span>A data format that only supports point features</span></label>
 </div>
+<p><strong>Why do shapefiles often come in <code>.zip</code> format?</strong></p>
+<div id="radio_VORRSVQLZJ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_VORRSVQLZJ" value="answer"> <span>They contain multiple files that need to be kept together</span></label><label><input type="radio" autocomplete="off" name="radio_VORRSVQLZJ" value=""> <span>They are too large to be stored as individual files</span></label><label><input type="radio" autocomplete="off" name="radio_VORRSVQLZJ" value=""> <span>They require a password for access</span></label><label><input type="radio" autocomplete="off" name="radio_VORRSVQLZJ" value=""> <span>They can only be read in GIS software</span></label>
+</div>
+<p><strong>Once a shapefile is downloaded and unzipped, which function is used to read it?</strong></p>
+<div id="radio_UAIKSRMRJF" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_UAIKSRMRJF" value=""> <span><code>read.csv()</code></span></label><label><input type="radio" autocomplete="off" name="radio_UAIKSRMRJF" value="answer"> <span><code>read_sf()</code></span></label><label><input type="radio" autocomplete="off" name="radio_UAIKSRMRJF" value=""> <span><code>load_shapefile()</code></span></label><label><input type="radio" autocomplete="off" name="radio_UAIKSRMRJF" value=""> <span><code>import_shp()</code></span></label>
+</div>
+</div>
+</div>
+</section>
+<section id="data-from-openstreetmap" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="data-from-openstreetmap"><span class="header-section-number">12.4</span> Data from OpenStreetMap</h2>
+<p><a href="https://www.openstreetmap.org/"><img src="../images/osm_logo.jpg" alt="OpenStreetMap logo" class="right-side-image"></a></p>
+<p>Often we can get map data from the organisation we are working for, or from open-data portals run by governments or international organisations. But sometimes they won’t hold the information we need.</p>
+<p>Fortunately, there is another source of data: OpenStreetMap (OSM). This is a global resource of map data created by volunteers (and started at UCL), using a mixture of open data from governments, data contributed by charities and data collected by the volunteers themselves. Watch this video to learn a bit more about OpenStreetMap.</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/d6n29CU2-Sg" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>We have already used OSM data in this course: all of the base maps we have used when we create maps with <code>ggplot()</code> are based on data from OpenStreetMap. But we have very little control over which information is and is not included in base maps. Sometimes we need more control over the data, and that means downloading data direct from OSM.</p>
+<p>We can download OSM data into R using the <code>osmdata</code> package. This package allows us to choose particular features from the billions of features worldwide that are included in the OSM database. To choose features, we must:</p>
+<ol type="1">
+<li>specify the area we want to download data for using the <code>opq()</code> function,</li>
+<li>specify what type of features we want to download using the <code>add_osm_feature()</code> function,</li>
+<li>download the data using the <code>osmdata_sf()</code> function, and</li>
+<li>extract the type of spatial object (points, lines or polygons) that we are interested in.</li>
+</ol>
+<p>Imagine that in your analysis of homicides in Medellin, you have been asked to consider the question of whether homicides are clustered near to bus stops. To answer this question, we need to know the locations of bus stops in the area we are interested in. This information is not published as open data by the Medellin city authorities. Fortunately we can extract bus-stop locations from OpenStreetMap using the <code>osmdata</code> package.</p>
+<p>To do this, we first need to calculate the <em>bounding box</em> of the La Candelaria neighbourhood that we are interested in. A bounding box is the smallest rectangle that a particular spatial shape will fit inside. For example, the red rectangle on this map shows the bounding box of the city of Medellin (shown in blue).</p>
+<p class="full-width-image">
+<img src="../images/medellin_bbox_map.jpg" alt="Map of the boundary of Medellin and the corresponding bounding box">
+</p>
+<p>You can calculate the bounding box of an SF object using the <code>st_bbox()</code> function from the sf package. In this case we want the bounding box of the La Candelaria neighbourhood, so we will need to load a dataset that includes the boundary of that neighbourhood. Add this code to the <code>chapter10.R</code> script file and run it.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter10.R</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="do">## Load neighbourhood boundary ----</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-label="2"></a>medellin_comunas <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/medellin_comunas.gpkg"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-label="3"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<p>We can now calculate the bounding box of the neighbourhood we are interested in. Add this code to the <code>chapter10.R</code> script file and run it.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter10.R</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-label="1"></a><span class="co"># GET OSM DATA -----------------------------------------------------------------</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-label="2"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-label="3"></a><span class="co"># Calculate neighbourhood bounding box</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-label="4"></a>la_candelaria_bbox <span class="ot">&lt;-</span> medellin_comunas <span class="sc">|&gt;</span> </span>
+<span id="cb12-5"><a href="#cb12-5" aria-label="5"></a>  <span class="fu">filter</span>(nombre <span class="sc">==</span> <span class="st">"LA CANDELARIA"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-6"><a href="#cb12-6" aria-label="6"></a>  <span class="fu">st_bbox</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>OpenStreetMap requires lon/lat data
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>All the functions in the osmdata package expect co-ordinates (such as the corners of a bounding box) to be provided as longitudes and latitudes. If you provide data using any other co-ordinate reference system you will see an error saying:</p>
+<pre data-code-line-numbers=""><code>Error in `httr2::req_perform()`:
+! HTTP 400 Bad Request.</code></pre>
+<p>If your data is in a projected co-ordinate system, make sure you use <code>st_transform()</code> to transform the data to use the WGS84 system, EPSG:4326.</p>
+</div>
+</div>
+<p>The bounding box is the first thing we need to know in order to get data from OpenStreetMap. The second thing we need to know is what search terms to use in the <code>add_osm_feature()</code> function to return the locations of bus stops. OpenStreetMap has hundreds of feature categories, all in the format <code>key=value</code>. Sometimes we will only need to search for a particular key (category of feature), such as the <a href="https://wiki.openstreetmap.org/wiki/Key:highway"><code>highway</code> key</a> that contains all the features that show roads (from motorways to winding lanes leading to farms in the countryside), tracks and paths. In other cases, we will want to search for a particular value (type of feature within a category), such as searching for the value <a href="https://wiki.openstreetmap.org/wiki/Tag:natural%3Dwater"><code>natural=water</code></a> to search for lakes, rivers, etc.</p>
+<p>The best place to find out how a feature you are interested in is recorded in the OSM database is to look at the <a href="https://wiki.openstreetmap.org/wiki/Map_features">OpenStreetMap Wiki</a>. Bus stops are recorded in OSM using the tag <code>highway=bus_stop</code>.</p>
+<p>Now that we know the bounding box of the area we are interested in and the tag for the type of feature we want, we can download the data from OpenStreetMap.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter10.R</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-label="1"></a><span class="co"># Define the bounding box of the area we want to search</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-label="2"></a>bus_stops <span class="ot">&lt;-</span> <span class="fu">opq</span>(la_candelaria_bbox) <span class="sc">|&gt;</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-label="3"></a>  <span class="co"># Define the features we want</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-label="4"></a>  <span class="fu">add_osm_feature</span>(<span class="at">key =</span> <span class="st">"highway"</span>, <span class="at">value =</span> <span class="st">"bus_stop"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb14-5"><a href="#cb14-5" aria-label="5"></a>  <span class="co"># Download those features for that area</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-label="6"></a>  <span class="fu">osmdata_sf</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<p>The <code>bus_stops</code> object returned by <code>osmdata_sf()</code> is a <em>list</em> of objects. If you type the name of the object in the R Console and press Return you will see a summary of the contents of the <code>bus_stops</code> object:</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>R Console</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a>bus_stops</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre data-code-line-numbers=""><code>Object of class 'osmdata' with:
+                 $bbox : 6.22450932830104,-75.5802925457919,6.26512401936258,-75.5538503495463
+        $overpass_call : The call submitted to the overpass API
+                 $meta : metadata including timestamp and version numbers
+           $osm_points : 'sf' Simple Features Collection with 62 points
+            $osm_lines : NULL
+         $osm_polygons : 'sf' Simple Features Collection with 0 polygons
+       $osm_multilines : NULL
+    $osm_multipolygons : NULL</code></pre>
+</div>
+</div>
+<p>You can see that the object <code>bus_stops</code> has quite complicated structure, but that nested within it is an object called <code>osm_points</code> that is an SF object with 62 rows and another SF object called <code>osm_polygons</code>. Even within a particular type of feature, some places might be represented as points (e.g.&nbsp;a point placed at a bus stop) while others are represented as polygons (e.g.&nbsp;the outline of a bus station).</p>
+<p>We can use the <code>pluck()</code> function from the <code>purrr</code> package (part of the tidyverse) to extract the parts of the <code>bus_stops</code> object that we want. To see the first few rows of the SF object <code>osm_points</code>, we can run this code in the R Console:</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>R Console</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-label="1"></a>bus_stops <span class="sc">|&gt;</span> <span class="fu">pluck</span>(<span class="st">"osm_points"</span>) <span class="sc">|&gt;</span> <span class="fu">glimpse</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre data-code-line-numbers=""><code>Rows: 62
+Columns: 25
+$ osm_id               &lt;chr&gt; "847830985", "1561073855", "2300293115", "2418112…
+$ name                 &lt;chr&gt; "Las estatuas", "La Alpujarra", "Barrio Colombia"…
+$ access               &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ alt_name             &lt;chr&gt; NA, NA, "Estación Barrio Colombia", NA, NA, NA, N…
+$ bench                &lt;chr&gt; "no", NA, "yes", NA, NA, "no", "no", "no", "no", …
+$ bin                  &lt;chr&gt; "yes", NA, "yes", NA, NA, NA, NA, NA, NA, "no", N…
+$ bus                  &lt;chr&gt; "yes", NA, "yes", NA, "yes", "yes", "yes", "yes",…
+$ `check_date:shelter` &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ covered              &lt;chr&gt; NA, NA, NA, NA, NA, "no", "no", "no", "no", "no",…
+$ highway              &lt;chr&gt; "bus_stop", "bus_stop", "bus_stop", "bus_stop", "…
+$ lit                  &lt;chr&gt; NA, NA, "yes", NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ local_ref            &lt;chr&gt; NA, "La Alpujarra", NA, NA, NA, NA, NA, NA, NA, N…
+$ `name:en`            &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, "…
+$ `name:signed`        &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ network              &lt;chr&gt; NA, NA, "Metroplus", NA, "Metroplus", NA, NA, NA,…
+$ note                 &lt;chr&gt; NA, NA, NA, NA, "Sentido Norte Sur", NA, NA, NA, …
+$ operator             &lt;chr&gt; NA, NA, "Metro de Medellín", NA, "Metro de Medell…
+$ panoramax            &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ public_transport     &lt;chr&gt; "platform", NA, "platform", NA, "platform", "plat…
+$ `ref:signed`         &lt;chr&gt; "no", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ shelter              &lt;chr&gt; "yes", "no", "yes", NA, "yes", "no", "no", "no", …
+$ source               &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ tactile_paving       &lt;chr&gt; "no", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ wheelchair           &lt;chr&gt; NA, NA, "yes", NA, "yes", NA, NA, NA, NA, NA, NA,…
+$ geometry             &lt;POINT [°]&gt; POINT (-75.57696 6.260205), POINT (-75.5734…</code></pre>
+</div>
+</div>
+<p>We can see from this that <code>osmdata_sf()</code> has returned a number of different data fields for each bus stop in the area we are interested in. Most of the fields are blank, but there is a <code>name</code> column and a <code>geometry</code> column that we can use to plot the locations of the bus stops.</p>
+<p>Now that we have the locations bus stops in La Candelaria, let’s map them and compare them to the locations of homicides. To do that, we can create a kernel density layer of homicides, as we learned to do in <a href="#sec-mapping-patterns" class="quarto-xref"><span class="quarto-unresolved-ref">sec-mapping-patterns</span></a>. One detail you might remember from that chapter is that the <code>hotspot_kde()</code> function does not work with data that use co-ordinates specified as longitude and latitude (i.e.&nbsp;data the uses the WGS84/EPSG:4326 co-ordinate system). At the moment the <code>medellin_homicides</code> dataset does use lon/lat pairs, so we will first need to transform the data to an alternative co-ordinate reference system.</p>
+<p>When you have needed to transform data in previous chapters, the text has told you which co-ordinate system to use. But there will be many cases where you have been provided with a dataset but have not been given any advice on which co-ordinate system to use. Fortunately, there is an <a href="https://github.com/walkerke/crsuggest">R package called crsuggest</a> that can help with this. Run this code in the R Console to see which co-ordinate systems you can use for the <code>medellin_homicides</code> dataset.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>R Console</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-label="1"></a>crsuggest<span class="sc">::</span><span class="fu">suggest_crs</span>(medellin_homicides)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre data-code-line-numbers=""><code># A tibble: 10 × 6
+   crs_code crs_name                        crs_type crs_gcs crs_units crs_proj4
+   &lt;chr&gt;    &lt;chr&gt;                           &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    
+ 1 3115     MAGNA-SIRGAS / Colombia West z… project…    4686 m         +proj=tm…
+ 2 21896    Bogota 1975 / Colombia West zo… project…    4218 m         +proj=tm…
+ 3 29168    SAD69 / UTM zone 18N            project…    4618 m         +proj=ut…
+ 4 21897    Bogota 1975 / Colombia Bogota … project…    4218 m         +proj=tm…
+ 5 31987    SIRGAS 1995 / UTM zone 18N      project…    4170 m         +proj=ut…
+ 6 31972    SIRGAS 2000 / UTM zone 18N      project…    4674 m         +proj=ut…
+ 7 32618    WGS 84 / UTM zone 18N           project…    4326 m         +proj=ut…
+ 8 32418    WGS 72BE / UTM zone 18N         project…    4324 m         +proj=ut…
+ 9 32218    WGS 72 / UTM zone 18N           project…    4322 m         +proj=ut…
+10 3832     WGS 84 / PDC Mercator           project…    4326 m         +proj=me…</code></pre>
+</div>
+</div>
+<p><code>suggest_crs()</code> produces a table showing one or more co-ordinate reference systems (CRS) that would be suitable for the <code>medellin_homicides</code> dataset. In general, it is best to use the CRS in the first row of the table produced by <code>suggest_crs()</code>, as long as that CRS uses metres as its unit of measurement. In this case, we can see from the <code>crs_units</code> column that all the options use metres (rather than feet, or some other unit), so we can just use the CRS in the first row: the MAGNA-SIRGAS / Colombia West zone CRS, which has the code EPSG:3115. We will transform the homicides data and the neighbourhood boundary to use this CRS, since this will allow both <code>st_intersection()</code> and <code>hotspot_kde()</code> to work.</p>
+<p>Add this code to the <code>chapter10.R</code> file and run it.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter10.R</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-label="1"></a><span class="do">## WRANGLE DATA ----------------------------------------------------------------</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-label="2"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-label="3"></a><span class="co"># Create neighbourhood boundary</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-label="4"></a>la_candelaria <span class="ot">&lt;-</span> medellin_comunas <span class="sc">|&gt;</span> </span>
+<span id="cb21-5"><a href="#cb21-5" aria-label="5"></a>  <span class="fu">filter</span>(nombre <span class="sc">==</span> <span class="st">"LA CANDELARIA"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb21-6"><a href="#cb21-6" aria-label="6"></a>  <span class="co"># Transform the data to a local co-ordinate reference system</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-label="7"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:3115"</span>)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-label="8"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-label="9"></a><span class="co"># Estimate homicide density</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-label="10"></a>homicide_density <span class="ot">&lt;-</span> medellin_homicides <span class="sc">|&gt;</span> </span>
+<span id="cb21-11"><a href="#cb21-11" aria-label="11"></a>  <span class="co"># This data needs to use the same CRS as `la_candelaria` for </span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-label="12"></a>  <span class="co"># `st_intersection()` to work</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-label="13"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:3115"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb21-14"><a href="#cb21-14" aria-label="14"></a>  <span class="co"># Extract only those homicides occurring within the La Candelaria </span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-label="15"></a>  <span class="co"># neighbourhood (otherwise `hotspot_kde()` will be very slow)</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-label="16"></a>  <span class="fu">st_intersection</span>(la_candelaria) <span class="sc">|&gt;</span> </span>
+<span id="cb21-17"><a href="#cb21-17" aria-label="17"></a>  <span class="co"># Estimate density of homicides</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-label="18"></a>  <span class="fu">hotspot_kde</span>(</span>
+<span id="cb21-19"><a href="#cb21-19" aria-label="19"></a>    <span class="at">grid =</span> <span class="fu">hotspot_grid</span>(la_candelaria, <span class="at">cell_size =</span> <span class="dv">100</span>), </span>
+<span id="cb21-20"><a href="#cb21-20" aria-label="20"></a>    <span class="at">bandwidth_adjust =</span> <span class="fl">0.33</span>,</span>
+<span id="cb21-21"><a href="#cb21-21" aria-label="21"></a>    <span class="at">quiet =</span> <span class="cn">TRUE</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-label="22"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb21-23"><a href="#cb21-23" aria-label="23"></a>  <span class="co"># Clip the result to the neighbourhood boundary</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-label="24"></a>  <span class="fu">st_intersection</span>(la_candelaria)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre data-code-line-numbers=""><code>Warning: attribute variables are assumed to be spatially constant throughout
+all geometries
+Warning: attribute variables are assumed to be spatially constant throughout
+all geometries</code></pre>
+</div>
+</div>
+<p>We now have everything we need to map homicides in La Candelaria in relation to bus stops. Let’s add to our script file the code needed to create a density map.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter10.R</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-label="1"></a><span class="co"># PLOT MAP ---------------------------------------------------------------------</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-label="2"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-label="3"></a>  <span class="co"># Add base map</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-label="4"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"cartolight"</span>, <span class="at">zoomin =</span> <span class="dv">0</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-label="5"></a>  <span class="co"># Add density layer</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-label="6"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> kde), <span class="at">data =</span> homicide_density, <span class="at">alpha =</span> <span class="fl">0.7</span>, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-label="7"></a>  <span class="co"># Add metro lines without expanding the map area</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-label="8"></a>  <span class="fu">annotation_spatial</span>(<span class="at">data =</span> metro_lines, <span class="at">colour =</span> <span class="st">"darkblue"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-label="9"></a>  <span class="co"># Add neighbourhood boundary</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-label="10"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> la_candelaria, <span class="at">colour =</span> <span class="st">"grey40"</span>, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-label="11"></a>  <span class="co"># Add bus stop locations</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-label="12"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> <span class="fu">pluck</span>(bus_stops, <span class="st">"osm_points"</span>), <span class="at">colour =</span> <span class="st">"darkred"</span>) <span class="sc">+</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-label="13"></a>  <span class="co"># Control appearance of density layer</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-label="14"></a>  <span class="fu">scale_fill_distiller</span>(</span>
+<span id="cb23-15"><a href="#cb23-15" aria-label="15"></a>    <span class="at">direction =</span> <span class="dv">1</span>, </span>
+<span id="cb23-16"><a href="#cb23-16" aria-label="16"></a>    <span class="at">breaks =</span> <span class="fu">range</span>(<span class="fu">pull</span>(homicide_density, <span class="st">"kde"</span>)),</span>
+<span id="cb23-17"><a href="#cb23-17" aria-label="17"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"lower"</span>, <span class="st">"higher"</span>)</span>
+<span id="cb23-18"><a href="#cb23-18" aria-label="18"></a>  ) <span class="sc">+</span></span>
+<span id="cb23-19"><a href="#cb23-19" aria-label="19"></a>  <span class="co"># Add plot labels</span></span>
+<span id="cb23-20"><a href="#cb23-20" aria-label="20"></a>  <span class="fu">labs</span>(</span>
+<span id="cb23-21"><a href="#cb23-21" aria-label="21"></a>    <span class="at">caption =</span> <span class="fu">str_glue</span>(</span>
+<span id="cb23-22"><a href="#cb23-22" aria-label="22"></a>      <span class="st">"Contains data from OpenStreetMap</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb23-23"><a href="#cb23-23" aria-label="23"></a>      <span class="st">"Homicide data: Alcaldía de Medellín (CC-BY-SA)"</span></span>
+<span id="cb23-24"><a href="#cb23-24" aria-label="24"></a>    ),</span>
+<span id="cb23-25"><a href="#cb23-25" aria-label="25"></a>    <span class="at">fill =</span> <span class="st">"homicide</span><span class="sc">\n</span><span class="st">density"</span></span>
+<span id="cb23-26"><a href="#cb23-26" aria-label="26"></a>  ) <span class="sc">+</span></span>
+<span id="cb23-27"><a href="#cb23-27" aria-label="27"></a>  <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Most of this code should be familiar to you from previous chapters – if you would like to refresh your memory on the code needed to produce a kernel density map, look back to <a href="#sec-mapping-patterns" class="quarto-xref"><span class="quarto-unresolved-ref">sec-mapping-patterns</span></a>. One line of this code that might not be familiar is the <code>annotation_spatial()</code> function (from the ggspatial package). Like <code>geom_sf()</code>, <code>annotation_spatial()</code> adds an SF object to a <code>ggplot()</code> map stack. However, when you use <code>geom_sf()</code> to add an SF object, the area shown on the map automatically expands so that it covers all the data in the SF object. In this case, we don’t want the map to expand to show the whole area covered by the <code>metro_lines</code> object, since we are only interested in one neighbourhood. In those circumstances we can use <code>annotation_spatial()</code> to add the <code>metro_lines</code> data to the map without changing the map extent.</p>
+<p>From this map, it looks like homicides do not cluster particularly around bus stops. This would probably be welcome information for the city’s public transport managers.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>OpenStreetMap data must be properly cited
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Just as with other sources of map data, you are legally required to <a href="https://wiki.openstreetmap.org/wiki/Draft_Attribution_Guideline">cite data from OpenStreetMap</a> if you use it. The code in the exercise above, for example, cites data from two sources:</p>
+<ul>
+<li>“Contains data from OpenStreetMap” acknowledges that both the base map and the bus-stop locations were obtained from OpenStreetMap.</li>
+<li>“Homicide data: Alcaldía de Medellín (CC-BY-SA)” acknowledges that the Medellin homicide data were released by the Mayor of Medellin under the <a href="https://opendefinition.org/licenses/cc-by-sa/">Creative Commons Attribution Share-alike</a> (CC-BY-SA) licence.</li>
+</ul>
 </div>
 </div>
 <div class="callout callout-style-default callout-quiz callout-titled">
@@ -504,12 +1023,178 @@ Learn how spatial concentrations of crime vary over time, how to analyse spatio-
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Quiz</span>How to use this book
+<span class="screen-reader-only">Quiz</span>OpenStreetMap data
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Finally, you will see boxes like this one throughout the book that give you the opportunity to check your understanding of a particular section of that chapter. Sometimes this will be in the form of a multiple-choice question, and sometimes you’ll be asked to write some code in the R Console. You will always be able to check whether your answers are correct.</p>
+<p><strong>What type of data can be obtained from OpenStreetMap?</strong></p>
+<div id="radio_WDLCCMWVGE" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_WDLCCMWVGE" value=""> <span>Only road networks</span></label><label><input type="radio" autocomplete="off" name="radio_WDLCCMWVGE" value=""> <span>Only administrative boundaries</span></label><label><input type="radio" autocomplete="off" name="radio_WDLCCMWVGE" value="answer"> <span>A variety of geographic features including roads, buildings, and landmarks</span></label><label><input type="radio" autocomplete="off" name="radio_WDLCCMWVGE" value=""> <span>Only satellite imagery</span></label>
 </div>
+<p><strong>Which R package is used to retrieve data from OpenStreetMap?</strong></p>
+<div id="radio_DHOFRLQPQC" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_DHOFRLQPQC" value=""> <span>openstreetmapr</span></label><label><input type="radio" autocomplete="off" name="radio_DHOFRLQPQC" value="answer"> <span>osmdata</span></label><label><input type="radio" autocomplete="off" name="radio_DHOFRLQPQC" value=""> <span>osmr</span></label><label><input type="radio" autocomplete="off" name="radio_DHOFRLQPQC" value=""> <span>sf</span></label>
+</div>
+<p><strong>What does the <code>opq()</code> function do in the osmdata package?</strong></p>
+<div id="radio_TSEAUOQWHM" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_TSEAUOQWHM" value=""> <span>Converts between coordinate reference systems</span></label><label><input type="radio" autocomplete="off" name="radio_TSEAUOQWHM" value=""> <span>Filters out duplicate points in a dataset</span></label><label><input type="radio" autocomplete="off" name="radio_TSEAUOQWHM" value=""> <span>Creates a map visualization</span></label><label><input type="radio" autocomplete="off" name="radio_TSEAUOQWHM" value="answer"> <span>Specifies a geographic area for an OpenStreetMap query</span></label>
+</div>
+</div>
+</div>
+</section>
+<section id="in-summary" class="level2" data-number="12.5">
+<h2 data-number="12.5" class="anchored" data-anchor-id="in-summary"><span class="header-section-number">12.5</span> In summary</h2>
+<p>In this chapter we have learned how to find open data, including data from OpenStreetMap, and add it to our maps to help readers better understand crime patterns. We will be able to use these skills to add data to future maps that we make so that readers can gain more insight into crime patterns or other phenomena that we might be analysing.</p>
+<p>Here is the complete script needed to map homicides and bus stops in La Candelaria:</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>chapter10.R</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-label="1"></a><span class="co"># This script produces a map of the density of homicides in the La Candelaria</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-label="2"></a><span class="co"># area of Medellin, Colombia, together with the locations of local bus stops</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-label="3"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-label="4"></a><span class="co"># Load packages</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-label="5"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, osmdata, sf, sfhotspot, tidyverse)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-label="6"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-label="7"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-label="8"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-label="9"></a><span class="co"># LOAD DATA --------------------------------------------------------------------</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-label="10"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-label="11"></a></span>
+<span id="cb24-12"><a href="#cb24-12" aria-label="12"></a><span class="do">## Load Medellin homicide data ----</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-label="13"></a><span class="co"># Note: this dataset uses ';' as the column separator</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-label="14"></a>medellin_homicides <span class="ot">&lt;-</span> <span class="fu">read_csv2</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/medellin_homicides.csv"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb24-15"><a href="#cb24-15" aria-label="15"></a>  <span class="co"># Remove rows with missing co-ordinates</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-label="16"></a>  <span class="fu">drop_na</span>(longitud, latitud) <span class="sc">|&gt;</span> </span>
+<span id="cb24-17"><a href="#cb24-17" aria-label="17"></a>  <span class="co"># Convert the data to an SF object</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-label="18"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitud"</span>, <span class="st">"latitud"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>)</span>
+<span id="cb24-19"><a href="#cb24-19" aria-label="19"></a></span>
+<span id="cb24-20"><a href="#cb24-20" aria-label="20"></a><span class="do">## Load neighbourhood boundary ----</span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-label="21"></a>medellin_comunas <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/medellin_comunas.gpkg"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb24-22"><a href="#cb24-22" aria-label="22"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span>
+<span id="cb24-23"><a href="#cb24-23" aria-label="23"></a></span>
+<span id="cb24-24"><a href="#cb24-24" aria-label="24"></a><span class="do">## Load metro lines ----</span></span>
+<span id="cb24-25"><a href="#cb24-25" aria-label="25"></a></span>
+<span id="cb24-26"><a href="#cb24-26" aria-label="26"></a><span class="co"># Download zip file</span></span>
+<span id="cb24-27"><a href="#cb24-27" aria-label="27"></a>metro_lines_file <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".zip"</span>)</span>
+<span id="cb24-28"><a href="#cb24-28" aria-label="28"></a><span class="fu">download.file</span>(</span>
+<span id="cb24-29"><a href="#cb24-29" aria-label="29"></a>  <span class="at">url =</span> <span class="st">"https://mpjashby.github.io/crimemappingdata/medellin_metro_lines.zip"</span>, </span>
+<span id="cb24-30"><a href="#cb24-30" aria-label="30"></a>  <span class="at">destfile =</span> metro_lines_file</span>
+<span id="cb24-31"><a href="#cb24-31" aria-label="31"></a>)</span>
+<span id="cb24-32"><a href="#cb24-32" aria-label="32"></a></span>
+<span id="cb24-33"><a href="#cb24-33" aria-label="33"></a><span class="co"># Set the name for a temporary directory</span></span>
+<span id="cb24-34"><a href="#cb24-34" aria-label="34"></a>metro_lines_dir <span class="ot">&lt;-</span> <span class="fu">str_glue</span>(<span class="st">"{tempdir()}/metro_lines"</span>)</span>
+<span id="cb24-35"><a href="#cb24-35" aria-label="35"></a></span>
+<span id="cb24-36"><a href="#cb24-36" aria-label="36"></a><span class="co"># Unzip file</span></span>
+<span id="cb24-37"><a href="#cb24-37" aria-label="37"></a><span class="fu">unzip</span>(metro_lines_file, <span class="at">exdir =</span> metro_lines_dir)</span>
+<span id="cb24-38"><a href="#cb24-38" aria-label="38"></a></span>
+<span id="cb24-39"><a href="#cb24-39" aria-label="39"></a><span class="co"># Load the data</span></span>
+<span id="cb24-40"><a href="#cb24-40" aria-label="40"></a>metro_lines <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="fu">str_glue</span>(<span class="st">"{metro_lines_dir}/medellin_metro_lines.shp"</span>))</span>
+<span id="cb24-41"><a href="#cb24-41" aria-label="41"></a></span>
+<span id="cb24-42"><a href="#cb24-42" aria-label="42"></a></span>
+<span id="cb24-43"><a href="#cb24-43" aria-label="43"></a></span>
+<span id="cb24-44"><a href="#cb24-44" aria-label="44"></a><span class="co"># GET OSM DATA -----------------------------------------------------------------</span></span>
+<span id="cb24-45"><a href="#cb24-45" aria-label="45"></a></span>
+<span id="cb24-46"><a href="#cb24-46" aria-label="46"></a><span class="co"># Calculate neighbourhood bounding box</span></span>
+<span id="cb24-47"><a href="#cb24-47" aria-label="47"></a>la_candelaria_bbox <span class="ot">&lt;-</span> medellin_comunas <span class="sc">|&gt;</span> </span>
+<span id="cb24-48"><a href="#cb24-48" aria-label="48"></a>  <span class="fu">filter</span>(nombre <span class="sc">==</span> <span class="st">"LA CANDELARIA"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb24-49"><a href="#cb24-49" aria-label="49"></a>  <span class="fu">st_bbox</span>()</span>
+<span id="cb24-50"><a href="#cb24-50" aria-label="50"></a></span>
+<span id="cb24-51"><a href="#cb24-51" aria-label="51"></a><span class="co"># Define the bounding box of the area we want to search</span></span>
+<span id="cb24-52"><a href="#cb24-52" aria-label="52"></a>bus_stops <span class="ot">&lt;-</span> <span class="fu">opq</span>(la_candelaria_bbox) <span class="sc">|&gt;</span> </span>
+<span id="cb24-53"><a href="#cb24-53" aria-label="53"></a>  <span class="co"># Define the features we want</span></span>
+<span id="cb24-54"><a href="#cb24-54" aria-label="54"></a>  <span class="fu">add_osm_feature</span>(<span class="at">key =</span> <span class="st">"highway"</span>, <span class="at">value =</span> <span class="st">"bus_stop"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb24-55"><a href="#cb24-55" aria-label="55"></a>  <span class="co"># Download those features for that area</span></span>
+<span id="cb24-56"><a href="#cb24-56" aria-label="56"></a>  <span class="fu">osmdata_sf</span>()</span>
+<span id="cb24-57"><a href="#cb24-57" aria-label="57"></a></span>
+<span id="cb24-58"><a href="#cb24-58" aria-label="58"></a></span>
+<span id="cb24-59"><a href="#cb24-59" aria-label="59"></a></span>
+<span id="cb24-60"><a href="#cb24-60" aria-label="60"></a><span class="do">## WRANGLE DATA ----------------------------------------------------------------</span></span>
+<span id="cb24-61"><a href="#cb24-61" aria-label="61"></a></span>
+<span id="cb24-62"><a href="#cb24-62" aria-label="62"></a><span class="co"># Create neighbourhood boundary</span></span>
+<span id="cb24-63"><a href="#cb24-63" aria-label="63"></a>la_candelaria <span class="ot">&lt;-</span> medellin_comunas <span class="sc">|&gt;</span> </span>
+<span id="cb24-64"><a href="#cb24-64" aria-label="64"></a>  <span class="fu">filter</span>(nombre <span class="sc">==</span> <span class="st">"LA CANDELARIA"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb24-65"><a href="#cb24-65" aria-label="65"></a>  <span class="co"># Transform the data to a local co-ordinate reference system</span></span>
+<span id="cb24-66"><a href="#cb24-66" aria-label="66"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:3115"</span>)</span>
+<span id="cb24-67"><a href="#cb24-67" aria-label="67"></a></span>
+<span id="cb24-68"><a href="#cb24-68" aria-label="68"></a><span class="co"># Estimate homicide density</span></span>
+<span id="cb24-69"><a href="#cb24-69" aria-label="69"></a>homicide_density <span class="ot">&lt;-</span> medellin_homicides <span class="sc">|&gt;</span> </span>
+<span id="cb24-70"><a href="#cb24-70" aria-label="70"></a>  <span class="co"># This data needs to use the same CRS as `la_candelaria` for </span></span>
+<span id="cb24-71"><a href="#cb24-71" aria-label="71"></a>  <span class="co"># `st_intersection()` to work</span></span>
+<span id="cb24-72"><a href="#cb24-72" aria-label="72"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:3115"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb24-73"><a href="#cb24-73" aria-label="73"></a>  <span class="co"># Extract only those homicides occurring within the La Candelaria </span></span>
+<span id="cb24-74"><a href="#cb24-74" aria-label="74"></a>  <span class="co"># neighbourhood (otherwise `hotspot_kde()` will be very slow)</span></span>
+<span id="cb24-75"><a href="#cb24-75" aria-label="75"></a>  <span class="fu">st_intersection</span>(la_candelaria) <span class="sc">|&gt;</span> </span>
+<span id="cb24-76"><a href="#cb24-76" aria-label="76"></a>  <span class="co"># Estimate density of homicides</span></span>
+<span id="cb24-77"><a href="#cb24-77" aria-label="77"></a>  <span class="fu">hotspot_kde</span>(</span>
+<span id="cb24-78"><a href="#cb24-78" aria-label="78"></a>    <span class="at">grid =</span> <span class="fu">hotspot_grid</span>(la_candelaria, <span class="at">cell_size =</span> <span class="dv">100</span>), </span>
+<span id="cb24-79"><a href="#cb24-79" aria-label="79"></a>    <span class="at">bandwidth_adjust =</span> <span class="fl">0.33</span>,</span>
+<span id="cb24-80"><a href="#cb24-80" aria-label="80"></a>    <span class="at">quiet =</span> <span class="cn">TRUE</span></span>
+<span id="cb24-81"><a href="#cb24-81" aria-label="81"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb24-82"><a href="#cb24-82" aria-label="82"></a>  <span class="co"># Clip the result to the neighbourhood boundary</span></span>
+<span id="cb24-83"><a href="#cb24-83" aria-label="83"></a>  <span class="fu">st_intersection</span>(la_candelaria)</span>
+<span id="cb24-84"><a href="#cb24-84" aria-label="84"></a></span>
+<span id="cb24-85"><a href="#cb24-85" aria-label="85"></a></span>
+<span id="cb24-86"><a href="#cb24-86" aria-label="86"></a></span>
+<span id="cb24-87"><a href="#cb24-87" aria-label="87"></a><span class="co"># PLOT MAP ---------------------------------------------------------------------</span></span>
+<span id="cb24-88"><a href="#cb24-88" aria-label="88"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb24-89"><a href="#cb24-89" aria-label="89"></a>  <span class="co"># Add base map</span></span>
+<span id="cb24-90"><a href="#cb24-90" aria-label="90"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"cartolight"</span>, <span class="at">zoomin =</span> <span class="dv">0</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb24-91"><a href="#cb24-91" aria-label="91"></a>  <span class="co"># Add density layer</span></span>
+<span id="cb24-92"><a href="#cb24-92" aria-label="92"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> kde), <span class="at">data =</span> homicide_density, <span class="at">alpha =</span> <span class="fl">0.7</span>, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb24-93"><a href="#cb24-93" aria-label="93"></a>  <span class="co"># Add metro lines without expanding the map area</span></span>
+<span id="cb24-94"><a href="#cb24-94" aria-label="94"></a>  <span class="fu">annotation_spatial</span>(<span class="at">data =</span> metro_lines, <span class="at">colour =</span> <span class="st">"darkblue"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb24-95"><a href="#cb24-95" aria-label="95"></a>  <span class="co"># Add neighbourhood boundary</span></span>
+<span id="cb24-96"><a href="#cb24-96" aria-label="96"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> la_candelaria, <span class="at">colour =</span> <span class="st">"grey40"</span>, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb24-97"><a href="#cb24-97" aria-label="97"></a>  <span class="co"># Add bus stop locations</span></span>
+<span id="cb24-98"><a href="#cb24-98" aria-label="98"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> <span class="fu">pluck</span>(bus_stops, <span class="st">"osm_points"</span>), <span class="at">colour =</span> <span class="st">"darkred"</span>) <span class="sc">+</span></span>
+<span id="cb24-99"><a href="#cb24-99" aria-label="99"></a>  <span class="co"># Control appearance of density layer</span></span>
+<span id="cb24-100"><a href="#cb24-100" aria-label="100"></a>  <span class="fu">scale_fill_distiller</span>(</span>
+<span id="cb24-101"><a href="#cb24-101" aria-label="101"></a>    <span class="at">direction =</span> <span class="dv">1</span>, </span>
+<span id="cb24-102"><a href="#cb24-102" aria-label="102"></a>    <span class="at">breaks =</span> <span class="fu">range</span>(<span class="fu">pull</span>(homicide_density, <span class="st">"kde"</span>)),</span>
+<span id="cb24-103"><a href="#cb24-103" aria-label="103"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"lower"</span>, <span class="st">"higher"</span>)</span>
+<span id="cb24-104"><a href="#cb24-104" aria-label="104"></a>  ) <span class="sc">+</span></span>
+<span id="cb24-105"><a href="#cb24-105" aria-label="105"></a>  <span class="co"># Add plot labels</span></span>
+<span id="cb24-106"><a href="#cb24-106" aria-label="106"></a>  <span class="fu">labs</span>(</span>
+<span id="cb24-107"><a href="#cb24-107" aria-label="107"></a>    <span class="at">caption =</span> <span class="fu">str_glue</span>(</span>
+<span id="cb24-108"><a href="#cb24-108" aria-label="108"></a>      <span class="st">"Contains data from OpenStreetMap</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb24-109"><a href="#cb24-109" aria-label="109"></a>      <span class="st">"Homicide data: Alcaldía de Medellín (CC-BY-SA)"</span></span>
+<span id="cb24-110"><a href="#cb24-110" aria-label="110"></a>    ),</span>
+<span id="cb24-111"><a href="#cb24-111" aria-label="111"></a>    <span class="at">fill =</span> <span class="st">"homicide</span><span class="sc">\n</span><span class="st">density"</span></span>
+<span id="cb24-112"><a href="#cb24-112" aria-label="112"></a>  ) <span class="sc">+</span></span>
+<span id="cb24-113"><a href="#cb24-113" aria-label="113"></a>  <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<div class="box reading">
+<p>To find out more about the skills we have worked on in this chapter, you may want to read:</p>
+<ul>
+<li><a href="https://doi.org/10.1080/15230406.2014.972456">a paper exploring how open crime data can be used in researching crime</a>, and</li>
+<li><a href="https://docs.ropensci.org/osmdata/articles/osmdata.html">a more-detailed introduction to the <code>osmdata</code> package written by Mark Padgham and Robin Lovelace</a>.</li>
+</ul>
+</div>
+<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Quiz</span>Check your knowledge: Revision questions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Answer these questions to check you have understood the main points covered in this chapter. Write between 50 and 100 words to answer each question.</p>
+<ol type="1">
+<li>Why is it important to incorporate additional spatial data when creating crime maps?</li>
+<li>What are the key differences between open data and proprietary data sources?</li>
+<li>What are shapefiles, and what challenges do they present when working with spatial data?</li>
+<li>How does OpenStreetMap (OSM) work as a data source, and what steps are involved in retrieving spatial data from OSM using R?</li>
+<li>Why is it necessary to check the terms of use and provide attribution when using open data sources?</li>
+</ol>
+</div>
+</div>
+<div class="credits">
+<p>The OpenStreetMap logo is a trademark of the OpenStreetMap Foundation, and is used with their permission. This chapter not endorsed by or affiliated with the OpenStreetMap Foundation.</p>
 </div>
 
 
@@ -1126,13 +1811,13 @@ window.onload = function() {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link" aria-label="Welcome!">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Welcome!</span>
+      <a href="../11_writing_reports/index.html" class="pagination-link" aria-label="Writing reports in R">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Writing reports in R</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./setup.html" class="pagination-link" aria-label="Install the software needed for this book">
-        <span class="nav-page-text">Install the software needed for this book</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../13_mapping_hotspots/index.html" class="pagination-link" aria-label="Mapping hotspots">
+        <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Mapping hotspots</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -3213,5 +3898,5 @@ function initCycle(container) {
 
 
 
-<script src="site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.js" defer="true"></script>
+<script src="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.js" defer="true"></script>
 </body></html>

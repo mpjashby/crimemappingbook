@@ -8,7 +8,7 @@
 
 <meta name="description" content="An introductory textbook on using R to understand and visualise spatial and spatio-temporal patterns of crime.">
 
-<title>Contents – Learn Crime Mapping with R</title>
+<title>11&nbsp; Writing reports in R – Learn Crime Mapping with R</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -27,33 +27,68 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./setup.html" rel="next">
-<link href="./index.html" rel="prev">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/quarto-axe/axe.min.js"></script>
-<script src="site_libs/quarto-axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../12_place_data/index.html" rel="next">
+<link href="../10_messy_data/index.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/quarto-axe/axe.min.js"></script>
+<script src="../site_libs/quarto-axe/axe-check.js" type="module"></script>
 <script id="quarto-axe-checker-options" type="text/plain">eyJzdGFuZGFyZCI6IndjYWcyMmFhIiwib3V0cHV0IjoiY29uc29sZSJ9</script>
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-28b3a635af6a38e0a0209d6ed3ccafbc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
-<link href="site_libs/quarto-contrib/diagrams-0.2.0/diagrams.css" rel="stylesheet">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-28b3a635af6a38e0a0209d6ed3ccafbc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/diagrams-0.2.0/diagrams.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -93,16 +128,16 @@ quarto book
 <!-- END OF INCLUDED HEADER -->
 
 
-<link rel="stylesheet" href="css/styles.css">
-<link rel="stylesheet" href="include/webex.css">
-<meta property="og:title" content="Contents – Learn Crime Mapping with R">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../include/webex.css">
+<meta property="og:title" content="11&nbsp; Writing reports in R – Learn Crime Mapping with R">
 <meta property="og:description" content="An introductory textbook on using R to understand and visualise spatial and spatio-temporal patterns of crime.">
 <meta property="og:image" content="https://books.lesscrime.info/learncrimemapping/images/cover_image.png">
 <meta property="og:site_name" content="Learn Crime Mapping with R">
 <meta property="og:image:alt" content="Cover of Learn Crime Mapping with R">
 <meta property="og:image:height" content="600">
 <meta property="og:image:width" content="600">
-<meta name="twitter:title" content="Contents – Learn Crime Mapping with R">
+<meta name="twitter:title" content="11&nbsp; Writing reports in R – Learn Crime Mapping with R">
 <meta name="twitter:description" content="An introductory textbook on using R to understand and visualise spatial and spatio-temporal patterns of crime.">
 <meta name="twitter:image" content="https://books.lesscrime.info/learncrimemapping/images/cover_image.png">
 <meta name="twitter:image:alt" content="Cover of Learn Crime Mapping with R">
@@ -120,7 +155,7 @@ quarto book
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./contents.html">Contents</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../08_handling_bugs/index.html">Part III: Crime maps for different purposes</a></li><li class="breadcrumb-item"><a href="../11_writing_reports/index.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Writing reports in R</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -134,12 +169,12 @@ quarto book
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="./index.html" class="sidebar-logo-link">
-      <img src="./images/cover_image.png" alt="Cover of Learn Crime Mapping with R" class="sidebar-logo light-content py-0 d-lg-inline d-none">
-      <img src="./images/cover_image.png" alt="Cover of Learn Crime Mapping with R" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      <a href="../11_writing_reports/index.html" class="sidebar-logo-link">
+      <img src="../images/cover_image.png" alt="Cover of Learn Crime Mapping with R" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../images/cover_image.png" alt="Cover of Learn Crime Mapping with R" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
       </a>
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Learn Crime Mapping with R</a> 
+      <a href="../">Learn Crime Mapping with R</a> 
         <div class="sidebar-tools-main tools-wide">
     <div class="dropdown">
       <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
@@ -177,13 +212,13 @@ quarto book
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Welcome!</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./contents.html" class="sidebar-item-text sidebar-link active">
+  <a href="../contents.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Contents</span></a>
   </div>
 </li>
@@ -198,19 +233,19 @@ quarto book
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./setup.html" class="sidebar-item-text sidebar-link">
+  <a href="../setup.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Install the software needed for this book</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01_getting_started/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../01_getting_started/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting started</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02_your_first_crime_map/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../02_your_first_crime_map/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Your first crime map</span></span></a>
   </div>
 </li>
@@ -227,31 +262,31 @@ quarto book
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03_data_wrangling/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../03_data_wrangling/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Loading and selecting data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_transforming_data/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../04_transforming_data/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Transforming and summarising data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./05_your_second_crime_map/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../05_your_second_crime_map/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Your second crime map</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./06_mapping_crime_patterns/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../06_mapping_crime_patterns/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Mapping crime patterns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07_map_context/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../07_map_context/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Giving a map context</span></span></a>
   </div>
 </li>
@@ -259,64 +294,64 @@ quarto book
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
  <span class="menu-text">Part III: Crime maps for different purposes</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./08_handling_bugs/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../08_handling_bugs/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Handling bugs in your code</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09_mapping_areas/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../09_mapping_areas/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Mapping area data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./10_messy_data/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../10_messy_data/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Handling messy data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./11_writing_reports/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../11_writing_reports/index.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Writing reports in R</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./12_place_data/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../12_place_data/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Using data about places</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./13_mapping_hotspots/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../13_mapping_hotspots/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Mapping hotspots</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./14_crime_series/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../14_crime_series/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Mapping crime series</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./15_no_maps/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../15_no_maps/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Presenting spatial data without maps</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./16_mapping_time/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../16_mapping_time/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Mapping crime over time</span></span></a>
   </div>
 </li>
@@ -333,31 +368,31 @@ quarto book
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./appendices/read_functions.html" class="sidebar-item-text sidebar-link">
+  <a href="../appendices/read_functions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Functions for reading data into R</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./appendices/map_checklist.html" class="sidebar-item-text sidebar-link">
+  <a href="../appendices/map_checklist.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Checklist: Making a good crime map</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./appendices/common_errors.html" class="sidebar-item-text sidebar-link">
+  <a href="../appendices/common_errors.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Common R errors and how to fix them</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./appendices/functions_to_avoid.html" class="sidebar-item-text sidebar-link">
+  <a href="../appendices/functions_to_avoid.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Some R functions you should avoid</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./appendices/handling_errors.html" class="sidebar-item-text sidebar-link">
+  <a href="../appendices/handling_errors.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">Checklist: handling code errors</span></span></a>
   </div>
 </li>
@@ -373,16 +408,32 @@ quarto book
     <h2 id="toc-title">In this chapter</h2>
    
   <ul>
-  <li><a href="#features-used-in-this-book" id="toc-features-used-in-this-book" class="nav-link active" data-scroll-target="#features-used-in-this-book">Features used in this book</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">11.1</span> Introduction</a></li>
+  <li><a href="#markdown" id="toc-markdown" class="nav-link" data-scroll-target="#markdown"><span class="header-section-number">11.2</span> Markdown</a>
+  <ul class="collapse">
+  <li><a href="#markdown-document-structure" id="toc-markdown-document-structure" class="nav-link" data-scroll-target="#markdown-document-structure"><span class="header-section-number">11.2.1</span> Markdown document structure</a></li>
+  <li><a href="#inline-elements" id="toc-inline-elements" class="nav-link" data-scroll-target="#inline-elements"><span class="header-section-number">11.2.2</span> Inline elements</a></li>
+  <li><a href="#processing-markdown-in-rstudio" id="toc-processing-markdown-in-rstudio" class="nav-link" data-scroll-target="#processing-markdown-in-rstudio"><span class="header-section-number">11.2.3</span> Processing Markdown in RStudio</a></li>
+  </ul></li>
+  <li><a href="#quarto" id="toc-quarto" class="nav-link" data-scroll-target="#quarto"><span class="header-section-number">11.3</span> Quarto</a>
+  <ul class="collapse">
+  <li><a href="#r-code-in-quarto" id="toc-r-code-in-quarto" class="nav-link" data-scroll-target="#r-code-in-quarto"><span class="header-section-number">11.3.1</span> R code in Quarto</a></li>
+  <li><a href="#maps-charts-and-tables-in-quarto-documents" id="toc-maps-charts-and-tables-in-quarto-documents" class="nav-link" data-scroll-target="#maps-charts-and-tables-in-quarto-documents"><span class="header-section-number">11.3.2</span> Maps, charts and tables in Quarto documents</a></li>
+  </ul></li>
+  <li><a href="#rendering-quarto" id="toc-rendering-quarto" class="nav-link" data-scroll-target="#rendering-quarto"><span class="header-section-number">11.4</span> Rendering Quarto</a>
+  <ul class="collapse">
+  <li><a href="#making-self-contained-html-documents" id="toc-making-self-contained-html-documents" class="nav-link" data-scroll-target="#making-self-contained-html-documents"><span class="header-section-number">11.4.1</span> Making self-contained HTML documents</a></li>
+  </ul></li>
+  <li><a href="#in-summary" id="toc-in-summary" class="nav-link" data-scroll-target="#in-summary"><span class="header-section-number">11.5</span> In summary</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/mpjashby/crimemappingbook/issues/new" class="toc-action"><i class="bi bi-chat-right"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../08_handling_bugs/index.html">Part III: Crime maps for different purposes</a></li><li class="breadcrumb-item"><a href="../11_writing_reports/index.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Writing reports in R</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Contents</h1>
+<h1 class="title"><span id="sec-reports" class="quarto-section-identifier"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Writing reports in R</span></span></h1>
 </div>
 
 
@@ -399,103 +450,231 @@ quarto book
 </header>
 
 
-<p>This book is divided into 16 chapters, each covering a different topic related to crime mapping with R. Some chapters focus on mapping skills, while others focus on data wrangling or on how good coding practice can make your life easier. The chapters build on one another, so the easiest way to go through the book is to work through the chapters in order. But if you already know some R coding, and something about mapping, you might want to jump into a specific chapter to get what you need.</p>
-<p><strong>Before you start, make sure you <a href="./setup.html">install the software you need for this book</a>.</strong></p>
-<dl>
-<dt><a href="01_getting_started/">Chapter 1: Getting Started</a></dt>
-<dd>
-Get started with crime mapping by learning about why putting crime on maps is useful, and get a tour of the Positron software we will use throughout this course.
-</dd>
-<dt><a href="02_your_first_crime_map/">Chapter 2: Your first crime map</a></dt>
-<dd>
-Quickly walk (or jog) through the process of creating a complete crime map in R.
-</dd>
-<dt><a href="03_data_wrangling/">Chapter 3: Loading and selecting data</a></dt>
-<dd>
-Learn how to load tabular data, name objects and choose the rows and columns needed for an analysis.
-</dd>
-<dt><a href="04_transforming_data/">Chapter 4: Transforming and summarising data</a></dt>
-<dd>
-Learn how to create new values, summarise and arrange rows, build pipelines and save processed data.
-</dd>
-<dt><a href="05_your_second_crime_map/">Chapter 5: Your second crime map</a></dt>
-<dd>
-Walk through each specific stage in the process of creating a crime map, while learning how to name files and organise scripts with comments.
-</dd>
-<dt><a href="06_mapping_crime_patterns/">Chapter 6: Mapping crime patterns</a></dt>
-<dd>
-Learn how to use maps to identify patterns of crime in cities.
-</dd>
-<dt><a href="07_map_context/">Chapter 7: Giving a map context</a></dt>
-<dd>
-Learn how to make your maps easier to understand using supporting elements such as titles and legends.
-</dd>
-<dt><a href="08_handling_bugs/">Chapter 8: Handling bugs in your code</a></dt>
-<dd>
-Learn how to find and fix problems with the R code that you write.
-</dd>
-<dt><a href="09_mapping_areas/">Chapter 9: Mapping area data</a></dt>
-<dd>
-Learn how to make thematic (choropleth) maps that use data for areas to accomplish tasks such as mapping crime rates.
-</dd>
-<dt><a href="10_messy_data/">Chapter 10: Handling messy data</a></dt>
-<dd>
-Learn how to handle different types of messy data and transform them into tidy data that is easier to analyse.
-</dd>
-<dt><a href="11_writing_reports/">Chapter 11: Writing reports in R</a></dt>
-<dd>
-Learn how to use Markdown and Quarto to write reports in Positron, and how writing reproducible reports makes your analysis more reliable.
-</dd>
-<dt><a href="12_place_data/">Chapter 12: Using data about places</a></dt>
-<dd>
-Learn how to find and use additional spatial data to improve your crime maps, for example by adding the locations of local facilities that might be important in generating patterns of crime.
-</dd>
-<dt><a href="13_mapping_hotspots/">Chapter 13: Mapping hotspots</a></dt>
-<dd>
-Learn how to identify which areas have more crime than we would expect by chance, and how to map the density of crime risk.
-</dd>
-<dt><a href="14_crime_series/">Chapter 14: Mapping crime series</a></dt>
-<dd>
-Learn how to map serial crimes and spree crimes, as well as how to combine multiple maps in R.
-</dd>
-<dt><a href="15_no_maps/">Chapter 15: Presenting spatial data without maps</a></dt>
-<dd>
-Learn how to use tables and different types of charts to communicate spatial information about crime in circumstances where maps are not the best choice.
-</dd>
-<dt><a href="16_mapping_time/">Chapter 16: Mapping crime over time</a></dt>
-<dd>
-Learn how spatial concentrations of crime vary over time, how to analyse spatio-temporal crime patterns and how to make animated maps.
-</dd>
-</dl>
-<section id="features-used-in-this-book" class="level2">
-<h2 class="anchored" data-anchor-id="features-used-in-this-book">Features used in this book</h2>
+<div class="abstract">
+<p>This chapter introduces teaches you how to integrate text, data, tables and charts in RStudio using Quarto. This allows us to create dynamic and reproducible documents that update automatically when data changes, eliminating the risk of errors from copying and pasting results into separate word processors. You will learn how to use Markdown to structure reports, embed R code for analysis, and produce outputs in multiple formats, including HTML, Word, and PDF. Mastering these skills ensures clarity, efficiency, and accuracy in crime analysis reporting, making research findings more transparent and reliable for decision-makers.</p>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Before you start
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Open RStudio or – if you already have RStudio open – click <code>Session</code> then <code>Restart R</code>. Make sure you’re working inside the Crime Mapping RStudio project you created in <a href="#sec-create-project" class="quarto-xref"><span class="quarto-unresolved-ref">sec-create-project</span></a>, then you’re ready to start mapping.</p>
+</div>
+</div>
+<section id="introduction" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">11.1</span> Introduction</h2>
+<p>We already know how to produce useful maps in R so that people can use them to make decisions about understanding and responding to crime problems. But maps are only one part of most spatial analysis. In practice, maps are usually part of a larger report in which you as an analyst will explain what your maps show and perhaps make recommendations about what decisions people should make.</p>
+<p>You are probably used to creating graphics in one piece of software (such as a map in R or a chart in Excel) and then importing or pasting those graphics into another program (such as Word) to including them in a written report. This way of working is often fine, but it has some important shortcomings. For example, if you want to make a change to a graphic (maybe to correct a typo), you then have to import it into your writing program again. More importantly, it can become hard to keep track of which version of a graphic you need to import and you may end up including the wrong version of a file.</p>
+<p class="centered-image">
+<img src="../images/quarto_process.png" alt="A schematic representing the multi-language input (e.g. Python, R, Observable, Julia) and multi-format output (e.g. PDF, html, Word documents, and more) versatility of Quarto.">
+</p>
+<p>The same problem applies to numbers that you might calculate in statistical software such as R. You might calculate a statistic such as the mean number of burglaries in local council wards, then paste the result into Word to include it in your report. But if you then realise later on that there is a problem with your data and re-run your code, it would be very easy (especially in a long report) to forget that you needed to update the mean value presented in the report. The risk of making errors like this is particularly high if you are asked to update an existing report based on new data. Perhaps the worst aspect of this problem is that you will never know for sure if the numbers in your final report are correct, unless you go back and check every one of them in whatever program you used to generate the numbers in the first place. So whenever you present your analysis you will have the nagging doubt that some of the results might be incorrect.</p>
+<p>We can describe this risk of a report containing obsolete charts or incorrect statistics by saying that is is not <em>reproducible</em> – if we were asked to go back and demonstrate each stage in producing the report to prove that we had done everything correctly, it would be very hard to do so. This is important because the reports that analysts write about crime are so often used to make decisions about how to respond to crime. An error in copying and pasting a number from R or Excel into Word could lead to police officers being deployed to the wrong place, or the wrong local council being given funding to install crime-prevention measures.</p>
+<p>Watch this video to learn more about writing reproducible documents with that is known as <em>literate coding</em>.</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/42RFdADQdcI" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Quiz</span>Reproducibility
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>What is a key feature of a computational notebook?</strong></p>
+<div id="radio_ESLCCPDTUT" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_ESLCCPDTUT" value=""> <span>It separates code and natural language into different documents.</span></label><label><input type="radio" autocomplete="off" name="radio_ESLCCPDTUT" value="answer"> <span>It intersperses code with natural language within the same document.</span></label><label><input type="radio" autocomplete="off" name="radio_ESLCCPDTUT" value=""> <span>It only supports Python as a programming language.</span></label><label><input type="radio" autocomplete="off" name="radio_ESLCCPDTUT" value=""> <span>It primarily focuses on graphical user interfaces rather than code execution.</span></label>
+</div>
+<p><strong>Why is literate coding recommended for reproducible workflows?</strong></p>
+<div id="radio_SIFFPUOFHF" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_SIFFPUOFHF" value=""> <span>It ensures that all steps, including steps done manually in external software, are documented</span></label><label><input type="radio" autocomplete="off" name="radio_SIFFPUOFHF" value=""> <span>It makes code execution optional in reports</span></label><label><input type="radio" autocomplete="off" name="radio_SIFFPUOFHF" value="answer"> <span>It minimizes dependencies on undocumented steps by showing all steps in the analysis clearly</span></label><label><input type="radio" autocomplete="off" name="radio_SIFFPUOFHF" value=""> <span>It replaces all traditional forms of documentation with graphical representations</span></label>
+</div>
+<p><strong>Which of the following best describes Quarto notebooks?</strong></p>
+<div id="radio_RYUTGQBCGP" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_RYUTGQBCGP" value=""> <span>They are a proprietary tool developed exclusively for use with the R programming language</span></label><label><input type="radio" autocomplete="off" name="radio_RYUTGQBCGP" value=""> <span>They can only be edited using Jupyter Notebook</span></label><label><input type="radio" autocomplete="off" name="radio_RYUTGQBCGP" value=""> <span>They do not allow mixing of prose and code chunks</span></label><label><input type="radio" autocomplete="off" name="radio_RYUTGQBCGP" value="answer"> <span>They evolved from R Markdown and support multiple programming languages</span></label>
+</div>
+</div>
+</div>
+<p>In this chapter we will learn to use Quarto to write reports directly in RStudio, integrating data, maps and statistics directly into reports so that they are always up-to-date. Quarto can be used to produce detailed and polished reports in a way that makes sure they are always up to date. For example, the report <a href="https://discovery.ucl.ac.uk/id/eprint/10115766/1/2020-Q3.pdf"><em>Stop and Search in London</em></a> was created entirely in Quarto.</p>
+</section>
+<section id="markdown" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="markdown"><span class="header-section-number">11.2</span> Markdown</h2>
+<p><em>Markdown</em> is a way of formatting plain text so that a computer can convert it into different file formats. For example, RStudio can convert Markdown documents into Word, PDF, PowerPoint and many other formats.</p>
+<p class="full-width-image">
+<img src="../images/markdown_flowchart.png" alt="Flow chart showing that a Markdown document can be processed by RStudio into Word, PDF, PowerPoint, web or other formats">
+</p>
+<p>Markdown uses plain-text characters to represent formatting such as titles, italic text and so on. For example, the Markdown text:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-code-line-numbers=""><pre class="sourceCode numberSource lang-md number-lines code-with-copy"><code class="sourceCode"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a># Introduction</span>
+<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a>In this chapter we will learn to use a tool called *Quarto* to write reports </span>
+<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a>directly in RStudio.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>produces the output:</p>
+<div class="faux-markdown">
+<h1>
+Introduction
+</h1>
+<p>
+In this chapter we will learn to use a tool called <em>Quarto</em> to write reports directly in RStudio.
+</p>
+</div>
+<p>In this example, the character <code>#</code> <em>followed by a space</em> at the start of a line means that line should be shown as a first-level heading and the asterisks (<code>*</code> – we could also have used the underscore character <code>_</code>) around the word <code>Quarto</code> indicate that it should be emphasised (typically with <em>italic</em> text).</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Important things you should know
+<span class="screen-reader-only">Important</span>Spaces are important in Markdown headings
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Throughout the book you will see boxes marked with an exclamation mark that contain information that it is particularly important for you to know to avoid common mistakes in writing code or making maps. Pay special attention to these points and remember to ask questions if anything isn’t clear.</p>
+<p>In Markdown we use the hash character <code>#</code> followed by a space to indicate that a line should be formatted as a top-level heading. The space after the <code>#</code> is important – if you write <code>#Introduction</code> instead of <code># Introduction</code> then R will not recognise that line as representing a heading and it will not be formatted properly.</p>
 </div>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<p>Markdown is designed to be easy to read and easy to write. It is perfectly possible, for example, to read the unformatted Markdown text in the example above. Since Markdown files (which have the file extension <code>.md</code>) are plain text, it’s also possible to open them on virtually any computer. Markdown is very widely used on the web – using underscores to mark out italic text and asterisks to mark out bold text even works in messaging apps such as Telegram and WhatsApp.</p>
+<p>In Markdown you describe the <em>structure</em> of a document, not its appearance. The appearance of the document (which fonts it uses, what margins the pages have and so on) are determined by the templates that RStudio uses to convert markdown files into documents of different types. This can save you a lot of time, because you don’t need to specify fonts and other formatting. Instead, you can concentrate on the structure of your argument rather than the details of formatting.</p>
+<p>You can create your own templates for documents (for example if you want to create documents that match a particular corporate style) but in this course we will use the templates built into RStudio, which are designed to create documents that communicate data effectively.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Click on this line of text
+<span class="screen-reader-only">Important</span>Use Markdown to describe <em>structure</em>, not appearance
 </div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>In this book you will also see lines of text marked by a light-bulb symbol that you can click on to find out more information about a particular issue. This is generally information that you do not need to know to complete a task, but which might be useful in other circumstances or which might answer some questions that you have. You can skip these boxes if you want to, or come back to them later if you have a question.</p>
+<p>You should not try to fine-tune the visual appearance of a document produced from Markdown-formatted text by (for example) changing a second-level heading to a third-level heading because you want the heading text to be slightly smaller. Keeping the structure of your document (defined using Markdown) separate from its visual appearance has several benefits that are important, but not immediately obvious. For example, screen reading software used by blind or partially sighted people will read out the <em>structure</em> of a document rather than the visual appearance. So if, for example, you were to use Markdown syntax for <code>code text</code> to change the font in the headings in a Markdown document, it is possible that would make the document much harder for people using a screen reader to make sense of.</p>
+<p>If you want to change the visual appearance of a piece of Markdown-formatted text, you should change the template that is used to convert that text into a Word document, PDF, web page, etc.</p>
+<p><strong>Use Markdown to describe the structure of a document, not its appearance</strong>.</p>
 </div>
+</div>
+<section id="markdown-document-structure" class="level3" data-number="11.2.1">
+<h3 data-number="11.2.1" class="anchored"><span class="header-section-number">11.2.1</span> Markdown document structure</h3>
+<p>To create paragraphs in Markdown, you simply split text with a blank line. So this Markdown text:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-code-line-numbers=""><pre class="sourceCode numberSource lang-md number-lines code-with-copy"><code class="sourceCode"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a>In this chapter we will learn to use a tool called _Quarto_ to write reports </span>
+<span id="cb2-2"><a href="#cb2-2" aria-label="2"></a>directly in RStudio. Markdown is a way of formatting plain text so that a </span>
+<span id="cb2-3"><a href="#cb2-3" aria-label="3"></a>computer can convert it into different file formats.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>produces the output:</p>
+<div class="faux-markdown">
+<p>In this chapter we will learn to use a tool called <em>Quarto</em> to write reports directly in RStudio. Markdown is a way of formatting plain text so that a computer can convert it into different file formats.</p>
+</div>
+<p>because there is no blank line between the first and second sentences. We can split this into two paragraphs just by adding a blank line:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-code-line-numbers=""><pre class="sourceCode numberSource lang-md number-lines code-with-copy"><code class="sourceCode"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a>In this chapter we will learn to use a tool called _Quarto_ to write reports </span>
+<span id="cb3-2"><a href="#cb3-2" aria-label="2"></a>directly in RStudio.</span>
+<span id="cb3-3"><a href="#cb3-3" aria-label="3"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-label="4"></a>Markdown is a way of formatting plain text so that a computer can convert it </span>
+<span id="cb3-5"><a href="#cb3-5" aria-label="5"></a>into different file formats.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>which produces the output:</p>
+<div class="faux-markdown">
+<p>In this chapter we will learn to use a tool called <em>Quarto</em> to write reports directly in RStudio.</p>
+<p>Markdown is a way of formatting plain text so that a computer can convert it into different file formats.</p>
+</div>
+<section id="headings" class="level4 unnumbered">
+<h4 class="unnumbered anchored">Headings</h4>
+<p>There are six levels of headings available in Markdown documents, although it is very unlikely that you will need all six. Headings are specified by adding one or more <code>#</code> characters to the start of the line, followed by a space:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-code-line-numbers=""><pre class="sourceCode numberSource lang-md number-lines code-with-copy"><code class="sourceCode"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a># First-level heading</span>
+<span id="cb4-2"><a href="#cb4-2" aria-label="2"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-label="3"></a>## Second-level heading</span>
+<span id="cb4-4"><a href="#cb4-4" aria-label="4"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-label="5"></a>### Third-level heading</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>produces:</p>
+<div class="faux-markdown">
+<h1>
+First-level heading
+</h1>
+<h2 class="anchored" data-anchor-id="headings">
+Second-level heading
+</h2>
+<h3 class="anchored">
+Third-level heading
+</h3>
+</div>
+<p>Headings should have at least one blank line above and below them, so that they stand out from the surrounding code. I usually leave three blank lines before a second-level heading and two blank lines before other headings, with exactly one blank line after every type of heading.</p>
+</section>
+<section id="lists" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="lists">Lists</h4>
+<p>Markdown supports two types of list: ordered lists and unordered lists. You can make an ordered list by putting each list item on a new line and starting each line with a number followed by a full stop (<code>.</code>). You make an unordered list in the same way, but starting each line with an asterisk:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-code-line-numbers=""><pre class="sourceCode numberSource lang-md number-lines code-with-copy"><code class="sourceCode"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a>1. A list of items</span>
+<span id="cb5-2"><a href="#cb5-2" aria-label="2"></a>2. for which the ordering</span>
+<span id="cb5-3"><a href="#cb5-3" aria-label="3"></a>3. of items is important</span>
+<span id="cb5-4"><a href="#cb5-4" aria-label="4"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-label="5"></a>* A list of items</span>
+<span id="cb5-6"><a href="#cb5-6" aria-label="6"></a>* for which the ordering</span>
+<span id="cb5-7"><a href="#cb5-7" aria-label="7"></a>* of items is *not* important</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>produces:</p>
+<div class="faux-markdown">
+<ol type="1">
+<li>A list of items</li>
+<li>for which the ordering</li>
+<li>of items is important</li>
+</ol>
+<ul>
+<li>A list of items</li>
+<li>for which the ordering</li>
+<li>of items is <em>not</em> important</li>
+</ul>
+</div>
+</section>
+<section id="quotes" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="quotes">Quotes</h4>
+<p>If you want to insert a quote into your Markdown document, you can do that by putting a greater-than (<code>&gt;</code>) symbol followed by a space at the start of each line of the quote:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" data-code-line-numbers=""><pre class="sourceCode numberSource lang-md number-lines code-with-copy"><code class="sourceCode"><span id="cb6-1"><a href="#cb6-1" aria-label="1"></a>&gt; In this chapter we will learn to use a tool called _Quarto_ to write reports </span>
+<span id="cb6-2"><a href="#cb6-2" aria-label="2"></a>&gt; directly in RStudio.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>produces</p>
+<div class="faux-markdown">
+<blockquote class="blockquote">
+In this chapter we will learn to use a tool called <em>Quarto</em> to write reports directly in RStudio.
+</blockquote>
+</div>
+</section>
+</section>
+<section id="inline-elements" class="level3" data-number="11.2.2">
+<h3 data-number="11.2.2" class="anchored" data-anchor-id="inline-elements"><span class="header-section-number">11.2.2</span> Inline elements</h3>
+<p>As well as using Markdown to describe the structure of a document, you can use it to mark up particular text within a paragraph. We’ve already seen how to do this using <code>_to emphasise text_</code> (usually displayed in <em>italics</em>). We can also <code>**strongly emphasise**</code> text, which will usually appear in <strong>bold</strong>. Note that the <code>_</code>, <code>*</code> or <code>**</code> characters must be touching a word on exactly one side:</p>
+<ul>
+<li><code>some _emphasised_ text</code> produces some <em>emphasised</em> text</li>
+<li><code>some_emphasised_text</code> does not produce emphasised text</li>
+<li><code>some _ emphasised _ text</code> does not produce emphasised text</li>
+</ul>
+<p>We can add links to a document using the format <code>[link text](URL)</code>. For example, the text:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" data-code-line-numbers=""><pre class="sourceCode numberSource lang-md number-lines code-with-copy"><code class="sourceCode"><span id="cb7-1"><a href="#cb7-1" aria-label="1"></a>[learn about the tidyverse](https://www.tidyverse.org/)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>produces the link:</p>
+<div class="faux-markdown">
+<p><a href="https://www.tidyverse.org/">learn about the tidyverse</a></p>
+</div>
+<p>There are several other Markdown codes for describing different elements within a document, including images, videos and segments of code. You can find out more about what’s possible with Markdown on the <a href="https://quarto.org/docs/authoring/markdown-basics.html">Markdown Basics page of the Quarto website</a>.</p>
+</section>
+<section id="processing-markdown-in-rstudio" class="level3" data-number="11.2.3">
+<h3 data-number="11.2.3" class="anchored" data-anchor-id="processing-markdown-in-rstudio"><span class="header-section-number">11.2.3</span> Processing Markdown in RStudio</h3>
+<p>Once you’ve written a Markdown document, you can convert it into a web page, a Word document or a PDF file from within RStudio. To see how this works, in RStudio click <code>File</code> then <code>New File</code> then <code>Markdown File</code> and save the new file as <code>chapter14.md</code>. Note this file ends with <code>.md</code> rather than <code>.R</code> – that tells RStudio that the file is a Markdown document.</p>
+<p>You should now see a new button at the top of the RStudio script panel marked <code>Preview</code>.</p>
+<p class="centered-image">
+<img src="images/rstudio-markdown-preview.png" alt="Screen shot of the Preview button in RStudio that allows converting Markdown documents to web pages, PDFs or Word documents.">
+</p>
+<p>If you click on the small downward-pointing triangle next to that button, you have the option to produce your report in <abbr title="hypertext markup language">HTML</abbr> (web page) format, PDF or Microsoft Word. HTML format is useful for creating documents to be published on the web, but also for quickly previewing documents in RStudio while you are working on them.</p>
+<p>You do not need to have Microsoft Word installed on your computer to produce Word documents from Markdown files in RStudio, although you will need Word (or other word-processing software) to view the file after it is created.</p>
+<p>To create PDF files from Markdown in RStudio, your computer has to have a version of software called TeX installed. If you’ve never heard of TeX, you can install it automatically using the tinytex R package. To install TeX, just run this R code <em>once</em> in the R Console:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-label="1"></a><span class="fu">install.packages</span>(<span class="st">"tinytex"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-label="2"></a>tinytex<span class="sc">::</span><span class="fu">install_tinytex</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>TeX should now be installed on your computer. After you have restarted RStudio you will be able to create PDFs from within RStudio.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Note that you only have to install TeX once on each computer you use, so you should not include <code>tinytex::install_tinytex()</code> in any Quarto scripts that you write.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-quiz callout-titled">
@@ -504,12 +683,404 @@ Learn how spatial concentrations of crime vary over time, how to analyse spatio-
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Quiz</span>How to use this book
+<span class="screen-reader-only">Quiz</span>Markdown
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Finally, you will see boxes like this one throughout the book that give you the opportunity to check your understanding of a particular section of that chapter. Sometimes this will be in the form of a multiple-choice question, and sometimes you’ll be asked to write some code in the R Console. You will always be able to check whether your answers are correct.</p>
+<p><strong>Which of the following is the correct way to create a first-level heading in Markdown?</strong></p>
+<div id="radio_KDCDFHBWRF" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_KDCDFHBWRF" value=""> <span><code>**Heading 1**</code></span></label><label><input type="radio" autocomplete="off" name="radio_KDCDFHBWRF" value=""> <span><code>== Heading 1 ==</code></span></label><label><input type="radio" autocomplete="off" name="radio_KDCDFHBWRF" value="answer"> <span><code># Heading 1</code></span></label><label><input type="radio" autocomplete="off" name="radio_KDCDFHBWRF" value=""> <span><code>## Heading 1</code></span></label>
 </div>
+<p><strong>How do you create an unordered list in Markdown?</strong></p>
+<div id="radio_TSQOJADAYA" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_TSQOJADAYA" value=""> <span>Using numbers like <code>1. Item</code></span></label><label><input type="radio" autocomplete="off" name="radio_TSQOJADAYA" value="answer"> <span>Using asterisks or dashes like <code>* Item</code></span></label><label><input type="radio" autocomplete="off" name="radio_TSQOJADAYA" value=""> <span>Using <code>**</code> around the text</span></label><label><input type="radio" autocomplete="off" name="radio_TSQOJADAYA" value=""> <span>Using brackets like <code>[Item]</code></span></label>
+</div>
+<p><strong>What is the correct way to make strongly emphasise text in Markdown?</strong></p>
+<div id="radio_WHARLJOYAZ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_WHARLJOYAZ" value=""> <span><code>_strongly emphasised text_</code></span></label><label><input type="radio" autocomplete="off" name="radio_WHARLJOYAZ" value=""> <span><code>-strongly emphasised text-</code></span></label><label><input type="radio" autocomplete="off" name="radio_WHARLJOYAZ" value=""> <span><code>#strongly emphasised text#</code></span></label><label><input type="radio" autocomplete="off" name="radio_WHARLJOYAZ" value="answer"> <span><code>**strongly emphasised text**</code></span></label>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="quarto" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="quarto"><span class="header-section-number">11.3</span> Quarto</h2>
+<p>Markdown allows you to create static documents in RStudio. We can add all types of R output – including maps, tables, charts and the results of calculations – to Markdown documents using <em>Quarto</em>, which is built into RStudio.</p>
+<p>Quarto is a system that converts Markdown documents that contain chunks of code written in R or Python, runs the code and then integrates the Markdown text and the code results into one or more output files. Quarto can produce web pages, Word documents, PDF files, presentations, websites, e-books and other formats.</p>
+<p>A Quarto file is just like a Markdown document except that it has the file extension <code>.qmd</code> rather than the extension <code>.md</code>. The <code>.qmd</code> extension tells RStudio that a file will contain a mixture of text formatted with Markdown and code that produces tables, charts and so on.</p>
+<p>Since Quarto can produce many types of document, RStudio has a dialogue box in which you can select from all the installed Quarto templates. In RStudio, click <code>File</code> then <code>New File</code> then <code>Quarto Document…</code></p>
+<p class="centered-image">
+<img src="../images/rstudio-quarto-menu.png" alt="Screen shot of RStudio's menu for creating a new documents.">
+</p>
+<p>This will open a box containing all the Quarto templates that are installed on your computer. Some of these are installed by default and some may have been added by packages that you have installed.</p>
+<p class="centered-image">
+<img src="../images/rstudio-new-quarto.png" alt="Screen shot of RStudio's dialogue box for creating a new Quarto document.">
+</p>
+<p>You can edit Quarto documents in two ways in RStudio. When you create a new Quarto document, RStudio will open it in the <em>Visual editor</em>. This allows you to write the text content of your document as you would in word-processing software such as Word. For example, you can make text bold using buttons on the tool bar at the top of the document, or using standard keyboard short-cuts such as <code>Ctrl+B</code> on Windows or <code>Command+B</code> on Mac. There is also a <em>Source editor</em>, which allows you to edit the underlying Markdown formatted text directly.</p>
+<p>In this chapter we will use the Visual editor, but you can choose to use the Source editor if you prefer. To switch between the two editors, slick the <code>Source</code> or <code>Visual</code> buttons at the left-hand end of the formatting tool bar at the top of the Quarto document window.</p>
+<p>Whichever editor you use, Quarto documents start with a <em>header</em> that provides some basic information about the document, such as the title. A simple Quarto header looks like this:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" data-code-line-numbers=""><pre class="sourceCode numberSource yaml number-lines code-with-copy"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="pp">---</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-label="2"></a><span class="fu">title</span><span class="kw">:</span><span class="at">  </span><span class="st">"An Quarto document"</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-label="3"></a><span class="fu">author</span><span class="kw">:</span><span class="at"> </span><span class="st">"Joe Bloggs"</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-label="4"></a><span class="fu">date</span><span class="kw">:</span><span class="at">   </span><span class="st">"3 March 2021"</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-label="5"></a><span class="pp">---</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The header is written in yet another programming language called <a href="https://en.wikipedia.org/wiki/YAML">YAML</a>. You don’t need to know the details of YAML to write headers for Quarto documents. Two things you do need to know, though:</p>
+<ul>
+<li>The three dashes (<code>---</code>) are important, because they tell RStudio that the content inside the dashes is the document header. The dashes must appear at the start of a line on their own.</li>
+<li>Indentation matters in YAML. Every line takes the form <code>key: value</code> and in most cases the key must be at the very start of the line. Lines in YAML are not limited to 80 characters, so you should not break a single value (such as the document title) over multiple lines.</li>
+</ul>
+<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Quiz</span>Quarto
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>What is the key difference between a Markdown (<code>.md</code>) and a Quarto (<code>.qmd</code>) file?</strong></p>
+<div id="radio_EFYBMZPSFQ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_EFYBMZPSFQ" value=""> <span>Markdown is only used for web pages</span></label><label><input type="radio" autocomplete="off" name="radio_EFYBMZPSFQ" value=""> <span>Markdown does not support headings</span></label><label><input type="radio" autocomplete="off" name="radio_EFYBMZPSFQ" value="answer"> <span>Quarto supports embedding executable code</span></label><label><input type="radio" autocomplete="off" name="radio_EFYBMZPSFQ" value=""> <span>Quarto is only used for PDF documents</span></label>
+</div>
+<p><strong>What is the main role of the YAML header in a Quarto document?</strong></p>
+<div id="radio_LSLUYDVUQB" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_LSLUYDVUQB" value=""> <span>It contains the results of the analysis</span></label><label><input type="radio" autocomplete="off" name="radio_LSLUYDVUQB" value="answer"> <span>It specifies document metadata like title, author, and output format</span></label><label><input type="radio" autocomplete="off" name="radio_LSLUYDVUQB" value=""> <span>It automatically saves the document</span></label><label><input type="radio" autocomplete="off" name="radio_LSLUYDVUQB" value=""> <span>It allows Markdown text to be rendered</span></label>
+</div>
+<p><strong>What is one benefit of using Quarto over traditional word processors like Microsoft Word?</strong></p>
+<div id="radio_EODGCJKJEU" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_EODGCJKJEU" value=""> <span>It eliminates the need for writing text</span></label><label><input type="radio" autocomplete="off" name="radio_EODGCJKJEU" value=""> <span>It automatically corrects mistakes</span></label><label><input type="radio" autocomplete="off" name="radio_EODGCJKJEU" value=""> <span>It does not require learning new skills</span></label><label><input type="radio" autocomplete="off" name="radio_EODGCJKJEU" value="answer"> <span>It allows integration of real-time R computations into the document</span></label>
+</div>
+</div>
+</div>
+<section id="r-code-in-quarto" class="level3" data-number="11.3.1">
+<h3 data-number="11.3.1" class="anchored" data-anchor-id="r-code-in-quarto"><span class="header-section-number">11.3.1</span> R code in Quarto</h3>
+<p>Quarto will process everything in an Quarto document after the header (marked with <code>---</code>) as Markdown text. The only exception to this is when you include sections of code in an Quarto document.</p>
+<p>You can include R code inside a line of Markdown text (known as <em>inline</em> code) and the result of that code will be included in the document output. To do this in the visual editor, you type a lower-case <code>r</code> followed by a space, then the code you want to run. You then select the text from the letter <code>r</code> to the end of the code, open the <code>Format</code> menu in the Quarto tool bar and select <code>Code</code> (alternatively you can select the text and use the keyboard short-cut <code>Command+D</code> on Mac or <code>Ctrl+D</code> on Windows).</p>
+<p>For example, if you wanted to insert today’s date into a Quarto document, you can type:</p>
+<p class="centered-image">
+<img src="../images/quarto-inline-code.gif" alt="Animated screen shot of adding inline code to a Quarto document">
+</p>
+<p>Which would produce the output:</p>
+<div class="faux-markdown">
+<p>Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <a href="https://quarto.org">https://quarto.org</a>.</p>
+<p>This document was written on 19 August 2026</p>
+</div>
+<p>Putting R code inline is fine for simple pieces of code, but longer pieces of code included inline would become difficult to read (and therefore difficult to debug). Fortunately, we can put as much code as we like in a <em>code block</em>. To add a block of R code to an Quarto document, we open the <code>Insert</code> menu on the Quarto tool bar, click <code>Code Chunk</code> and then <code>R</code>. You will then see a grey box appear at the point in your document where you had placed the cursor, with the text <code>{r}</code> at the start of the box.</p>
+<p>We can use code chunks to run longer pieces of code that would be difficult to read if the code were inline. For example, if you wanted to load a data file of crime data, filter it for crimes occurring in a particular month and then count the number of rows, you could do the calculation in a code chunk and then include the result inline:</p>
+<div class="cell faux-markdown">
+<div class="cell-output cell-output-stdout">
+<pre data-code-line-numbers=""><code>---
+title: "An example Quarto document"
+format: 
+  html:
+    embed-resources: true
+editor: visual
+---
+
+```{r setup}
+# Load packages
+pacman::p_load(tidyverse)
+
+# Load crime data
+crimes &lt;- read_csv("crime_data.csv")
+```
+
+```{r count-crimes}
+# Count number of crimes in February 2021
+crime_count &lt;- crimes |&gt; 
+  filter(year == 2021, month == "February") |&gt; 
+  nrow()
+```
+
+There were `r scales::comma(crime_count)` crimes recorded in February 2021.</code></pre>
+</div>
+</div>
+<p>Note that to make the Quarto document more readable, RStudio has given the R code chunk a grey background, in contrast to the white background of the rest of the document. If a code chunk does not have a grey background, this is a good sign that there is something wrong: maybe you haven’t saved the file with a <code>.qmd</code> file extension, or maybe you have not inserted the code block correctly.</p>
+<p>Code chunks can also be used to insert tables and charts (including maps) into a Quarto document. To add a nicely formatted table of data, use the <code>gt()</code> function from the gt package. For example:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="co"># Print table of crime counts in each police division</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-label="2"></a>crimes <span class="sc">|&gt;</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-label="3"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2021</span>, month <span class="sc">==</span> <span class="st">"February"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-4"><a href="#cb11-4" aria-label="4"></a>  <span class="fu">count</span>(division) <span class="sc">|&gt;</span> </span>
+<span id="cb11-5"><a href="#cb11-5" aria-label="5"></a>  <span class="co"># We haven't loaded the gt package, so we need to refer to the `gt()`</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-label="6"></a>  <span class="co"># function using the `::` operator</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-label="7"></a>  gt<span class="sc">::</span><span class="fu">gt</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>We can also use code chunks to produce graphics. In this case, you just include the code to produce your map or chart in a code chunk as you normally would.</p>
+<p>To help keep track of code chunks, we can name them. To name a code chunk, put a single space after the letter <code>r</code> in the line that begins the chunk and then give the chunk name. Names can include letters, numbers and dashes (<code>-</code>). For example, if we wanted to call the chunk above <code>count-all-crimes</code> we would start the code chunk with the code <code>{r count-all-crimes}</code>.</p>
+<p>The package that converts Quarto documents into other formats is called knitr – actually, it’s a bit more complicated than that, but one of the nice things about Quarto is you don’t need to worry about what’s happening behind the scenes.</p>
+<p class="full-width-image">
+<img src="../images/knitr-process.png" alt="A schematic representing rendering of Quarto documents from .qmd, to knitr or jupyter, to plain text markdown, then converted by pandoc into any number of output types including html, PDF, or Word document.">
+</p>
+<p>The default Quarto template is set up so that the final document that is produced from your Quarto file will include both the code that you include in any code chunks <em>and</em> the output that the code produces. For example, this Quarto document:</p>
+<div class="cell faux-markdown">
+<div class="cell-output cell-output-stdout">
+<pre data-code-line-numbers=""><code>---
+title: "An example Quarto document"
+format: 
+  html:
+    embed-resources: true
+editor: visual
+---
+
+```{r setup}
+# Load packages
+pacman::p_load(tidyverse)
+
+# Load crime data
+crimes &lt;- read_csv("crime_data.csv")
+```
+
+```{r count-crimes}
+# Count number of crimes in February 2021
+crime_count &lt;- crimes |&gt; 
+  filter(year == 2021, month == "February") |&gt; 
+  nrow()
+```
+
+There were `r scales::comma(crime_count)` crimes recorded in February 2021.</code></pre>
+</div>
+</div>
+<p>Produces this output, which is probably not what you want:</p>
+<div class="faux-output">
+<iframe height="600" src="quarto_code_chunk.html" title="The default output from a Quarto file includes a copy of the R code in the file" style="width: 100%;"></iframe>
+</div>
+<p>We can control the results of code chunks using <em>chunk options</em>, sometimes called <em>knitr options</em>. We put these on the first line of each code chunk, with each option on a separate line and each line starting with the characters <code>#|</code> (referred to as a <em>hash-pipe</em>). Note that the <code>#|</code> <em>must</em> be followed by a space for Quarto to recognise it as a chunk option.</p>
+<p>To specify that the code in our R code chunks should not be printed in the final document, we can set the chunk option <code>#| echo: false</code>. To specify that both the R code and the <em>output</em> produced by that code in each code chunk (e.g.&nbsp;and messages or warnings) should not be shown, we can set the chunk option <code>#| include: false</code>.</p>
+<p>If we change the code in our previous example to include this line, the output becomes much more like the report we want:</p>
+<div class="cell faux-markdown">
+<div class="cell-output cell-output-stdout">
+<pre data-code-line-numbers=""><code>---
+title: "An example Quarto document"
+format: 
+  html:
+    embed-resources: true
+editor: visual
+---
+
+```{r setup}
+#| include: false
+
+# Load packages
+pacman::p_load(tidyverse)
+
+# Load crime data
+crimes &lt;- read_csv("crime_data.csv")
+```
+
+```{r count-crimes}
+#| echo: false
+
+# Count number of crimes in February 2021
+crime_count &lt;- crimes |&gt; 
+  filter(year == 2021, month == "February") |&gt; 
+  nrow()
+```
+
+There were `r scales::comma(crime_count)` crimes recorded in February 2021.</code></pre>
+</div>
+</div>
+<div class="faux-output">
+<iframe height="300" src="quarto_code_chunk_noecho.html" title="We can use chunk options to stop raw R code and output from appearing in a document" style="width: 100%;"></iframe>
+</div>
+<p>If a code chunk produces a chart or map then we <em>do</em> want to show the output (although not the code), so in that case we should not set <code>#| include: false</code> – we do not need to set <code>#| include: true</code> because it is the default.</p>
+<p>Since we probably don’t want any chunks in our code to include the code in our final document, we could end up setting the chunk option <code>#| echo: false</code> for every code chunk. In a long or complicated document, this would get tedious. Fortunately, we can set chunk options <em>globally</em> (i.e.&nbsp;for all chunks in a document) by setting them in the YAML document header. To do this, we add a key called <code>execute</code> to the header. Instead of giving the <code>execute</code> key a value such as <code>true</code> or <code>false</code>, we instead indent the <em>next</em> line of the header by exactly two spaces and then set the chunk option <code>echo: false</code>. If we wanted to set multiple global chunk options here, we would put each one on a new line, all of the lines indented by two spaces from the start of each document.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" data-code-line-numbers=""><pre class="sourceCode numberSource yaml number-lines code-with-copy"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1" aria-label="1"></a><span class="pp">---</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-label="2"></a><span class="fu">title</span><span class="kw">:</span><span class="at">  </span><span class="st">"An Quarto document"</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-label="3"></a><span class="fu">author</span><span class="kw">:</span><span class="at"> </span><span class="st">"Joe Bloggs"</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-label="4"></a><span class="fu">date</span><span class="kw">:</span><span class="at">   </span><span class="st">"3 March 2021"</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-label="5"></a><span class="fu">execute</span><span class="kw">:</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-label="6"></a><span class="at">  </span><span class="fu">echo</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-label="7"></a><span class="pp">---</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Some of the R code we write produces messages or warnings that we will not want to include in our Quarto documents. For example, readers of a report based on crime data are unlikely to want to see the warning produced by the <code>st_intersection()</code> function, and will probably be quite surprised if this appears in their code. To hide these messages, we can split the code needed to produce a map into two code chunks: one to do the pre-processing that often creates messages or warnings, and a second chunk to create the map itself. Then we can use <code>#| include: false</code> to suppress any output from the first chunk.</p>
+<div class="cell faux-markdown">
+<div class="cell-output cell-output-stdout">
+<pre data-code-line-numbers=""><code>---
+title: "Medellin homicides map"
+format:
+  html:
+    embed-resources: true
+    fig-cap-location: top
+execute:
+  echo: false
+---
+
+```{r setup}
+#| include: false
+
+# Load packages
+pacman::p_load(ggspatial, sf, sfhotspot, tidyverse)
+
+# Load homicide data
+medellin_homicides &lt;- read_csv2("https://mpjashby.github.io/crimemappingdata/medellin_homicides.csv") |&gt;
+  drop_na(longitud, latitud) |&gt; 
+  st_as_sf(coords = c("longitud", "latitud"), crs = "EPSG:4326")
+
+# Load city boundary
+medellin_boundary &lt;- read_sf("https://mpjashby.github.io/crimemappingdata/medellin_comunas.gpkg") |&gt;
+  janitor::clean_names() |&gt; 
+  st_transform("EPSG:3115")
+```
+
+```{r calculate_density}
+#| include: false
+
+# Calculate crime density
+medellin_homicide_density &lt;- medellin_homicides |&gt;
+  st_transform("EPSG:3115") |&gt;
+  hotspot_kde(bandwidth_adjust = 0.33, quiet = TRUE) |&gt; 
+  # The next line would produce a message if we hadn't used the chunk option
+  # `#| include: false`
+  st_intersection(medellin_boundary)
+```
+
+@fig-homicides shows the density of homicides in Medellin, Colombia, from 2010 to 2019.
+
+```{r}
+#| label: fig-homicides
+#| fig-cap: "Density of homicides in Medellin, 2010 to 2019"
+
+# Note we don't have to set `#| include: true` for this code chunk, because that
+# is the default
+
+# Plot a basic density map
+ggplot() +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") + 
+  geom_sf(
+    aes(fill = kde),
+    data = medellin_homicide_density,
+    alpha = 0.7,
+    colour = NA
+  ) +
+  scale_fill_distiller(direction = 1) +
+  labs(
+    caption = "Homicide data: Alcaldía de Medellin (CC-BY-SA)", 
+    fill = "homicide\ndensity"
+  ) +
+  theme_void()
+```</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>If there is a bug in your code, <code>#| include: false</code> may suppress important warnings
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Using <code>#| include: false</code> can be useful to stop an output document being littered with R messages and warnings. However, it will also stop you seeing warnings that might be important in highlighting problems you need to fix. If code in a Quarto code chunk is not producing the results you expect, the first thing you should do is remove <code>#| include: false</code> from the chunk so that you can see any warnings or messages that you might need to act upon. Once the code is running as you want it to, you can add <code>#| include: false</code> back again.</p>
+</div>
+</div>
+</section>
+<section id="maps-charts-and-tables-in-quarto-documents" class="level3" data-number="11.3.2">
+<h3 data-number="11.3.2" class="anchored" data-anchor-id="maps-charts-and-tables-in-quarto-documents"><span class="header-section-number">11.3.2</span> Maps, charts and tables in Quarto documents</h3>
+<p>Almost all the documents you produce in Quarto will include one or more maps, charts or tables. Quarto includes tools for providing captions for figures and tables, as well as the ability to refer to them elsewhere in a document.</p>
+<p>Maps, charts and tables in Quarto documents are usually the output produced by a chunk of R code. For example, we might use a <code>ggplot()</code> stack to make a map. To turn a code chunk into a figure we can reference, we need to add two chunk options at the start of the code chunk. We use the <code>#| label</code> chunk option to specify what text we will use throughout the rest of the document to refer to the figure or table produced by that code chunk. Note that labels must begin with <code>fig-</code> for figures (charts and maps) or <code>tbl-</code> for tables. For example, we might label a map with the label <code>#| label: fig-homicides-map</code> or a table with the label <code>#| label: tbl-robbery-counts</code>. Note that chunk labels can contain letters, numbers and dashes (<code>-</code>), but not spaces or other characters.</p>
+<p>The second chunk option we should add is either the <code>#| fig-cap</code> chunk option (for charts and maps) or the <code>#| tbl-cap</code> argument, to create a caption for the chart, map or table. Note that captions should be enclosed in quotes, e.g.&nbsp;<code>#| tbl-cap: "This is the table caption"</code>.</p>
+<p>Once we have set the label and the caption for a code chunk, we can use that label to insert cross-references into our document. For example, in the code above you can see that the code chunk that creates the map of homicides in Medellin has the chunk option <code>#| label: fig-homicides</code>. Just above that code chunk, the figure produced by that chunk is referenced in the text using the code <code>@fig-homicides</code>. You can see in the output below that the cross-reference <code>@fig-homicides</code> has been changed to the text ‘Figure 1’, that the cross-reference is a hyperlink (to the part of the document containing the map) and that the map now has a caption that starts ‘Figure 1’.</p>
+<div class="faux-output">
+<iframe height="800" src="medellin_homicides.html" title="An HTML file produced by Quarto that shows a figure with a caption and a cross reference in the text." style="width: 100%;"></iframe>
+</div>
+<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Quiz</span>Using code in Quarto documents
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>What happens if you set the option <code>#| echo: false</code> in a Quarto code chunk?</strong></p>
+<div id="radio_BJNICAIVNZ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_BJNICAIVNZ" value="answer"> <span>The code is hidden, but the output is displayed</span></label><label><input type="radio" autocomplete="off" name="radio_BJNICAIVNZ" value=""> <span>The output is hidden, but the code is displayed</span></label><label><input type="radio" autocomplete="off" name="radio_BJNICAIVNZ" value=""> <span>Both code and output are hidden</span></label><label><input type="radio" autocomplete="off" name="radio_BJNICAIVNZ" value=""> <span>The document fails to render</span></label>
+</div>
+<p><strong>Why is it useful to name code chunks in Quarto?</strong></p>
+<div id="radio_OXQXENLEUB" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_OXQXENLEUB" value=""> <span>It speeds up code execution</span></label><label><input type="radio" autocomplete="off" name="radio_OXQXENLEUB" value=""> <span>It automatically changes the output format</span></label><label><input type="radio" autocomplete="off" name="radio_OXQXENLEUB" value="answer"> <span>It makes debugging easier</span></label><label><input type="radio" autocomplete="off" name="radio_OXQXENLEUB" value=""> <span>It is required for Quarto to run</span></label>
+</div>
+<p><strong>What happens if you set the option <code>#| include: false</code> in a Quarto code chunk?</strong></p>
+<div id="radio_EUFZXEURSM" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_EUFZXEURSM" value=""> <span>The code is hidden, but the output is displayed</span></label><label><input type="radio" autocomplete="off" name="radio_EUFZXEURSM" value=""> <span>The output is hidden, but the code is displayed</span></label><label><input type="radio" autocomplete="off" name="radio_EUFZXEURSM" value="answer"> <span>Both code and output are hidden</span></label><label><input type="radio" autocomplete="off" name="radio_EUFZXEURSM" value=""> <span>The document fails to render</span></label>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="rendering-quarto" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="rendering-quarto"><span class="header-section-number">11.4</span> Rendering Quarto</h2>
+<p>Once you’ve written the text for your document and added the code needed to produce statistics, tables and figures, it’s time to convert your Quarto file to a document in the format you need. This process is called <em>rendering</em> (or sometimes <em>knitting</em>) the document.</p>
+<p class="full-width-image">
+&lt;img src=“../images/knitting_hedgehog.png” alt=“A round hedgehog in a yellow beanie, knitting a teal scarf. Behind them are different outputs from”knitting” documents in R, including PDF, Word, LaTeX, html5, slides, eBooks, dashboards, and websites.”&gt;
+</p>
+<p>In RStudio you can render a Quarto document by clicking the <code>Render</code> button (if you can’t see the <code>Render</code> button at the top of your Quarto document, that is a sign you haven’t saved the file as a <code>.qmd</code> file). By default, RStudio will produce an HTML file (a web page) and open it in the HTML viewer built into RStudio. You can produce other formats instead of a web page by clicking on the downward-pointing arrow next to the <code>Render</code> button and then choosing the format you want.</p>
+<p>You can control the output format that RStudio will produce by changing the <code>format:</code> value in the YAML header of your Quarto document. The default is <code>format: html</code>, but you can also use <code>format: pdf</code> to produce a PDF file, <code>format: docx</code> to produce a Word document, <code>format: epub</code> to produce an e-book, <code>format: pptx</code> to produce a PowerPoint presentation. There are <a href="https://quarto.org/docs/output-formats/all-formats.html">many other ouput formats available</a>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Use HTML output if possible
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you have a choice of which format to produce a report in, I would suggest you choose HTML because it can do things (like include interactive maps made with leaflet) that Word and PDF format cannot, and can easily be read on mobile devices. Well-formatted HTML documents are also much more accessible to people who need assistive technology such as screen readers for blind and partially sighted people. If, for whatever reason, you cannot choose HTML, I recommend choosing PDF format since it is readable on almost all computers, even those that do not have Word installed on them. Only produce reports in Word format if you are specifically required to submit something in that format.</p>
+</div>
+</div>
+<p>Whatever format you choose, the output file will be saved in the same folder on your computer that you saved your <code>.qmd</code> file in, and will have the same file name but with a different file extension (<code>.html</code>, <code>.pdf</code>, <code>.docx</code>, etc.). If you render the document again, RStudio will overwrite the previous output file.</p>
+<p>When you render a Quarto document, RStudio will run all the code in the file so that it can knit the results together with the document text. This is similar to running the code in a <code>.R</code> file using the <code>Source</code> button, except that when RStudio runs the code in a Quarto document, RStudio can only access functions from the packages that are loaded in the Quarto document itself, and only make use of objects created inside the Quarto document. This means that nothing you do in the console or in any other files you have open in RStudio (e.g.&nbsp;loading a package or creating an object) affects the results that will be produced when you render a Quarto document. This will probably be frustrating at first, but it helps enormously in keeping your code organised and in making it reproducible.</p>
+<p>Since rendering a Quarto document involves running all the code contained in it, it is possible that the code will cause errors at the time when the Quarto document is rendered. When this happens, the R error message will appear in the RStudio Render panel. When you run a <code>.R</code> file that produces an error, the error message typically tells you which line of code the error occurred on. But when an error occurs while rendering a Quarto file, the error message only specifies the first and last lines of the <em>part</em> of the document in which the error occurred. If the error occurred inside a code chunk, the error message will refer to the first and last lines of that chunk, but the error itself could have occurred anywhere inside that chunk. If the error occurs <em>outside</em> a code chunk, the error message will report that the error occurred somewhere between the last line of the previous code chunk and the first line of the next code chunk. It is up to you to find the exact location of the error.</p>
+<section id="making-self-contained-html-documents" class="level3" data-number="11.4.1">
+<h3 data-number="11.4.1" class="anchored" data-anchor-id="making-self-contained-html-documents"><span class="header-section-number">11.4.1</span> Making self-contained HTML documents</h3>
+<p>Web pages written in HTML typically make use of images, videos and other resources stored in separate files. In fact, the web page you’re reading now makes use of resources stored in 51 separate files. This works well on the web, since it allows resources to be shared between lots of HTML files, which reduces how much data has to be stored and transmitted across networks. But it works less well when you want to send an HTML report to someone else over email, since it can be hard to keep track of all the external files associated with a particular HTML file.</p>
+<p>To deal with this problem, we can tell Quarto that when it creates an HTML report, all the necessary data and other resources should be embedded inside the HTML file itself. This makes the HTML file larger, but easier to manage. To make HTML reports produced by Quarto self-contained in this way, we can change the <code>format</code> section of the header of a Quarto document from simply <code>format: html</code> to instead specify exactly what settings we want to be used to create that HTML file:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16" data-code-line-numbers=""><pre class="sourceCode numberSource yaml number-lines code-with-copy"><code class="sourceCode yaml"><span id="cb16-1"><a href="#cb16-1" aria-label="1"></a><span class="fu">format</span><span class="kw">:</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-label="2"></a><span class="at">  </span><span class="fu">html</span><span class="kw">:</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-label="3"></a><span class="at">    </span><span class="fu">embed-resources</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>There are lots of other ways we can use the <code>format</code> section of the header in a Quarto document to fine-tune how the resulting document works. You can find out more <a href="https://quarto.org/docs/output-formats/html-basics.html">in the HTML section of the Quarto website</a>.</p>
+</section>
+</section>
+<section id="in-summary" class="level2" data-number="11.5">
+<h2 data-number="11.5" class="anchored" data-anchor-id="in-summary"><span class="header-section-number">11.5</span> In summary</h2>
+<p>In this chapter we have learned how to use Markdown to create structured text using simple formatting codes and how to integrate that text with our code to produce integrated reports that include the results of our analysis. This means we can make our work reproducible so that we can avoid all the mistakes that can happen if we have to copy and paste statistics and graphics into reports written in software like Word.</p>
+<p>It also means we can produce periodic reports with updated data very easily, since we can just choose the data we want the report to be based on using <code>filter()</code> at the start of our file and render the document. This can save a huge amount of time in producing reports such as performance bulletins or monthly summaries of crime in an area.</p>
+<p>To get used to working with Quarto files, download <a href="../resources/example_quarto_report.qmd">this example report</a> to your computer and open it in RStudio. Now make the following changes:</p>
+<ol type="1">
+<li>Change the global chunk options so that the code used in each code chunk is not shown in the final document.</li>
+<li>Render the file into documents of at least two different formats (e.g.&nbsp;HTML and Word). If you have installed <code>tinytex</code> on your computer so that you can create PDF documents, look at how different the document appears in PDF format compared to HTML format because of the different templates used.</li>
+</ol>
+<div class="box reading">
+<p>There is a lot more you can do with Quarto. To find out more, refer to these resources.</p>
+<ul>
+<li><a href="https://r4ds.hadley.nz/quarto.html">R for Data Science chapter on Quarto</a>.</li>
+<li>A <a href="https://quarto.org/docs/gallery/">gallery of different documents, websites and presentations written with Quarto</a>.</li>
+</ul>
+</div>
+<div class="callout callout-style-default callout-quiz callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Quiz</span>Check your knowledge: Revision questions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Answer these questions to check you have understood the main points covered in this chapter. Write between 50 and 100 words to answer each question.</p>
+<ol type="1">
+<li>Why is reproducibility important in writing reports, and why does non-reproducible analysis risk providing decision makers with the wrong information?</li>
+<li>How does Markdown help structure a report, and what are some key Markdown formatting features?</li>
+<li>What role does the YAML header play in a Quarto document, and how can it be customized?</li>
+<li>What are chunk options in Quarto, and how do they affect the final output of a report?</li>
+<li>How does Quarto improve the workflow of integrating tables, charts, and maps into reports?</li>
+</ol>
+</div>
+</div>
+<div class="credits">
+<p><a href="https://twitter.com/allison_horst">Artwork by <span class="citation" data-cites="allison_horst">@allison_horst</span></a></p>
 </div>
 
 
@@ -1126,13 +1697,13 @@ window.onload = function() {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link" aria-label="Welcome!">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Welcome!</span>
+      <a href="../10_messy_data/index.html" class="pagination-link" aria-label="Handling messy data">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Handling messy data</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./setup.html" class="pagination-link" aria-label="Install the software needed for this book">
-        <span class="nav-page-text">Install the software needed for this book</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../12_place_data/index.html" class="pagination-link" aria-label="Using data about places">
+        <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Using data about places</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -3213,5 +3784,5 @@ function initCycle(container) {
 
 
 
-<script src="site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.js" defer="true"></script>
+<script src="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.js" defer="true"></script>
 </body></html>
