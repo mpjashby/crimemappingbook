@@ -35,6 +35,8 @@ assignees: mpjashby
 - [ ] Use `title=""` attribute for callout titles -- `Cmd+F` "`#### `" to check.
 - [ ] Change artwork citation URL to `https://allisonhorst.com/`.
 - [ ] Remove commented out obsolete sections.
+- [ ] Update any hard-coded references to other chapters, which have changed as a result of chapters being reordered.
+- [ ] Ensure any files students are asked to create (e.g. `chapter_02.R`) reflect new chapter numbers.
 
 #### Accessibility checks
 
