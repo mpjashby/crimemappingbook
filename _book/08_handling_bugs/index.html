@@ -317,32 +317,32 @@ quarto book
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../10_place_data/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Using data about places</span></span></a>
+  <a href="../10_messy_data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Handling messy data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../11_mapping_hotspots/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Mapping hotspots</span></span></a>
+  <a href="../11_writing_reports/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Writing reports in R</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../12_messy_data/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Handling messy data</span></span></a>
+  <a href="../12_place_data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Using data about places</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../13_crime_series/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Mapping crime series</span></span></a>
+  <a href="../13_mapping_hotspots/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Mapping hotspots</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../14_writing_reports/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Writing reports in R</span></span></a>
+  <a href="../14_crime_series/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Mapping crime series</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -466,7 +466,7 @@ quarto book
 
 
 <div class="abstract">
-<p>This chapter will teach you how to identify and fix bugs in your R code. You will learn how to interpret messages, warnings and errors, and how to distinguish between syntax errors, runtime errors and logic errors. The chapter also introduces a systematic debugging process based on finding the smallest piece of code that produces a problem, inspecting the data used by that code and changing one thing at a time. By the end of the chapter, you will be better prepared to diagnose problems in your own analyses and to ask others for help when you need it.</p>
+<p>This chapter will teach you how to identify and fix bugs in your R code. You will learn how to interpret messages, warnings and errors, and how to distinguish between different types of error. The chapter also introduces a systematic debugging process that you can use to find a fix problems. By the end of the chapter, you will be better prepared to diagnose problems in your code and to ask others for help when you need it.</p>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Before you start">
 <div class="callout-header d-flex align-content-center">
@@ -494,6 +494,7 @@ quarto book
 <li>find the smallest piece of code that produces a problem;</li>
 <li>inspect the data used and produced by each step in an analysis;</li>
 <li>use R manual pages to understand functions;</li>
+<li>recognise and resolve conflicts between functions with the same name;</li>
 <li>create a reproducible example when asking for help; and</li>
 <li>assess suggestions from online sources and generative AI critically.</li>
 </ul>
@@ -508,7 +509,7 @@ quarto book
 </div>
 <div class="callout-body-container callout-body">
 <p>Whether an AI tool such as ChatGPT or Gemini can fix your code depends on the nature of the problem, the information you provide and the features available to you. AI tools can solve many problems well, but they can also produce plausible suggestions that are wrong.</p>
-<p>It’s not always possible to rely on AI to fix problems with our code, and even when it is possible, it is still useful to understand the solution the AI is suggesting. We’ll come back to using AI to help us fix bugs in our code in the final section of this chapter.</p>
+<p>It’s not always possible to rely on AI to fix problems with our code, and even when it is possible, it is still useful to understand the solution the AI is suggesting. We’ll come back to using AI to help us fix bugs in our code later in this chapter.</p>
 </div>
 </div>
 </section>
@@ -535,12 +536,12 @@ quarto book
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Which habit makes an analysis easier to check and reproduce?</strong></p>
-<div id="radio_LWBTSWBRWI" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_LWBTSWBRWI" value=""> <span>Run each permanent line directly in the Console and do not save it</span></label><label><input type="radio" autocomplete="off" name="radio_LWBTSWBRWI" value=""> <span>Use a different naming style for each object so that names stand out</span></label><label><input type="radio" autocomplete="off" name="radio_LWBTSWBRWI" value="answer"> <span>Keep permanent code in a named script and run the complete script from a new R session</span></label><label><input type="radio" autocomplete="off" name="radio_LWBTSWBRWI" value=""> <span>Store downloaded data in the same folder as R scripts</span></label>
+<div id="radio_GEKYBWETPB" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_GEKYBWETPB" value=""> <span>Run each permanent line directly in the Console and do not save it</span></label><label><input type="radio" autocomplete="off" name="radio_GEKYBWETPB" value=""> <span>Use a different naming style for each object so that names stand out</span></label><label><input type="radio" autocomplete="off" name="radio_GEKYBWETPB" value="answer"> <span>Keep permanent code in a named script and run the complete script from a new R session</span></label><label><input type="radio" autocomplete="off" name="radio_GEKYBWETPB" value=""> <span>Store downloaded data in the same folder as R scripts</span></label>
 </div>
 <p><strong>Why does consistent formatting help with debugging?</strong></p>
-<div id="radio_QJFMOFNHZK" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_QJFMOFNHZK" value=""> <span>It prevents every possible bug</span></label><label><input type="radio" autocomplete="off" name="radio_QJFMOFNHZK" value="answer"> <span>It makes unusual or incomplete code easier to notice</span></label><label><input type="radio" autocomplete="off" name="radio_QJFMOFNHZK" value=""> <span>It allows R to guess what incomplete code should do</span></label><label><input type="radio" autocomplete="off" name="radio_QJFMOFNHZK" value=""> <span>It automatically corrects logic errors</span></label>
+<div id="radio_WPTDVCQWZP" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_WPTDVCQWZP" value=""> <span>It prevents every possible bug</span></label><label><input type="radio" autocomplete="off" name="radio_WPTDVCQWZP" value="answer"> <span>It makes unusual or incomplete code easier to notice</span></label><label><input type="radio" autocomplete="off" name="radio_WPTDVCQWZP" value=""> <span>It allows R to guess what incomplete code should do</span></label><label><input type="radio" autocomplete="off" name="radio_WPTDVCQWZP" value=""> <span>It automatically corrects logic errors</span></label>
 </div>
 </div>
 </div>
@@ -666,24 +667,37 @@ quarto book
 <section id="messages" class="level3" data-number="8.3.1">
 <h3 data-number="8.3.1" class="anchored" data-anchor-id="messages"><span class="header-section-number">8.3.1</span> Messages</h3>
 <p><em>Messages</em> are usually for information only and typically don’t require you to take any action. For example, the function <code>get_crime_data()</code> from the <code>crimedata</code> package issues a message to tell you what data it is downloading. It does this because downloading data sometimes takes a few seconds and without a message you might wonder if the code was working.</p>
-<div class="cell">
+<div class="cell bad_code">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
-<pre><strong>Don't run this code</strong></pre>
+<pre><strong>Do not run this code</strong></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a>mesa_crimes <span class="ot">&lt;-</span> crimedata<span class="sc">::</span><span class="fu">get_crime_data</span>(<span class="at">cities =</span> <span class="st">"Mesa"</span>, <span class="at">quiet =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<div class="cell-output cell-output-stderr">
+<pre data-code-line-numbers=""><code>Downloading list of URLs for data files.
+ℹ This takes a few seconds but is only done once per session.</code></pre>
 </div>
-<p>Messages appear in the <strong>Console</strong> panel along with other output from R. Do not rely on the colour of the text to decide whether something is a message, warning or error: read the text itself.</p>
-<p>When R prints a message about your code, any code underneath the code that generated the message will still run. For example, if you run these three lines of code (the second of which prints a message, using the <code>message()</code> function), the line after the message will run as expected:</p>
+<div class="cell-output cell-output-stdout">
+<pre data-code-line-numbers=""><code>Downloading crime_open_database_sample_mesa_2022.Rds
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |=========================================================             |  81%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+</div>
+</div>
+<p>Messages appear in the <strong>Console</strong> panel along with other output from R. When R prints a message about your code, any code underneath the code that generated the message will still run. For example, if you run these three lines of code (the second of which prints a message, using the <code>message()</code> function), the line after the message will run as expected:</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="dv">2</span> <span class="sc">*</span> <span class="dv">2</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-label="2"></a><span class="fu">message</span>(<span class="st">"This is a message. Make sure you understand it."</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-label="3"></a><span class="dv">2</span> <span class="sc">/</span> <span class="dv">2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a><span class="dv">2</span> <span class="sc">*</span> <span class="dv">2</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-label="2"></a><span class="fu">message</span>(<span class="st">"This is a message. Make sure you understand it."</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-label="3"></a><span class="dv">2</span> <span class="sc">/</span> <span class="dv">2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <div class="cell">
@@ -720,7 +734,7 @@ quarto book
 </section>
 <section id="errors" class="level3" data-number="8.3.3">
 <h3 data-number="8.3.3" class="anchored" data-anchor-id="errors"><span class="header-section-number">8.3.3</span> Errors</h3>
-<p><em>Errors</em> are generated when R cannot complete the current operation. An error might occur, for example, because <code>read_csv()</code> could not open a requested file. An error stops the current operation. If you run a complete script, it will usually stop at the first error, so later expressions in the script will not run. If you submit expressions separately in the Console, you can still correct the problem and submit another expression. Errors are generally used for more-serious issues that prevent an operation from running successfully.</p>
+<p><em>Errors</em> are generated when R cannot complete the current operation. An error might occur, for example, because <code>read_csv()</code> could not open a requested file. Errors are generally used for more-serious issues that prevent an operation from running successfully, so an error occurring stops the code being run at that point. When you run a complete script that has an error in it, R will stop running the script at the point where the error occurred. That means any code above the error will still have run, but code below the error will not have done.</p>
 </section>
 </section>
 <section id="types-of-code-bugs" class="level2" data-number="8.4">
@@ -734,7 +748,7 @@ quarto book
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-label="1"></a><span class="fu">c</span>(<span class="st">"A"</span> <span class="st">"B"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="fu">c</span>(<span class="st">"A"</span> <span class="st">"B"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in parse(text = input): &lt;text&gt;:1:7: unexpected string constant
@@ -753,7 +767,7 @@ quarto book
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="dv">3</span> <span class="sc">*</span> <span class="st">"A"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="dv">3</span> <span class="sc">*</span> <span class="st">"A"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `3 * "A"`:
@@ -784,31 +798,31 @@ quarto book
 <p>There is a saying in programming that a computer will do exactly what you tell it to do, but that that may not be the same as what you <em>wanted</em> it to do. A logic error happens when the code runs but produces a result that is incorrect in some way. For example, we might inadvertently write code that accidentally filters out some rows in a dataset that we actually needed to keep. There is no way for R to know that you didn’t intend to filter out those rows, so it will happily follow your instructions even though they will lead to the wrong result. For that reason, logic errors often don’t cause an R error message. They are often only visible because they cause unexpected results later on in a script.</p>
 <p>Logic errors are often the hardest bugs to find because there may be no error messages in the R console and the output produced by a script can look plausible, even if it’s wrong. To identify logic errors, you must inspect the data produced at each important stage and compare the result with what you expected. Simple checks using functions such as <code>head()</code>, <code>nrow()</code>, <code>count()</code> and <code>summary()</code> can expose unexpected results before they affect later parts of an analysis.</p>
 <p>Now we know what messages, warnings and errors are, we need to find out how to deal with them when they happen.</p>
-<div class="callout callout-style-default callout-quiz callout-titled" title="Messages, warnings, errors and bugs">
+<div class="callout callout-style-default callout-quiz callout-titled" title="Messages, warnings and errors">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Quiz</span>Messages, warnings, errors and bugs
+<span class="screen-reader-only">Quiz</span>Messages, warnings and errors
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Which of the following terms is used in R to describe the way of communicating something for information only?</strong></p>
-<div id="radio_JBTHSMNSDI" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_JBTHSMNSDI" value="answer"> <span>A message</span></label><label><input type="radio" autocomplete="off" name="radio_JBTHSMNSDI" value=""> <span>A warning</span></label><label><input type="radio" autocomplete="off" name="radio_JBTHSMNSDI" value=""> <span>An error</span></label><label><input type="radio" autocomplete="off" name="radio_JBTHSMNSDI" value=""> <span>A condition</span></label>
+<div id="radio_TCDBBYXKCA" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_TCDBBYXKCA" value="answer"> <span>A message</span></label><label><input type="radio" autocomplete="off" name="radio_TCDBBYXKCA" value=""> <span>A warning</span></label><label><input type="radio" autocomplete="off" name="radio_TCDBBYXKCA" value=""> <span>An error</span></label><label><input type="radio" autocomplete="off" name="radio_TCDBBYXKCA" value=""> <span>A condition</span></label>
 </div>
 <p><strong>Which of these statements is true?</strong></p>
-<div id="radio_DVEZPNNESM" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_DVEZPNNESM" value=""> <span>It is generally okay not to worry about warnings produced by R code – in most cases you won't need to take any action anyway</span></label><label><input type="radio" autocomplete="off" name="radio_DVEZPNNESM" value="answer"> <span>While you will often not need to take any action in response to a warning produced by your R code, it is still important to understand what caused the warning just in case you need to take action</span></label>
+<div id="radio_QBFYIAVATR" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_QBFYIAVATR" value=""> <span>It is generally okay not to worry about warnings produced by R code – in most cases you won't need to take any action anyway</span></label><label><input type="radio" autocomplete="off" name="radio_QBFYIAVATR" value="answer"> <span>While you will often not need to take any action in response to a warning produced by your R code, it is still important to understand what caused the warning just in case you need to take action</span></label>
 </div>
 <p><strong>What type of bug occurs when code runs but produces the wrong result?</strong></p>
-<div id="radio_YNJIKEYEQO" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_YNJIKEYEQO" value=""> <span>A syntax error</span></label><label><input type="radio" autocomplete="off" name="radio_YNJIKEYEQO" value=""> <span>A runtime error</span></label><label><input type="radio" autocomplete="off" name="radio_YNJIKEYEQO" value="answer"> <span>A logic error</span></label><label><input type="radio" autocomplete="off" name="radio_YNJIKEYEQO" value=""> <span>A message</span></label>
+<div id="radio_EKTLCAXKUG" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_EKTLCAXKUG" value=""> <span>A syntax error</span></label><label><input type="radio" autocomplete="off" name="radio_EKTLCAXKUG" value=""> <span>A runtime error</span></label><label><input type="radio" autocomplete="off" name="radio_EKTLCAXKUG" value="answer"> <span>A logic error</span></label><label><input type="radio" autocomplete="off" name="radio_EKTLCAXKUG" value=""> <span>A message</span></label>
 </div>
 <p><strong>What is the difference between a syntax error and a runtime error?</strong></p>
-<div id="radio_JKPRDJHJZV" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_JKPRDJHJZV" value="answer"> <span>A syntax error stops R interpreting the code, while a runtime error occurs when R cannot complete an operation</span></label><label><input type="radio" autocomplete="off" name="radio_JKPRDJHJZV" value=""> <span>A syntax error produces an incorrect result, while a runtime error always produces a warning</span></label><label><input type="radio" autocomplete="off" name="radio_JKPRDJHJZV" value=""> <span>A syntax error occurs only in the Console, while a runtime error occurs only in scripts</span></label><label><input type="radio" autocomplete="off" name="radio_JKPRDJHJZV" value=""> <span>There is no difference between syntax errors and runtime errors</span></label>
+<div id="radio_YMWRNQNFOU" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_YMWRNQNFOU" value="answer"> <span>A syntax error stops R interpreting the code, while a runtime error occurs when R cannot complete an operation</span></label><label><input type="radio" autocomplete="off" name="radio_YMWRNQNFOU" value=""> <span>A syntax error produces an incorrect result, while a runtime error always produces a warning</span></label><label><input type="radio" autocomplete="off" name="radio_YMWRNQNFOU" value=""> <span>A syntax error occurs only in the Console, while a runtime error occurs only in scripts</span></label><label><input type="radio" autocomplete="off" name="radio_YMWRNQNFOU" value=""> <span>There is no difference between syntax errors and runtime errors</span></label>
 </div>
 </div>
 </div>
@@ -848,13 +862,13 @@ quarto book
 <p>Sometimes it won’t be necessary to go through all the steps because the problem will be easy to fix, but it’s still useful to follow the process from the start until we reach a solution.</p>
 <section id="step-1-understand-the-problem" class="level3" data-number="8.5.1">
 <h3 data-number="8.5.1" class="anchored" data-anchor-id="step-1-understand-the-problem"><span class="header-section-number">8.5.1</span> Step 1: Understand the problem</h3>
-<p>The first step in diagnosing a problem with our code is to reproduce it, then read <em>and understand</em> any errors, warnings or messages produced. If R does not produce one of these, compare the result with what you expected. For simple bugs this will often be enough to solve the problem. For example, if you were to try to run this code with the <code>frauds</code> dataset we loaded earlier:</p>
+<p>The first step in diagnosing a problem with our code is to reproduce it, then read <em>and understand</em> any errors, warnings or messages produced. For simple bugs this will often be enough to solve the problem. For example, if you were to try to run this code with the <code>frauds</code> dataset we loaded earlier:</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="fu">select</span>(frauds, offense_category)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-label="1"></a><span class="fu">select</span>(frauds, offense_category)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>You would see that R produced an error message saying something like:</p>
@@ -871,7 +885,7 @@ quarto book
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-label="1"></a><span class="fu">head</span>(frauds)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a><span class="fu">head</span>(frauds)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 6 × 6
@@ -892,7 +906,7 @@ quarto book
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a><span class="fu">str_wrap</span>(<span class="st">"A line of text that we want to break into shorter lines"</span>, <span class="at">length =</span> <span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-label="1"></a><span class="fu">str_wrap</span>(<span class="st">"A line of text that we want to break into shorter lines"</span>, <span class="at">length =</span> <span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `str_wrap()`:
@@ -935,14 +949,114 @@ This section gives more examples of how the function can be used.
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-label="1"></a><span class="fu">str_wrap</span>(<span class="st">"A line of text that we want to break into shorter lines"</span>, <span class="at">width =</span> <span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-label="1"></a><span class="fu">str_wrap</span>(<span class="st">"A line of text that we want to break into shorter lines"</span>, <span class="at">width =</span> <span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>[1] "A line of text that\nwe want to break\ninto shorter lines"</code></pre>
 </div>
 </div>
+<section id="sec-function-conflicts" class="level4" data-number="8.5.1.1">
+<h4 data-number="8.5.1.1" class="anchored" data-anchor-id="sec-function-conflicts"><span class="header-section-number">8.5.1.1</span> Conflicts between function names</h4>
+<p>Checking a manual page is only useful if it describes the function that R is actually using. R packages are written by people working in many different areas, so packages sometimes contain functions with the same name. Those functions might do similar things, or they might do completely different things.</p>
+<p>For example, dplyr contains a function called <code>select()</code> that selects columns from a data frame. The MASS package also contains a function called <code>select()</code>, but it is used for a different purpose and has different arguments. If both packages are loaded, R will normally use the function from the package that was loaded most recently.</p>
+<p>Imagine that we loaded the tidyverse first and MASS second:</p>
+<div class="cell bad_code">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Do not run this code</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, MASS)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<p>When MASS is loaded, R prints a message saying that <code>MASS::select()</code> has <em>masked</em> <code>dplyr::select()</code>. This means that an unqualified call to <code>select()</code> will now use the function from MASS. Code intended to select the <code>offense_type</code> column would then produce an error like this:</p>
+<div class="cell bad_code">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Do not run this code</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-label="1"></a><span class="fu">select</span>(frauds, offense_type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-error">
+<pre data-code-line-numbers=""><code>Error in `MASS::select()`:
+! unused argument (offense_type)</code></pre>
+</div>
+</div>
+<p>The error says that <code>offense_type</code> is an unused argument because <code>MASS::select()</code> does not have an argument for selecting columns. In a session where MASS had masked dplyr, the same problem would occur with <code>select(frauds, offense_type)</code>. This is why an error about an argument can sometimes mean that R is using a different function from the one you intended.</p>
+<p>The tidyverse packages contain several functions that share names with functions in other packages. For example, dplyr and the stats package both contain a function called <code>filter()</code>. We usually want <code>dplyr::filter()</code> when working with data frames, whereas <code>stats::filter()</code> is designed for time-series data.</p>
+<p>The guiding principle in this book is to load packages in alphabetical order, then load tidyverse last:</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>R Console</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(MASS, tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<p>Loading tidyverse last means that calls to <code>select()</code> and <code>filter()</code> will normally use the dplyr versions that we need for data wrangling. Always read the messages printed when packages are loaded: a message about a function being masked does not necessarily indicate a problem, but it tells you which package’s function R will use.</p>
+<p>If changing the package-loading order is not appropriate, or if you need to use both versions of a function in the same script, use <code>::</code> to specify the package explicitly. For example, <code>dplyr::select(frauds, offense_type)</code> always uses the dplyr function, regardless of the order in which packages were loaded.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Load tidyverse last">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Load tidyverse last
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>One way to minimise how confusing package conflicts can be is to always load packages in a consistent order. I strongly recommend loading packages in alphabetical order, <em>then</em> loading the tidyverse package <em>last</em>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Using the conflicted package">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Using the conflicted package
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The conflicted package provides another way to manage function-name conflicts. It produces an error if you use the name of a function provided by more than one loaded package, unless you have specified which version you prefer.</p>
+<p>Load conflicted before calling <code>pacman::p_load()</code>, then use <code>conflict_prefer()</code> after loading the other packages:</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>R Console</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-label="1"></a><span class="fu">library</span>(conflicted)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(MASS, tidyverse)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-label="3"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-label="4"></a><span class="fu">conflict_prefer</span>(<span class="st">"select"</span>, <span class="st">"dplyr"</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-label="5"></a><span class="fu">conflict_prefer</span>(<span class="st">"filter"</span>, <span class="st">"dplyr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<p>In the rest of the script, unqualified calls to <code>select()</code> and <code>filter()</code> will use the dplyr functions. You can learn more in the <a href="https://conflicted.r-lib.org/">conflicted package documentation</a>.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-quiz callout-titled" title="Package conflicts">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Quiz</span>Package conflicts
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>If you load two packages in R that both contain a function with the same name, which function will R use by default?</strong></p>
+<div id="radio_RNZDNZQWZY" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_RNZDNZQWZY" value=""> <span>The function that is from the <code>tidyverse</code> suite of packages.</span></label><label><input type="radio" autocomplete="off" name="radio_RNZDNZQWZY" value=""> <span>The function from the package that was loaded <em>first</em></span></label><label><input type="radio" autocomplete="off" name="radio_RNZDNZQWZY" value="answer"> <span>The function from the package that was loaded <em>last</em></span></label><label><input type="radio" autocomplete="off" name="radio_RNZDNZQWZY" value=""> <span>Neither function will run because R will produce an error.</span></label>
+</div>
+</div>
+</div>
 <div class="callout callout-style-default callout-tip callout-titled" title="What should I do if an error mentions `rlang::last_trace()`?">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -951,12 +1065,13 @@ This section gives more examples of how the function can be used.
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Some errors produced by tidyverse packages suggest running <code>rlang::last_trace()</code>. This command shows the sequence of function calls that led to the error. The output can be long, so first look for a line that refers to your script or to a function you called. You do not need to understand the internal package functions listed in the trace.</p>
 </div>
 </div>
 </div>
+</section>
 </section>
 <section id="step-2-isolate-the-code-that-produces-the-problem" class="level3" data-number="8.5.2">
 <h3 data-number="8.5.2" class="anchored" data-anchor-id="step-2-isolate-the-code-that-produces-the-problem"><span class="header-section-number">8.5.2</span> Step 2: Isolate the code that produces the problem</h3>
@@ -966,10 +1081,10 @@ This section gives more examples of how the function can be used.
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-label="2"></a>  <span class="fu">select</span>(offense_type, date, longitude, latitude) <span class="sc">|&gt;</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-label="3"></a>  <span class="fu">filter</span>(offence_type <span class="sc">==</span> <span class="st">"impersonation"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-label="4"></a>  <span class="fu">arrange</span>(date)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-label="2"></a>  <span class="fu">select</span>(offense_type, date, longitude, latitude) <span class="sc">|&gt;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-label="3"></a>  <span class="fu">filter</span>(offence_type <span class="sc">==</span> <span class="st">"impersonation"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-label="4"></a>  <span class="fu">arrange</span>(date)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `filter()`:
@@ -989,10 +1104,10 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude) <span class="sc">|&gt;</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-label="3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26A"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-label="4"></a>  <span class="fu">arrange</span>(date)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude) <span class="sc">|&gt;</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-label="3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-label="4"></a>  <span class="fu">arrange</span>(date)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `arrange()`:
@@ -1001,7 +1116,7 @@ Caused by error:
 ! `..1` must be a vector, not a function.</code></pre>
 </div>
 </div>
-<p>The message seems to tell us that the error occurs in <code>arrange()</code>. But looking at that line of code, there is nothing obviously wrong. <code>arrange()</code> is a function in a package that we’ve loaded (<code>arrange()</code> is in the dplyr package, which was loaded automatically when we loaded the tidyverse package), and <code>date</code> is a column in the original <code>frauds</code> dataset. So why is R producing an error message? We could look at the manual page by typing <code>?arrange</code> in the R Console, but let’s imagine we’ve done that and it didn’t help.</p>
+<p>The message seems to tell us that the error occurs in <code>arrange()</code>. But looking at that line of code, there is nothing obviously wrong. <code>arrange()</code> is a function in a package that we’ve loaded (<code>arrange()</code> is in the dplyr package, which was loaded automatically when we loaded the tidyverse package), and <code>date</code> is a column in the original <code>frauds</code> dataset. So why is R producing an error message? We could look at the manual page by typing <code>?arrange</code> in the R Console, but let’s imagine we’ve done that already and it didn’t help.</p>
 <p>A useful next step in these circumstances is to look at the <em>inputs</em> a function is receiving. This can be important because while the error message suggests the problem is in <code>arrange()</code>, it’s possible that the <em>cause</em> of the error is some problem with a previous part of our code and that <code>arrange()</code> is just the first function to notice the problem. In cases like that, an error message can be technically correct but somewhat misleading.</p>
 <p>A good way to identify which line of a code pipeline is causing the problem is to comment out all the lines except the first one, then run the code and see if it produces an error. If no error appears and the result produced by that line looks reasonable, then we continue to uncomment one line at a time until we find the problem.</p>
 <p>Re-run the code above, but comment out all the lines except the first one by putting <code>#</code> at the start of each line. Remember to remove the <code>|&gt;</code> from the end of the last <em>uncommented</em> line of code, since otherwise you will find the code does not run as expected. Your code should now look like this:</p>
@@ -1010,10 +1125,10 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-label="1"></a>frauds</span>
-<span id="cb24-2"><a href="#cb24-2" aria-label="2"></a><span class="co"># select(offense_code, longitude, latitude) |&gt;</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-label="3"></a><span class="co"># filter(offense_code == "26A") |&gt;</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-label="4"></a><span class="co"># arrange(date)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-label="1"></a>frauds</span>
+<span id="cb31-2"><a href="#cb31-2" aria-label="2"></a><span class="co"># select(offense_code, longitude, latitude) |&gt;</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-label="3"></a><span class="co"># filter(offense_code == "26A") |&gt;</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-label="4"></a><span class="co"># arrange(date)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>If you run this code, it will simply print the first few lines of the dataset. Remove the <code>#</code> comment symbol from the second line of the code and run it again, remembering to replace the pipe operator (<code>|&gt;</code>) at the end of line 1 and remove the <code>|&gt;</code> at the end of line 2.</p>
@@ -1022,10 +1137,10 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-label="3"></a><span class="co"># filter(offense_code == "26A") |&gt;</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-label="4"></a><span class="co"># arrange(date)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-label="3"></a><span class="co"># filter(offense_code == "26A") |&gt;</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-label="4"></a><span class="co"># arrange(date)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>Again, the code does not produce an error – but the result now has only three columns. Checking the output at this stage shows that the <code>date</code> column has been removed. Add <code>date</code> to the list of columns that are included in <code>select()</code> before continuing.</p>
@@ -1035,9 +1150,9 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, date, longitude, latitude) <span class="sc">|&gt;</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-label="3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26E"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, date, longitude, latitude) <span class="sc">|&gt;</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-label="3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26E"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 0 × 4
@@ -1051,7 +1166,7 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-label="1"></a><span class="fu">count</span>(frauds, offense_code)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-label="1"></a><span class="fu">count</span>(frauds, offense_code)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 3 × 2
@@ -1068,10 +1183,10 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude) <span class="sc">|&gt;</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-label="3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26A"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-label="4"></a>  sf<span class="sc">::</span><span class="fu">st_transform</span>(<span class="st">"EPSG:3603"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude) <span class="sc">|&gt;</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-label="3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-label="4"></a>  sf<span class="sc">::</span><span class="fu">st_transform</span>(<span class="st">"EPSG:3603"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `UseMethod()`:
@@ -1098,12 +1213,12 @@ Caused by error:
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What is a useful way to find where a bug was introduced?</strong></p>
-<div id="radio_ZDFQUDZCSP" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_ZDFQUDZCSP" value=""> <span>Change several arguments at once so that one of them is likely to work</span></label><label><input type="radio" autocomplete="off" name="radio_ZDFQUDZCSP" value=""> <span>Inspect only the final result because intermediate results do not matter</span></label><label><input type="radio" autocomplete="off" name="radio_ZDFQUDZCSP" value="answer"> <span>Run the code one stage at a time and inspect the result after each stage</span></label><label><input type="radio" autocomplete="off" name="radio_ZDFQUDZCSP" value=""> <span>Ignore a result with zero rows if R did not produce an error</span></label>
+<div id="radio_GEHPGXUBVA" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_GEHPGXUBVA" value=""> <span>Change several arguments at once so that one of them is likely to work</span></label><label><input type="radio" autocomplete="off" name="radio_GEHPGXUBVA" value=""> <span>Inspect only the final result because intermediate results do not matter</span></label><label><input type="radio" autocomplete="off" name="radio_GEHPGXUBVA" value="answer"> <span>Run the code one stage at a time and inspect the result after each stage</span></label><label><input type="radio" autocomplete="off" name="radio_GEHPGXUBVA" value=""> <span>Ignore a result with zero rows if R did not produce an error</span></label>
 </div>
 <p><strong>What can a function’s manual page help you check?</strong></p>
-<div id="radio_NIDHEODRSM" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_NIDHEODRSM" value=""> <span>Only the name of the package containing the function</span></label><label><input type="radio" autocomplete="off" name="radio_NIDHEODRSM" value="answer"> <span>The inputs a function expects, its arguments and the value it returns</span></label><label><input type="radio" autocomplete="off" name="radio_NIDHEODRSM" value=""> <span>A guarantee that the function is suitable for your analysis</span></label><label><input type="radio" autocomplete="off" name="radio_NIDHEODRSM" value=""> <span>A list of every bug that the function can produce</span></label>
+<div id="radio_NMJVMTXPYQ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_NMJVMTXPYQ" value=""> <span>Only the name of the package containing the function</span></label><label><input type="radio" autocomplete="off" name="radio_NMJVMTXPYQ" value="answer"> <span>The inputs a function expects, its arguments and the value it returns</span></label><label><input type="radio" autocomplete="off" name="radio_NMJVMTXPYQ" value=""> <span>A guarantee that the function is suitable for your analysis</span></label><label><input type="radio" autocomplete="off" name="radio_NMJVMTXPYQ" value=""> <span>A list of every bug that the function can produce</span></label>
 </div>
 </div>
 </div>
@@ -1126,41 +1241,41 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>chapter_08.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-label="1"></a><span class="co"># Load packages</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, tidyverse)</span>
-<span id="cb32-3"><a href="#cb32-3" aria-label="3"></a></span>
-<span id="cb32-4"><a href="#cb32-4" aria-label="4"></a><span class="co"># Load a dataset from your computer and wrangle it</span></span>
-<span id="cb32-5"><a href="#cb32-5" aria-label="5"></a>road_deaths <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"road_deaths_data.csv"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb32-6"><a href="#cb32-6" aria-label="6"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb32-7"><a href="#cb32-7" aria-label="7"></a>  <span class="fu">rename</span>(<span class="at">ksi_drivers =</span> drivers, <span class="at">ksi_pass_front =</span> front, <span class="at">ksi_pass_rear =</span> rear) <span class="sc">|&gt;</span></span>
-<span id="cb32-8"><a href="#cb32-8" aria-label="8"></a>  <span class="fu">select</span>(<span class="sc">-</span>petrol_price, <span class="sc">-</span>van_killed) <span class="sc">|&gt;</span></span>
-<span id="cb32-9"><a href="#cb32-9" aria-label="9"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb32-10"><a href="#cb32-10" aria-label="10"></a>    <span class="at">law =</span> <span class="fu">as.logical</span>(law),</span>
-<span id="cb32-11"><a href="#cb32-11" aria-label="11"></a>    <span class="at">ksi_driver_rate =</span> ksi_drivers <span class="sc">/</span> (kms <span class="sc">/</span> <span class="dv">1000</span>)</span>
-<span id="cb32-12"><a href="#cb32-12" aria-label="12"></a>  )</span>
-<span id="cb32-13"><a href="#cb32-13" aria-label="13"></a></span>
-<span id="cb32-14"><a href="#cb32-14" aria-label="14"></a><span class="co"># Make a time-series chart of two continuous variables, coloured by a</span></span>
-<span id="cb32-15"><a href="#cb32-15" aria-label="15"></a><span class="co"># categorical variable, then add a trend line</span></span>
-<span id="cb32-16"><a href="#cb32-16" aria-label="16"></a>road_deaths <span class="sc">+</span></span>
-<span id="cb32-17"><a href="#cb32-17" aria-label="17"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month_beginning, <span class="at">y =</span> ksi_driver_rate)) <span class="sc">+</span></span>
-<span id="cb32-18"><a href="#cb32-18" aria-label="18"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> law)) <span class="sc">+</span></span>
-<span id="cb32-19"><a href="#cb32-19" aria-label="19"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
-<span id="cb32-20"><a href="#cb32-20" aria-label="20"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 years"</span>, <span class="at">date_labels =</span> <span class="st">"%Y"</span>) <span class="sc">+</span></span>
-<span id="cb32-21"><a href="#cb32-21" aria-label="21"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">comma_format</span>(), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
-<span id="cb32-22"><a href="#cb32-22" aria-label="22"></a>  <span class="fu">scale_colour_brewer</span>(<span class="at">type =</span> <span class="st">"qual"</span>) <span class="sc">+</span></span>
-<span id="cb32-23"><a href="#cb32-23" aria-label="23"></a>  <span class="fu">labs</span>(</span>
-<span id="cb32-24"><a href="#cb32-24" aria-label="24"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
-<span id="cb32-25"><a href="#cb32-25" aria-label="25"></a>    <span class="at">y =</span> <span class="st">"drivers killed or seriously injured per 1,000km travelled"</span>,</span>
-<span id="cb32-26"><a href="#cb32-26" aria-label="26"></a>    <span class="at">colour =</span> <span class="st">"after seat belts made mandatory"</span></span>
-<span id="cb32-27"><a href="#cb32-27" aria-label="27"></a>  ) <span class="sc">+</span></span>
-<span id="cb32-28"><a href="#cb32-28" aria-label="28"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb32-29"><a href="#cb32-29" aria-label="29"></a>  <span class="fu">theme</span>(</span>
-<span id="cb32-30"><a href="#cb32-30" aria-label="30"></a>    <span class="at">axis.line.x =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
-<span id="cb32-31"><a href="#cb32-31" aria-label="31"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
-<span id="cb32-32"><a href="#cb32-32" aria-label="32"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb32-33"><a href="#cb32-33" aria-label="33"></a>    <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb32-34"><a href="#cb32-34" aria-label="34"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span></span>
-<span id="cb32-35"><a href="#cb32-35" aria-label="35"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-label="1"></a><span class="co"># Load packages</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, tidyverse)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-label="3"></a></span>
+<span id="cb39-4"><a href="#cb39-4" aria-label="4"></a><span class="co"># Load a dataset from your computer and wrangle it</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-label="5"></a>road_deaths <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"road_deaths_data.csv"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-label="6"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-label="7"></a>  <span class="fu">rename</span>(<span class="at">ksi_drivers =</span> drivers, <span class="at">ksi_pass_front =</span> front, <span class="at">ksi_pass_rear =</span> rear) <span class="sc">|&gt;</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-label="8"></a>  <span class="fu">select</span>(<span class="sc">-</span>petrol_price, <span class="sc">-</span>van_killed) <span class="sc">|&gt;</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-label="9"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb39-10"><a href="#cb39-10" aria-label="10"></a>    <span class="at">law =</span> <span class="fu">as.logical</span>(law),</span>
+<span id="cb39-11"><a href="#cb39-11" aria-label="11"></a>    <span class="at">ksi_driver_rate =</span> ksi_drivers <span class="sc">/</span> (kms <span class="sc">/</span> <span class="dv">1000</span>)</span>
+<span id="cb39-12"><a href="#cb39-12" aria-label="12"></a>  )</span>
+<span id="cb39-13"><a href="#cb39-13" aria-label="13"></a></span>
+<span id="cb39-14"><a href="#cb39-14" aria-label="14"></a><span class="co"># Make a time-series chart of two continuous variables, coloured by a</span></span>
+<span id="cb39-15"><a href="#cb39-15" aria-label="15"></a><span class="co"># categorical variable, then add a trend line</span></span>
+<span id="cb39-16"><a href="#cb39-16" aria-label="16"></a>road_deaths <span class="sc">+</span></span>
+<span id="cb39-17"><a href="#cb39-17" aria-label="17"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month_beginning, <span class="at">y =</span> ksi_driver_rate)) <span class="sc">+</span></span>
+<span id="cb39-18"><a href="#cb39-18" aria-label="18"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> law)) <span class="sc">+</span></span>
+<span id="cb39-19"><a href="#cb39-19" aria-label="19"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
+<span id="cb39-20"><a href="#cb39-20" aria-label="20"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 years"</span>, <span class="at">date_labels =</span> <span class="st">"%Y"</span>) <span class="sc">+</span></span>
+<span id="cb39-21"><a href="#cb39-21" aria-label="21"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">comma_format</span>(), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
+<span id="cb39-22"><a href="#cb39-22" aria-label="22"></a>  <span class="fu">scale_colour_brewer</span>(<span class="at">type =</span> <span class="st">"qual"</span>) <span class="sc">+</span></span>
+<span id="cb39-23"><a href="#cb39-23" aria-label="23"></a>  <span class="fu">labs</span>(</span>
+<span id="cb39-24"><a href="#cb39-24" aria-label="24"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb39-25"><a href="#cb39-25" aria-label="25"></a>    <span class="at">y =</span> <span class="st">"drivers killed or seriously injured per 1,000km travelled"</span>,</span>
+<span id="cb39-26"><a href="#cb39-26" aria-label="26"></a>    <span class="at">colour =</span> <span class="st">"after seat belts made mandatory"</span></span>
+<span id="cb39-27"><a href="#cb39-27" aria-label="27"></a>  ) <span class="sc">+</span></span>
+<span id="cb39-28"><a href="#cb39-28" aria-label="28"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb39-29"><a href="#cb39-29" aria-label="29"></a>  <span class="fu">theme</span>(</span>
+<span id="cb39-30"><a href="#cb39-30" aria-label="30"></a>    <span class="at">axis.line.x =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
+<span id="cb39-31"><a href="#cb39-31" aria-label="31"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
+<span id="cb39-32"><a href="#cb39-32" aria-label="32"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb39-33"><a href="#cb39-33" aria-label="33"></a>    <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb39-34"><a href="#cb39-34" aria-label="34"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span></span>
+<span id="cb39-35"><a href="#cb39-35" aria-label="35"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>At the moment, you can’t run this code because you don’t have the <code>road_deaths_data.csv</code> file. Download the file using the following link and save it in the <code>data/raw</code> folder. Keeping the downloaded file separate from the script follows the workspace structure introduced in <a href="../01_getting_started/index.html#sec-create-project" class="quarto-xref"><span>Section 1.5</span></a>.</p>
@@ -1187,41 +1302,41 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>chapter_08.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34" data-source-line-numbers="nil" data-code-line-numbers="2,5,16,17,18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-label="1"></a><span class="co"># Load packages</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, tidyverse) </span>
-<span id="cb34-3"><a href="#cb34-3" aria-label="3"></a></span>
-<span id="cb34-4"><a href="#cb34-4" aria-label="4"></a><span class="co"># Load a dataset from your computer and wrangle it</span></span>
-<span id="cb34-5"><a href="#cb34-5" aria-label="5"></a>road_deaths <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"road_deaths_data.csv"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb34-6"><a href="#cb34-6" aria-label="6"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb34-7"><a href="#cb34-7" aria-label="7"></a>  <span class="fu">rename</span>(<span class="at">ksi_drivers =</span> drivers, <span class="at">ksi_pass_front =</span> front, <span class="at">ksi_pass_rear =</span> rear) <span class="sc">|&gt;</span></span>
-<span id="cb34-8"><a href="#cb34-8" aria-label="8"></a>  <span class="fu">select</span>(<span class="sc">-</span>petrol_price, <span class="sc">-</span>van_killed) <span class="sc">|&gt;</span></span>
-<span id="cb34-9"><a href="#cb34-9" aria-label="9"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb34-10"><a href="#cb34-10" aria-label="10"></a>    <span class="at">law =</span> <span class="fu">as.logical</span>(law),</span>
-<span id="cb34-11"><a href="#cb34-11" aria-label="11"></a>    <span class="at">ksi_driver_rate =</span> ksi_drivers <span class="sc">/</span> (kms <span class="sc">/</span> <span class="dv">1000</span>)</span>
-<span id="cb34-12"><a href="#cb34-12" aria-label="12"></a>  )</span>
-<span id="cb34-13"><a href="#cb34-13" aria-label="13"></a></span>
-<span id="cb34-14"><a href="#cb34-14" aria-label="14"></a><span class="co"># Make a time-series chart of two continuous variables, coloured by a</span></span>
-<span id="cb34-15"><a href="#cb34-15" aria-label="15"></a><span class="co"># categorical variable, then add a trend line</span></span>
-<span id="cb34-16"><a href="#cb34-16" aria-label="16"></a>road_deaths <span class="sc">+</span> </span>
-<span id="cb34-17"><a href="#cb34-17" aria-label="17"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month_beginning, <span class="at">y =</span> ksi_driver_rate)) <span class="sc">+</span> </span>
-<span id="cb34-18"><a href="#cb34-18" aria-label="18"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> law)) <span class="sc">+</span> </span>
-<span id="cb34-19"><a href="#cb34-19" aria-label="19"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
-<span id="cb34-20"><a href="#cb34-20" aria-label="20"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 years"</span>, <span class="at">date_labels =</span> <span class="st">"%Y"</span>) <span class="sc">+</span></span>
-<span id="cb34-21"><a href="#cb34-21" aria-label="21"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">comma_format</span>(), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
-<span id="cb34-22"><a href="#cb34-22" aria-label="22"></a>  <span class="fu">scale_colour_brewer</span>(<span class="at">type =</span> <span class="st">"qual"</span>) <span class="sc">+</span></span>
-<span id="cb34-23"><a href="#cb34-23" aria-label="23"></a>  <span class="fu">labs</span>(</span>
-<span id="cb34-24"><a href="#cb34-24" aria-label="24"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
-<span id="cb34-25"><a href="#cb34-25" aria-label="25"></a>    <span class="at">y =</span> <span class="st">"drivers killed or seriously injured per 1,000km travelled"</span>,</span>
-<span id="cb34-26"><a href="#cb34-26" aria-label="26"></a>    <span class="at">colour =</span> <span class="st">"after seat belts made mandatory"</span></span>
-<span id="cb34-27"><a href="#cb34-27" aria-label="27"></a>  ) <span class="sc">+</span></span>
-<span id="cb34-28"><a href="#cb34-28" aria-label="28"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb34-29"><a href="#cb34-29" aria-label="29"></a>  <span class="fu">theme</span>(</span>
-<span id="cb34-30"><a href="#cb34-30" aria-label="30"></a>    <span class="at">axis.line.x =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
-<span id="cb34-31"><a href="#cb34-31" aria-label="31"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
-<span id="cb34-32"><a href="#cb34-32" aria-label="32"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb34-33"><a href="#cb34-33" aria-label="33"></a>    <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb34-34"><a href="#cb34-34" aria-label="34"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span></span>
-<span id="cb34-35"><a href="#cb34-35" aria-label="35"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41" data-source-line-numbers="nil" data-code-line-numbers="2,5,16,17,18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-label="1"></a><span class="co"># Load packages</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, tidyverse) </span>
+<span id="cb41-3"><a href="#cb41-3" aria-label="3"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-label="4"></a><span class="co"># Load a dataset from your computer and wrangle it</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-label="5"></a>road_deaths <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"road_deaths_data.csv"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb41-6"><a href="#cb41-6" aria-label="6"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-label="7"></a>  <span class="fu">rename</span>(<span class="at">ksi_drivers =</span> drivers, <span class="at">ksi_pass_front =</span> front, <span class="at">ksi_pass_rear =</span> rear) <span class="sc">|&gt;</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-label="8"></a>  <span class="fu">select</span>(<span class="sc">-</span>petrol_price, <span class="sc">-</span>van_killed) <span class="sc">|&gt;</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-label="9"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb41-10"><a href="#cb41-10" aria-label="10"></a>    <span class="at">law =</span> <span class="fu">as.logical</span>(law),</span>
+<span id="cb41-11"><a href="#cb41-11" aria-label="11"></a>    <span class="at">ksi_driver_rate =</span> ksi_drivers <span class="sc">/</span> (kms <span class="sc">/</span> <span class="dv">1000</span>)</span>
+<span id="cb41-12"><a href="#cb41-12" aria-label="12"></a>  )</span>
+<span id="cb41-13"><a href="#cb41-13" aria-label="13"></a></span>
+<span id="cb41-14"><a href="#cb41-14" aria-label="14"></a><span class="co"># Make a time-series chart of two continuous variables, coloured by a</span></span>
+<span id="cb41-15"><a href="#cb41-15" aria-label="15"></a><span class="co"># categorical variable, then add a trend line</span></span>
+<span id="cb41-16"><a href="#cb41-16" aria-label="16"></a>road_deaths <span class="sc">+</span> </span>
+<span id="cb41-17"><a href="#cb41-17" aria-label="17"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month_beginning, <span class="at">y =</span> ksi_driver_rate)) <span class="sc">+</span> </span>
+<span id="cb41-18"><a href="#cb41-18" aria-label="18"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> law)) <span class="sc">+</span> </span>
+<span id="cb41-19"><a href="#cb41-19" aria-label="19"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
+<span id="cb41-20"><a href="#cb41-20" aria-label="20"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 years"</span>, <span class="at">date_labels =</span> <span class="st">"%Y"</span>) <span class="sc">+</span></span>
+<span id="cb41-21"><a href="#cb41-21" aria-label="21"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">comma_format</span>(), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
+<span id="cb41-22"><a href="#cb41-22" aria-label="22"></a>  <span class="fu">scale_colour_brewer</span>(<span class="at">type =</span> <span class="st">"qual"</span>) <span class="sc">+</span></span>
+<span id="cb41-23"><a href="#cb41-23" aria-label="23"></a>  <span class="fu">labs</span>(</span>
+<span id="cb41-24"><a href="#cb41-24" aria-label="24"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb41-25"><a href="#cb41-25" aria-label="25"></a>    <span class="at">y =</span> <span class="st">"drivers killed or seriously injured per 1,000km travelled"</span>,</span>
+<span id="cb41-26"><a href="#cb41-26" aria-label="26"></a>    <span class="at">colour =</span> <span class="st">"after seat belts made mandatory"</span></span>
+<span id="cb41-27"><a href="#cb41-27" aria-label="27"></a>  ) <span class="sc">+</span></span>
+<span id="cb41-28"><a href="#cb41-28" aria-label="28"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb41-29"><a href="#cb41-29" aria-label="29"></a>  <span class="fu">theme</span>(</span>
+<span id="cb41-30"><a href="#cb41-30" aria-label="30"></a>    <span class="at">axis.line.x =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
+<span id="cb41-31"><a href="#cb41-31" aria-label="31"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
+<span id="cb41-32"><a href="#cb41-32" aria-label="32"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb41-33"><a href="#cb41-33" aria-label="33"></a>    <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb41-34"><a href="#cb41-34" aria-label="34"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span></span>
+<span id="cb41-35"><a href="#cb41-35" aria-label="35"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>That means we can remove:</p>
@@ -1239,18 +1354,18 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, tidyverse)</span>
-<span id="cb35-2"><a href="#cb35-2" aria-label="2"></a></span>
-<span id="cb35-3"><a href="#cb35-3" aria-label="3"></a>road_deaths <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"road_deaths_data.csv"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, tidyverse)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-label="2"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-label="3"></a>road_deaths <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"road_deaths_data.csv"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error:
 ! '/Users/mattashby/Documents/Crime Mapping
   Book/data/raw/road_deaths_data.csv' does not exist.</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-label="1"></a>road_deaths <span class="sc">+</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-label="2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month_beginning, <span class="at">y =</span> drivers)) <span class="sc">+</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-label="3"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> law))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-label="1"></a>road_deaths <span class="sc">+</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-label="2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month_beginning, <span class="at">y =</span> drivers)) <span class="sc">+</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-label="3"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> law))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `fortify()`:
 ! `data` must be a &lt;data.frame&gt;, or an object coercible by `fortify()`,
@@ -1274,7 +1389,7 @@ Caused by error:
 </div>
 <p>Even though we have removed most of the previous code, this shorter code still produces the same error message. The bug must therefore be in one of the few remaining expressions. This makes the problem much easier to understand than it was in the original script.</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="But wouldn't this chart look very different?">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1283,7 +1398,7 @@ Caused by error:
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>If this shortened code ran successfully rather than producing an error, the resulting chart would look very different to the original chart we wanted. But that does not matter, because what we are interested in is isolating the lines of code that produce the specific error we want to find and fix.</p>
 </div>
@@ -1301,7 +1416,7 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-label="1"></a><span class="fu">head</span>(mpg)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-label="1"></a><span class="fu">head</span>(mpg)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 6 × 11
@@ -1327,11 +1442,11 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-label="1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb41-2"><a href="#cb41-2" aria-label="2"></a></span>
-<span id="cb41-3"><a href="#cb41-3" aria-label="3"></a>mpg <span class="sc">+</span></span>
-<span id="cb41-4"><a href="#cb41-4" aria-label="4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> hwy)) <span class="sc">+</span></span>
-<span id="cb41-5"><a href="#cb41-5" aria-label="5"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> trans))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-label="1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-label="2"></a></span>
+<span id="cb48-3"><a href="#cb48-3" aria-label="3"></a>mpg <span class="sc">+</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-label="4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> hwy)) <span class="sc">+</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-label="5"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> trans))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `fortify()`:
@@ -1357,7 +1472,7 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-label="1"></a>reprex<span class="sc">::</span><span class="fu">reprex</span>(<span class="at">input =</span> <span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"chapter_08.R"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-label="1"></a>reprex<span class="sc">::</span><span class="fu">reprex</span>(<span class="at">input =</span> <span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"chapter_08.R"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>The reprex package runs the example in a separate R session (to avoid conflicts with your current workspace) and produces a preview containing both the code and its output. If clipboard support is available on your computer, it also copies the formatted code to your clipboard so that you can paste it into a message, web form or chat bot.</p>
@@ -1385,12 +1500,12 @@ Caused by error:
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What should a reprex contain?</strong></p>
-<div id="radio_JGJDHBFRUA" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_JGJDHBFRUA" value=""> <span>The complete analysis and the original confidential dataset</span></label><label><input type="radio" autocomplete="off" name="radio_JGJDHBFRUA" value="answer"> <span>The smallest code and non-sensitive data needed to reproduce the same problem</span></label><label><input type="radio" autocomplete="off" name="radio_JGJDHBFRUA" value=""> <span>Only a screenshot of the error message</span></label><label><input type="radio" autocomplete="off" name="radio_JGJDHBFRUA" value=""> <span>Every package installed on your computer</span></label>
+<div id="radio_NWMATPZCPZ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_NWMATPZCPZ" value=""> <span>The complete analysis and the original confidential dataset</span></label><label><input type="radio" autocomplete="off" name="radio_NWMATPZCPZ" value="answer"> <span>The smallest code and non-sensitive data needed to reproduce the same problem</span></label><label><input type="radio" autocomplete="off" name="radio_NWMATPZCPZ" value=""> <span>Only a screenshot of the error message</span></label><label><input type="radio" autocomplete="off" name="radio_NWMATPZCPZ" value=""> <span>Every package installed on your computer</span></label>
 </div>
 <p><strong>What makes a request for debugging help easier to answer?</strong></p>
-<div id="radio_CFTYMHTGPW" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_CFTYMHTGPW" value=""> <span>Post the question on as many websites as possible</span></label><label><input type="radio" autocomplete="off" name="radio_CFTYMHTGPW" value=""> <span>Use a title such as 'R problem' so that it applies broadly</span></label><label><input type="radio" autocomplete="off" name="radio_CFTYMHTGPW" value="answer"> <span>Explain the expected result and include a checked reprex</span></label><label><input type="radio" autocomplete="off" name="radio_CFTYMHTGPW" value=""> <span>Remove the error message because it might distract readers</span></label>
+<div id="radio_NSKDYSBYAL" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_NSKDYSBYAL" value=""> <span>Post the question on as many websites as possible</span></label><label><input type="radio" autocomplete="off" name="radio_NSKDYSBYAL" value=""> <span>Use a title such as 'R problem' so that it applies broadly</span></label><label><input type="radio" autocomplete="off" name="radio_NSKDYSBYAL" value="answer"> <span>Explain the expected result and include a checked reprex</span></label><label><input type="radio" autocomplete="off" name="radio_NSKDYSBYAL" value=""> <span>Remove the error message because it might distract readers</span></label>
 </div>
 </div>
 </div>
@@ -1410,7 +1525,7 @@ Caused by error:
 <p>One useful application for tools such as ChatGPT, Gemini and Claude that are based on LLMs is helping to write and debug code. Having access to an AI tool doesn’t mean that you don’t need to know how to code. No AI tool is perfect, so you need to know enough to check that its suggestions are correct for your data and analytical goal. But LLMs can be very helpful in many circumstances.</p>
 <p>There are many different LLM services available, and they are constantly changing. Some are free to use, while others require a paid subscription. Some are designed for general-purpose use, while others are specifically designed for coding. Some are designed to be used in a web browser, while others can be integrated directly into software such as Positron.</p>
 <p>Most people’s starting point with AI tools will be a web-based chat bot service such as ChatGPT or Microsoft Copilot. These services are designed to be easy to use. They can only use the code, files or connected sources that you make available to them. Some services can run code or inspect uploaded files, but these capabilities vary by service, account and configuration.</p>
-<p>Tools designed specifically for coding include OpenAI Codex, Claude Code and GitHub Copilot. Depending on how they are configured, coding tools may be able to inspect permitted project files, run code and suggest or make changes. This extra context can make them more useful for debugging, but it is important to check what each tool is allowed to read, run or change. Access, prices and features vary, and these tools can require additional technical skill to set up and use.</p>
+<p>Much more useful for helping write and debug code are AI tools that are specifically designed for that purpose. There are many of these available, such as Open AI Codex, Claude Code and GitHub Copilot. Once set up, these tools have access to the code and data in a project, so they can base their answers on much more information. The way all LLM tools work means that the more information you provide, the more likely it is that the tool will give you a useful answer, so these tools can be much more helpful than a general-purpose chat bot. The main limitation of these tools is that they are not free (some are very expensive!) and that they often require some technical skill to set up and use.</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Eligible students can use GitHub Copilot without paying">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1464,12 +1579,12 @@ mpg +
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What is the safest way to ask an LLM for debugging help?</strong></p>
-<div id="radio_ZARXCJEWKQ" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_ZARXCJEWKQ" value=""> <span>Ask the LLM to replace the complete analysis without explaining its changes</span></label><label><input type="radio" autocomplete="off" name="radio_ZARXCJEWKQ" value="answer"> <span>Provide a non-sensitive reprex, the expected result and the exact problem</span></label><label><input type="radio" autocomplete="off" name="radio_ZARXCJEWKQ" value=""> <span>Upload the original crime dataset so that the LLM has maximum context</span></label><label><input type="radio" autocomplete="off" name="radio_ZARXCJEWKQ" value=""> <span>Accept any suggestion that runs without an error</span></label>
+<div id="radio_XEASXCKTAE" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_XEASXCKTAE" value=""> <span>Ask the LLM to replace the complete analysis without explaining its changes</span></label><label><input type="radio" autocomplete="off" name="radio_XEASXCKTAE" value="answer"> <span>Provide a non-sensitive reprex, the expected result and the exact problem</span></label><label><input type="radio" autocomplete="off" name="radio_XEASXCKTAE" value=""> <span>Upload the original crime dataset so that the LLM has maximum context</span></label><label><input type="radio" autocomplete="off" name="radio_XEASXCKTAE" value=""> <span>Accept any suggestion that runs without an error</span></label>
 </div>
 <p><strong>Why must you verify code suggested by an LLM?</strong></p>
-<div id="radio_ZLBBRHNIKV" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_ZLBBRHNIKV" value=""> <span>An LLM checks every suggestion against the current package documentation</span></label><label><input type="radio" autocomplete="off" name="radio_ZLBBRHNIKV" value=""> <span>Code that runs cannot contain a logic error</span></label><label><input type="radio" autocomplete="off" name="radio_ZLBBRHNIKV" value="answer"> <span>An LLM can produce a plausible suggestion that is wrong for your analysis</span></label><label><input type="radio" autocomplete="off" name="radio_ZLBBRHNIKV" value=""> <span>Different LLMs always return the same answer to a prompt</span></label>
+<div id="radio_VFNXKEMTHQ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_VFNXKEMTHQ" value=""> <span>An LLM checks every suggestion against the current package documentation</span></label><label><input type="radio" autocomplete="off" name="radio_VFNXKEMTHQ" value=""> <span>Code that runs cannot contain a logic error</span></label><label><input type="radio" autocomplete="off" name="radio_VFNXKEMTHQ" value="answer"> <span>An LLM can produce a plausible suggestion that is wrong for your analysis</span></label><label><input type="radio" autocomplete="off" name="radio_VFNXKEMTHQ" value=""> <span>Different LLMs always return the same answer to a prompt</span></label>
 </div>
 </div>
 </div>
@@ -1492,16 +1607,16 @@ mpg +
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Why should you avoid using the <code>attach()</code> function?</strong></p>
-<div id="radio_OUWEGDMQJX" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_OUWEGDMQJX" value=""> <span>It deletes all the objects in your R environment</span></label><label><input type="radio" autocomplete="off" name="radio_OUWEGDMQJX" value=""> <span>It makes it impossible for you to share your code with anyone else</span></label><label><input type="radio" autocomplete="off" name="radio_OUWEGDMQJX" value="answer"> <span>It makes it hard to keep track of which values are stored in which dataset</span></label><label><input type="radio" autocomplete="off" name="radio_OUWEGDMQJX" value=""> <span>It has been superseded by the <code>if_else()</code> function</span></label>
+<div id="radio_RGANRVVAQC" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_RGANRVVAQC" value=""> <span>It deletes all the objects in your R environment</span></label><label><input type="radio" autocomplete="off" name="radio_RGANRVVAQC" value=""> <span>It makes it impossible for you to share your code with anyone else</span></label><label><input type="radio" autocomplete="off" name="radio_RGANRVVAQC" value="answer"> <span>It makes it hard to keep track of which values are stored in which dataset</span></label><label><input type="radio" autocomplete="off" name="radio_RGANRVVAQC" value=""> <span>It has been superseded by the <code>if_else()</code> function</span></label>
 </div>
 <p><strong>What function should you generally use instead of <code>%&gt;%</code>?</strong></p>
-<div id="radio_IQSXUDENFD" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_IQSXUDENFD" value=""> <span><code>pluck()</code></span></label><label><input type="radio" autocomplete="off" name="radio_IQSXUDENFD" value=""> <span><code>mod()</code></span></label><label><input type="radio" autocomplete="off" name="radio_IQSXUDENFD" value=""> <span><code>pull()</code></span></label><label><input type="radio" autocomplete="off" name="radio_IQSXUDENFD" value="answer"> <span><code>|&gt;</code></span></label>
+<div id="radio_RPJOITUVSW" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_RPJOITUVSW" value=""> <span><code>pluck()</code></span></label><label><input type="radio" autocomplete="off" name="radio_RPJOITUVSW" value=""> <span><code>mod()</code></span></label><label><input type="radio" autocomplete="off" name="radio_RPJOITUVSW" value=""> <span><code>pull()</code></span></label><label><input type="radio" autocomplete="off" name="radio_RPJOITUVSW" value="answer"> <span><code>|&gt;</code></span></label>
 </div>
 <p><strong>What happens if you try to run the code <code>as.numeric("100 degrees")</code>?</strong></p>
-<div id="radio_MVXGXELZGV" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_MVXGXELZGV" value=""> <span>The numeric value <code>100</code> is returned</span></label><label><input type="radio" autocomplete="off" name="radio_MVXGXELZGV" value="answer"> <span>The value <code>NA</code> is returned</span></label><label><input type="radio" autocomplete="off" name="radio_MVXGXELZGV" value=""> <span>The text value <code>"100"</code> is returned</span></label><label><input type="radio" autocomplete="off" name="radio_MVXGXELZGV" value=""> <span>R crashes</span></label>
+<div id="radio_DIHTLMFQWA" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_DIHTLMFQWA" value=""> <span>The numeric value <code>100</code> is returned</span></label><label><input type="radio" autocomplete="off" name="radio_DIHTLMFQWA" value="answer"> <span>The value <code>NA</code> is returned</span></label><label><input type="radio" autocomplete="off" name="radio_DIHTLMFQWA" value=""> <span>The text value <code>"100"</code> is returned</span></label><label><input type="radio" autocomplete="off" name="radio_DIHTLMFQWA" value=""> <span>R crashes</span></label>
 </div>
 </div>
 </div>
@@ -1519,11 +1634,11 @@ mpg +
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-label="1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb45-2"><a href="#cb45-2" aria-label="2"></a></span>
-<span id="cb45-3"><a href="#cb45-3" aria-label="3"></a>mpg <span class="sc">+</span> <span class="co"># &lt;---- THE `+` OPERATOR HERE SHOULD BE A `|&gt;` OPERATOR INSTEAD</span></span>
-<span id="cb45-4"><a href="#cb45-4" aria-label="4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> hwy)) <span class="sc">+</span></span>
-<span id="cb45-5"><a href="#cb45-5" aria-label="5"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> trans))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-label="1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-label="2"></a></span>
+<span id="cb52-3"><a href="#cb52-3" aria-label="3"></a>mpg <span class="sc">+</span> <span class="co"># &lt;---- THE `+` OPERATOR HERE SHOULD BE A `|&gt;` OPERATOR INSTEAD</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-label="4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> hwy)) <span class="sc">+</span></span>
+<span id="cb52-5"><a href="#cb52-5" aria-label="5"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> trans))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>The mistake in this code is easy to make because what <code>+</code> does inside a <code>ggplot()</code> stack is similar to what <code>|&gt;</code> does in passing the result of one function to the next function in a data-wrangling pipeline. Remember that we use <code>+</code> to combine layers inside a <code>ggplot()</code> stack and <code>|&gt;</code> to pass an object to a function.</p>
@@ -1543,12 +1658,12 @@ mpg +
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What might cause the error message <code>could not find function "blah"</code>?</strong></p>
-<div id="radio_NIKBFETEQE" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_NIKBFETEQE" value=""> <span>You have loaded packages in the wrong order</span></label><label><input type="radio" autocomplete="off" name="radio_NIKBFETEQE" value=""> <span>You have mis-typed the name of the <code>blah</code> object</span></label><label><input type="radio" autocomplete="off" name="radio_NIKBFETEQE" value="answer"> <span>You have not loaded the package that contains the <code>blah()</code> function</span></label><label><input type="radio" autocomplete="off" name="radio_NIKBFETEQE" value=""> <span>You have tried to use a generic function with a type of object the function does not know how to use</span></label>
+<div id="radio_XQBABOTEEN" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_XQBABOTEEN" value=""> <span>You have loaded packages in the wrong order</span></label><label><input type="radio" autocomplete="off" name="radio_XQBABOTEEN" value=""> <span>You have mis-typed the name of the <code>blah</code> object</span></label><label><input type="radio" autocomplete="off" name="radio_XQBABOTEEN" value="answer"> <span>You have not loaded the package that contains the <code>blah()</code> function</span></label><label><input type="radio" autocomplete="off" name="radio_XQBABOTEEN" value=""> <span>You have tried to use a generic function with a type of object the function does not know how to use</span></label>
 </div>
 <p><strong>What might cause the error message <code>non-numeric argument to binary operator</code>?</strong></p>
-<div id="radio_JGRLOWILHT" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_JGRLOWILHT" value=""> <span>You have tried to use a function as if it is an object</span></label><label><input type="radio" autocomplete="off" name="radio_JGRLOWILHT" value="answer"> <span>You have tried to use a mathematical operator such as <code>+</code> or <code>-</code> with a non-numeric value such as a character value</span></label><label><input type="radio" autocomplete="off" name="radio_JGRLOWILHT" value=""> <span>You have used an argument name in a function that does not understand it</span></label><label><input type="radio" autocomplete="off" name="radio_JGRLOWILHT" value=""> <span>You have either mis-typed the function name or the package containing that function is not loaded</span></label>
+<div id="radio_BJTRIBDJKL" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_BJTRIBDJKL" value=""> <span>You have tried to use a function as if it is an object</span></label><label><input type="radio" autocomplete="off" name="radio_BJTRIBDJKL" value="answer"> <span>You have tried to use a mathematical operator such as <code>+</code> or <code>-</code> with a non-numeric value such as a character value</span></label><label><input type="radio" autocomplete="off" name="radio_BJTRIBDJKL" value=""> <span>You have used an argument name in a function that does not understand it</span></label><label><input type="radio" autocomplete="off" name="radio_BJTRIBDJKL" value=""> <span>You have either mis-typed the function name or the package containing that function is not loaded</span></label>
 </div>
 </div>
 </div>
@@ -1563,6 +1678,7 @@ mpg +
 <li>reproduce and isolate a problem systematically;</li>
 <li>inspect intermediate data and compare results with what you expected;</li>
 <li>use manual pages and common-error guidance;</li>
+<li>recognise and resolve conflicts between functions with the same name;</li>
 <li>create and check a non-sensitive reprex; and</li>
 <li>assess debugging suggestions from people, online resources and generative AI critically.</li>
 </ul>
@@ -1573,41 +1689,41 @@ mpg +
 <div class="code-with-filename-file">
 <pre><strong>chapter_08.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-label="1"></a><span class="co"># Load packages</span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, tidyverse)</span>
-<span id="cb46-3"><a href="#cb46-3" aria-label="3"></a></span>
-<span id="cb46-4"><a href="#cb46-4" aria-label="4"></a><span class="co"># Load a dataset from the workspace and wrangle it</span></span>
-<span id="cb46-5"><a href="#cb46-5" aria-label="5"></a>road_deaths <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"road_deaths_data.csv"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb46-6"><a href="#cb46-6" aria-label="6"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb46-7"><a href="#cb46-7" aria-label="7"></a>  <span class="fu">rename</span>(<span class="at">ksi_drivers =</span> drivers, <span class="at">ksi_pass_front =</span> front, <span class="at">ksi_pass_rear =</span> rear) <span class="sc">|&gt;</span></span>
-<span id="cb46-8"><a href="#cb46-8" aria-label="8"></a>  <span class="fu">select</span>(<span class="sc">-</span>petrol_price, <span class="sc">-</span>van_killed) <span class="sc">|&gt;</span></span>
-<span id="cb46-9"><a href="#cb46-9" aria-label="9"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb46-10"><a href="#cb46-10" aria-label="10"></a>    <span class="at">law =</span> <span class="fu">as.logical</span>(law),</span>
-<span id="cb46-11"><a href="#cb46-11" aria-label="11"></a>    <span class="at">ksi_driver_rate =</span> ksi_drivers <span class="sc">/</span> (kms <span class="sc">/</span> <span class="dv">1000</span>)</span>
-<span id="cb46-12"><a href="#cb46-12" aria-label="12"></a>  )</span>
-<span id="cb46-13"><a href="#cb46-13" aria-label="13"></a></span>
-<span id="cb46-14"><a href="#cb46-14" aria-label="14"></a><span class="co"># Make a time-series chart of two continuous variables, coloured by a</span></span>
-<span id="cb46-15"><a href="#cb46-15" aria-label="15"></a><span class="co"># categorical variable, then add a trend line</span></span>
-<span id="cb46-16"><a href="#cb46-16" aria-label="16"></a>road_deaths <span class="sc">|&gt;</span></span>
-<span id="cb46-17"><a href="#cb46-17" aria-label="17"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month_beginning, <span class="at">y =</span> ksi_driver_rate)) <span class="sc">+</span></span>
-<span id="cb46-18"><a href="#cb46-18" aria-label="18"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> law)) <span class="sc">+</span></span>
-<span id="cb46-19"><a href="#cb46-19" aria-label="19"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
-<span id="cb46-20"><a href="#cb46-20" aria-label="20"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 years"</span>, <span class="at">date_labels =</span> <span class="st">"%Y"</span>) <span class="sc">+</span></span>
-<span id="cb46-21"><a href="#cb46-21" aria-label="21"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">comma_format</span>(), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
-<span id="cb46-22"><a href="#cb46-22" aria-label="22"></a>  <span class="fu">scale_colour_brewer</span>(<span class="at">type =</span> <span class="st">"qual"</span>) <span class="sc">+</span></span>
-<span id="cb46-23"><a href="#cb46-23" aria-label="23"></a>  <span class="fu">labs</span>(</span>
-<span id="cb46-24"><a href="#cb46-24" aria-label="24"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
-<span id="cb46-25"><a href="#cb46-25" aria-label="25"></a>    <span class="at">y =</span> <span class="st">"drivers killed or seriously injured per 1,000km travelled"</span>,</span>
-<span id="cb46-26"><a href="#cb46-26" aria-label="26"></a>    <span class="at">colour =</span> <span class="st">"after seat belts made mandatory"</span></span>
-<span id="cb46-27"><a href="#cb46-27" aria-label="27"></a>  ) <span class="sc">+</span></span>
-<span id="cb46-28"><a href="#cb46-28" aria-label="28"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb46-29"><a href="#cb46-29" aria-label="29"></a>  <span class="fu">theme</span>(</span>
-<span id="cb46-30"><a href="#cb46-30" aria-label="30"></a>    <span class="at">axis.line.x =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
-<span id="cb46-31"><a href="#cb46-31" aria-label="31"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
-<span id="cb46-32"><a href="#cb46-32" aria-label="32"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb46-33"><a href="#cb46-33" aria-label="33"></a>    <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb46-34"><a href="#cb46-34" aria-label="34"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span></span>
-<span id="cb46-35"><a href="#cb46-35" aria-label="35"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-label="1"></a><span class="co"># Load packages</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, tidyverse)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-label="3"></a></span>
+<span id="cb53-4"><a href="#cb53-4" aria-label="4"></a><span class="co"># Load a dataset from the workspace and wrangle it</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-label="5"></a>road_deaths <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"road_deaths_data.csv"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-label="6"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-label="7"></a>  <span class="fu">rename</span>(<span class="at">ksi_drivers =</span> drivers, <span class="at">ksi_pass_front =</span> front, <span class="at">ksi_pass_rear =</span> rear) <span class="sc">|&gt;</span></span>
+<span id="cb53-8"><a href="#cb53-8" aria-label="8"></a>  <span class="fu">select</span>(<span class="sc">-</span>petrol_price, <span class="sc">-</span>van_killed) <span class="sc">|&gt;</span></span>
+<span id="cb53-9"><a href="#cb53-9" aria-label="9"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb53-10"><a href="#cb53-10" aria-label="10"></a>    <span class="at">law =</span> <span class="fu">as.logical</span>(law),</span>
+<span id="cb53-11"><a href="#cb53-11" aria-label="11"></a>    <span class="at">ksi_driver_rate =</span> ksi_drivers <span class="sc">/</span> (kms <span class="sc">/</span> <span class="dv">1000</span>)</span>
+<span id="cb53-12"><a href="#cb53-12" aria-label="12"></a>  )</span>
+<span id="cb53-13"><a href="#cb53-13" aria-label="13"></a></span>
+<span id="cb53-14"><a href="#cb53-14" aria-label="14"></a><span class="co"># Make a time-series chart of two continuous variables, coloured by a</span></span>
+<span id="cb53-15"><a href="#cb53-15" aria-label="15"></a><span class="co"># categorical variable, then add a trend line</span></span>
+<span id="cb53-16"><a href="#cb53-16" aria-label="16"></a>road_deaths <span class="sc">|&gt;</span></span>
+<span id="cb53-17"><a href="#cb53-17" aria-label="17"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month_beginning, <span class="at">y =</span> ksi_driver_rate)) <span class="sc">+</span></span>
+<span id="cb53-18"><a href="#cb53-18" aria-label="18"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> law)) <span class="sc">+</span></span>
+<span id="cb53-19"><a href="#cb53-19" aria-label="19"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
+<span id="cb53-20"><a href="#cb53-20" aria-label="20"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 years"</span>, <span class="at">date_labels =</span> <span class="st">"%Y"</span>) <span class="sc">+</span></span>
+<span id="cb53-21"><a href="#cb53-21" aria-label="21"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">comma_format</span>(), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
+<span id="cb53-22"><a href="#cb53-22" aria-label="22"></a>  <span class="fu">scale_colour_brewer</span>(<span class="at">type =</span> <span class="st">"qual"</span>) <span class="sc">+</span></span>
+<span id="cb53-23"><a href="#cb53-23" aria-label="23"></a>  <span class="fu">labs</span>(</span>
+<span id="cb53-24"><a href="#cb53-24" aria-label="24"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb53-25"><a href="#cb53-25" aria-label="25"></a>    <span class="at">y =</span> <span class="st">"drivers killed or seriously injured per 1,000km travelled"</span>,</span>
+<span id="cb53-26"><a href="#cb53-26" aria-label="26"></a>    <span class="at">colour =</span> <span class="st">"after seat belts made mandatory"</span></span>
+<span id="cb53-27"><a href="#cb53-27" aria-label="27"></a>  ) <span class="sc">+</span></span>
+<span id="cb53-28"><a href="#cb53-28" aria-label="28"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb53-29"><a href="#cb53-29" aria-label="29"></a>  <span class="fu">theme</span>(</span>
+<span id="cb53-30"><a href="#cb53-30" aria-label="30"></a>    <span class="at">axis.line.x =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
+<span id="cb53-31"><a href="#cb53-31" aria-label="31"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey90"</span>),</span>
+<span id="cb53-32"><a href="#cb53-32" aria-label="32"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb53-33"><a href="#cb53-33" aria-label="33"></a>    <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb53-34"><a href="#cb53-34" aria-label="34"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span></span>
+<span id="cb53-35"><a href="#cb53-35" aria-label="35"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>Save <code>chapter_08.R</code> by pressing <kbd title="mac: Command-S, windows: Ctrl-S" aria-hidden="true" data-mac="Command-S" data-windows="Ctrl-S"></kbd><span class="visually-hidden"></span>. To check that the analysis is reproducible, restart R using the <strong>Restart R</strong> (<strong>⟳</strong>) button in Positron’s <strong>Console</strong> panel and run the complete script from beginning to end.</p>
@@ -1628,6 +1744,7 @@ mpg +
 <li>Why is it important to check each line of code when debugging a block of R code? Describe a method for systematically isolating problematic lines.</li>
 <li>What role do R manual pages play in understanding and fixing errors? How can you access these pages, and what key sections should you focus on?</li>
 <li>Why is it dangerous to ignore warnings in your R code? Provide an example of how a warning could indicate a significant problem with your analysis.</li>
+<li>What are function-name conflicts in R? Explain how package-loading order and explicit namespaces can be used to resolve them.</li>
 <li>What information should you include in a reprex or an AI prompt when asking for debugging help? Explain how you would protect sensitive information and verify any suggested code.</li>
 </ol>
 </div>

@@ -957,7 +957,7 @@ vancouver_nbhds <- here("data", "raw", "vancouver_neighbourhoods.geojson") |>
   st_transform("EPSG:32610")
 ```
 
-You might have noticed that as well as loading the boundary data with `read_sf()`, we have transformed the data to use the same co-ordinate system (EPSG:32610) as is used for the `bike_thefts` object. This is because we can only clip datasets that use the same co-ordinate system.
+You might have noticed that as well as loading the boundary data with `read_sf()`, we have transformed the data to use the same coordinate system (EPSG:32610) as is used for the `bike_thefts` object. This is because we can only clip datasets that use the same coordinate system.
 
 Before we clip the density layer to the city boundary, check that your file `chapter_06.R` looks like this:
 
@@ -1026,11 +1026,11 @@ bike_theft_density_clip <- bike_thefts |> # <1>
 If you aren't comfortable with how the pipe operator works, you might want to refer back to @sec-pipe-operator.
 
 
-::: {.callout-important title="Both layers must use the same co-ordinate system"}
+::: {.callout-important title="Both layers must use the same coordinate system"}
 
-`hotspot_clip()` requires both spatial layers to use the same co-ordinate system. If the layers use different co-ordinate systems, transform one of them with `st_transform()` so that it uses the same system as the other layer.
+`hotspot_clip()` requires both spatial layers to use the same coordinate system. If the layers use different coordinate systems, transform one of them with `st_transform()` so that it uses the same system as the other layer.
 
-If you do not know which co-ordinate systems the layers use, you can use the `st_crs()` function to extract the co-ordinate system from one layer and pass that value as the second argument to `st_transform()`. For example:
+If you do not know which coordinate systems the layers use, you can use the `st_crs()` function to extract the coordinate system from one layer and pass that value as the second argument to `st_transform()`. For example:
 
 ```r
 st_transform(bike_theft_density, crs = st_crs(vancouver_nbhds))
@@ -1064,7 +1064,7 @@ From this map, we can see that while the `bike_theft_density` object (shown in b
 #| echo: false
 
 clipping_quiz1 <- c(
-  "To transform one dataset into another co-ordinate system.",
+  "To transform one dataset into another coordinate system.",
   answer = "To clip a dataset to the boundary of another spatial layer.",
   "To merge multiple spatial layers into one.",
   "To calculate the centroid of spatial objects."

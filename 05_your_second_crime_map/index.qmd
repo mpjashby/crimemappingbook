@@ -47,8 +47,8 @@ By the end of this chapter, you will have learned how to:
 
 - give files informative names that work reliably in code;
 - describe how points, lines, polygons and rasters represent spatial data;
-- explain why spatial data need a co-ordinate reference system;
-- convert co-ordinate columns into an SF object;
+- explain why spatial data need a coordinate reference system;
+- convert coordinate columns into an SF object;
 - filter an SF object to select particular crimes;
 - organise a multi-stage script using comments and blank lines; and
 - create and style a basic crime map using ggplot2.
@@ -223,14 +223,14 @@ spatial_data_quiz5 <- c(
 :::
 
 
-Points, lines and polygons in spatial data are known as *geometric objects* or simply *geometries*. Spatial data is data that has a geometric object (e.g. a pair of co-ordinates representing a crime location) associated with each row.
+Points, lines and polygons in spatial data are known as *geometric objects* or simply *geometries*. Spatial data is data that has a geometric object (e.g. a pair of coordinates representing a crime location) associated with each row.
 
 
 ### Representing places on the earth
 
-With any spatial data, we need a way of describing where on the earth a particular point (such as the location of a crime or the corner of a building) is located. Watch this video to find out about the different co-ordinate systems we can use to do this.
+With any spatial data, we need a way of describing where on the earth a particular point (such as the location of a crime or the corner of a building) is located. Watch this video to find out about the different coordinate systems we can use to do this.
 
-{{< video https://youtu.be/8L6EXiuckLo aria-label="Video: Co-ordinate systems used to represent places on Earth" >}}
+{{< video https://youtu.be/8L6EXiuckLo aria-label="Video: Coordinate systems used to represent places on Earth" >}}
 
 
 ::: {.callout-quiz .callout title="Representing places on Earth"}
@@ -264,7 +264,7 @@ places_quiz4 <- c(
   answer = "The map may have errors or show distorted features",
   "The map will automatically adjust to the correct region",
   "The dataset will not load",
-  "The co-ordinates will convert to the nearest global standard"
+  "The coordinates will convert to the nearest global standard"
 )
 
 places_quiz5 <- c(
@@ -276,12 +276,12 @@ places_quiz5 <- c(
 ```
 
 
-**What are co-ordinates used for?**
+**What are coordinates used for?**
 
 `r webexercises::longmcq(places_quiz1)`
 
 
-**What is the geographic co-ordinate system based on?**
+**What is the geographic coordinate system based on?**
 
 `r webexercises::longmcq(places_quiz2)`
 
@@ -291,12 +291,12 @@ places_quiz5 <- c(
 `r webexercises::longmcq(places_quiz3)`
 
 
-**What can happen if you use a co-ordinate system designed for a different part of the globe?**
+**What can happen if you use a coordinate system designed for a different part of the globe?**
 
 `r webexercises::longmcq(places_quiz4)`
 
 
-**What is a practical way to find out which co-ordinate system a dataset uses if it’s not embedded in the file?**
+**What is a practical way to find out which coordinate system a dataset uses if it’s not embedded in the file?**
 
 `r webexercises::longmcq(places_quiz5)`
 
@@ -310,7 +310,7 @@ places_quiz5 <- c(
 
 <a href="https://r-spatial.github.io/sf/" aria-label="Visit the sf package website"><img src="../images/sf-package.gif" class="right-side-image" alt=""></a>
 
-There are several packages that handle raster map data from different sources – one of them is the [ggspatial package](https://paleolimbot.github.io/ggspatial/) that we have already used to load the base map of Atlanta for the homicide map we made in @sec-first-map. One of the most important spatial packages is the [sf package](https://r-spatial.github.io/sf/), which we use to handle spatial vector data. _SF_ stands for 'simple features', which is a standard for storing spatial data. SF objects are data frames that have a special column to hold the geometry (point, line or polygon) associated with each row in the data. SF objects also understand what co-ordinate system the geometry are described in. This means SF objects can be transformed between co-ordinate systems and combined together in layers on a map.
+There are several packages that handle raster map data from different sources – one of them is the [ggspatial package](https://paleolimbot.github.io/ggspatial/) that we have already used to load the base map of Atlanta for the homicide map we made in @sec-first-map. One of the most important spatial packages is the [sf package](https://r-spatial.github.io/sf/), which we use to handle spatial vector data. _SF_ stands for 'simple features', which is a standard for storing spatial data. SF objects are data frames that have a special column to hold the geometry (point, line or polygon) associated with each row in the data. SF objects also understand what coordinate system the geometry are described in. This means SF objects can be transformed between coordinate systems and combined together in layers on a map.
 
 There are lots of functions in the sf package for handling spatial data. Almost all of these functions begin with the letters `st_` (e.g. `st_read()`), which makes it easy to identify that those functions are designed to be used on SF objects.
 
@@ -498,13 +498,13 @@ the `pacman::p_load()` function as we have done in previous chapters.
 
 ### Converting our data to an SF object
 
-At present, the data in the `thefts` object is just a regular tibble. We could not use it to make a map because R does not know which columns represent the geometry, or what co-ordinate system the locations are recorded in. We can deal with this by converting the data to an SF object using the `st_as_sf()` function from the `sf` package.
+At present, the data in the `thefts` object is just a regular tibble. We could not use it to make a map because R does not know which columns represent the geometry, or what coordinate system the locations are recorded in. We can deal with this by converting the data to an SF object using the `st_as_sf()` function from the `sf` package.
 
-The data provided by the Vancouver Police use the UTM zone 10N co-ordinate system. <abbr title="Universal Transverse Mercator">UTM</abbr> is a system for assigning co-ordinates to any location on earth relative to a designated local reference point for the UTM zone covering that part of the planet. The 'N' at the end of the zone name 10N refers to the northern hemisphere.
+The data provided by the Vancouver Police use the UTM zone 10N coordinate system. <abbr title="Universal Transverse Mercator">UTM</abbr> is a system for assigning coordinates to any location on earth relative to a designated local reference point for the UTM zone covering that part of the planet. The 'N' at the end of the zone name 10N refers to the northern hemisphere.
 
-::: {.callout-important title="Co-ordinate reference systems are specific to one part of the globe"}
+::: {.callout-important title="Coordinate reference systems are specific to one part of the globe"}
 
-In almost all cases, co-ordinate reference systems only work for the part of the world that they were designed for. So we should not use the UTM zone 10N co-ordinate system to map data outside the area for which it was designed (broadly speaking, the west coast of North America from Los Angeles to Vancouver, and the part of Canada directly north of Vancouver extending most of the way to the north pole). If we were to use the UTM zone 10N co-ordinate system for data from another part of the world, we would be very likely to get error messages or strange results.
+In almost all cases, coordinate reference systems only work for the part of the world that they were designed for. So we should not use the UTM zone 10N coordinate system to map data outside the area for which it was designed (broadly speaking, the west coast of North America from Los Angeles to Vancouver, and the part of Canada directly north of Vancouver extending most of the way to the north pole). If we were to use the UTM zone 10N coordinate system for data from another part of the world, we would be very likely to get error messages or strange results.
 :::
 
 
@@ -607,9 +607,9 @@ ggsave(
 knitr::include_graphics(here::here("images/utm_vancouver.jpg"))
 ```
 
-We can convert the `thefts` tibble to an SF object using the `st_as_sf()` function (remember, all functions in the `sf` package start with `st_`, which can sometimes make the function names a little confusing). We specify which columns in the data represent the geometry (in this case, the `x` and `y` columns), and what co-ordinate system the data uses. 
+We can convert the `thefts` tibble to an SF object using the `st_as_sf()` function (remember, all functions in the `sf` package start with `st_`, which can sometimes make the function names a little confusing). We specify which columns in the data represent the geometry (in this case, the `x` and `y` columns), and what coordinate system the data uses. 
 
-Co-ordinate systems can be specified in lots of ways (some very complicated), but the easiest is to specify the <abbr title="European Petroleum Survey Group">EPSG</abbr> code for the relevant system. An EPSG code is a unique reference number for a particular co-ordinate system that R can look up in a database to get the information needed to display the data on a map. The EPSG code for the UTM zone 10N is `EPSG:32610`.
+Coordinate systems can be specified in lots of ways (some very complicated), but the easiest is to specify the <abbr title="European Petroleum Survey Group">EPSG</abbr> code for the relevant system. An EPSG code is a unique reference number for a particular coordinate system that R can look up in a database to get the information needed to display the data on a map. The EPSG code for the UTM zone 10N is `EPSG:32610`.
 
 We only need the version of the thefts data that is a spatial dataset, so we can again add the code needed to convert the `thefts` tibble to an SF object to the pipeline we have already created. This means that the data will be loaded, cleaned and converted to an SF object in one step, and we can store the result in the `thefts` object.
 
@@ -627,9 +627,9 @@ thefts <- here("data", "raw", "vancouver_thefts.csv.gz") |> # <1>
 1. Find the location of the Vancouver thefts dataset on the specific computer you are using.
 2. Load the data from the CSV file into R.
 3. Clean the column names so they are in `snake_case`.
-4. Convert the tibble to an SF object, specifying which columns represent the geometry and what co-ordinate system the data uses.
+4. Convert the tibble to an SF object, specifying which columns represent the geometry and what coordinate system the data uses.
 
-If you look at the contents of the `thefts` object by running `head(thefts)` in the R Console, you'll see that there is a new column called `geometry`. This column contains the co-ordinates of each bike theft. But crucially, it stores those co-ordinates in a format that R recognises represent specific locations on the surface of the earth, which means the co-ordinates can be used to make maps.
+If you look at the contents of the `thefts` object by running `head(thefts)` in the R Console, you'll see that there is a new column called `geometry`. This column contains the coordinates of each bike theft. But crucially, it stores those coordinates in a format that R recognises represent specific locations on the surface of the earth, which means the coordinates can be used to make maps.
 
 
 ::: {.callout-important title="Only convert non-spatial data with `st_as_sf()`"}
@@ -695,9 +695,9 @@ Our data is now ready for us to make our crime map!
 #| echo: false
 
 sf_quiz1 <- c(
-  "It changes every co-ordinate into a place name",
+  "It changes every coordinate into a place name",
   "It removes all non-spatial columns from the data",
-  answer = "It stores the geometry and co-ordinate system alongside the other columns",
+  answer = "It stores the geometry and coordinate system alongside the other columns",
   "It automatically adds a base map"
 )
 
@@ -710,7 +710,7 @@ sf_quiz2 <- c(
 
 sf_quiz3 <- c(
   "It chooses which rows contain bicycle thefts",
-  answer = "It tells R which co-ordinate reference system the locations use",
+  answer = "It tells R which coordinate reference system the locations use",
   "It sets the number of points shown on the map",
   "It gives the new SF object a name"
 )
@@ -967,7 +967,7 @@ mapping_quiz1 <- c(
 )
 
 mapping_quiz2 <- c(
-  "It changes the co-ordinate reference system",
+  "It changes the coordinate reference system",
   "It removes points outside the map",
   answer = "It makes points semi-transparent",
   "It changes the point shape"
@@ -1000,16 +1000,16 @@ Save `chapter_05.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Then s
 
 ## In summary
 
-In this chapter we have learned more about some of the specific steps in the process of creating a basic crime map. Concepts such as co-ordinate reference systems and EPSG codes can be hard to understand at first, but you will get used to them as you use them to make more maps, so that by the end of this book you will be confident applying those ideas in a wide range of contexts.
+In this chapter we have learned more about some of the specific steps in the process of creating a basic crime map. Concepts such as coordinate reference systems and EPSG codes can be hard to understand at first, but you will get used to them as you use them to make more maps, so that by the end of this book you will be confident applying those ideas in a wide range of contexts.
 
 You can now:
 
 - give data and script files informative names;
 - distinguish between point, line, polygon and raster spatial data;
-- explain why spatial data need an appropriate co-ordinate reference system;
+- explain why spatial data need an appropriate coordinate reference system;
 - download a raw-data file without overwriting an existing copy;
 - use project-relative paths to load local data;
-- convert co-ordinate columns into an SF object;
+- convert coordinate columns into an SF object;
 - use a pipeline to prepare spatial data;
 - organise a script using comments, blank lines and section headings; and
 - draw and style spatial points using `ggplot()` and `geom_sf()`.

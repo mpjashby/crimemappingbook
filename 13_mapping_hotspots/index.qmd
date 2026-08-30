@@ -199,7 +199,7 @@ burglaries <- read_csv("https://mpjashby.github.io/crimemappingdata/nottingham_b
 ```
 
 
-We do not have a source of open data for all the buildings in Nottingham, so we will use the osmdata package to get the locations of buildings from OpenStreetMap (OSM). You may remember from @sec-place-data that to do this we need to know which key (and possibly value) the OSM database uses for storing the locations of buildings. The OSM feature key for a building is 'building' and it is not necessary to specify a value (since we want to capture all types of building). The osmdata package expects data to use the WGS84 co-ordinate reference system, so we must also make sure any data sources we use are 
+We do not have a source of open data for all the buildings in Nottingham, so we will use the osmdata package to get the locations of buildings from OpenStreetMap (OSM). You may remember from @sec-place-data that to do this we need to know which key (and possibly value) the OSM database uses for storing the locations of buildings. The OSM feature key for a building is 'building' and it is not necessary to specify a value (since we want to capture all types of building). The osmdata package expects data to use the WGS84 coordinate reference system, so we must also make sure any data sources we use are 
 projected using that system (EPSG:4326).
 
 Add this code to your R script and run it.
@@ -286,9 +286,9 @@ It looks like almost all the streets in the three wards we are interested in are
 
 We can also see from this map that the `r scales::comma(nrow(pluck(nottingham_buildings, "osm_points")))` point features in the OSM data (shown as green dots on the map) typically represent the corners of buildings that are also represented as polygons, so we know we can ignore the points layer within the OSM data.
 
-Since the `hotspot_dual_kde()` function works on points, we need to convert the polygon and multipolygon layers to points by calculating their centroids, then merge the two layers together. This will generate a warning that `st_centroid does not give correct centroids for longitude/latitude data` but we can ignore this because the calculated centroids will be good enough for our purposes (if we wanted to, we could transform the data to use the British National Grid, calculate the centroids and then transform it back).
+Since the `hotspot_dual_kde()` function works on points, we need to merge the polygon and multipolygon layers, then convert the combined layer to points by calculating the centroid of each building. We will transform the building data to use the British National Grid before calculating centroids. Calculating centroids in an appropriate projected coordinate system is more reliable than calculating them from longitude and latitude coordinates.
 
-Since we are only interested in those buildings in three particular wards, we can also at this stage remove any buildings that are outside those wards using `st_intersection()`, as we have already done for the `burglaries` object. Since the `wards` object uses the British National Grid and `st_intersection()` requires both datasets to use the same co-ordinate system, we will transform the building centroids before clipping them.
+Since we are only interested in buildings in three particular wards, we can also remove any buildings outside those wards using `hotspot_clip()`. Both the building centroids and the `wards` object will use the British National Grid.
 
 Add this code to the `chapter11a.R` file and run it.
 
@@ -300,12 +300,12 @@ nottingham_building_centroids <- bind_rows(
   pluck(nottingham_buildings, "osm_polygons"), 
   pluck(nottingham_buildings, "osm_multipolygons")
 ) |>
-  # Convert polygons to points
-  st_centroid() |> 
-  # Transform to same CRS as `wards` object
+  # Transform to the same CRS as the `wards` object
   st_transform("EPSG:27700") |> 
+  # Convert polygons to points
+  st_centroid() |>
   # Remove any points outside the wards of interest
-  st_intersection(wards)
+  hotspot_clip(wards)
 ```
 
 
@@ -316,24 +316,11 @@ You might have seen a warning saying `st_centroid assumes attributes are constan
 :::
 
 
-::: {.callout-tip collapse="true"}
-#### What does the warning `attribute variables are assumed …` mean?
-
-`st_intersection()` produces a warning message whenever it is used:
-
-```
-Warning: attribute variables are assumed to be spatially constant throughout all geometries
-```
-
-As long as you are simply using `st_intersection()` to remove parts of the data outside a boundary, you can ignore this message.
-:::
-
-
 ### Calculating dual kernel density
 
 We now have the object `burglaries` that contains the locations of each burglary in the three Nottingham wards that we are interested in, and the object `nottingham_building_centroids` that contains the centroids of each building in those three wards. We can use these layers to estimate the density of burglaries and buildings, then combine these to estimate the density of burglary risk.
 
-`hotspot_dual_kde()` works in the same way as `hotspot_kde()`, except that it requires two datasets. In this case, that means one dataset of crime locations and one dataset of building locations. `hotspot_dual_kde()` will set the cell size and bandwidth automatically, but we can set them manually using the `cell_size`, `bandwidth_adjust` and `grid` arguments in the same way we have done for `hotspot_kde()`. In this case, we will use the `hotspot_grid()` helper function to create a grid based on the boundaries of the wards we are interested in. All the spatial objects we are going to use here have co-ordinates specified using the British National Grid because we have already transformed them, so we do not need to do any transformation here.
+`hotspot_dual_kde()` works in the same way as `hotspot_kde()`, except that it requires two datasets. In this case, that means one dataset of crime locations and one dataset of building locations. `hotspot_dual_kde()` will set the cell size and bandwidth automatically, but we can set them manually using the `cell_size`, `bandwidth_adjust` and `grid` arguments in the same way we have done for `hotspot_kde()`. In this case, we will use the `hotspot_grid()` helper function to create a grid based on the boundaries of the wards we are interested in. All the spatial objects we are going to use here have coordinates specified using the British National Grid because we have already transformed them, so we do not need to do any transformation here.
 
 
 ```{r}
@@ -442,15 +429,15 @@ If we wanted to understand burglary risk on the University of Nottingham campus,
 #| echo: false
 
 dual_kde_quiz1 <- c(
-    "`hotspot_dual_kde()` can work on any co-ordinates, whether they use a geographic co-ordinate system (i.e. longitude and latitude) or a projected system.",
-    answer = "`hotspot_dual_kde()` requires co-ordinates to use a projected co-ordinate system (i.e. not longitude and latitude).",
-    "`hotspot_dual_kde()` requires co-ordinates to use a geographic co-ordinate system (i.e. longitude and latitude).",
-    "`hotspot_dual_kde()` does not work with co-ordinates, so it does not matter which type of co-ordinate system a dataset uses."
+    "`hotspot_dual_kde()` can work on any coordinates, whether they use a geographic coordinate system (i.e. longitude and latitude) or a projected system.",
+    answer = "`hotspot_dual_kde()` requires coordinates to use a projected coordinate system (i.e. not longitude and latitude).",
+    "`hotspot_dual_kde()` requires coordinates to use a geographic coordinate system (i.e. longitude and latitude).",
+    "`hotspot_dual_kde()` does not work with coordinates, so it does not matter which type of coordinate system a dataset uses."
 )
 
 dual_kde_quiz2 <- c(
     "To make our maps look nicer.",
-    "To transform the co-ordinate system our data uses from the system `hotspot_dual_kde()` uses to the one we need to produce a map.",
+    "To transform the coordinate system our data uses from the system `hotspot_dual_kde()` uses to the one we need to produce a map.",
     answer = "To eliminate any areas that we do not have data for, since displaying KDE values for such areas on a map might be misleading.",
     "To make it easier to see the other layers on our map."
 )
@@ -614,7 +601,7 @@ We can calculate the Gi* statistic using the `hotspot_gistar()` function from th
 
 Open a new R script file and save it as `chapter11b.R`.
 
-In this example, we will find the hotspots of robbery in Nottingham in 2020, based on a grid of 100-metre cells. We will store this in an object called `robbery`, transform it to use the British National Grid co-ordinate system (so we can specify the cell size in metres) and then use the resulting object to calculate the Gi* values.
+In this example, we will find the hotspots of robbery in Nottingham in 2020, based on a grid of 100-metre cells. We will store this in an object called `robbery`, transform it to use the British National Grid coordinate system (so we can specify the cell size in metres) and then use the resulting object to calculate the Gi* values.
 
 Add this code to the new script file and run it.
 

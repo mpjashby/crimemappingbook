@@ -171,7 +171,7 @@ hungerford_map_overall <- ggplot() +
   annotation_scale(style = "ticks", line_col = "grey40", text_col = "grey40") +
   # Expand the map to show a larger area above/below the data
   scale_y_continuous(expand = expansion(2)) +
-  # Specify co-ordinate system
+  # Specify coordinate system
   coord_sf(crs = "EPSG:27700") +
   labs(title = " Shootings in Wiltshire") +
   theme_void() +
@@ -214,7 +214,7 @@ hungerford_map_town <- ggplot() +
   # Expand the map to show a larger area around the data
   scale_x_continuous(expand = expansion(0.3)) +
   scale_y_continuous(expand = expansion(0.3)) +
-  # Specify co-ordinate system
+  # Specify coordinate system
   coord_sf(crs = "EPSG:27700") +
   labs(title = "Shootings in Hungerford town") +
   theme_void() +
@@ -286,13 +286,13 @@ hungerford_shootings |>
   knitr::kable()
 ```
 
-One way to do that is to draw lines on the map connecting each incident in turn. To do this, we will create a dataset where each row contains _two_ pairs of co-ordinates: one representing the location of a particular shooting and the other representing the location of the _previous_ shooting. To do that, we will:
+One way to do that is to draw lines on the map connecting each incident in turn. To do this, we will create a dataset where each row contains _two_ pairs of coordinates: one representing the location of a particular shooting and the other representing the location of the _previous_ shooting. To do that, we will:
 
-  1. Take the `hungerford_shootings` dataset and rename the existing columns holding the co-ordinates so that it is clear those co-ordinates are for the
+  1. Take the `hungerford_shootings` dataset and rename the existing columns holding the coordinates so that it is clear those coordinates are for the
      _end_ of each line between points. To do this we will use the `rename()` function from the dplyr package.
-  2. Add two new columns to each row that show the co-ordinates of the row in the dataset immediately above the current row (i.e. the row that represents
+  2. Add two new columns to each row that show the coordinates of the row in the dataset immediately above the current row (i.e. the row that represents
      the location before the current location. We will do this with the `lag()` function, also from dplyr.
-  3. Use these two pairs of co-ordinates to plot lines on a map.
+  3. Use these two pairs of coordinates to plot lines on a map.
 
 ```{r}
 #| filename: "chapter13.R"
@@ -344,7 +344,7 @@ ggplot() +
   ) +
   # Add points
   geom_point(aes(x = easting, y = northing), data = hungerford_shootings) +
-  # Since our layers are not an SF object, tell `ggplot()` what co-ordinate 
+  # Since our layers are not an SF object, tell `ggplot()` what coordinate 
   # system to use
   coord_sf(crs = "EPSG:27700") +
   theme_void()
@@ -353,7 +353,7 @@ ggplot() +
 
 This map is not particularly useful -- we will return to that in a minute.
 
-If you look at this code, you'll see that we've included the function `coord_sf()` in our `ggplot()` stack. In all the previous maps that we have made, we have used `geom_sf()` to plot geographic data on our maps. `geom_sf()` understands how to translate co-ordinates specified using different co-ordinate systems to locations on the surface of each map. Other functions in the `geom_*()` family of functions do not know how to do this automatically, so we must specify the co-ordinate system by adding the `coord_sf()` function to the stack. We only need to use one argument to `coord_sf()`: the `crs` argument to specify the co-ordinate system that our data uses. In this case, we know that the co-ordinates in the `hungerford_shootings` and `hungerford_lines` objects are specified using the British National Grid, which has the EPSG code EPSG:27700.
+If you look at this code, you'll see that we've included the function `coord_sf()` in our `ggplot()` stack. In all the previous maps that we have made, we have used `geom_sf()` to plot geographic data on our maps. `geom_sf()` understands how to translate coordinates specified using different coordinate systems to locations on the surface of each map. Other functions in the `geom_*()` family of functions do not know how to do this automatically, so we must specify the coordinate system by adding the `coord_sf()` function to the stack. We only need to use one argument to `coord_sf()`: the `crs` argument to specify the coordinate system that our data uses. In this case, we know that the coordinates in the `hungerford_shootings` and `hungerford_lines` objects are specified using the British National Grid, which has the EPSG code EPSG:27700.
 
 The map we have made above shows the sequence of events, but there are at least four ways that we can make it better.
 
@@ -393,7 +393,7 @@ ggplot() +
   geom_point(aes(x = easting, y = northing), data = hungerford_shootings) +
   # Expand the map to show a larger area above/below the data
   scale_y_continuous(expand = expansion(2)) +
-  # Specify co-ordinate system
+  # Specify coordinate system
   coord_sf(crs = "EPSG:27700") +
   theme_void()
 ```
@@ -439,7 +439,7 @@ ggplot() +
   ) +
   # Expand the map to show a larger area above/below the data
   scale_y_continuous(expand = expansion(2)) +
-  # Specify co-ordinate system
+  # Specify coordinate system
   coord_sf(crs = "EPSG:27700") +
   theme_void()
 ```
@@ -495,7 +495,7 @@ hungerford_map_overall <- ggplot() +
   annotation_scale(style = "ticks", line_col = "grey40", text_col = "grey40") +
   # Expand the map to show a larger area above/below the data
   scale_y_continuous(expand = expansion(2)) +
-  # Specify co-ordinate system
+  # Specify coordinate system
   coord_sf(crs = "EPSG:27700") +
   labs(title = " Shootings in Wiltshire") +
   theme_void() +
@@ -620,7 +620,7 @@ hungerford_map_town <- ggplot() +
   # Expand the map to show a larger area around the data
   scale_x_continuous(expand = expansion(0.3)) +
   scale_y_continuous(expand = expansion(0.3)) +
-  # Specify co-ordinate system
+  # Specify coordinate system
   coord_sf(crs = "EPSG:27700") +
   labs(title = "Shootings in Hungerford town") +
   theme_void() +
@@ -805,7 +805,7 @@ hungerford_map_overall <- ggplot() +
   annotation_scale(style = "ticks", line_col = "grey40", text_col = "grey40") +
   # Expand the map to show a larger area above/below the data
   scale_y_continuous(expand = expansion(2)) +
-  # Specify co-ordinate system
+  # Specify coordinate system
   coord_sf(crs = "EPSG:27700") +
   labs(title = " Shootings in Wiltshire") +
   theme_void() +
@@ -848,7 +848,7 @@ hungerford_map_town <- ggplot() +
   # Expand the map to show a larger area around the data
   scale_x_continuous(expand = expansion(0.3)) +
   scale_y_continuous(expand = expansion(0.3)) +
-  # Specify co-ordinate system
+  # Specify coordinate system
   coord_sf(crs = "EPSG:27700") +
   labs(title = "Shootings in Hungerford town") +
   theme_void() +
