@@ -23,6 +23,7 @@ By the end of this chapter, you will have learned how to:
 - find the smallest piece of code that produces a problem;
 - inspect the data used and produced by each step in an analysis;
 - use R manual pages to understand functions;
+- recognise and resolve conflicts between functions with the same name;
 - create a reproducible example when asking for help; and
 - assess suggestions from online sources and generative AI critically.
 
@@ -131,7 +132,8 @@ When something is not quite right, or just when there is an issue in your code t
 
 ```{r}
 #| label: crimedata-example
-#| filename: "Don't run this code"
+#| filename: "Do not run this code"
+#| classes: "bad_code"
 
 mesa_crimes <- crimedata::get_crime_data(cities = "Mesa", quiet = FALSE)
 ```
@@ -159,7 +161,7 @@ message("This is a message. Make sure you understand it.")
 
 ### Warnings
 
-*Warnings* are generated when there is a potential problem with your code, but the problem was not serious enough to stop your code running entirely. For example, ggplot2 functions like `geom_point()` will send a warning if some of the rows in your data contain missing values (e.g. if some crimes have missing co-ordinates).
+*Warnings* are generated when there is a potential problem with your code, but the problem was not serious enough to stop your code running entirely. For example, ggplot2 functions like `geom_point()` will send a warning if some of the rows in your data contain missing values (e.g. if some crimes have missing coordinates).
 
 Warnings are important and you should take time to read and understand them, but it is _possible_ that having done so it will be safe to not take any action. *Whether* it is safe to take no action will often depend on exactly what you are trying to do, which is why it is important that you understand each warning that you see. For example, if you already know that some rows in your data contain missing values and are happy to plot the remaining values, it will be safe to ignore the warning produced by `geom_point()`. But if your dataset should not have any missing values in it, you will need to investigate why `geom_point()` is warning you about missing values and whether those values have been accidentally introduced by some part of your code.
 
@@ -403,6 +405,103 @@ Checking the manual page for a function can often help you understand why a part
 
 str_wrap("A line of text that we want to break into shorter lines", width = 20)
 ```
+
+
+#### Conflicts between function names {#sec-function-conflicts}
+
+Checking a manual page is only useful if it describes the function that R is actually using. R packages are written by people working in many different areas, so packages sometimes contain functions with the same name. Those functions might do similar things, or they might do completely different things.
+
+For example, dplyr contains a function called `select()` that selects columns from a data frame. The MASS package also contains a function called `select()`, but it is used for a different purpose and has different arguments. If both packages are loaded, R will normally use the function from the package that was loaded most recently.
+
+Imagine that we loaded the tidyverse first and MASS second:
+
+```{r}
+#| eval: false
+#| filename: "Do not run this code"
+#| classes: "bad_code"
+
+pacman::p_load(tidyverse, MASS)
+```
+
+Since MASS was loaded last, a call to `select()` will now use the function of that name from MASS, not the function from the dplyr package loaded by tidyverse. Code intended to select the `offense_type` column would then produce an error like this:
+
+```{r}
+#| eval: false
+#| filename: "Do not run this code"
+#| classes: "bad_code"
+
+select(frauds, offense_type)
+```
+
+```{r}
+#| echo: false
+#| error: true
+
+MASS::select(frauds, offense_type)
+```
+
+
+The error says that `offense_type` is an unused argument because the `select()` function from the MASS package does not have an argument for selecting columns. This is why an error about an argument can sometimes mean that R is using a different function from the one you intended.
+
+The tidyverse packages contain several functions that share names with functions in other packages. For example, dplyr and the stats package both contain a function called `filter()`. We usually want `dplyr::filter()` when working with data frames, because `stats::filter()` is designed for time-series data and is only useful in that context.
+
+The guiding principle in this book is to load packages in alphabetical order, **then load tidyverse last**:
+
+```{r}
+#| eval: false
+#| filename: "R Console"
+
+pacman::p_load(MASS, tidyverse)
+```
+
+Loading tidyverse last means that calls to `select()` and `filter()` will normally use the dplyr versions that we need for data wrangling. 
+
+If changing the package-loading order is not appropriate, or if you need to use both versions of a function in the same script, use `::` to specify the package explicitly. For example, `dplyr::select(frauds, offense_type)` always uses the dplyr function, regardless of the order in which packages were loaded.
+
+::: {.callout-important title="Load tidyverse last"}
+
+One way to minimise how confusing package conflicts can be is to always load packages in a consistent order. I strongly recommend loading packages in alphabetical order, _then_ loading the tidyverse package _last_.
+:::
+
+::: {.callout-tip collapse="true" title="Using the conflicted package"}
+
+The conflicted package provides another way to manage function-name conflicts. It produces an error if you use the name of a function provided by more than one loaded package, unless you have specified which version you prefer.
+
+Load conflicted before calling `pacman::p_load()`, then use `conflict_prefer()` after loading the other packages:
+
+```{r}
+#| eval: false
+#| filename: "R Console"
+
+library(conflicted)
+pacman::p_load(MASS, tidyverse)
+
+conflict_prefer("select", "dplyr")
+conflict_prefer("filter", "dplyr")
+```
+
+In the rest of the script, unqualified calls to `select()` and `filter()` will use the dplyr functions. You can learn more in the [conflicted package documentation](https://conflicted.r-lib.org/).
+:::
+
+::: {.callout-quiz .callout title="Package conflicts"}
+
+```{r}
+#| label: conflict-quiz
+#| echo: false
+
+conflict_quiz1 <- c(
+  "The function that is from the `tidyverse` suite of packages.",
+  "The function from the package that was loaded *first*",
+  answer = "The function from the package that was loaded *last*",
+  "Neither function will run because R will produce an error."
+)
+```
+
+**If you load two packages in R that both contain a function with the same name, which function will R use by default?**
+
+`r webexercises::longmcq(conflict_quiz1)`
+
+:::
 
 ::: {.callout-tip collapse="true" title="What should I do if an error mentions `rlang::last_trace()`?"}
 
@@ -1118,6 +1217,7 @@ You can now:
 - reproduce and isolate a problem systematically;
 - inspect intermediate data and compare results with what you expected;
 - use manual pages and common-error guidance;
+- recognise and resolve conflicts between functions with the same name;
 - create and check a non-sensitive reprex; and
 - assess debugging suggestions from people, online resources and generative AI critically.
 
@@ -1144,7 +1244,8 @@ Answer these questions to check you have understood the main points covered in t
 3. Why is it important to check each line of code when debugging a block of R code? Describe a method for systematically isolating problematic lines.
 4. What role do R manual pages play in understanding and fixing errors? How can you access these pages, and what key sections should you focus on?
 5. Why is it dangerous to ignore warnings in your R code? Provide an example of how a warning could indicate a significant problem with your analysis.
-6. What information should you include in a reprex or an AI prompt when asking for debugging help? Explain how you would protect sensitive information and verify any suggested code.
+6. What are function-name conflicts in R? Explain how package-loading order and explicit namespaces can be used to resolve them.
+7. What information should you include in a reprex or an AI prompt when asking for debugging help? Explain how you would protect sensitive information and verify any suggested code.
 :::
 
 <p class="credits"><a href="https://allisonhorst.com/">Artwork by Allison Horst</a></p>
