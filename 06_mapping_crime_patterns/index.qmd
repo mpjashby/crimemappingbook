@@ -1112,6 +1112,37 @@ clipping_quiz2 <- c(
 :::
 
 
+## Isobands
+
+KDE maps are extremely useful because they allow us to visualise overall _patterns_ of crime much more easily than if we simply plot crimes on a dot map. But the density layers produced by `hotspot_kde()` can sometimes be hard to interpret on a map. One alternative way to visualise density is to convert the density surface to _isobands_. Isobands are polygons that represent areas of equal crime density. You might have seen them on weather maps, where they are sometimes used to visualise areas that are expected to have the same temperature:
+
+![](../images/isotherm_map.gif){fig-alt="A weather map showing isotherms, which are lines that connect areas of equal temperature." width=80%}
+
+We can convert the output produced by `hotspot_kde()` to isobands using the `hotspot_isoband()` function from sfhotspot. This function takes a KDE layer and converts it to a set of polygons that represent areas of equal density. We can then plot these polygons on a map instead of the KDE layer. For example, we can just add `hotspot_isoband()` to the end of the code pipeline we used to create the clipped KDE layer, and then plot the result. Note that this needs a few changes to the `ggplot()` code, which are summarised below this code.
+
+```{r}
+#| label: map-isoband
+#| filename: "R Console"
+
+# Estimate density of bike thefts, clip result, and convert to isobands
+bike_theft_density_isoband <- bike_thefts |>
+  hotspot_kde(bandwidth_adjust = 0.5, quiet = TRUE) |>
+  hotspot_isoband(breaks = 7) |> #<1>
+  hotspot_clip(vancouver_nbhds)
+
+# Plot density map
+ggplot() +
+  geom_sf(aes(fill = label), data = bike_theft_density_isoband) + #<2>
+  scale_fill_brewer(palette = "Oranges", direction = 1) #<3>
+```
+1. It is important to add `hotspot_isoband()` to the pipeline _before_ `hotspot_clip()`, since otherwise `hotspot_isoband()` is likely to produce an error.
+2. Instead of setting `fill = kde` as we do with `hotspot_kde()`, instead we set `fill = label` when we map `hotspot_isoband()`.
+3. `hotspot_isoband()` collapses KDE values into categories, so instead of using `scale_fill_distiller()` to represent a continuous KDE variable, we use `scale_fill_brewer()` to represent an ordered categorical variable.
+
+One potential drawback of using isobands is that they create the risk of the environmental fallacy: all the locations on the map within a particular isoband look on the map like they have exactly the same density of crime, when fact there will be some variation within each band because each band represents a _range_ of values. How big this problem is depends on how wide the range of values is in each isoband. We can control this by specifying how many different bands the range of KDE values should be split into. By default, `hotspot_isoband()` splits the range of values into 5 bands, but we can change this using the `breaks` argument. For example, if we wanted to split the range of values into 10 bands, we could use `hotspot_isoband(breaks = 10)`.
+
+Whether to visualise KDE values or generalise them into isobands first is up to you. Both are valid ways to visualise the density of a particular type of crime. You might want to experiment with both approaches to see which one better communicates the information you want to show on your map. In this book, we will generally visualise KDE layers rather than isobands to keep the code examples short, but you should feel free to experiment with both approaches.
+
 
 ## Adding a base map {#sec-base-maps}
 
@@ -1462,3 +1493,8 @@ Answer these questions to check you have understood the main points covered in t
 5. How does the choice of colour scale affect the interpretation of a density map? When should you use sequential, diverging and qualitative colour schemes?
 
 :::
+
+::: {.credits}
+Isotherm map courtesy of the [University of Illinois WW2010 Project](http://ww2010.atmos.uiuc.edu/%28Gh%29/abt/usrgd/cntnt/prdct.rxml).
+:::
+
