@@ -317,32 +317,32 @@ quarto book
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../10_place_data/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Using data about places</span></span></a>
+  <a href="../10_messy_data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Handling messy data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../11_mapping_hotspots/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Mapping hotspots</span></span></a>
+  <a href="../11_writing_reports/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Writing reports in R</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../12_messy_data/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Handling messy data</span></span></a>
+  <a href="../12_place_data/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Using data about places</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../13_crime_series/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Mapping crime series</span></span></a>
+  <a href="../13_mapping_hotspots/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Mapping hotspots</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../14_writing_reports/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Writing reports in R</span></span></a>
+  <a href="../14_crime_series/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Mapping crime series</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -413,8 +413,9 @@ quarto book
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">6.1</span> Introduction</a></li>
   <li><a href="#mapping-crime-density" id="toc-mapping-crime-density" class="nav-link" data-scroll-target="#mapping-crime-density"><span class="header-section-number">6.2</span> Mapping crime density</a>
   <ul class="collapse">
-  <li><a href="#fine-tuning-cell-size-and-bandwidth" id="toc-fine-tuning-cell-size-and-bandwidth" class="nav-link" data-scroll-target="#fine-tuning-cell-size-and-bandwidth"><span class="header-section-number">6.2.1</span> Fine-tuning cell size and bandwidth</a></li>
-  <li><a href="#using-colour-to-show-density" id="toc-using-colour-to-show-density" class="nav-link" data-scroll-target="#using-colour-to-show-density"><span class="header-section-number">6.2.2</span> Using colour to show density</a></li>
+  <li><a href="#sec-choosing-projected-crs" id="toc-sec-choosing-projected-crs" class="nav-link" data-scroll-target="#sec-choosing-projected-crs"><span class="header-section-number">6.2.1</span> Choosing a projected coordinate reference system</a></li>
+  <li><a href="#fine-tuning-cell-size-and-bandwidth" id="toc-fine-tuning-cell-size-and-bandwidth" class="nav-link" data-scroll-target="#fine-tuning-cell-size-and-bandwidth"><span class="header-section-number">6.2.2</span> Fine-tuning cell size and bandwidth</a></li>
+  <li><a href="#using-colour-to-show-density" id="toc-using-colour-to-show-density" class="nav-link" data-scroll-target="#using-colour-to-show-density"><span class="header-section-number">6.2.3</span> Using colour to show density</a></li>
   </ul></li>
   <li><a href="#clipping-map-layers" id="toc-clipping-map-layers" class="nav-link" data-scroll-target="#clipping-map-layers"><span class="header-section-number">6.3</span> Clipping map layers</a></li>
   <li><a href="#sec-base-maps" id="toc-sec-base-maps" class="nav-link" data-scroll-target="#sec-base-maps"><span class="header-section-number">6.4</span> Adding a base map</a></li>
@@ -481,6 +482,7 @@ quarto book
 <p>By the end of this chapter, you will have learned how to:</p>
 <ul>
 <li>estimate a density layer using <code>hotspot_kde()</code>;</li>
+<li>choose an appropriate projected coordinate reference system;</li>
 <li>adjust grid-cell size and bandwidth;</li>
 <li>choose an appropriate sequential colour scale;</li>
 <li>clip a density layer to the area covered by the data using <code>hotspot_clip()</code>; and</li>
@@ -528,7 +530,7 @@ quarto book
 <pre><strong>chapter_06.R</strong></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="co"># Load packages</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, here, httr2, sf, sfhotspot, tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(crsuggest, ggspatial, here, httr2, sf, sfhotspot, tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>Run this line by clicking anywhere on it and pressing <kbd title="mac: Command-Return, windows: Ctrl-Enter" aria-hidden="true" data-mac="Command-Return" data-windows="Ctrl-Enter"></kbd><span class="visually-hidden"></span> on your keyboard.</p>
@@ -661,25 +663,56 @@ Projected CRS: WGS 84 / UTM zone 10N
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What is a key advantage of using KDE over dot maps for crime data?</strong></p>
-<div id="radio_PCHDCFKTTE" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_PCHDCFKTTE" value="answer"> <span>It helps make spatial patterns in data more apparent.</span></label><label><input type="radio" autocomplete="off" name="radio_PCHDCFKTTE" value=""> <span>It shows the exact location of each crime point.</span></label><label><input type="radio" autocomplete="off" name="radio_PCHDCFKTTE" value=""> <span>It allows for interactive maps that users can click on.</span></label><label><input type="radio" autocomplete="off" name="radio_PCHDCFKTTE" value=""> <span>It removes crime data points from the map.</span></label>
+<div id="radio_TBLIPDFOMG" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_TBLIPDFOMG" value="answer"> <span>It helps make spatial patterns in data more apparent.</span></label><label><input type="radio" autocomplete="off" name="radio_TBLIPDFOMG" value=""> <span>It shows the exact location of each crime point.</span></label><label><input type="radio" autocomplete="off" name="radio_TBLIPDFOMG" value=""> <span>It allows for interactive maps that users can click on.</span></label><label><input type="radio" autocomplete="off" name="radio_TBLIPDFOMG" value=""> <span>It removes crime data points from the map.</span></label>
 </div>
 <p><strong>Which R function is used to create a density layer from point data?</strong></p>
-<div id="radio_CPUSZCVGRC" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_CPUSZCVGRC" value=""> <span><code>ggplot()</code></span></label><label><input type="radio" autocomplete="off" name="radio_CPUSZCVGRC" value=""> <span><code>hotspot_density()</code></span></label><label><input type="radio" autocomplete="off" name="radio_CPUSZCVGRC" value="answer"> <span><code>hotspot_kde()</code></span></label><label><input type="radio" autocomplete="off" name="radio_CPUSZCVGRC" value=""> <span><code>st_point_to_kde()</code></span></label>
+<div id="radio_VTJXCLJRXK" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_VTJXCLJRXK" value=""> <span><code>ggplot()</code></span></label><label><input type="radio" autocomplete="off" name="radio_VTJXCLJRXK" value=""> <span><code>hotspot_density()</code></span></label><label><input type="radio" autocomplete="off" name="radio_VTJXCLJRXK" value="answer"> <span><code>hotspot_kde()</code></span></label><label><input type="radio" autocomplete="off" name="radio_VTJXCLJRXK" value=""> <span><code>st_point_to_kde()</code></span></label>
 </div>
 <p><strong>Which argument in <code>geom_sf()</code> is used to specify that the fill colour of grid cells should be determined by the KDE values?</strong></p>
-<div id="radio_KAGIGDKATJ" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_KAGIGDKATJ" value=""> <span><code>colour</code></span></label><label><input type="radio" autocomplete="off" name="radio_KAGIGDKATJ" value="answer"> <span><code>fill</code></span></label><label><input type="radio" autocomplete="off" name="radio_KAGIGDKATJ" value=""> <span><code>shape</code></span></label><label><input type="radio" autocomplete="off" name="radio_KAGIGDKATJ" value=""> <span><code>size</code></span></label>
+<div id="radio_XSTWZLVMOX" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_XSTWZLVMOX" value=""> <span><code>colour</code></span></label><label><input type="radio" autocomplete="off" name="radio_XSTWZLVMOX" value="answer"> <span><code>fill</code></span></label><label><input type="radio" autocomplete="off" name="radio_XSTWZLVMOX" value=""> <span><code>shape</code></span></label><label><input type="radio" autocomplete="off" name="radio_XSTWZLVMOX" value=""> <span><code>size</code></span></label>
 </div>
 <p><strong>Where should you specify <code>fill = kde</code> when fill colour should vary according to values in the <code>kde</code> column?</strong></p>
-<div id="radio_BXTFOWWBPX" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_BXTFOWWBPX" value="answer"> <span>Inside <code>aes()</code></span></label><label><input type="radio" autocomplete="off" name="radio_BXTFOWWBPX" value=""> <span>Outside <code>aes()</code></span></label><label><input type="radio" autocomplete="off" name="radio_BXTFOWWBPX" value=""> <span>Inside <code>ggplot()</code> but outside <code>geom_sf()</code></span></label><label><input type="radio" autocomplete="off" name="radio_BXTFOWWBPX" value=""> <span>Inside <code>labs()</code></span></label>
+<div id="radio_RQNRGZAJUN" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_RQNRGZAJUN" value="answer"> <span>Inside <code>aes()</code></span></label><label><input type="radio" autocomplete="off" name="radio_RQNRGZAJUN" value=""> <span>Outside <code>aes()</code></span></label><label><input type="radio" autocomplete="off" name="radio_RQNRGZAJUN" value=""> <span>Inside <code>ggplot()</code> but outside <code>geom_sf()</code></span></label><label><input type="radio" autocomplete="off" name="radio_RQNRGZAJUN" value=""> <span>Inside <code>labs()</code></span></label>
 </div>
 </div>
 </div>
-<section id="fine-tuning-cell-size-and-bandwidth" class="level3" data-number="6.2.1">
-<h3 data-number="6.2.1" class="anchored" data-anchor-id="fine-tuning-cell-size-and-bandwidth"><span class="header-section-number">6.2.1</span> Fine-tuning cell size and bandwidth</h3>
+<section id="sec-choosing-projected-crs" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="sec-choosing-projected-crs"><span class="header-section-number">6.2.1</span> Choosing a projected coordinate reference system</h3>
+<p>As we learned in <a href="../05_your_second_crime_map/index.html" class="quarto-xref"><span>Chapter 5</span></a>, spatial data can use different coordinate reference systems (CRSs). Data that use a geographic CRS usually store locations as longitude and latitude measured in decimal degrees. Decimal degrees are difficult to use for parameters that represent distances: for example, a cell size of <code>0.002</code> degrees is much less intuitive than a cell size of 200 metres. A <em>projected</em> CRS designed for the part of the world we are analysing will often use familiar units such as metres, making distances easier to specify and interpret.</p>
+<p>The <code>hotspot_kde()</code> function automatically transforms data to a suitable projected CRS in the background if necessary, so you do not need to transform longitude and latitude data before using that function. Other spatial functions do not always do this automatically, however, and we will sometimes want to choose a projected CRS ourselves.</p>
+<p>The <code>suggest_crs()</code> function from the crsuggest package can identify projected CRSs designed for the area covered by a spatial dataset. Run this code in the R Console to see suitable CRSs for the Vancouver bike-theft data:</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>R Console</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-label="1"></a>crsuggest<span class="sc">::</span><span class="fu">suggest_crs</span>(bike_thefts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre data-code-line-numbers=""><code># A tibble: 10 × 6
+   crs_code crs_name                        crs_type crs_gcs crs_units crs_proj4
+   &lt;chr&gt;    &lt;chr&gt;                           &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    
+ 1 3153     NAD83(CSRS) / BC Albers         project…    4617 m         +proj=ae…
+ 2 3005     NAD83 / BC Albers               project…    4269 m         +proj=ae…
+ 3 26710    NAD27 / UTM zone 10N            project…    4267 m         +proj=ut…
+ 4 3157     NAD83(CSRS) / UTM zone 10N      project…    4617 m         +proj=ut…
+ 5 26910    NAD83 / UTM zone 10N            project…    4269 m         +proj=ut…
+ 6 32610    WGS 84 / UTM zone 10N           project…    4326 m         +proj=ut…
+ 7 32410    WGS 72BE / UTM zone 10N         project…    4324 m         +proj=ut…
+ 8 32210    WGS 72 / UTM zone 10N           project…    4322 m         +proj=ut…
+ 9 3979     NAD83(CSRS) / Canada Atlas Lam… project…    4617 m         +proj=lc…
+10 3978     NAD83 / Canada Atlas Lambert    project…    4269 m         +proj=lc…</code></pre>
+</div>
+</div>
+<p><code>suggest_crs()</code> returns a table of possible coordinate systems. The <code>crs_code</code> column gives the EPSG code that we can use with <code>st_transform()</code>, while <code>crs_name</code> describes the coordinate system and <code>crs_units</code> shows the units it uses. In general, we can use the CRS in the first row as long as its units are metres. If it uses unfamiliar units, we can choose the first suggested CRS that uses metres instead.</p>
+<p>The Vancouver data already use UTM zone 10N (<code>EPSG:32610</code>), an appropriate projected CRS whose coordinates are measured in metres, so we do not need to transform them. When a transformation is needed, we can pass the chosen code to <code>st_transform()</code>. For example, <code>bike_thefts |&gt; st_transform("EPSG:3153")</code> would transform the Vancouver data to the first CRS suggested in the table.</p>
+</section>
+<section id="fine-tuning-cell-size-and-bandwidth" class="level3" data-number="6.2.2">
+<h3 data-number="6.2.2" class="anchored" data-anchor-id="fine-tuning-cell-size-and-bandwidth"><span class="header-section-number">6.2.2</span> Fine-tuning cell size and bandwidth</h3>
 <p>We can control the appearance of KDE maps in several ways. For example, we can vary the number of cells in the grid and the definition of what cells the kernel density estimation process should consider to be ‘nearby’ for the purposes of calculating weighted counts. Cells are considered to be ‘nearby’ to a particular cell if they are closer to that cell than a distance known as the KDE <em>bandwidth</em>.</p>
 <p>By default, <code>hotspot_kde()</code> chooses the cell size and the bandwidth automatically. The maps below show how changing these defaults changes the appearance of our map (with the legend and axes removed to make the small maps clearer).</p>
 <div class="cell" data-layout-align="center">
@@ -708,8 +741,8 @@ Projected CRS: WGS 84 / UTM zone 10N
 </div>
 </div>
 </section>
-<section id="using-colour-to-show-density" class="level3" data-number="6.2.2">
-<h3 data-number="6.2.2" class="anchored" data-anchor-id="using-colour-to-show-density"><span class="header-section-number">6.2.2</span> Using colour to show density</h3>
+<section id="using-colour-to-show-density" class="level3" data-number="6.2.3">
+<h3 data-number="6.2.3" class="anchored" data-anchor-id="using-colour-to-show-density"><span class="header-section-number">6.2.3</span> Using colour to show density</h3>
 <p>The final way we can control the appearance of our density layer is to change the colour scheme used to represent density. To do this, we can use another type of function from the ggplot2 package: <em>scales</em>. Functions in the <code>scale_*()</code> family of functions allow us to control how the mapping between a column in the data and an aesthetic (colour, size, etc.) is represented visually. For example, which colour scheme is used to represent the density of thefts on our map.</p>
 <p>There are many <code>scale_*()</code> functions, but the <code>scale_fill_distiller()</code> function produces several different colour scales that are specifically designed to be effective on maps.</p>
 <p>Colour schemes can be divided into three types:</p>
@@ -759,10 +792,10 @@ Projected CRS: WGS 84 / UTM zone 10N
 <div class="code-with-filename-file">
 <pre><strong>chapter_06.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-label="1"></a><span class="co"># Plot density map</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-label="2"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-label="3"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> kde), <span class="at">data =</span> bike_theft_density, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-label="4"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"Oranges"</span>, <span class="at">direction =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-label="1"></a><span class="co"># Plot density map</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-label="2"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-label="3"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> kde), <span class="at">data =</span> bike_theft_density, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-label="4"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"Oranges"</span>, <span class="at">direction =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output-display">
 <div>
@@ -784,20 +817,20 @@ Projected CRS: WGS 84 / UTM zone 10N
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What R package do we use to make density maps using the <code>hotspot_kde()</code> function?</strong></p>
-<div id="radio_OJGBNWSROR" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_OJGBNWSROR" value=""> <span>dplyr</span></label><label><input type="radio" autocomplete="off" name="radio_OJGBNWSROR" value=""> <span>ggplot2</span></label><label><input type="radio" autocomplete="off" name="radio_OJGBNWSROR" value=""> <span>sf</span></label><label><input type="radio" autocomplete="off" name="radio_OJGBNWSROR" value="answer"> <span>sfhotspot</span></label>
+<div id="radio_YEZZRGRIJI" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_YEZZRGRIJI" value=""> <span>dplyr</span></label><label><input type="radio" autocomplete="off" name="radio_YEZZRGRIJI" value=""> <span>ggplot2</span></label><label><input type="radio" autocomplete="off" name="radio_YEZZRGRIJI" value=""> <span>sf</span></label><label><input type="radio" autocomplete="off" name="radio_YEZZRGRIJI" value="answer"> <span>sfhotspot</span></label>
 </div>
 <p><strong>What is the <code>bandwidth_adjust</code> argument of the function <code>hotspot_kde()</code> used for?</strong></p>
-<div id="radio_KHCGWPZIHZ" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_KHCGWPZIHZ" value="answer"> <span>Adjusting the bandwidth of the density layer, relative to the default bandwidth</span></label><label><input type="radio" autocomplete="off" name="radio_KHCGWPZIHZ" value=""> <span>Adjusting the cell size of the density layer, relative to the default cell size</span></label><label><input type="radio" autocomplete="off" name="radio_KHCGWPZIHZ" value=""> <span>Adjusting the colour scheme used to represent density on the map</span></label><label><input type="radio" autocomplete="off" name="radio_KHCGWPZIHZ" value=""> <span>Adjusting the bandwidth of the density layer, relative to a bandwidth of zero</span></label>
+<div id="radio_LUZWICJAWU" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_LUZWICJAWU" value="answer"> <span>Adjusting the bandwidth of the density layer, relative to the default bandwidth</span></label><label><input type="radio" autocomplete="off" name="radio_LUZWICJAWU" value=""> <span>Adjusting the cell size of the density layer, relative to the default cell size</span></label><label><input type="radio" autocomplete="off" name="radio_LUZWICJAWU" value=""> <span>Adjusting the colour scheme used to represent density on the map</span></label><label><input type="radio" autocomplete="off" name="radio_LUZWICJAWU" value=""> <span>Adjusting the bandwidth of the density layer, relative to a bandwidth of zero</span></label>
 </div>
 <p><strong>In what circumstances is it appropriate to use a diverging colour scale, e.g.&nbsp;one that goes from blue to white to red?</strong></p>
-<div id="radio_SJGZEKBSVG" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_SJGZEKBSVG" value=""> <span>To represent variation in a variable from low to high</span></label><label><input type="radio" autocomplete="off" name="radio_SJGZEKBSVG" value="answer"> <span>To represent variation in a variable above and below a meaningful mid-point</span></label><label><input type="radio" autocomplete="off" name="radio_SJGZEKBSVG" value=""> <span>To represent variation in a variable from high to low</span></label><label><input type="radio" autocomplete="off" name="radio_SJGZEKBSVG" value=""> <span>To represent categories in a categorical variable</span></label>
+<div id="radio_ZEAMSYFEML" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_ZEAMSYFEML" value=""> <span>To represent variation in a variable from low to high</span></label><label><input type="radio" autocomplete="off" name="radio_ZEAMSYFEML" value="answer"> <span>To represent variation in a variable above and below a meaningful mid-point</span></label><label><input type="radio" autocomplete="off" name="radio_ZEAMSYFEML" value=""> <span>To represent variation in a variable from high to low</span></label><label><input type="radio" autocomplete="off" name="radio_ZEAMSYFEML" value=""> <span>To represent categories in a categorical variable</span></label>
 </div>
 <p><strong>Why is it a bad idea to use a diverging colour scheme for crime density maps?</strong></p>
-<div id="radio_ZMFBFQOWMM" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_ZMFBFQOWMM" value=""> <span>It highlights low-density areas more clearly.</span></label><label><input type="radio" autocomplete="off" name="radio_ZMFBFQOWMM" value="answer"> <span>It can mislead the viewer by suggesting a central point of significance.</span></label><label><input type="radio" autocomplete="off" name="radio_ZMFBFQOWMM" value=""> <span>It makes the map look too colourful, which can be distracting.</span></label><label><input type="radio" autocomplete="off" name="radio_ZMFBFQOWMM" value=""> <span>It hides the areas with the highest crime density.</span></label>
+<div id="radio_TDSSYXVBWC" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_TDSSYXVBWC" value=""> <span>It highlights low-density areas more clearly.</span></label><label><input type="radio" autocomplete="off" name="radio_TDSSYXVBWC" value="answer"> <span>It can mislead the viewer by suggesting a central point of significance.</span></label><label><input type="radio" autocomplete="off" name="radio_TDSSYXVBWC" value=""> <span>It makes the map look too colourful, which can be distracting.</span></label><label><input type="radio" autocomplete="off" name="radio_TDSSYXVBWC" value=""> <span>It hides the areas with the highest crime density.</span></label>
 </div>
 </div>
 </div>
@@ -833,13 +866,13 @@ Projected CRS: WGS 84 / UTM zone 10N
 <div class="code-with-filename-file">
 <pre><strong>chapter_06.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-label="1"></a><span class="co"># Download Vancouver neighbourhood boundaries</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-label="2"></a><span class="fu">request</span>(</span>
-<span id="cb7-3"><a href="#cb7-3" aria-label="3"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_neighbourhoods.geojson"</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-label="4"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-label="5"></a>  <span class="fu">req_perform</span>(</span>
-<span id="cb7-6"><a href="#cb7-6" aria-label="6"></a>    <span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_neighbourhoods.geojson"</span>)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-label="7"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="co"># Download Vancouver neighbourhood boundaries</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-label="2"></a><span class="fu">request</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-label="3"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_neighbourhoods.geojson"</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-label="4"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-label="5"></a>  <span class="fu">req_perform</span>(</span>
+<span id="cb9-6"><a href="#cb9-6" aria-label="6"></a>    <span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_neighbourhoods.geojson"</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-label="7"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>Add the following code after the pipeline that loads and wrangles the bike-theft data and before the code that creates <code>bike_theft_density</code>:</p>
@@ -848,58 +881,58 @@ Projected CRS: WGS 84 / UTM zone 10N
 <div class="code-with-filename-file">
 <pre><strong>chapter_06.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-label="1"></a><span class="co"># Load Vancouver neighbourhood boundaries</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-label="2"></a>vancouver_nbhds <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_neighbourhoods.geojson"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-label="3"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-label="4"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:32610"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-label="1"></a><span class="co"># Load Vancouver neighbourhood boundaries</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-label="2"></a>vancouver_nbhds <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_neighbourhoods.geojson"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-label="3"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-label="4"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:32610"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
-<p>You might have noticed that as well as loading the boundary data with <code>read_sf()</code>, we have transformed the data to use the same co-ordinate system (EPSG:32610) as is used for the <code>bike_thefts</code> object. This is because we can only clip datasets that use the same co-ordinate system.</p>
+<p>You might have noticed that as well as loading the boundary data with <code>read_sf()</code>, we have transformed the data to use the same coordinate system (EPSG:32610) as is used for the <code>bike_thefts</code> object. This is because we can only clip datasets that use the same coordinate system.</p>
 <p>Before we clip the density layer to the city boundary, check that your file <code>chapter_06.R</code> looks like this:</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_06.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="co"># Load packages</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, here, httr2, sf, sfhotspot, tidyverse)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-label="3"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-label="4"></a><span class="co"># Download the raw data</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-label="5"></a><span class="fu">request</span>(</span>
-<span id="cb9-6"><a href="#cb9-6" aria-label="6"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-label="7"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-label="8"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_thefts.csv.gz"</span>))</span>
-<span id="cb9-9"><a href="#cb9-9" aria-label="9"></a></span>
-<span id="cb9-10"><a href="#cb9-10" aria-label="10"></a><span class="fu">request</span>(</span>
-<span id="cb9-11"><a href="#cb9-11" aria-label="11"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_neighbourhoods.geojson"</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-label="12"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-label="13"></a>  <span class="fu">req_perform</span>(</span>
-<span id="cb9-14"><a href="#cb9-14" aria-label="14"></a>    <span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_neighbourhoods.geojson"</span>)</span>
-<span id="cb9-15"><a href="#cb9-15" aria-label="15"></a>  )</span>
-<span id="cb9-16"><a href="#cb9-16" aria-label="16"></a></span>
-<span id="cb9-17"><a href="#cb9-17" aria-label="17"></a><span class="co"># Load and wrangle bike theft data</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-label="18"></a>thefts <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_thefts.csv.gz"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-label="19"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-label="20"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="at">crs =</span> <span class="st">"EPSG:32610"</span>)</span>
-<span id="cb9-21"><a href="#cb9-21" aria-label="21"></a></span>
-<span id="cb9-22"><a href="#cb9-22" aria-label="22"></a>bike_thefts <span class="ot">&lt;-</span> <span class="fu">filter</span>(thefts, type <span class="sc">==</span> <span class="st">"Theft of Bicycle"</span>)</span>
-<span id="cb9-23"><a href="#cb9-23" aria-label="23"></a></span>
-<span id="cb9-24"><a href="#cb9-24" aria-label="24"></a><span class="co"># Load Vancouver neighbourhood boundaries</span></span>
-<span id="cb9-25"><a href="#cb9-25" aria-label="25"></a>vancouver_nbhds <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_neighbourhoods.geojson"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb9-26"><a href="#cb9-26" aria-label="26"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
-<span id="cb9-27"><a href="#cb9-27" aria-label="27"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:32610"</span>)</span>
-<span id="cb9-28"><a href="#cb9-28" aria-label="28"></a></span>
-<span id="cb9-29"><a href="#cb9-29" aria-label="29"></a><span class="co"># Estimate density of bike thefts</span></span>
-<span id="cb9-30"><a href="#cb9-30" aria-label="30"></a>bike_theft_density <span class="ot">&lt;-</span> <span class="fu">hotspot_kde</span>(</span>
-<span id="cb9-31"><a href="#cb9-31" aria-label="31"></a>  bike_thefts,</span>
-<span id="cb9-32"><a href="#cb9-32" aria-label="32"></a>  <span class="at">bandwidth_adjust =</span> <span class="fl">0.5</span>,</span>
-<span id="cb9-33"><a href="#cb9-33" aria-label="33"></a>  <span class="at">quiet =</span> <span class="cn">TRUE</span></span>
-<span id="cb9-34"><a href="#cb9-34" aria-label="34"></a>)</span>
-<span id="cb9-35"><a href="#cb9-35" aria-label="35"></a></span>
-<span id="cb9-36"><a href="#cb9-36" aria-label="36"></a><span class="co"># Plot density map</span></span>
-<span id="cb9-37"><a href="#cb9-37" aria-label="37"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb9-38"><a href="#cb9-38" aria-label="38"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> kde), <span class="at">data =</span> bike_theft_density, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb9-39"><a href="#cb9-39" aria-label="39"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"Oranges"</span>, <span class="at">direction =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="co"># Load packages</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(crsuggest, ggspatial, here, httr2, sf, sfhotspot, tidyverse)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-label="3"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-label="4"></a><span class="co"># Download the raw data</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-label="5"></a><span class="fu">request</span>(</span>
+<span id="cb11-6"><a href="#cb11-6" aria-label="6"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-label="7"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-label="8"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_thefts.csv.gz"</span>))</span>
+<span id="cb11-9"><a href="#cb11-9" aria-label="9"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-label="10"></a><span class="fu">request</span>(</span>
+<span id="cb11-11"><a href="#cb11-11" aria-label="11"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_neighbourhoods.geojson"</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-label="12"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-label="13"></a>  <span class="fu">req_perform</span>(</span>
+<span id="cb11-14"><a href="#cb11-14" aria-label="14"></a>    <span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_neighbourhoods.geojson"</span>)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-label="15"></a>  )</span>
+<span id="cb11-16"><a href="#cb11-16" aria-label="16"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-label="17"></a><span class="co"># Load and wrangle bike theft data</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-label="18"></a>thefts <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_thefts.csv.gz"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-label="19"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-label="20"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="at">crs =</span> <span class="st">"EPSG:32610"</span>)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-label="21"></a></span>
+<span id="cb11-22"><a href="#cb11-22" aria-label="22"></a>bike_thefts <span class="ot">&lt;-</span> <span class="fu">filter</span>(thefts, type <span class="sc">==</span> <span class="st">"Theft of Bicycle"</span>)</span>
+<span id="cb11-23"><a href="#cb11-23" aria-label="23"></a></span>
+<span id="cb11-24"><a href="#cb11-24" aria-label="24"></a><span class="co"># Load Vancouver neighbourhood boundaries</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-label="25"></a>vancouver_nbhds <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_neighbourhoods.geojson"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-label="26"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-label="27"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:32610"</span>)</span>
+<span id="cb11-28"><a href="#cb11-28" aria-label="28"></a></span>
+<span id="cb11-29"><a href="#cb11-29" aria-label="29"></a><span class="co"># Estimate density of bike thefts</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-label="30"></a>bike_theft_density <span class="ot">&lt;-</span> <span class="fu">hotspot_kde</span>(</span>
+<span id="cb11-31"><a href="#cb11-31" aria-label="31"></a>  bike_thefts,</span>
+<span id="cb11-32"><a href="#cb11-32" aria-label="32"></a>  <span class="at">bandwidth_adjust =</span> <span class="fl">0.5</span>,</span>
+<span id="cb11-33"><a href="#cb11-33" aria-label="33"></a>  <span class="at">quiet =</span> <span class="cn">TRUE</span></span>
+<span id="cb11-34"><a href="#cb11-34" aria-label="34"></a>)</span>
+<span id="cb11-35"><a href="#cb11-35" aria-label="35"></a></span>
+<span id="cb11-36"><a href="#cb11-36" aria-label="36"></a><span class="co"># Plot density map</span></span>
+<span id="cb11-37"><a href="#cb11-37" aria-label="37"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb11-38"><a href="#cb11-38" aria-label="38"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> kde), <span class="at">data =</span> bike_theft_density, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb11-39"><a href="#cb11-39" aria-label="39"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"Oranges"</span>, <span class="at">direction =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>We can clip the KDE layer produced by <code>hotspot_kde()</code> to the boundary of the City of Vancouver using the <code>hotspot_clip()</code> function from sfhotspot. <code>hotspot_clip()</code> keeps the parts of the KDE cells that fall inside the area covered by the boundary layer and removes the rest.</p>
@@ -909,24 +942,24 @@ Projected CRS: WGS 84 / UTM zone 10N
 <div class="code-with-filename-file">
 <pre><strong>chapter_06.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="annotated-cell-9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-9-1"><a href="#annotated-cell-9-1" aria-label="1"></a><span class="co"># Estimate density of bike thefts and clip result</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-9-2" class="code-annotation-target"><a href="#annotated-cell-9-2" aria-label="2"></a>bike_theft_density_clip <span class="ot">&lt;-</span> bike_thefts <span class="sc">|&gt;</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-9-3" class="code-annotation-target"><a href="#annotated-cell-9-3" aria-label="3"></a>  <span class="fu">hotspot_kde</span>(<span class="at">bandwidth_adjust =</span> <span class="fl">0.5</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-9-4" class="code-annotation-target"><a href="#annotated-cell-9-4" aria-label="4"></a>  <span class="fu">hotspot_clip</span>(vancouver_nbhds)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="annotated-cell-10" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-10-1"><a href="#annotated-cell-10-1" aria-label="1"></a><span class="co"># Estimate density of bike thefts and clip result</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-10-2" class="code-annotation-target"><a href="#annotated-cell-10-2" aria-label="2"></a>bike_theft_density_clip <span class="ot">&lt;-</span> bike_thefts <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-10-3" class="code-annotation-target"><a href="#annotated-cell-10-3" aria-label="3"></a>  <span class="fu">hotspot_kde</span>(<span class="at">bandwidth_adjust =</span> <span class="fl">0.5</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-10-4" class="code-annotation-target"><a href="#annotated-cell-10-4" aria-label="4"></a>  <span class="fu">hotspot_clip</span>(vancouver_nbhds)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-annotation">
 <dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-9" data-target-annotation="1">1</dt>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-9" data-code-lines="2" data-code-annotation="1">take the <code>bike_thefts</code> object, <em>and then</em></span>
+<span data-code-cell="annotated-cell-10" data-code-lines="2" data-code-annotation="1">take the <code>bike_thefts</code> object, <em>and then</em></span>
 </dd>
-<dt data-target-cell="annotated-cell-9" data-target-annotation="2">2</dt>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-9" data-code-lines="3" data-code-annotation="2">use it to estimate the density of thefts <em>and then</em></span>
+<span data-code-cell="annotated-cell-10" data-code-lines="3" data-code-annotation="2">use it to estimate the density of thefts <em>and then</em></span>
 </dd>
-<dt data-target-cell="annotated-cell-9" data-target-annotation="3">3</dt>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-cell="annotated-cell-9" data-code-lines="4" data-code-annotation="3">clip the resulting density object to the boundary stored in the <code>vancouver_nbhds</code> object.</span>
+<span data-code-cell="annotated-cell-10" data-code-lines="4" data-code-annotation="3">clip the resulting density object to the boundary stored in the <code>vancouver_nbhds</code> object.</span>
 </dd>
 </dl>
 </div>
@@ -935,19 +968,19 @@ Projected CRS: WGS 84 / UTM zone 10N
 </div>
 </div>
 <p>If you aren’t comfortable with how the pipe operator works, you might want to refer back to <a href="../04_transforming_data/index.html#sec-pipe-operator" class="quarto-xref"><span>Section 4.6</span></a>.</p>
-<div class="callout callout-style-default callout-important callout-titled" title="Both layers must use the same co-ordinate system">
+<div class="callout callout-style-default callout-important callout-titled" title="Both layers must use the same coordinate system">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Both layers must use the same co-ordinate system
+<span class="screen-reader-only">Important</span>Both layers must use the same coordinate system
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>hotspot_clip()</code> requires both spatial layers to use the same co-ordinate system. If the layers use different co-ordinate systems, transform one of them with <code>st_transform()</code> so that it uses the same system as the other layer.</p>
-<p>If you do not know which co-ordinate systems the layers use, you can use the <code>st_crs()</code> function to extract the co-ordinate system from one layer and pass that value as the second argument to <code>st_transform()</code>. For example:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="fu">st_transform</span>(bike_theft_density, <span class="at">crs =</span> <span class="fu">st_crs</span>(vancouver_nbhds))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>hotspot_clip()</code> requires both spatial layers to use the same coordinate system. If the layers use different coordinate systems, transform one of them with <code>st_transform()</code> so that it uses the same system as the other layer.</p>
+<p>If you do not know which coordinate systems the layers use, you can use the <code>st_crs()</code> function to extract the coordinate system from one layer and pass that value as the second argument to <code>st_transform()</code>. For example:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-label="1"></a><span class="fu">st_transform</span>(bike_theft_density, <span class="at">crs =</span> <span class="fu">st_crs</span>(vancouver_nbhds))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>We can quickly check the effect of clipping the density layer to the city boundary by producing a very basic map that shows both layers in separate colours. Run this code in the R Console:</p>
@@ -956,18 +989,18 @@ Projected CRS: WGS 84 / UTM zone 10N
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-label="1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-label="2"></a>  <span class="co"># Add convex hull of bike thefts to map</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-label="3"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bike_theft_density, <span class="at">fill =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-label="4"></a>  <span class="co"># Add clipped density layer to map</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-label="5"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bike_theft_density_clip, <span class="at">fill =</span> <span class="st">"green"</span>) <span class="sc">+</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-label="6"></a>  <span class="co"># Add city boundary to map for comparison</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-label="7"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> vancouver_nbhds, <span class="at">colour =</span> <span class="st">"black"</span>, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">linewidth =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-label="1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-label="2"></a>  <span class="co"># Add convex hull of bike thefts to map</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-label="3"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bike_theft_density, <span class="at">fill =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-label="4"></a>  <span class="co"># Add clipped density layer to map</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-label="5"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bike_theft_density_clip, <span class="at">fill =</span> <span class="st">"green"</span>) <span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-label="6"></a>  <span class="co"># Add city boundary to map for comparison</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-label="7"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> vancouver_nbhds, <span class="at">colour =</span> <span class="st">"black"</span>, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">linewidth =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" alt="A diagnostic map comparing the original blue KDE grid with the green clipped grid. Blue cells extend beyond the black city boundary, while green cells stop at it." width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" alt="A diagnostic map comparing the original blue KDE grid with the green clipped grid. Blue cells extend beyond the black city boundary, while green cells stop at it." width="672"></p>
 </figure>
 </div>
 </div>
@@ -984,12 +1017,12 @@ Projected CRS: WGS 84 / UTM zone 10N
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What is the purpose of the <code>hotspot_clip()</code> function?</strong></p>
-<div id="radio_JEWNOLAEBP" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_JEWNOLAEBP" value=""> <span>To transform one dataset into another co-ordinate system.</span></label><label><input type="radio" autocomplete="off" name="radio_JEWNOLAEBP" value="answer"> <span>To clip a dataset to the boundary of another spatial layer.</span></label><label><input type="radio" autocomplete="off" name="radio_JEWNOLAEBP" value=""> <span>To merge multiple spatial layers into one.</span></label><label><input type="radio" autocomplete="off" name="radio_JEWNOLAEBP" value=""> <span>To calculate the centroid of spatial objects.</span></label>
+<div id="radio_WNPMDSVXDC" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_WNPMDSVXDC" value=""> <span>To transform one dataset into another coordinate system.</span></label><label><input type="radio" autocomplete="off" name="radio_WNPMDSVXDC" value="answer"> <span>To clip a dataset to the boundary of another spatial layer.</span></label><label><input type="radio" autocomplete="off" name="radio_WNPMDSVXDC" value=""> <span>To merge multiple spatial layers into one.</span></label><label><input type="radio" autocomplete="off" name="radio_WNPMDSVXDC" value=""> <span>To calculate the centroid of spatial objects.</span></label>
 </div>
 <p><strong>Why is it important to clip a KDE layer to a relevant boundary in crime mapping?</strong></p>
-<div id="radio_VRIIXUNKEU" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_VRIIXUNKEU" value=""> <span>To remove unnecessary layers.</span></label><label><input type="radio" autocomplete="off" name="radio_VRIIXUNKEU" value=""> <span>To reduce the overall size of the dataset.</span></label><label><input type="radio" autocomplete="off" name="radio_VRIIXUNKEU" value=""> <span>To improve the map’s aesthetic appearance.</span></label><label><input type="radio" autocomplete="off" name="radio_VRIIXUNKEU" value="answer"> <span>To avoid showing incorrect density estimates for areas without data.</span></label>
+<div id="radio_TWESYBHBHR" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_TWESYBHBHR" value=""> <span>To remove unnecessary layers.</span></label><label><input type="radio" autocomplete="off" name="radio_TWESYBHBHR" value=""> <span>To reduce the overall size of the dataset.</span></label><label><input type="radio" autocomplete="off" name="radio_TWESYBHBHR" value=""> <span>To improve the map’s aesthetic appearance.</span></label><label><input type="radio" autocomplete="off" name="radio_TWESYBHBHR" value="answer"> <span>To avoid showing incorrect density estimates for areas without data.</span></label>
 </div>
 </div>
 </div>
@@ -1004,20 +1037,20 @@ Projected CRS: WGS 84 / UTM zone 10N
 <div class="code-with-filename-file">
 <pre><strong>chapter_06.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-label="1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-label="2"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">zoomin =</span> <span class="dv">0</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-label="3"></a>  <span class="fu">geom_sf</span>(</span>
-<span id="cb13-4"><a href="#cb13-4" aria-label="4"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> kde),</span>
-<span id="cb13-5"><a href="#cb13-5" aria-label="5"></a>    <span class="at">data =</span> bike_theft_density_clip,</span>
-<span id="cb13-6"><a href="#cb13-6" aria-label="6"></a>    <span class="at">alpha =</span> <span class="fl">0.7</span>,</span>
-<span id="cb13-7"><a href="#cb13-7" aria-label="7"></a>    <span class="at">colour =</span> <span class="cn">NA</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-label="8"></a>  ) <span class="sc">+</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-label="9"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"Purples"</span>, <span class="at">direction =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-label="2"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">zoomin =</span> <span class="dv">0</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-label="3"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-label="4"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> kde),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-label="5"></a>    <span class="at">data =</span> bike_theft_density_clip,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-label="6"></a>    <span class="at">alpha =</span> <span class="fl">0.7</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-label="7"></a>    <span class="at">colour =</span> <span class="cn">NA</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-label="8"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-label="9"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"Purples"</span>, <span class="at">direction =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" alt="A purple density layer of recorded bicycle thefts over a street base map of Vancouver. Darker areas show higher estimated density." width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" alt="A purple density layer of recorded bicycle thefts over a street base map of Vancouver. Darker areas show higher estimated density." width="672"></p>
 </figure>
 </div>
 </div>
@@ -1045,7 +1078,7 @@ Projected CRS: WGS 84 / UTM zone 10N
 </div>
 </div>
 <p>You may want to experiment with different base map styles by using the <code>type</code> argument to <code>annotation_map_tile()</code>, e.g.&nbsp;using <code>annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none")</code>.</p>
-<p>One final note about the <code>annotation_map_tile()</code> function: you might have noticed that when we have used it above we have always set the argument <code>progress = "none"</code>. This stops the function from printing a progress bar while it is downloading the map tiles. The progress bar can sometimes be useful, but when you include the output from an R function in a report (as you will learn to do in <a href="../14_writing_reports/index.html" class="quarto-xref"><span>Chapter 14</span></a>), the output from the progress bar is likely to interfere with the formatting of the report. To prevent that, we use the <code>progress = "none"</code> argument.</p>
+<p>One final note about the <code>annotation_map_tile()</code> function: you might have noticed that when we have used it above we have always set the argument <code>progress = "none"</code>. This stops the function from printing a progress bar while it is downloading the map tiles. The progress bar can sometimes be useful, but when you include the output from an R function in a report (as you will learn to do in <a href="../11_writing_reports/index.html" class="quarto-xref"><span>Chapter 11</span></a>), the output from the progress bar is likely to interfere with the formatting of the report. To prevent that, we use the <code>progress = "none"</code> argument.</p>
 <div class="callout callout-style-default callout-quiz callout-titled" title="Base maps">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1057,16 +1090,16 @@ Projected CRS: WGS 84 / UTM zone 10N
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What is the purpose of adding a base map to a crime map in R?</strong></p>
-<div id="radio_YCWZVMVEOG" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_YCWZVMVEOG" value=""> <span>To provide information about socio-economic conditions in different places.</span></label><label><input type="radio" autocomplete="off" name="radio_YCWZVMVEOG" value="answer"> <span>To provide context on the locations of concentrations of crime.</span></label><label><input type="radio" autocomplete="off" name="radio_YCWZVMVEOG" value=""> <span>To stop the map from appearing too visually cluttered</span></label><label><input type="radio" autocomplete="off" name="radio_YCWZVMVEOG" value=""> <span>To make a map more visually attractive.</span></label>
+<div id="radio_LNURBUDXAJ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_LNURBUDXAJ" value=""> <span>To provide information about socio-economic conditions in different places.</span></label><label><input type="radio" autocomplete="off" name="radio_LNURBUDXAJ" value="answer"> <span>To provide context on the locations of concentrations of crime.</span></label><label><input type="radio" autocomplete="off" name="radio_LNURBUDXAJ" value=""> <span>To stop the map from appearing too visually cluttered</span></label><label><input type="radio" autocomplete="off" name="radio_LNURBUDXAJ" value=""> <span>To make a map more visually attractive.</span></label>
 </div>
 <p><strong>Which R package is commonly used for adding base maps to crime maps?</strong></p>
-<div id="radio_RCRNLWKFZD" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_RCRNLWKFZD" value=""> <span><code>ggplot2</code></span></label><label><input type="radio" autocomplete="off" name="radio_RCRNLWKFZD" value=""> <span><code>ggmap</code></span></label><label><input type="radio" autocomplete="off" name="radio_RCRNLWKFZD" value="answer"> <span><code>ggspatial</code></span></label><label><input type="radio" autocomplete="off" name="radio_RCRNLWKFZD" value=""> <span><code>sfhotspot</code></span></label>
+<div id="radio_NQJSZTPMUF" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_NQJSZTPMUF" value=""> <span><code>ggplot2</code></span></label><label><input type="radio" autocomplete="off" name="radio_NQJSZTPMUF" value=""> <span><code>ggmap</code></span></label><label><input type="radio" autocomplete="off" name="radio_NQJSZTPMUF" value="answer"> <span><code>ggspatial</code></span></label><label><input type="radio" autocomplete="off" name="radio_NQJSZTPMUF" value=""> <span><code>sfhotspot</code></span></label>
 </div>
 <p><strong>Why might you need to be careful in choosing the right base map when creating a crime map?</strong></p>
-<div id="radio_PIDJUHXIOD" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_PIDJUHXIOD" value="answer"> <span>To ensure that it does not distract from the crime data.</span></label><label><input type="radio" autocomplete="off" name="radio_PIDJUHXIOD" value=""> <span>To fit the base map to the full extent of the dataset.</span></label><label><input type="radio" autocomplete="off" name="radio_PIDJUHXIOD" value=""> <span>To remove all geographic details and focus only on crime locations.</span></label><label><input type="radio" autocomplete="off" name="radio_PIDJUHXIOD" value=""> <span>To add unnecessary elements to the map.</span></label>
+<div id="radio_SXCDCRENVQ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_SXCDCRENVQ" value="answer"> <span>To ensure that it does not distract from the crime data.</span></label><label><input type="radio" autocomplete="off" name="radio_SXCDCRENVQ" value=""> <span>To fit the base map to the full extent of the dataset.</span></label><label><input type="radio" autocomplete="off" name="radio_SXCDCRENVQ" value=""> <span>To remove all geographic details and focus only on crime locations.</span></label><label><input type="radio" autocomplete="off" name="radio_SXCDCRENVQ" value=""> <span>To add unnecessary elements to the map.</span></label>
 </div>
 </div>
 </div>
@@ -1085,14 +1118,14 @@ Projected CRS: WGS 84 / UTM zone 10N
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-label="1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-label="2"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> vancouver_nbhds) <span class="sc">+</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-label="3"></a>  <span class="fu">geom_sf_label</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">str_wrap</span>(name, <span class="at">width =</span> <span class="dv">10</span>)), <span class="at">data =</span> vancouver_nbhds)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-label="1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-label="2"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> vancouver_nbhds) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-label="3"></a>  <span class="fu">geom_sf_label</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">str_wrap</span>(name, <span class="at">width =</span> <span class="dv">10</span>)), <span class="at">data =</span> vancouver_nbhds)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" alt="A map of Vancouver neighbourhood polygons labelled with their names. Longer names wrap onto multiple lines." width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" alt="A map of Vancouver neighbourhood polygons labelled with their names. Longer names wrap onto multiple lines." width="672"></p>
 </figure>
 </div>
 </div>
@@ -1104,60 +1137,60 @@ Projected CRS: WGS 84 / UTM zone 10N
 <div class="code-with-filename-file">
 <pre><strong>chapter_06.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="annotated-cell-13" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-13-1"><a href="#annotated-cell-13-1" aria-label="1"></a><span class="co"># Plot density map</span></span>
-<span id="annotated-cell-13-2"><a href="#annotated-cell-13-2" aria-label="2"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="annotated-cell-13-3"><a href="#annotated-cell-13-3" aria-label="3"></a>  <span class="co"># Add base map</span></span>
-<span id="annotated-cell-13-4"><a href="#annotated-cell-13-4" aria-label="4"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"cartolight"</span>, <span class="at">zoomin =</span> <span class="dv">0</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="annotated-cell-13-5"><a href="#annotated-cell-13-5" aria-label="5"></a>  <span class="co"># Add density layer</span></span>
-<span id="annotated-cell-13-6"><a href="#annotated-cell-13-6" aria-label="6"></a>  <span class="fu">geom_sf</span>(</span>
-<span id="annotated-cell-13-7"><a href="#annotated-cell-13-7" aria-label="7"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> kde),</span>
-<span id="annotated-cell-13-8"><a href="#annotated-cell-13-8" aria-label="8"></a>    <span class="at">data =</span> bike_theft_density_clip,</span>
-<span id="annotated-cell-13-9"><a href="#annotated-cell-13-9" aria-label="9"></a>    <span class="at">alpha =</span> <span class="fl">0.75</span>,</span>
-<span id="annotated-cell-13-10"><a href="#annotated-cell-13-10" aria-label="10"></a>    <span class="at">colour =</span> <span class="cn">NA</span></span>
-<span id="annotated-cell-13-11"><a href="#annotated-cell-13-11" aria-label="11"></a>  ) <span class="sc">+</span></span>
-<span id="annotated-cell-13-12"><a href="#annotated-cell-13-12" aria-label="12"></a>  <span class="co"># Add neighbourhood boundaries</span></span>
-<span id="annotated-cell-13-13"><a href="#annotated-cell-13-13" aria-label="13"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> vancouver_nbhds, <span class="at">colour =</span> <span class="st">"seagreen3"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="annotated-cell-13-14"><a href="#annotated-cell-13-14" aria-label="14"></a>  <span class="co"># Add neighbourhood names</span></span>
-<span id="annotated-cell-13-15"><a href="#annotated-cell-13-15" aria-label="15"></a>  <span class="fu">geom_sf_label</span>(</span>
-<span id="annotated-cell-13-16"><a href="#annotated-cell-13-16" aria-label="16"></a>    <span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">str_wrap</span>(name, <span class="dv">10</span>)),</span>
-<span id="annotated-cell-13-17"><a href="#annotated-cell-13-17" aria-label="17"></a>    <span class="at">data =</span> vancouver_nbhds,</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-13" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-13-18" class="code-annotation-target"><a href="#annotated-cell-13-18" aria-label="18"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-13" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-13-19" class="code-annotation-target"><a href="#annotated-cell-13-19" aria-label="19"></a>    <span class="at">colour =</span> <span class="st">"seagreen"</span>,</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-13" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-13-20" class="code-annotation-target"><a href="#annotated-cell-13-20" aria-label="20"></a>    <span class="at">lineheight =</span> <span class="dv">1</span>,</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-13" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-13-21" class="code-annotation-target"><a href="#annotated-cell-13-21" aria-label="21"></a>    <span class="at">size =</span> <span class="fl">2.5</span>,</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-13" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-13-22" class="code-annotation-target"><a href="#annotated-cell-13-22" aria-label="22"></a>    <span class="at">linewidth =</span> <span class="cn">NA</span></span>
-<span id="annotated-cell-13-23"><a href="#annotated-cell-13-23" aria-label="23"></a>  ) <span class="sc">+</span></span>
-<span id="annotated-cell-13-24"><a href="#annotated-cell-13-24" aria-label="24"></a>  <span class="co"># Set the colour scale</span></span>
-<span id="annotated-cell-13-25"><a href="#annotated-cell-13-25" aria-label="25"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">direction =</span> <span class="dv">1</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="annotated-cell-14" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-14-1"><a href="#annotated-cell-14-1" aria-label="1"></a><span class="co"># Plot density map</span></span>
+<span id="annotated-cell-14-2"><a href="#annotated-cell-14-2" aria-label="2"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="annotated-cell-14-3"><a href="#annotated-cell-14-3" aria-label="3"></a>  <span class="co"># Add base map</span></span>
+<span id="annotated-cell-14-4"><a href="#annotated-cell-14-4" aria-label="4"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"cartolight"</span>, <span class="at">zoomin =</span> <span class="dv">0</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="annotated-cell-14-5"><a href="#annotated-cell-14-5" aria-label="5"></a>  <span class="co"># Add density layer</span></span>
+<span id="annotated-cell-14-6"><a href="#annotated-cell-14-6" aria-label="6"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="annotated-cell-14-7"><a href="#annotated-cell-14-7" aria-label="7"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> kde),</span>
+<span id="annotated-cell-14-8"><a href="#annotated-cell-14-8" aria-label="8"></a>    <span class="at">data =</span> bike_theft_density_clip,</span>
+<span id="annotated-cell-14-9"><a href="#annotated-cell-14-9" aria-label="9"></a>    <span class="at">alpha =</span> <span class="fl">0.75</span>,</span>
+<span id="annotated-cell-14-10"><a href="#annotated-cell-14-10" aria-label="10"></a>    <span class="at">colour =</span> <span class="cn">NA</span></span>
+<span id="annotated-cell-14-11"><a href="#annotated-cell-14-11" aria-label="11"></a>  ) <span class="sc">+</span></span>
+<span id="annotated-cell-14-12"><a href="#annotated-cell-14-12" aria-label="12"></a>  <span class="co"># Add neighbourhood boundaries</span></span>
+<span id="annotated-cell-14-13"><a href="#annotated-cell-14-13" aria-label="13"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> vancouver_nbhds, <span class="at">colour =</span> <span class="st">"seagreen3"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="annotated-cell-14-14"><a href="#annotated-cell-14-14" aria-label="14"></a>  <span class="co"># Add neighbourhood names</span></span>
+<span id="annotated-cell-14-15"><a href="#annotated-cell-14-15" aria-label="15"></a>  <span class="fu">geom_sf_label</span>(</span>
+<span id="annotated-cell-14-16"><a href="#annotated-cell-14-16" aria-label="16"></a>    <span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">str_wrap</span>(name, <span class="dv">10</span>)),</span>
+<span id="annotated-cell-14-17"><a href="#annotated-cell-14-17" aria-label="17"></a>    <span class="at">data =</span> vancouver_nbhds,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-14-18" class="code-annotation-target"><a href="#annotated-cell-14-18" aria-label="18"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-14-19" class="code-annotation-target"><a href="#annotated-cell-14-19" aria-label="19"></a>    <span class="at">colour =</span> <span class="st">"seagreen"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-14-20" class="code-annotation-target"><a href="#annotated-cell-14-20" aria-label="20"></a>    <span class="at">lineheight =</span> <span class="dv">1</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-14-21" class="code-annotation-target"><a href="#annotated-cell-14-21" aria-label="21"></a>    <span class="at">size =</span> <span class="fl">2.5</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-14-22" class="code-annotation-target"><a href="#annotated-cell-14-22" aria-label="22"></a>    <span class="at">linewidth =</span> <span class="cn">NA</span></span>
+<span id="annotated-cell-14-23"><a href="#annotated-cell-14-23" aria-label="23"></a>  ) <span class="sc">+</span></span>
+<span id="annotated-cell-14-24"><a href="#annotated-cell-14-24" aria-label="24"></a>  <span class="co"># Set the colour scale</span></span>
+<span id="annotated-cell-14-25"><a href="#annotated-cell-14-25" aria-label="25"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">direction =</span> <span class="dv">1</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-annotation">
 <dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-13" data-target-annotation="1">1</dt>
+<dt data-target-cell="annotated-cell-14" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-13" data-code-lines="18" data-code-annotation="1"><code>alpha = 0.5</code> to make the label background semi-transparent so that we can see the density layer underneath it,</span>
+<span data-code-cell="annotated-cell-14" data-code-lines="18" data-code-annotation="1"><code>alpha = 0.5</code> to make the label background semi-transparent so that we can see the density layer underneath it,</span>
 </dd>
-<dt data-target-cell="annotated-cell-13" data-target-annotation="2">2</dt>
+<dt data-target-cell="annotated-cell-14" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-13" data-code-lines="19" data-code-annotation="2"><code>colour = "seagreen"</code> to slightly reduce the prominence of the label text to avoid distracting attention from the density layer,</span>
+<span data-code-cell="annotated-cell-14" data-code-lines="19" data-code-annotation="2"><code>colour = "seagreen"</code> to slightly reduce the prominence of the label text to avoid distracting attention from the density layer,</span>
 </dd>
-<dt data-target-cell="annotated-cell-13" data-target-annotation="3">3</dt>
+<dt data-target-cell="annotated-cell-14" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-cell="annotated-cell-13" data-code-lines="20" data-code-annotation="3"><code>lineheight = 1</code> to reduce the gap between lines in each label,</span>
+<span data-code-cell="annotated-cell-14" data-code-lines="20" data-code-annotation="3"><code>lineheight = 1</code> to reduce the gap between lines in each label,</span>
 </dd>
-<dt data-target-cell="annotated-cell-13" data-target-annotation="4">4</dt>
+<dt data-target-cell="annotated-cell-14" data-target-annotation="4">4</dt>
 <dd>
-<span data-code-cell="annotated-cell-13" data-code-lines="21" data-code-annotation="4"><code>size = 2.5</code> to slightly reduce the size of the label text,</span>
+<span data-code-cell="annotated-cell-14" data-code-lines="21" data-code-annotation="4"><code>size = 2.5</code> to slightly reduce the size of the label text,</span>
 </dd>
-<dt data-target-cell="annotated-cell-13" data-target-annotation="5">5</dt>
+<dt data-target-cell="annotated-cell-14" data-target-annotation="5">5</dt>
 <dd>
-<span data-code-cell="annotated-cell-13" data-code-lines="22" data-code-annotation="5"><code>linewidth = NA</code> to remove the default border around the label background.</span>
+<span data-code-cell="annotated-cell-14" data-code-lines="22" data-code-annotation="5"><code>linewidth = NA</code> to remove the default border around the label background.</span>
 </dd>
 </dl>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" alt="A density map of recorded bicycle thefts in Vancouver in 2020. The highest estimated densities are in and around the Downtown and West End neighbourhoods. Neighbourhood boundaries and labels appear over a pale base map." width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" alt="A density map of recorded bicycle thefts in Vancouver in 2020. The highest estimated densities are in and around the Downtown and West End neighbourhoods. Neighbourhood boundaries and labels appear over a pale base map." width="672"></p>
 </figure>
 </div>
 </div>
@@ -1174,16 +1207,16 @@ Projected CRS: WGS 84 / UTM zone 10N
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Where should the base-map layer appear in a <code>ggplot()</code> stack?</strong></p>
-<div id="radio_UKIYEENUAW" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_UKIYEENUAW" value="answer"> <span>Before the density layer, so that it appears underneath</span></label><label><input type="radio" autocomplete="off" name="radio_UKIYEENUAW" value=""> <span>After the density layer, so that it covers the density values</span></label><label><input type="radio" autocomplete="off" name="radio_UKIYEENUAW" value=""> <span>Inside <code>scale_fill_distiller()</code></span></label><label><input type="radio" autocomplete="off" name="radio_UKIYEENUAW" value=""> <span>The order of layers does not affect the map</span></label>
+<div id="radio_RIYWRIBLMP" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_RIYWRIBLMP" value="answer"> <span>Before the density layer, so that it appears underneath</span></label><label><input type="radio" autocomplete="off" name="radio_RIYWRIBLMP" value=""> <span>After the density layer, so that it covers the density values</span></label><label><input type="radio" autocomplete="off" name="radio_RIYWRIBLMP" value=""> <span>Inside <code>scale_fill_distiller()</code></span></label><label><input type="radio" autocomplete="off" name="radio_RIYWRIBLMP" value=""> <span>The order of layers does not affect the map</span></label>
 </div>
 <p><strong>Which function adds labels at the locations of spatial features?</strong></p>
-<div id="radio_PRKBZMJIUQ" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_PRKBZMJIUQ" value=""> <span><code>geom_sf()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PRKBZMJIUQ" value="answer"> <span><code>geom_sf_label()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PRKBZMJIUQ" value=""> <span><code>annotation_map_tile()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PRKBZMJIUQ" value=""> <span><code>hotspot_clip()</code></span></label>
+<div id="radio_PHANMVWZJR" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_PHANMVWZJR" value=""> <span><code>geom_sf()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PHANMVWZJR" value="answer"> <span><code>geom_sf_label()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PHANMVWZJR" value=""> <span><code>annotation_map_tile()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PHANMVWZJR" value=""> <span><code>hotspot_clip()</code></span></label>
 </div>
 <p><strong>What does <code>str_wrap(name, width = 10)</code> do to the neighbourhood labels?</strong></p>
-<div id="radio_IXLZGLYUFF" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_IXLZGLYUFF" value=""> <span>It changes the neighbourhood names to lower case.</span></label><label><input type="radio" autocomplete="off" name="radio_IXLZGLYUFF" value=""> <span>It removes neighbourhood names longer than ten characters.</span></label><label><input type="radio" autocomplete="off" name="radio_IXLZGLYUFF" value="answer"> <span>It wraps longer neighbourhood names onto multiple lines.</span></label><label><input type="radio" autocomplete="off" name="radio_IXLZGLYUFF" value=""> <span>It changes the order of the neighbourhoods.</span></label>
+<div id="radio_KTCKNDFCRY" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_KTCKNDFCRY" value=""> <span>It changes the neighbourhood names to lower case.</span></label><label><input type="radio" autocomplete="off" name="radio_KTCKNDFCRY" value=""> <span>It removes neighbourhood names longer than ten characters.</span></label><label><input type="radio" autocomplete="off" name="radio_KTCKNDFCRY" value="answer"> <span>It wraps longer neighbourhood names onto multiple lines.</span></label><label><input type="radio" autocomplete="off" name="radio_KTCKNDFCRY" value=""> <span>It changes the order of the neighbourhoods.</span></label>
 </div>
 </div>
 </div>
@@ -1201,7 +1234,7 @@ Projected CRS: WGS 84 / UTM zone 10N
 <li>Make density layers semi-transparent so that readers can see the base map underneath. Try <code>alpha = 0.7</code> in <code>geom_sf()</code>, then adjust the value until both the density layer and the geographic context are clear.</li>
 <li>Produce separate density layers for different types of crime. Combining offences can hide distinct spatial patterns and will make the result more strongly influenced by whichever offence is most numerous.</li>
 <li>Be cautious about mapping offences that are mainly found through police activity, such as drug or weapon possession. Their recorded locations can reflect where officers patrol as much as where offences occur.</li>
-<li>Remember that a KDE map shows concentrations of recorded events, not the risk that an event will happen to a person or place. Interpreting risk also requires information about the relevant population or opportunities and will be covered in <a href="../11_mapping_hotspots/index.html" class="quarto-xref"><span>Chapter 11</span></a>.</li>
+<li>Remember that a KDE map shows concentrations of recorded events, not the risk that an event will happen to a person or place. Interpreting risk also requires information about the relevant population or opportunities and will be covered in <a href="../13_mapping_hotspots/index.html" class="quarto-xref"><span>Chapter 13</span></a>.</li>
 </ul>
 </div>
 </div>
@@ -1212,6 +1245,7 @@ Projected CRS: WGS 84 / UTM zone 10N
 <p>You can now:</p>
 <ul>
 <li>estimate density with <code>hotspot_kde()</code>;</li>
+<li>choose an appropriate projected coordinate reference system;</li>
 <li>adjust grid-cell size and bandwidth;</li>
 <li>map density using an appropriate sequential colour scale;</li>
 <li>clip a density layer with <code>hotspot_clip()</code>; and</li>
@@ -1223,67 +1257,67 @@ Projected CRS: WGS 84 / UTM zone 10N
 <div class="code-with-filename-file">
 <pre><strong>chapter_06.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a><span class="co"># This script produces a density map of bicycle thefts in Vancouver in 2020.</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-label="2"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-label="3"></a><span class="co"># Load packages</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, here, httr2, sf, sfhotspot, tidyverse)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-label="5"></a></span>
-<span id="cb15-6"><a href="#cb15-6" aria-label="6"></a><span class="co"># Download the raw data</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-label="7"></a><span class="fu">request</span>(</span>
-<span id="cb15-8"><a href="#cb15-8" aria-label="8"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-label="9"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-label="10"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_thefts.csv.gz"</span>))</span>
-<span id="cb15-11"><a href="#cb15-11" aria-label="11"></a></span>
-<span id="cb15-12"><a href="#cb15-12" aria-label="12"></a><span class="fu">request</span>(</span>
-<span id="cb15-13"><a href="#cb15-13" aria-label="13"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_neighbourhoods.geojson"</span></span>
-<span id="cb15-14"><a href="#cb15-14" aria-label="14"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb15-15"><a href="#cb15-15" aria-label="15"></a>  <span class="fu">req_perform</span>(</span>
-<span id="cb15-16"><a href="#cb15-16" aria-label="16"></a>    <span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_neighbourhoods.geojson"</span>)</span>
-<span id="cb15-17"><a href="#cb15-17" aria-label="17"></a>  )</span>
-<span id="cb15-18"><a href="#cb15-18" aria-label="18"></a></span>
-<span id="cb15-19"><a href="#cb15-19" aria-label="19"></a><span class="co"># Load and wrangle bike-theft data</span></span>
-<span id="cb15-20"><a href="#cb15-20" aria-label="20"></a>thefts <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_thefts.csv.gz"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb15-21"><a href="#cb15-21" aria-label="21"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-label="22"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb15-23"><a href="#cb15-23" aria-label="23"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="at">crs =</span> <span class="st">"EPSG:32610"</span>)</span>
-<span id="cb15-24"><a href="#cb15-24" aria-label="24"></a></span>
-<span id="cb15-25"><a href="#cb15-25" aria-label="25"></a>bike_thefts <span class="ot">&lt;-</span> <span class="fu">filter</span>(thefts, type <span class="sc">==</span> <span class="st">"Theft of Bicycle"</span>)</span>
-<span id="cb15-26"><a href="#cb15-26" aria-label="26"></a></span>
-<span id="cb15-27"><a href="#cb15-27" aria-label="27"></a><span class="co"># Load Vancouver neighbourhood boundaries</span></span>
-<span id="cb15-28"><a href="#cb15-28" aria-label="28"></a>vancouver_nbhds <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_neighbourhoods.geojson"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb15-29"><a href="#cb15-29" aria-label="29"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
-<span id="cb15-30"><a href="#cb15-30" aria-label="30"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:32610"</span>)</span>
-<span id="cb15-31"><a href="#cb15-31" aria-label="31"></a></span>
-<span id="cb15-32"><a href="#cb15-32" aria-label="32"></a><span class="co"># Estimate density of bike thefts and clip the result</span></span>
-<span id="cb15-33"><a href="#cb15-33" aria-label="33"></a>bike_theft_density_clip <span class="ot">&lt;-</span> bike_thefts <span class="sc">|&gt;</span></span>
-<span id="cb15-34"><a href="#cb15-34" aria-label="34"></a>  <span class="fu">hotspot_kde</span>(<span class="at">bandwidth_adjust =</span> <span class="fl">0.5</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb15-35"><a href="#cb15-35" aria-label="35"></a>  <span class="fu">hotspot_clip</span>(vancouver_nbhds)</span>
-<span id="cb15-36"><a href="#cb15-36" aria-label="36"></a></span>
-<span id="cb15-37"><a href="#cb15-37" aria-label="37"></a><span class="co"># Plot density map</span></span>
-<span id="cb15-38"><a href="#cb15-38" aria-label="38"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb15-39"><a href="#cb15-39" aria-label="39"></a>  <span class="co"># Add base map</span></span>
-<span id="cb15-40"><a href="#cb15-40" aria-label="40"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"cartolight"</span>, <span class="at">zoomin =</span> <span class="dv">0</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb15-41"><a href="#cb15-41" aria-label="41"></a>  <span class="co"># Add density layer</span></span>
-<span id="cb15-42"><a href="#cb15-42" aria-label="42"></a>  <span class="fu">geom_sf</span>(</span>
-<span id="cb15-43"><a href="#cb15-43" aria-label="43"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> kde),</span>
-<span id="cb15-44"><a href="#cb15-44" aria-label="44"></a>    <span class="at">data =</span> bike_theft_density_clip,</span>
-<span id="cb15-45"><a href="#cb15-45" aria-label="45"></a>    <span class="at">alpha =</span> <span class="fl">0.75</span>,</span>
-<span id="cb15-46"><a href="#cb15-46" aria-label="46"></a>    <span class="at">colour =</span> <span class="cn">NA</span></span>
-<span id="cb15-47"><a href="#cb15-47" aria-label="47"></a>  ) <span class="sc">+</span></span>
-<span id="cb15-48"><a href="#cb15-48" aria-label="48"></a>  <span class="co"># Add neighbourhood boundaries</span></span>
-<span id="cb15-49"><a href="#cb15-49" aria-label="49"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> vancouver_nbhds, <span class="at">colour =</span> <span class="st">"seagreen3"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb15-50"><a href="#cb15-50" aria-label="50"></a>  <span class="co"># Add neighbourhood names</span></span>
-<span id="cb15-51"><a href="#cb15-51" aria-label="51"></a>  <span class="fu">geom_sf_label</span>(</span>
-<span id="cb15-52"><a href="#cb15-52" aria-label="52"></a>    <span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">str_wrap</span>(name, <span class="dv">10</span>)),</span>
-<span id="cb15-53"><a href="#cb15-53" aria-label="53"></a>    <span class="at">data =</span> vancouver_nbhds,</span>
-<span id="cb15-54"><a href="#cb15-54" aria-label="54"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
-<span id="cb15-55"><a href="#cb15-55" aria-label="55"></a>    <span class="at">colour =</span> <span class="st">"seagreen"</span>,</span>
-<span id="cb15-56"><a href="#cb15-56" aria-label="56"></a>    <span class="at">lineheight =</span> <span class="dv">1</span>,</span>
-<span id="cb15-57"><a href="#cb15-57" aria-label="57"></a>    <span class="at">size =</span> <span class="fl">2.5</span>,</span>
-<span id="cb15-58"><a href="#cb15-58" aria-label="58"></a>    <span class="at">linewidth =</span> <span class="cn">NA</span></span>
-<span id="cb15-59"><a href="#cb15-59" aria-label="59"></a>  ) <span class="sc">+</span></span>
-<span id="cb15-60"><a href="#cb15-60" aria-label="60"></a>  <span class="co"># Set the colour scale</span></span>
-<span id="cb15-61"><a href="#cb15-61" aria-label="61"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">direction =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-label="1"></a><span class="co"># This script produces a density map of bicycle thefts in Vancouver in 2020.</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-label="2"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-label="3"></a><span class="co"># Load packages</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, here, httr2, sf, sfhotspot, tidyverse)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-label="5"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-label="6"></a><span class="co"># Download the raw data</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-label="7"></a><span class="fu">request</span>(</span>
+<span id="cb17-8"><a href="#cb17-8" aria-label="8"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-label="9"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-label="10"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_thefts.csv.gz"</span>))</span>
+<span id="cb17-11"><a href="#cb17-11" aria-label="11"></a></span>
+<span id="cb17-12"><a href="#cb17-12" aria-label="12"></a><span class="fu">request</span>(</span>
+<span id="cb17-13"><a href="#cb17-13" aria-label="13"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_neighbourhoods.geojson"</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-label="14"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-label="15"></a>  <span class="fu">req_perform</span>(</span>
+<span id="cb17-16"><a href="#cb17-16" aria-label="16"></a>    <span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_neighbourhoods.geojson"</span>)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-label="17"></a>  )</span>
+<span id="cb17-18"><a href="#cb17-18" aria-label="18"></a></span>
+<span id="cb17-19"><a href="#cb17-19" aria-label="19"></a><span class="co"># Load and wrangle bike-theft data</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-label="20"></a>thefts <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_thefts.csv.gz"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-label="21"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-label="22"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-label="23"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="at">crs =</span> <span class="st">"EPSG:32610"</span>)</span>
+<span id="cb17-24"><a href="#cb17-24" aria-label="24"></a></span>
+<span id="cb17-25"><a href="#cb17-25" aria-label="25"></a>bike_thefts <span class="ot">&lt;-</span> <span class="fu">filter</span>(thefts, type <span class="sc">==</span> <span class="st">"Theft of Bicycle"</span>)</span>
+<span id="cb17-26"><a href="#cb17-26" aria-label="26"></a></span>
+<span id="cb17-27"><a href="#cb17-27" aria-label="27"></a><span class="co"># Load Vancouver neighbourhood boundaries</span></span>
+<span id="cb17-28"><a href="#cb17-28" aria-label="28"></a>vancouver_nbhds <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_neighbourhoods.geojson"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-29"><a href="#cb17-29" aria-label="29"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-label="30"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:32610"</span>)</span>
+<span id="cb17-31"><a href="#cb17-31" aria-label="31"></a></span>
+<span id="cb17-32"><a href="#cb17-32" aria-label="32"></a><span class="co"># Estimate density of bike thefts and clip the result</span></span>
+<span id="cb17-33"><a href="#cb17-33" aria-label="33"></a>bike_theft_density_clip <span class="ot">&lt;-</span> bike_thefts <span class="sc">|&gt;</span></span>
+<span id="cb17-34"><a href="#cb17-34" aria-label="34"></a>  <span class="fu">hotspot_kde</span>(<span class="at">bandwidth_adjust =</span> <span class="fl">0.5</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-35"><a href="#cb17-35" aria-label="35"></a>  <span class="fu">hotspot_clip</span>(vancouver_nbhds)</span>
+<span id="cb17-36"><a href="#cb17-36" aria-label="36"></a></span>
+<span id="cb17-37"><a href="#cb17-37" aria-label="37"></a><span class="co"># Plot density map</span></span>
+<span id="cb17-38"><a href="#cb17-38" aria-label="38"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb17-39"><a href="#cb17-39" aria-label="39"></a>  <span class="co"># Add base map</span></span>
+<span id="cb17-40"><a href="#cb17-40" aria-label="40"></a>  <span class="fu">annotation_map_tile</span>(<span class="at">type =</span> <span class="st">"cartolight"</span>, <span class="at">zoomin =</span> <span class="dv">0</span>, <span class="at">progress =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb17-41"><a href="#cb17-41" aria-label="41"></a>  <span class="co"># Add density layer</span></span>
+<span id="cb17-42"><a href="#cb17-42" aria-label="42"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb17-43"><a href="#cb17-43" aria-label="43"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> kde),</span>
+<span id="cb17-44"><a href="#cb17-44" aria-label="44"></a>    <span class="at">data =</span> bike_theft_density_clip,</span>
+<span id="cb17-45"><a href="#cb17-45" aria-label="45"></a>    <span class="at">alpha =</span> <span class="fl">0.75</span>,</span>
+<span id="cb17-46"><a href="#cb17-46" aria-label="46"></a>    <span class="at">colour =</span> <span class="cn">NA</span></span>
+<span id="cb17-47"><a href="#cb17-47" aria-label="47"></a>  ) <span class="sc">+</span></span>
+<span id="cb17-48"><a href="#cb17-48" aria-label="48"></a>  <span class="co"># Add neighbourhood boundaries</span></span>
+<span id="cb17-49"><a href="#cb17-49" aria-label="49"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> vancouver_nbhds, <span class="at">colour =</span> <span class="st">"seagreen3"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb17-50"><a href="#cb17-50" aria-label="50"></a>  <span class="co"># Add neighbourhood names</span></span>
+<span id="cb17-51"><a href="#cb17-51" aria-label="51"></a>  <span class="fu">geom_sf_label</span>(</span>
+<span id="cb17-52"><a href="#cb17-52" aria-label="52"></a>    <span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">str_wrap</span>(name, <span class="dv">10</span>)),</span>
+<span id="cb17-53"><a href="#cb17-53" aria-label="53"></a>    <span class="at">data =</span> vancouver_nbhds,</span>
+<span id="cb17-54"><a href="#cb17-54" aria-label="54"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<span id="cb17-55"><a href="#cb17-55" aria-label="55"></a>    <span class="at">colour =</span> <span class="st">"seagreen"</span>,</span>
+<span id="cb17-56"><a href="#cb17-56" aria-label="56"></a>    <span class="at">lineheight =</span> <span class="dv">1</span>,</span>
+<span id="cb17-57"><a href="#cb17-57" aria-label="57"></a>    <span class="at">size =</span> <span class="fl">2.5</span>,</span>
+<span id="cb17-58"><a href="#cb17-58" aria-label="58"></a>    <span class="at">linewidth =</span> <span class="cn">NA</span></span>
+<span id="cb17-59"><a href="#cb17-59" aria-label="59"></a>  ) <span class="sc">+</span></span>
+<span id="cb17-60"><a href="#cb17-60" aria-label="60"></a>  <span class="co"># Set the colour scale</span></span>
+<span id="cb17-61"><a href="#cb17-61" aria-label="61"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">direction =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>The script is in a logical order: it loads packages, downloads and prepares data, estimates and clips density, then produces the map. It includes only the permanent code needed to repeat the analysis, and comments identify each task.</p>

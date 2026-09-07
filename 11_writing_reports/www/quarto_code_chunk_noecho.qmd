@@ -1,0 +1,42 @@
+---
+title: "Medellín homicides map"
+author: "John Smith"
+date: "today"
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+# Load packages
+pacman::p_load(ggspatial, here, httr2, sf, sfhotspot, tidyverse)
+
+# Download the original data
+request(
+  "https://mpjashby.github.io/crimemappingdata/medellin_homicides.csv"
+) |>
+  req_perform(path = here("data", "raw", "medellin_homicides.csv"))
+
+# Load data
+medellin_homicides <- here("data", "raw", "medellin_homicides.csv") |>
+  read_csv2() |>
+  # Remove rows with missing coordinates
+  drop_na(longitud, latitud) |>
+  # Convert the data to an SF object
+  st_as_sf(coords = c("longitud", "latitud"), crs = "EPSG:4326")
+```
+
+```{r}
+#| label: count-homicides
+#| echo: false
+
+# Count number of homicides in February 2019
+homicide_count <- medellin_homicides |>
+  filter(year(fecha_hecho) == 2019, month(fecha_hecho) == 2) |>
+  nrow()
+```
+
+There were `r scales::comma(homicide_count)` homicides recorded in February 2019.

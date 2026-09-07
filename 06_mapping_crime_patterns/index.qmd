@@ -19,7 +19,7 @@ This chapter introduces techniques for mapping concentrations of recorded crime 
 #| include: false
 
 # Load packages
-pacman::p_load(ggspatial, patchwork, sf, sfhotspot, tidyverse)
+pacman::p_load(crsuggest, ggspatial, patchwork, sf, sfhotspot, tidyverse)
 ```
 
 
@@ -61,6 +61,7 @@ knitr::include_graphics(here("images", "vancouver_bike_thefts.jpg"))
 By the end of this chapter, you will have learned how to:
 
 - estimate a density layer using `hotspot_kde()`;
+- choose an appropriate projected coordinate reference system;
 - adjust grid-cell size and bandwidth;
 - choose an appropriate sequential colour scale;
 - clip a density layer to the area covered by the data using `hotspot_clip()`; and
@@ -120,7 +121,7 @@ Open `chapter_06.R` and update the line that loads packages so that it includes 
 #| filename: "chapter_06.R"
 
 # Load packages
-pacman::p_load(ggspatial, here, httr2, sf, sfhotspot, tidyverse)
+pacman::p_load(crsuggest, ggspatial, here, httr2, sf, sfhotspot, tidyverse)
 ```
 
 Run this line by clicking anywhere on it and pressing {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard.
@@ -489,6 +490,25 @@ density_quiz4 <- c(
 
 
 :::
+
+
+### Choosing a projected coordinate reference system {#sec-choosing-projected-crs}
+
+As we learned in @sec-second-map, spatial data can use different coordinate reference systems (CRSs). Data that use a geographic CRS usually store locations as longitude and latitude measured in decimal degrees. Decimal degrees are difficult to use for parameters that represent distances: for example, a cell size of `0.002` degrees is much less intuitive than a cell size of 200 metres. A _projected_ CRS designed for the part of the world we are analysing will often use familiar units such as metres, making distances easier to specify and interpret.
+
+The `hotspot_kde()` function automatically transforms data to a suitable projected CRS in the background if necessary, so you do not need to transform longitude and latitude data before using that function. Other spatial functions do not always do this automatically, however, and we will sometimes want to choose a projected CRS ourselves.
+
+The `suggest_crs()` function from the crsuggest package can identify projected CRSs designed for the area covered by a spatial dataset. Run this code in the R Console to see suitable CRSs for the Vancouver bike-theft data:
+
+```{r}
+#| filename: "R Console"
+
+crsuggest::suggest_crs(bike_thefts)
+```
+
+`suggest_crs()` returns a table of possible coordinate systems. The `crs_code` column gives the EPSG code that we can use with `st_transform()`, while `crs_name` describes the coordinate system and `crs_units` shows the units it uses. In general, we can use the CRS in the first row as long as its units are metres. If it uses unfamiliar units, we can choose the first suggested CRS that uses metres instead.
+
+The Vancouver data already use UTM zone 10N (`EPSG:32610`), an appropriate projected CRS whose coordinates are measured in metres, so we do not need to transform them. When a transformation is needed, we can pass the chosen code to `st_transform()`. For example, `bike_thefts |> st_transform("EPSG:3153")` would transform the Vancouver data to the first CRS suggested in the table.
 
 
 ### Fine-tuning cell size and bandwidth
@@ -966,7 +986,7 @@ Before we clip the density layer to the city boundary, check that your file `cha
 #| filename: "chapter_06.R"
 
 # Load packages
-pacman::p_load(ggspatial, here, httr2, sf, sfhotspot, tidyverse)
+pacman::p_load(crsuggest, ggspatial, here, httr2, sf, sfhotspot, tidyverse)
 
 # Download the raw data
 request(
@@ -1400,6 +1420,7 @@ In this chapter you learned how KDE can make broad patterns in a large point dat
 You can now:
 
 - estimate density with `hotspot_kde()`;
+- choose an appropriate projected coordinate reference system;
 - adjust grid-cell size and bandwidth;
 - map density using an appropriate sequential colour scale;
 - clip a density layer with `hotspot_clip()`; and

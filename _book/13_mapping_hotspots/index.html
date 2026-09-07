@@ -512,8 +512,8 @@ window.Quarto = {
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Which one of these statements is true?</strong></p>
-<div id="radio_HQXYZMDOYI" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_HQXYZMDOYI" value=""> <span>Crime is extremely geographically concentrated – we can expect half of crime to be concentrated in about 1% of micro places</span></label><label><input type="radio" autocomplete="off" name="radio_HQXYZMDOYI" value="answer"> <span>Crime is very geographically concentrated – we can expect half of crime to be concentrated in about 5% of micro places</span></label><label><input type="radio" autocomplete="off" name="radio_HQXYZMDOYI" value=""> <span>Crime is slightly geographically concentrated – we can expect half of crime to be concentrated in about one quarter of micro places</span></label><label><input type="radio" autocomplete="off" name="radio_HQXYZMDOYI" value=""> <span>Crime is usually not geographically concentrated at micro places</span></label>
+<div id="radio_HCVZJIJMYI" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_HCVZJIJMYI" value=""> <span>Crime is extremely geographically concentrated – we can expect half of crime to be concentrated in about 1% of micro places</span></label><label><input type="radio" autocomplete="off" name="radio_HCVZJIJMYI" value="answer"> <span>Crime is very geographically concentrated – we can expect half of crime to be concentrated in about 5% of micro places</span></label><label><input type="radio" autocomplete="off" name="radio_HCVZJIJMYI" value=""> <span>Crime is slightly geographically concentrated – we can expect half of crime to be concentrated in about one quarter of micro places</span></label><label><input type="radio" autocomplete="off" name="radio_HCVZJIJMYI" value=""> <span>Crime is usually not geographically concentrated at micro places</span></label>
 </div>
 </div>
 </div>
@@ -544,7 +544,7 @@ window.Quarto = {
 <p>Burglary is a good example of why the routine activities approach to thinking about crime that we introduced in <a href="../01_getting_started/index.html" class="quarto-xref"><span>Chapter 1</span></a> emphasises thinking about <em>targets</em> of crime rather than focusing only on crime <em>victims</em>. In the case of burglary, one person might be the owner of a large number of buildings (e.g.&nbsp;a farm with lots of out-buildings) or lots of people might own a single building (such as a house converted into flats). By thinking about the targets that are attacked by offenders, we can identify that burglary rates should be calculated based on buildings rather than, for example, residential population. Note that if our crime data only included <em>residential</em> burglaries then we would want to use <em>residential</em> buildings as our denominator, but in this case we have data for all burglaries, both residential and non-residential.</p>
 <section id="data-wrangling" class="level3" data-number="13.2.1">
 <h3 data-number="13.2.1" class="anchored" data-anchor-id="data-wrangling"><span class="header-section-number">13.2.1</span> Data wrangling</h3>
-<p>Before we can create our dual KDE layer, we have to complete some data wrangling. We will extract the boundaries for the wards of interest from a dataset of boundaries for all wards in Nottingham using <code>filter()</code> as we have done previously. To extract only the burglaries occurring in those three wards from a dataset of all burglaries in Nottingham, we will use <code>st_intersection()</code>. We will also transform both datasets to use the British National Grid (EPSG:27700), since we will need to do that anyway before calculating the KDE values.</p>
+<p>Before we can create our dual KDE layer, we have to complete some data wrangling. We will extract the boundaries for the wards of interest from a dataset of boundaries for all wards in Nottingham using <code>filter()</code> as we have done previously. To extract only the burglaries occurring in those three wards from a dataset of all burglaries in Nottingham, we will use <code>st_intersection()</code>. We will also transform both datasets to use the British National Grid (EPSG:27700), a projected CRS whose coordinates are measured in metres. See <a href="../06_mapping_crime_patterns/index.html#sec-choosing-projected-crs" class="quarto-xref"><span>Section 6.2.1</span></a> for how to choose an appropriate projected CRS.</p>
 <p>Open RStudio and make sure you are working within the project you created in <a href="../01_getting_started/index.html#sec-create-project" class="quarto-xref"><span>Section 1.5</span></a>. Create a new R script file and save it as <code>chapter11a.R</code>. Paste the following code into that file and run it.</p>
 <div class="cell">
 <div class="code-with-filename">
@@ -566,7 +566,7 @@ window.Quarto = {
 <span id="cb1-13"><a href="#cb1-13" aria-label="13"></a>  <span class="fu">st_intersection</span>(wards)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
-<p>We do not have a source of open data for all the buildings in Nottingham, so we will use the osmdata package to get the locations of buildings from OpenStreetMap (OSM). You may remember from <a href="../12_place_data/index.html" class="quarto-xref"><span>Chapter 12</span></a> that to do this we need to know which key (and possibly value) the OSM database uses for storing the locations of buildings. The OSM feature key for a building is ‘building’ and it is not necessary to specify a value (since we want to capture all types of building). The osmdata package expects data to use the WGS84 co-ordinate reference system, so we must also make sure any data sources we use are projected using that system (EPSG:4326).</p>
+<p>We do not have a source of open data for all the buildings in Nottingham, so we will use the osmdata package to get the locations of buildings from OpenStreetMap (OSM). You may remember from <a href="../12_place_data/index.html" class="quarto-xref"><span>Chapter 12</span></a> that to do this we need to know which key (and possibly value) the OSM database uses for storing the locations of buildings. The OSM feature key for a building is ‘building’ and it is not necessary to specify a value (since we want to capture all types of building). The osmdata package expects data to use the WGS84 coordinate reference system, so we must also make sure any data sources we use are projected using that system (EPSG:4326).</p>
 <p>Add this code to your R script and run it.</p>
 <div class="cell">
 <div class="code-with-filename">
@@ -599,7 +599,7 @@ window.Quarto = {
                  $bbox : 52.9173362670705,-1.21712477980417,52.9596833099217,-1.13020878819132
         $overpass_call : The call submitted to the overpass API
                  $meta : metadata including timestamp and version numbers
-           $osm_points : 'sf' Simple Features Collection with 169498 points
+           $osm_points : 'sf' Simple Features Collection with 169510 points
             $osm_lines : 'sf' Simple Features Collection with 48 linestrings
          $osm_polygons : 'sf' Simple Features Collection with 31690 polygons
        $osm_multilines : 'sf' Simple Features Collection with 2 multilinestrings
@@ -674,8 +674,8 @@ window.Quarto = {
 </div>
 </div>
 <p>It looks like almost all the streets in the three wards we are interested in are lined with buildings in the OSM data, which is what we would expect of streets in an urban area. There are some streets without buildings in the top-left of the map, but these streets are outside our three wards so this does not matter.</p>
-<p>We can also see from this map that the 169,498 point features in the OSM data (shown as green dots on the map) typically represent the corners of buildings that are also represented as polygons, so we know we can ignore the points layer within the OSM data.</p>
-<p>Since the <code>hotspot_dual_kde()</code> function works on points, we need to merge the polygon and multipolygon layers, then convert the combined layer to points by calculating the centroid of each building. We will transform the building data to use the British National Grid before calculating centroids. Calculating centroids in an appropriate projected co-ordinate system is more reliable than calculating them from longitude and latitude co-ordinates.</p>
+<p>We can also see from this map that the 169,510 point features in the OSM data (shown as green dots on the map) typically represent the corners of buildings that are also represented as polygons, so we know we can ignore the points layer within the OSM data.</p>
+<p>Since the <code>hotspot_dual_kde()</code> function works on points, we need to merge the polygon and multipolygon layers, then convert the combined layer to points by calculating the centroid of each building. We will transform the building data to use the British National Grid before calculating centroids. Calculating centroids in an appropriate projected coordinate system is more reliable than calculating them from longitude and latitude coordinates.</p>
 <p>Since we are only interested in buildings in three particular wards, we can also remove any buildings outside those wards using <code>hotspot_clip()</code>. Both the building centroids and the <code>wards</code> object will use the British National Grid.</p>
 <p>Add this code to the <code>chapter11a.R</code> file and run it.</p>
 <div class="cell">
@@ -722,7 +722,7 @@ window.Quarto = {
 <section id="calculating-dual-kernel-density" class="level3" data-number="13.2.2">
 <h3 data-number="13.2.2" class="anchored" data-anchor-id="calculating-dual-kernel-density"><span class="header-section-number">13.2.2</span> Calculating dual kernel density</h3>
 <p>We now have the object <code>burglaries</code> that contains the locations of each burglary in the three Nottingham wards that we are interested in, and the object <code>nottingham_building_centroids</code> that contains the centroids of each building in those three wards. We can use these layers to estimate the density of burglaries and buildings, then combine these to estimate the density of burglary risk.</p>
-<p><code>hotspot_dual_kde()</code> works in the same way as <code>hotspot_kde()</code>, except that it requires two datasets. In this case, that means one dataset of crime locations and one dataset of building locations. <code>hotspot_dual_kde()</code> will set the cell size and bandwidth automatically, but we can set them manually using the <code>cell_size</code>, <code>bandwidth_adjust</code> and <code>grid</code> arguments in the same way we have done for <code>hotspot_kde()</code>. In this case, we will use the <code>hotspot_grid()</code> helper function to create a grid based on the boundaries of the wards we are interested in. All the spatial objects we are going to use here have co-ordinates specified using the British National Grid because we have already transformed them, so we do not need to do any transformation here.</p>
+<p><code>hotspot_dual_kde()</code> works in the same way as <code>hotspot_kde()</code>, except that it requires two datasets. In this case, that means one dataset of crime locations and one dataset of building locations. <code>hotspot_dual_kde()</code> will set the cell size and bandwidth automatically, but we can set them manually using the <code>cell_size</code>, <code>bandwidth_adjust</code> and <code>grid</code> arguments in the same way we have done for <code>hotspot_kde()</code>. In this case, we will use the <code>hotspot_grid()</code> helper function to create a grid based on the boundaries of the wards we are interested in. All the spatial objects we are going to use here have coordinates specified using the British National Grid because we have already transformed them, so we do not need to do any transformation here.</p>
 <div class="cell">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -853,12 +853,12 @@ Projected CRS: OSGB36 / British National Grid
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Which <em>one</em> of these statements is true?</strong></p>
-<div id="radio_RKAMMCEAWU" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_RKAMMCEAWU" value=""> <span><code>hotspot_dual_kde()</code> can work on any co-ordinates, whether they use a geographic co-ordinate system (i.e.&nbsp;longitude and latitude) or a projected system.</span></label><label><input type="radio" autocomplete="off" name="radio_RKAMMCEAWU" value="answer"> <span><code>hotspot_dual_kde()</code> requires co-ordinates to use a projected co-ordinate system (i.e.&nbsp;not longitude and latitude).</span></label><label><input type="radio" autocomplete="off" name="radio_RKAMMCEAWU" value=""> <span><code>hotspot_dual_kde()</code> requires co-ordinates to use a geographic co-ordinate system (i.e.&nbsp;longitude and latitude).</span></label><label><input type="radio" autocomplete="off" name="radio_RKAMMCEAWU" value=""> <span><code>hotspot_dual_kde()</code> does not work with co-ordinates, so it does not matter which type of co-ordinate system a dataset uses.</span></label>
+<div id="radio_URJHYAPXBY" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_URJHYAPXBY" value=""> <span><code>hotspot_dual_kde()</code> can work on any coordinates, whether they use a geographic coordinate system (i.e.&nbsp;longitude and latitude) or a projected system.</span></label><label><input type="radio" autocomplete="off" name="radio_URJHYAPXBY" value="answer"> <span><code>hotspot_dual_kde()</code> requires coordinates to use a projected coordinate system (i.e.&nbsp;not longitude and latitude).</span></label><label><input type="radio" autocomplete="off" name="radio_URJHYAPXBY" value=""> <span><code>hotspot_dual_kde()</code> requires coordinates to use a geographic coordinate system (i.e.&nbsp;longitude and latitude).</span></label><label><input type="radio" autocomplete="off" name="radio_URJHYAPXBY" value=""> <span><code>hotspot_dual_kde()</code> does not work with coordinates, so it does not matter which type of coordinate system a dataset uses.</span></label>
 </div>
 <p><strong>Why do we usually clip the result of <code>hotspot_dual_kde()</code> using <code>st_intersection()</code>?</strong></p>
-<div id="radio_USQFZKFRNN" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_USQFZKFRNN" value=""> <span>To make our maps look nicer.</span></label><label><input type="radio" autocomplete="off" name="radio_USQFZKFRNN" value=""> <span>To transform the co-ordinate system our data uses from the system <code>hotspot_dual_kde()</code> uses to the one we need to produce a map.</span></label><label><input type="radio" autocomplete="off" name="radio_USQFZKFRNN" value="answer"> <span>To eliminate any areas that we do not have data for, since displaying KDE values for such areas on a map might be misleading.</span></label><label><input type="radio" autocomplete="off" name="radio_USQFZKFRNN" value=""> <span>To make it easier to see the other layers on our map.</span></label>
+<div id="radio_XERGWVFQWE" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_XERGWVFQWE" value=""> <span>To make our maps look nicer.</span></label><label><input type="radio" autocomplete="off" name="radio_XERGWVFQWE" value=""> <span>To transform the coordinate system our data uses from the system <code>hotspot_dual_kde()</code> uses to the one we need to produce a map.</span></label><label><input type="radio" autocomplete="off" name="radio_XERGWVFQWE" value="answer"> <span>To eliminate any areas that we do not have data for, since displaying KDE values for such areas on a map might be misleading.</span></label><label><input type="radio" autocomplete="off" name="radio_XERGWVFQWE" value=""> <span>To make it easier to see the other layers on our map.</span></label>
 </div>
 </div>
 </div>
@@ -1027,7 +1027,7 @@ We could now plot the `cells_for_prevention` object on a map to show the grid ce
 <p>To determine if the number of crimes in each area is greater than we would expect by chance, we can use the <em>Getis-Ord Gi* statistic</em> (also called the <em>local G</em> statistic, spoken out-loud as the <em>G-I star statistic</em>). If the Gi* statistic for an area is greater than a certain value, we can say that the number of crimes in that area is higher than we would expect if there were no patterns in the data. We will call areas with more crimes than we would expect by chance as <em>hotspots</em>.</p>
 <p>We can calculate the Gi* statistic using the <code>hotspot_gistar()</code> function from the sfhotspot package. This works in a similar way to the <code>hotspot_kde()</code> function, in that it takes an SF object of the locations of crimes and returns an SF object with a grid of cells, along with the Gi* value for each grid cell. Like <code>hotspot_kde()</code>, <code>hotspot_gistar()</code> will choose default values for several ways in which we could fine-tune the calculation of the Gi* statistic, but we could over-ride these defaults if we wanted to.</p>
 <p>Open a new R script file and save it as <code>chapter11b.R</code>.</p>
-<p>In this example, we will find the hotspots of robbery in Nottingham in 2020, based on a grid of 100-metre cells. We will store this in an object called <code>robbery</code>, transform it to use the British National Grid co-ordinate system (so we can specify the cell size in metres) and then use the resulting object to calculate the Gi* values.</p>
+<p>In this example, we will find the hotspots of robbery in Nottingham in 2020, based on a grid of 100-metre cells. We will store this in an object called <code>robbery</code>, transform it to use the British National Grid coordinate system (so we can specify the cell size in metres) and then use the resulting object to calculate the Gi* values.</p>
 <p>Add this code to the new script file and run it.</p>
 <div class="cell">
 <div class="code-with-filename">
@@ -1081,21 +1081,21 @@ date (1): month
 <pre data-code-line-numbers=""><code>Simple feature collection with 10 features and 4 fields
 Geometry type: POLYGON
 Dimension:     XY
-Bounding box:  xmin: 453167.5 ymin: 335974.1 xmax: 459567.5 ymax: 345274.1
+Bounding box:  xmin: 453067.5 ymin: 334074.1 xmax: 459167.5 ymax: 345374.1
 Projected CRS: OSGB36 / British National Grid
 # A tibble: 10 × 5
-       n     kde gistar pvalue                                          geometry
- * &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;                                     &lt;POLYGON [m]&gt;
- 1     0 0       -0.498  0.618 ((459467.5 341574.1, 459467.5 341674.1, 459567.5…
- 2     0 0.144   -0.498  0.618 ((456367.5 339474.1, 456367.5 339574.1, 456467.5…
- 3     0 0.0512  -0.498  0.618 ((456167.5 339474.1, 456167.5 339574.1, 456267.5…
- 4     0 0.715   -0.498  0.618 ((455867.5 343274.1, 455867.5 343374.1, 455967.5…
- 5     0 1.47     0.331  0.741 ((456767.5 344774.1, 456767.5 344874.1, 456867.5…
- 6     0 0       -0.498  0.618 ((453267.5 338874.1, 453267.5 338974.1, 453367.5…
- 7     0 0.607   -0.498  0.618 ((458067.5 339374.1, 458067.5 339474.1, 458167.5…
- 8     0 0.00601 -0.498  0.618 ((454967.5 335974.1, 454967.5 336074.1, 455067.5…
- 9     0 1.21    -0.498  0.618 ((453167.5 345174.1, 453167.5 345274.1, 453267.5…
-10     0 0       -0.498  0.618 ((453667.5 339274.1, 453667.5 339374.1, 453767.5…</code></pre>
+       n   kde gistar pvalue                                            geometry
+ * &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;                                       &lt;POLYGON [m]&gt;
+ 1     0 0.404 -0.498  0.618 ((454867.5 338074.1, 454867.5 338174.1, 454967.5 3…
+ 2     0 0     -0.498  0.618 ((459067.5 341274.1, 459067.5 341374.1, 459167.5 3…
+ 3     0 3.48  -0.498  0.618 ((455467.5 334074.1, 455467.5 334174.1, 455567.5 3…
+ 4     0 0     -0.498  0.618 ((457467.5 343674.1, 457467.5 343774.1, 457567.5 3…
+ 5     0 0.890 -0.498  0.618 ((458867.5 339074.1, 458867.5 339174.1, 458967.5 3…
+ 6     0 0.244 -0.498  0.618 ((456367.5 343974.1, 456367.5 344074.1, 456467.5 3…
+ 7     0 4.95   1.16   0.246 ((455467.5 339974.1, 455467.5 340074.1, 455567.5 3…
+ 8     0 3.65   1.16   0.246 ((455367.5 345274.1, 455367.5 345374.1, 455467.5 3…
+ 9     0 0.725 -0.498  0.618 ((453267.5 337374.1, 453267.5 337474.1, 453367.5 3…
+10     0 0     -0.498  0.618 ((453067.5 340574.1, 453067.5 340674.1, 453167.5 3…</code></pre>
 </div>
 </div>
 <p>The <code>robbery_gistar</code> object contains one row for each cell in a grid of cells covering the area of the robbery data. Each row has four columns:</p>
@@ -1187,12 +1187,12 @@ Projected CRS: OSGB36 / British National Grid
 </div>
 <div class="callout-body-container callout-body">
 <p><strong><code>robbery_gi</code> is an object storing a result produced by the <code>hotspot_gistar()</code> function. Which of these pieces of code could be used to extract <em>only</em> those rows in the data with significant p-values?</strong></p>
-<div id="radio_OAUKFPSJLR" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_OAUKFPSJLR" value="answer"> <span><code>filter(robbery_gi, pvalue &lt; 0.05)</code></span></label><label><input type="radio" autocomplete="off" name="radio_OAUKFPSJLR" value=""> <span><code>filter(robbery_gi, pvalue &gt; 0.05)</code></span></label><label><input type="radio" autocomplete="off" name="radio_OAUKFPSJLR" value=""> <span><code>filter(robbery_gi, pvalue &lt;= 0.05)</code></span></label><label><input type="radio" autocomplete="off" name="radio_OAUKFPSJLR" value=""> <span><code>filter(robbery_gi, pvalue == 0.05)</code></span></label>
+<div id="radio_WJHHZZKTBO" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_WJHHZZKTBO" value="answer"> <span><code>filter(robbery_gi, pvalue &lt; 0.05)</code></span></label><label><input type="radio" autocomplete="off" name="radio_WJHHZZKTBO" value=""> <span><code>filter(robbery_gi, pvalue &gt; 0.05)</code></span></label><label><input type="radio" autocomplete="off" name="radio_WJHHZZKTBO" value=""> <span><code>filter(robbery_gi, pvalue &lt;= 0.05)</code></span></label><label><input type="radio" autocomplete="off" name="radio_WJHHZZKTBO" value=""> <span><code>filter(robbery_gi, pvalue == 0.05)</code></span></label>
 </div>
 <p><strong>Which <em>one</em> of these statements is true about an SF object called <code>robberies_in_nottingham</code>?</strong></p>
-<div id="radio_NTCOZTIPGU" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_NTCOZTIPGU" value=""> <span>We can remove the <code>geometry</code> column with the code <code>select(robberies_in_nottingham, -geometry)</code>.</span></label><label><input type="radio" autocomplete="off" name="radio_NTCOZTIPGU" value=""> <span>We can remove the <code>geometry</code> column with the code <code>filter(robberies_in_nottingham, -geometry)</code>.</span></label><label><input type="radio" autocomplete="off" name="radio_NTCOZTIPGU" value="answer"> <span>We cannot remove the <code>geometry</code> column of an SF object with <code>select()</code>, so we must use <code>st_drop_geometry()</code> instead.</span></label><label><input type="radio" autocomplete="off" name="radio_NTCOZTIPGU" value=""> <span>There is no way to remove the <code>geometry</code> column from an SF object.</span></label>
+<div id="radio_KLXSXEQRNA" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_KLXSXEQRNA" value=""> <span>We can remove the <code>geometry</code> column with the code <code>select(robberies_in_nottingham, -geometry)</code>.</span></label><label><input type="radio" autocomplete="off" name="radio_KLXSXEQRNA" value=""> <span>We can remove the <code>geometry</code> column with the code <code>filter(robberies_in_nottingham, -geometry)</code>.</span></label><label><input type="radio" autocomplete="off" name="radio_KLXSXEQRNA" value="answer"> <span>We cannot remove the <code>geometry</code> column of an SF object with <code>select()</code>, so we must use <code>st_drop_geometry()</code> instead.</span></label><label><input type="radio" autocomplete="off" name="radio_KLXSXEQRNA" value=""> <span>There is no way to remove the <code>geometry</code> column from an SF object.</span></label>
 </div>
 </div>
 </div>
