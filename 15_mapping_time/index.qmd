@@ -535,12 +535,12 @@ changed over time:
 
 In this section we will learn how to construct a time-series chart like this. To illustrate this process, we will use an object called `assaults` that contains records of aggravated assaults in Chicago from 2010 to 2019. We will transform the accompanying district boundaries to EPSG:26916, a projected CRS for Chicago whose coordinates are measured in metres. See @sec-choosing-projected-crs for how to choose an appropriate projected CRS for a spatial dataset.
 
-Open a new R script file and save it as `chapter16a.R`. Add this code to the file and run it.
+Open a new R script file and save it as `chapter15a.R`. Add this code to the file and run it.
 
 
 ```{r}
 #| eval: false
-#| filename: "chapter16a.R"
+#| filename: "chapter15a.R"
 
 # Load packages
 pacman::p_load(ggspatial, sf, sfhotspot, slider, tidyverse)
@@ -601,7 +601,7 @@ One complication of counting incidents by week is that our data might not fit ne
 
 
 ```{r}
-#| filename: "chapter16a.R"
+#| filename: "chapter15a.R"
 
 # Count number of aggravated assaults each week
 assault_weekly_counts <- assaults |> 
@@ -715,7 +715,7 @@ Once we've calculated a moving average, we can show this using the line on our c
 
 
 ```{r}
-#| filename: "chapter16a.R"
+#| filename: "chapter15a.R"
 
 # Create plot of weekly assault counts with moving average
 assault_weekly_counts |> 
@@ -836,7 +836,7 @@ Add this code to the end of your R script file and run it.
 
 
 ```{r}
-#| filename: "chapter16a.R"
+#| filename: "chapter15a.R"
 
 # Create a seasonal plot of aggravated assaults
 assault_weekly_counts |> 
@@ -888,7 +888,7 @@ We can do this in a single piece of code. Add this R code to the R script file j
 
 
 ```{r}
-#| filename: "chapter16a.R"
+#| filename: "chapter15a.R"
 
 # Create counts of assaults by hours of the day and week
 assault_hourly_counts <- assaults |> 
@@ -939,7 +939,7 @@ Add this code to the end of your R script file and run it.
 
 
 ```{r}
-#| filename: "chapter16a.R"
+#| filename: "chapter15a.R"
 #| fig-asp: 1
 
 # Create chart of assaults by hour of the day for each day of the week
@@ -1039,7 +1039,7 @@ Add this code to your R script file just after the code that creates the `assaul
 
 
 ```{r}
-#| filename: "chapter16a.R"
+#| filename: "chapter15a.R"
 
 # Calculate number of assaults by shift
 assaults_by_shift <- assaults |> 
@@ -1105,12 +1105,12 @@ some_data |>
 This code means 'take the dataset `some_data`, group it according to the values in the `some_variable` column and apply the `hotspot_kde()` function separately to each group'. The only thing left for us to do then is to use `ungroup()` to remove 
 the grouping from the result produced by `group_modify()` and convert that result back to an SF object using `st_as_sf()`. Don't worry about specifying any arguments to `st_as_sf()` – R will extract information such as the coordinate reference system from the `geometry` column of the data automatically.
 
-Add this code to the `chapter16a.R` code file just after the code that creates the `assaults_by_shift` object. Remember to run the code.
+Add this code to the `chapter15a.R` code file just after the code that creates the `assaults_by_shift` object. Remember to run the code.
 
 
 ```{r}
 #| cache: true
-#| filename: "chapter16a.R"
+#| filename: "chapter15a.R"
 
 # Estimate density of assaults for each CPD shift
 kde_by_shift <- assaults_by_shift |> 
@@ -1228,7 +1228,7 @@ On this map we can see that some places have a relatively high density of assaul
 
 
 ```{r}
-#| filename: "chapter16a.R"
+#| filename: "chapter15a.R"
 #| fig-asp: 0.5
 
 # Create new dataset containing just the cells in each shift with the highest
@@ -1331,7 +1331,7 @@ One alternative is to produce an animated map with each frame in the animation r
 
 The first step in producing an animated map is to create a KDE layer for each hour of the day. The code for this is the same as for the code we have already used to produce the KDE layers for each shift, except that we create a variable for hour of the day rather than police shift. Because an animated map of hours of the day needs 24 KDE layers, in this case it is particularly useful to use `group_modify()` to avoid having to create 24 different objects and then binding them together.
 
-Since the code to make animated maps is quite long, and our script file is fairly long already, let's start a new script file to store the code needed to make an animated map. Restart R (`Session > Restart R`), open a new script file and save it as `chapter16b.R`. 
+Since the code to make animated maps is quite long, and our script file is fairly long already, let's start a new script file to store the code needed to make an animated map. Restart R (`Session > Restart R`), open a new script file and save it as `chapter15b.R`.
 
 Copy this code into that file and run the code. There is quite a lot of code here, but all of it is code we have seen earlier in this chapter.
 
@@ -1345,7 +1345,7 @@ This code estimates the density of crime in each grid cell 24 times (once for ea
 
 ```{r}
 #| eval: false
-#| filename: "chapter16b.R"
+#| filename: "chapter15b.R"
 
 
 # PREPARE ----------------------------------------------------------------------
@@ -1478,7 +1478,7 @@ Add this code to your script file and run it.
 
 ```{r}
 #| cache: true
-#| filename: "chapter16b.R"
+#| filename: "chapter15b.R"
 #| fig-asp: 1
 
 # VISUALISE --------------------------------------------------------------------
@@ -1522,7 +1522,7 @@ We can save an animated map to a file by using `animate()` together with the `an
 
 ```{r}
 #| eval: false
-#| filename: "chapter16b.R"
+#| filename: "chapter15b.R"
 
 anim_save(
   filename = "chicago_downtown_agg_assaults.gif", 
