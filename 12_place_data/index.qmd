@@ -33,34 +33,80 @@ To help with this, you might produce a map showing the density of homicides reco
 #| label: metro-homicides-map
 #| eval: false
 #| echo: false
-library(ggrepel)
 
-medellin_comunas_projected <- medellin_comunas |>
-  st_transform("EPSG:3115")
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse)
+
+# Download the original data
+if (!file.exists(here("data", "raw", "medellin_homicides.csv"))) {
+  request(
+    "https://mpjashby.github.io/crimemappingdata/medellin_homicides.csv"
+  ) |>
+    req_perform(path = here("data", "raw", "medellin_homicides.csv"))
+}
+
+## Load neighbourhood boundary ----
+if (!file.exists(here("data", "raw", "medellin_comunas.gpkg"))) {
+  request(
+    "https://mpjashby.github.io/crimemappingdata/medellin_comunas.gpkg"
+  ) |>
+    req_perform(path = here("data", "raw", "medellin_comunas.gpkg"))
+}
+
+# Note: this dataset uses ';' as the column separator
+medellin_homicides <- here("data", "raw", "medellin_homicides.csv") |>
+  read_csv2() |>
+  # Remove rows with missing coordinates
+  drop_na(longitud, latitud) |>
+  # Convert the data to an SF object
+  st_as_sf(coords = c("longitud", "latitud"), crs = "EPSG:4326") |>
+  st_transform_auto(quiet = TRUE)
+
+medellin_comunas <- here("data", "raw", "medellin_comunas.gpkg") |>
+  read_sf() |>
+  janitor::clean_names() |>
+  st_transform_auto(quiet = TRUE)
+
+## Load metro lines ----
+
+# Download zip file
+metro_lines_file <- here("data", "raw", "medellin_metro_lines.zip")
+request(
+  "https://mpjashby.github.io/crimemappingdata/medellin_metro_lines.zip"
+) |>
+  req_perform(path = metro_lines_file)
+
+# Unzip the files into a named directory
+metro_lines_dir <- here("data", "processed", "medellin_metro_lines")
+unzip(metro_lines_file, exdir = metro_lines_dir)
+
+# Load the Metro data
+medellin_metro_lines <- here(metro_lines_dir, "medellin_metro_lines.shp") |>
+  read_sf()
+medellin_metro_stns <- read_csv(
+  "https://mpjashby.github.io/crimemappingdata/medellin_metro_stns.csv"
+) |>
+  st_as_sf(coords = c("x", "y"), crs = "EPSG:4326", remove = FALSE) |>
+  st_transform_auto(quiet = TRUE) |>
+  mutate(
+    nombre = str_remove(nombre, "Estación "),
+    nombre = str_remove(nombre, " \\(Línea [AB]\\)")
+  )
 
 medellin_homicides_density <- medellin_homicides |>
-  st_transform("EPSG:3115") |>
   hotspot_kde(
-    grid = hotspot_grid(medellin_comunas_projected, cell_size = 100),
+    grid = hotspot_grid(medellin_comunas, cell_size = 200),
     bandwidth_adjust = 0.2
   ) |>
-  hotspot_clip(medellin_comunas_projected)
+  hotspot_clip(medellin_comunas)
 
-medellin_homicides_map1 <- ggplot() +
-  annotation_map_tile(type = "cartolight", zoomin = 1, progress = "none") +
+medellin_homicides_map1 <- hotspot_map(medellin_homicides_density) +
   geom_sf(
     data = medellin_comunas,
     colour = "grey70",
     fill = NA,
     linewidth = 0.5
   ) +
-  geom_sf(
-    aes(fill = kde),
-    data = medellin_homicides_density,
-    alpha = 0.75,
-    colour = NA
-  ) +
-  annotation_scale(style = "ticks") +
+  ggspatial::annotation_scale(style = "ticks") +
   scale_fill_gradient(
     low = "white",
     high = "darkred",
@@ -72,21 +118,9 @@ medellin_homicides_map1 <- ggplot() +
   coord_sf(crs = "EPSG:4326") +
   labs(
     title = "Parque Berrío and Prado stations are in homicide hotspots",
-    subtitle = "number of homicides, 2010 to 2019",
-    caption = "Map data from OpenStreetMap",
-    fill = "density of\nhomicides",
     linetype = NULL
   ) +
-  theme_void() +
-  theme(
-    legend.key.height = unit(0.4, "lines"),
-    legend.key.width = unit(0.8, "lines"),
-    legend.text = element_text(size = rel(0.7)),
-    legend.title = element_text(size = rel(0.8)),
-    plot.title = element_text(size = rel(0.9)),
-    plot.subtitle = element_text(size = rel(0.8), margin = margin(3, 0, 6, 0)),
-    plot.caption = element_text(colour = "grey67", size = rel(0.7), hjust = 0)
-  )
+  theme_void()
 
 medellin_homicides_map2 <- medellin_homicides_map1 +
   geom_sf(
@@ -95,14 +129,15 @@ medellin_homicides_map2 <- medellin_homicides_map1 +
     colour = "grey40"
   ) +
   geom_sf(data = medellin_metro_stns, size = 1, colour = "grey40") +
-  geom_label_repel(
+  ggrepel::geom_label_repel(
     aes(x = x, y = y, label = nombre),
     data = filter(medellin_metro_stns, linea %in% c("A", "B")),
     alpha = 0.75,
     colour = "grey25",
     fill = "white",
     label.padding = unit(0.1, "lines"),
-    label.size = NA,
+    linewidth = 0,
+    max.iter = 1e5,
     min.segment.length = 0,
     size = 2.2
   ) +
@@ -155,10 +190,10 @@ To get started, open a new R script file in Positron and save it as `chapter_12.
 # area of Medellin, Colombia, together with bus stops in or near the area
 
 # Load packages
-pacman::p_load(ggspatial, here, httr2, osmdata, sf, sfhotspot, tidyverse)
+pacman::p_load(here, httr2, osmdata, sf, sfhotspot, tidyverse)
 ```
 
-Run this line of code to load the packages. You will note that as well as the packages we have used in previous chapters, this code loads a new package -- osmdata -- that we will learn about in this chapter. If you want to remind yourself about the packages we have already used, see @sec-wrangling-data for here, httr2 and tidyverse, @sec-second-map for sf, and @sec-mapping-patterns for ggspatial and sfhotspot.
+Run this line of code to load the packages. You will note that as well as the packages we have used in previous chapters, this code loads a new package -- osmdata -- that we will learn about in this chapter. If you want to remind yourself about the packages we have already used, see @sec-wrangling-data for here, httr2 and tidyverse, @sec-second-map for sf, and @sec-mapping-patterns for sfhotspot.
 
 Remember to run each block of code that you add to the script by pressing {{< kbd win="Ctrl-Enter" mac="Command-Return" >}}.
 
@@ -218,7 +253,7 @@ Organisations that provide data often do so on condition that users of the data 
 
 > Contains public sector information licensed under the Open Government Licence v3.0.
 
-Complying with open-data licences is a legal requirement, so it is important to make sure you understand what obligations you are accepting when you use a particular dataset. You can typically find the conditions for using a dataset on the website that you download the data from. If you are required to add an attribution statement to your maps, a good place to do this is by adding it to any other information you place in the `caption` argument of the `labs()` function in a `ggplot()` stack.
+Complying with open-data licences is a legal requirement, so it is important to make sure you understand what obligations you are accepting when you use a particular dataset. You can typically find the conditions for using a dataset on the website that you download the data from. In @sec-captions we learned that we can add data attribution statements like this to maps with the `caption` argument to the `hotspot_map()` function. 
 
 
 ::: {.callout-quiz .callout title="Open data"}
@@ -376,7 +411,7 @@ Fortunately, there is another source of data: OpenStreetMap (OSM). This is a glo
 
 {{< video https://youtu.be/d6n29CU2-Sg aria-label="Video introducing OpenStreetMap and how its map data are created" >}}
 
-We have already used OSM data in this course: all of the base maps we have used when we create maps with `ggplot()` are based on data from OpenStreetMap. But we have very little control over which information is and is not included in base maps. Sometimes we need more control over the data, and that means downloading data direct from OSM.
+We have already used OSM data in this course: all of the base maps we have used when we create maps with `hotspot_map()` are based on data from OpenStreetMap. But we have very little control over which information is and is not included in base maps. Sometimes we need more control over the data, and that means downloading data direct from OSM.
 
 We can download OSM data into R using the `osmdata` package. This package allows us to choose particular features from the billions of features worldwide that are included in the OSM database. To choose features, we must:
 
@@ -576,11 +611,14 @@ la_candelaria_metro_lines <- metro_lines |>
   hotspot_clip(la_candelaria, quiet = TRUE)
 
 # PLOT MAP ---------------------------------------------------------------------
-place_data_map <- ggplot() +
-  # Add base map
-  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
-  # Add density layer
-  geom_sf(aes(fill = kde), data = homicide_density, alpha = 0.7, colour = NA) +
+place_data_map <- hotspot_map(
+  homicide_density,
+  basemap_type = "cartolight",
+  caption = str_glue(
+    "Map data: © OpenStreetMap contributors\n",
+    "Homicide data: Alcaldía de Medellín (CC-BY-SA)"
+  )
+) +
   # Add metro lines within the neighbourhood
   geom_sf(
     aes(colour = "Metro line"),
@@ -597,27 +635,15 @@ place_data_map <- ggplot() +
     fill = "white",
     size = 2
   ) +
-  # Control appearance of density layer
-  scale_fill_distiller(
-    direction = 1,
-    breaks = range(pull(homicide_density, "kde")),
-    labels = c("lower", "higher")
-  ) +
   scale_colour_manual(values = c("Metro line" = "darkblue")) +
   scale_shape_manual(values = c("Bus stop" = 21)) +
   # Add plot labels
   labs(
     title = "Homicides do not appear to cluster around bus stops",
     subtitle = "La Candelaria, Medellin",
-    caption = str_glue(
-      "© OpenStreetMap contributors\n",
-      "Homicide data: Alcaldía de Medellín (CC-BY-SA)"
-    ),
     colour = NULL,
-    fill = "homicide\ndensity",
     shape = NULL
-  ) +
-  theme_void()
+  )
 
 place_data_map
 ```
@@ -703,150 +729,8 @@ Your complete `chapter_12.R` script should now look like this:
 
 ```{r}
 #| eval: false
+#| file: "../R/chapter_12.R"
 #| filename: "chapter_12.R"
-
-# This script produces a map of the density of homicides in the La Candelaria
-# area of Medellin, Colombia, together with bus stops in or near the area
-
-# Load packages
-pacman::p_load(ggspatial, here, httr2, osmdata, sf, sfhotspot, tidyverse)
-
-
-# LOAD DATA --------------------------------------------------------------------
-
-## Load Medellin homicide data ----
-# Download the original data
-request(
-  "https://mpjashby.github.io/crimemappingdata/medellin_homicides.csv"
-) |>
-  req_perform(path = here("data", "raw", "medellin_homicides.csv"))
-
-# Note: this dataset uses ';' as the column separator
-medellin_homicides <- here("data", "raw", "medellin_homicides.csv") |>
-  read_csv2() |>
-  # Remove rows with missing coordinates
-  drop_na(longitud, latitud) |>
-  # Convert the data to an SF object
-  st_as_sf(coords = c("longitud", "latitud"), crs = "EPSG:4326")
-
-## Load neighbourhood boundary ----
-request(
-  "https://mpjashby.github.io/crimemappingdata/medellin_comunas.gpkg"
-) |>
-  req_perform(path = here("data", "raw", "medellin_comunas.gpkg"))
-
-medellin_comunas <- here("data", "raw", "medellin_comunas.gpkg") |>
-  read_sf() |>
-  janitor::clean_names()
-
-## Load metro lines ----
-
-# Download zip file
-metro_lines_file <- here("data", "raw", "medellin_metro_lines.zip")
-request(
-  "https://mpjashby.github.io/crimemappingdata/medellin_metro_lines.zip"
-) |>
-  req_perform(path = metro_lines_file)
-
-# Unzip the files into a named directory
-metro_lines_dir <- here("data", "processed", "medellin_metro_lines")
-unzip(metro_lines_file, exdir = metro_lines_dir)
-
-# Load the data
-metro_lines <- read_sf(
-  here("data", "processed", "medellin_metro_lines", "medellin_metro_lines.shp")
-)
-
-
-# GET OSM DATA -----------------------------------------------------------------
-
-# Calculate neighbourhood bounding box
-la_candelaria_bbox <- medellin_comunas |>
-  filter(nombre == "LA CANDELARIA") |>
-  st_bbox()
-
-# Define the bounding box of the area we want to search
-bus_stops <- opq(la_candelaria_bbox) |>
-  # Define the features we want
-  add_osm_feature(key = "highway", value = "bus_stop") |>
-  # Download those features for that area
-  osmdata_sf()
-
-
-## WRANGLE DATA ----------------------------------------------------------------
-
-# Create neighbourhood boundary
-la_candelaria <- medellin_comunas |>
-  filter(nombre == "LA CANDELARIA") |>
-  # Transform the data to a local coordinate reference system
-  st_transform("EPSG:3115")
-
-# Estimate homicide density
-homicide_density <- medellin_homicides |>
-  # Use the same CRS as `la_candelaria`
-  st_transform("EPSG:3115") |>
-  # Extract only those homicides occurring within the La Candelaria
-  # neighbourhood (otherwise `hotspot_kde()` will be very slow)
-  hotspot_clip(la_candelaria) |>
-  # Estimate density of homicides
-  hotspot_kde(
-    grid = hotspot_grid(la_candelaria, cell_size = 100),
-    bandwidth_adjust = 0.33,
-    quiet = TRUE
-  ) |>
-  # Clip the result to the neighbourhood boundary
-  hotspot_clip(la_candelaria)
-
-la_candelaria_metro_lines <- metro_lines |>
-  st_transform(st_crs(la_candelaria)) |>
-  hotspot_clip(la_candelaria, quiet = TRUE)
-
-
-# PLOT MAP ---------------------------------------------------------------------
-place_data_map <- ggplot() +
-  # Add base map
-  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
-  # Add density layer
-  geom_sf(aes(fill = kde), data = homicide_density, alpha = 0.7, colour = NA) +
-  # Add metro lines within the neighbourhood
-  geom_sf(
-    aes(colour = "Metro line"),
-    data = la_candelaria_metro_lines,
-    linewidth = 1
-  ) +
-  # Add neighbourhood boundary
-  geom_sf(data = la_candelaria, colour = "grey40", fill = NA, linewidth = 1.5) +
-  # Add bus stop locations
-  geom_sf(
-    aes(shape = "Bus stop"),
-    data = pluck(bus_stops, "osm_points"),
-    colour = "black",
-    fill = "white",
-    size = 2
-  ) +
-  # Control appearance of density layer
-  scale_fill_distiller(
-    direction = 1,
-    breaks = range(pull(homicide_density, "kde")),
-    labels = c("lower", "higher")
-  ) +
-  scale_colour_manual(values = c("Metro line" = "darkblue")) +
-  scale_shape_manual(values = c("Bus stop" = 21)) +
-  # Add plot labels
-  labs(
-    title = "Homicides do not appear to cluster around bus stops",
-    subtitle = "La Candelaria, Medellin",
-    caption = str_glue(
-      "© OpenStreetMap contributors\n",
-      "Homicide data: Alcaldía de Medellín (CC-BY-SA)"
-    ),
-    colour = NULL,
-    fill = "homicide\ndensity",
-    shape = NULL
-  ) +
-  theme_void()
-
-place_data_map
 ```
 
 Save `chapter_12.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. To check that the analysis is reproducible, restart R using the **Restart R** (**&#10227;**) button in Positron's **Console** panel, then run the script from beginning to end. Keep the script in the `R` folder, the original downloads in `data/raw` and the extracted shapefile components in `data/processed`.

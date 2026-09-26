@@ -161,9 +161,9 @@ message("This is a message. Make sure you understand it.")
 
 ### Warnings
 
-*Warnings* are generated when there is a potential problem with your code, but the problem was not serious enough to stop your code running entirely. For example, ggplot2 functions like `geom_point()` will send a warning if some of the rows in your data contain missing values (e.g. if some crimes have missing coordinates).
+*Warnings* are generated when there is a potential problem with your code, but the problem was not serious enough to stop your code running entirely. For example, applying `st_centroid()` to polygons with attribute columns consistently produces the warning `st_centroid assumes attributes are constant over geometries`. The function still creates the centroid points, but warns that it has copied each polygon's attribute values to the corresponding point.
 
-Warnings are important and you should take time to read and understand them, but it is _possible_ that having done so it will be safe to not take any action. *Whether* it is safe to take no action will often depend on exactly what you are trying to do, which is why it is important that you understand each warning that you see. For example, if you already know that some rows in your data contain missing values and are happy to plot the remaining values, it will be safe to ignore the warning produced by `geom_point()`. But if your dataset should not have any missing values in it, you will need to investigate why `geom_point()` is warning you about missing values and whether those values have been accidentally introduced by some part of your code.
+Warnings are important and you should take time to read and understand them, but it is *possible* that, having done so, it will be safe to take no action. *Whether* it is safe to take no action will often depend on exactly what you are trying to do. If you created the centroids only to position labels, copying attributes such as an area name may be exactly what you intended, so no action is needed. However, an attribute such as population describes the whole polygon rather than its centre point. You would need to consider whether treating that value as an attribute of the centroid could make the subsequent analysis misleading.
 
 
 ::: {.callout-important title="It is not safe to simply ignore warnings"}
@@ -674,117 +674,23 @@ To make a reprex, we have to do three things:
 2. Make sure someone can run the example on their computer. This might involve using a dataset built into an R package or creating a small example dataset that has the same relevant structure as your data.
 3. Remove confidential, personal or otherwise sensitive information. Never share sensitive crime data, passwords, API keys or other credentials in a reprex.
 
-To practise making a reproducible example, create a new R script that we know will produce an error. Click **File**, then **New File ...** and choose **R File**. Save the file as `chapter_08.R` in the `R` folder of your crime mapping workspace, then paste the following code into it:
-
-```{r}
-#| echo: false
-
-# This code creates a CSV file that users can download and then reference in
-# their code as a local file (which is important in the narrative, since it
-# makes the example non-reproducible)
-Seatbelts |>
-  as_tibble() |>
-  mutate(
-    year = 1969 + floor(row_number() / 12.0001),
-    month = rep(1:12, 16),
-    month_beginning = as.Date(str_glue("{year}-{month}-01"))
-  ) |>
-  select(month_beginning, everything(), -year, -month) |>
-  write_csv(here::here("data", "road_deaths_data.csv"))
-```
+To practise making a reproducible example, we will create a new R script that we know will produce an error. Click **File**, then **New File ...** and choose **R File**. Save the file as `chapter_08.R` in the `R` folder of your crime mapping workspace, then paste the following code into it:
 
 ```{r}
 #| eval: false
-#| filename: "chapter_08.R"
-
-# Load packages
-pacman::p_load(here, tidyverse)
-
-# Load a dataset from your computer and wrangle it
-road_deaths <- read_csv(here("data", "raw", "road_deaths_data.csv")) |>
-  janitor::clean_names() |>
-  rename(ksi_drivers = drivers, ksi_pass_front = front, ksi_pass_rear = rear) |>
-  select(-petrol_price, -van_killed) |>
-  mutate(
-    law = as.logical(law),
-    ksi_driver_rate = ksi_drivers / (kms / 1000)
-  )
-
-# Make a time-series chart of two continuous variables, coloured by a
-# categorical variable, then add a trend line
-road_deaths +
-  ggplot(aes(x = month_beginning, y = ksi_driver_rate)) +
-  geom_point(aes(colour = law)) +
-  geom_smooth() +
-  scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
-  scale_y_continuous(labels = scales::comma_format(), limits = c(0, NA)) +
-  scale_colour_brewer(type = "qual") +
-  labs(
-    x = NULL,
-    y = "drivers killed or seriously injured per 1,000km travelled",
-    colour = "after seat belts made mandatory"
-  ) +
-  theme_minimal() +
-  theme(
-    axis.line.x = element_line(colour = "grey90"),
-    axis.ticks = element_line(colour = "grey90"),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    legend.position = "bottom"
-  )
+#| file: "../R/chapter_08_error.R"
 ```
 
-At the moment, you can't run this code because you don't have the `road_deaths_data.csv` file. Download the file using the following link and save it in the `data/raw` folder. Keeping the downloaded file separate from the script follows the workspace structure introduced in @sec-create-project.
-
-<p class="center"><a href="../data/road_deaths_data.csv" download class="btn btn-info">Download the road deaths data file</a></p>
-
-Now run all the code in the `chapter_08.R` file. You should see this error:
+When you run this code, you should see some messages and then this error:
 
 ```{r}
 #| echo: false
 #| error: true
+#| file: "../R/chapter_08_error.R"
 
-# Load packages
-pacman::p_load(here, tidyverse)
-
-# Load a dataset from your computer and wrangle it
-road_deaths <- read_csv(
-  here("data", "road_deaths_data.csv"),
-  show_col_types = FALSE
-) |>
-  janitor::clean_names() |>
-  rename(ksi_drivers = drivers, ksi_pass_front = front, ksi_pass_rear = rear) |>
-  select(-petrol_price, -van_killed) |>
-  mutate(
-    law = as.logical(law),
-    ksi_driver_rate = ksi_drivers / (kms / 1000)
-  )
-
-# Make a time-series chart of two continuous variables, coloured by a
-# categorical variable, then add a trend line
-road_deaths +
-  ggplot(aes(x = month_beginning, y = ksi_driver_rate)) +
-  geom_point(aes(colour = law)) +
-  geom_smooth() +
-  scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
-  scale_y_continuous(labels = scales::comma_format(), limits = c(0, NA)) +
-  scale_colour_brewer(type = "qual") +
-  labs(
-    x = NULL,
-    y = "drivers killed or seriously injured per 1,000km travelled",
-    colour = "after seat belts made mandatory"
-  ) +
-  theme_minimal() +
-  theme(
-    axis.line.x = element_line(colour = "grey90"),
-    axis.ticks = element_line(colour = "grey90"),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    legend.position = "bottom"
-  )
 ```
 
-As you can see, this error is not easy to decipher, so we might need help to deal with it. 
+As you can see, this error is not easy to decipher (although it does suggest the problem is related to the `hotspot_map()` function), so we might need help to deal with it. 
 
 
 
@@ -792,80 +698,83 @@ As you can see, this error is not easy to decipher, so we might need help to dea
 
 The first step in producing a reprex is to remove every line from our code that isn't necessary to produce the error. To do that, we start with the _last_ line of code and remove it, then re-run the code. If the code produces _the same error_, we know that the error wasn't caused or affected by anything on the line that we have removed. In that case, we don't need to include that line of code in the reprex. On the other hand, if the error message disappears and the code runs successfully, _or_ the error message changes to a different error, we know that the line of code we removed influenced the error in some way. In that case, we need to include that line of code in the reprex.
 
-Following this process line by line, it is actually possible to remove a lot of the original code and still produce the same error. In fact, we only need to keep five lines of the original code:
+Following this process line by line, it is actually possible to remove a lot of the original code and still produce the same error. In fact, we only need to keep seven lines of the original code:
 
 ```{r}
 #| eval: false
 #| filename: "chapter_08.R"
 
 # Load packages
-pacman::p_load(here, tidyverse) #<<
+pacman::p_load(here, sf, sfhotspot, tidyverse) #<<
 
-# Load a dataset from your computer and wrangle it
-road_deaths <- read_csv(here("data", "raw", "road_deaths_data.csv")) |> #<<
+# Load Bronx shootings dataset and wrangle it
+bronx_shootings <- here("data", "raw", "bronx_shootings.csv") |> #<<
+  read_csv() |> #<<
   janitor::clean_names() |>
-  rename(ksi_drivers = drivers, ksi_pass_front = front, ksi_pass_rear = rear) |>
-  select(-petrol_price, -van_killed) |>
-  mutate(
-    law = as.logical(law),
-    ksi_driver_rate = ksi_drivers / (kms / 1000)
-  )
+  st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326") |> #<<
+  rename(shooting_date = occur_date, fatal = murder) |>
+  # Keep only fatal shootings
+  filter(fatal == TRUE) |>
+  select(shooting_date, incident_key)
 
-# Make a time-series chart of two continuous variables, coloured by a
-# categorical variable, then add a trend line
-road_deaths + #<<
-  ggplot(aes(x = month_beginning, y = ksi_driver_rate)) + #<<
-  geom_point(aes(colour = law)) + #<<
-  geom_smooth() +
-  scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
-  scale_y_continuous(labels = scales::comma_format(), limits = c(0, NA)) +
-  scale_colour_brewer(type = "qual") +
+# Load NYPD precincts and filter to keep just those from the Bronx
+bronx_precincts <- here("data", "raw", "nyc_precincts.gpkg") |>
+  read_sf() |>
+  janitor::clean_names() |>
+  # Filter just those precincts that are in the Bronx (40th to 52nd)
+  filter(precinct %in% 40:52)
+
+# Map shootings
+bronx_shootings + #<<
+  hotspot_map(
+    #<<
+    basemap_type = "none", #<<
+    caption = "Shootings data: NYC Open Data",
+    alpha = 0.5,
+    colour = "red2"
+  ) + #<<
+  # Add precinct boundaries
+  geom_sf(data = bronx_precincts, colour = "grey50", fill = NA) +
   labs(
-    x = NULL,
-    y = "drivers killed or seriously injured per 1,000km travelled",
-    colour = "after seat belts made mandatory"
+    title = "Fatal shootings in the Bronx",
+    subtitle = "January to December 2019"
   ) +
-  theme_minimal() +
   theme(
-    axis.line.x = element_line(colour = "grey90"),
-    axis.ticks = element_line(colour = "grey90"),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    legend.position = "bottom"
+    plot.title = element_text(colour = "grey30", face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5)
   )
 ```
 
 That means we can remove:
 
-1. The comments (lines 1, 4, 14 and 15, above).
-2. The code that wrangles the data in ways that don't affect the error (lines 6--12).
-3. The code that adds a trend line to the chart (line 19).
-4. The code that fine-tunes the appearance of the chart (lines 20--35).
+1. The comments (lines 1, 4, 10, 14, 18, 21 and 29, above).
+2. The code that wrangles the shootings data in ways that don't affect this particular error (lines 7, 9 and 11--12).
+3. The code that loads and wrangles the precinct boundaries (lines 15--19).
+4. The code that fine-tunes the appearance of the map (lines 25--27 and 30--38).
 
-We cannot remove the code that loads necessary packages (line 2), loads the data (line 5) or produces the basic unformatted chart (lines 16--18), because if we remove any of those then the error message either changes or disappears.
+We cannot remove the code that loads necessary packages (line 2), loads the data (lines 5--6) or produces the basic unformatted map (lines 22--24 and 28), because if we remove any of those lines then you will see the error message either changes to a different error message, or disappears.
 
-This leaves us with much shorter code that produces the same error. Because we have removed the data-wrangling code, we must use the original column name `drivers` instead of the new name `ksi_driver_rate`. We also remove pipe and `+` operators that no longer connect to another line of code.
-
-Removing the lines we don't need to reproduce the error leaves `chapter_08.R` looking like this:
+Removing the lines we don't need to reproduce the error leaves `chapter_08.R` looking like this. Note that we've also removed tailing `|>` and `+` operators that no longer connect to another line of code.
 
 ```{r}
 #| error: true
 #| message: false
 #| filename: "R Console"
 
-pacman::p_load(here, tidyverse)
+pacman::p_load(here, sf, sfhotspot, tidyverse)
 
-road_deaths <- read_csv(here("data", "raw", "road_deaths_data.csv"))
+bronx_shootings <- here("data", "raw", "bronx_shootings.csv") |>
+  read_csv() |>
+  st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326")
 
-road_deaths +
-  ggplot(aes(x = month_beginning, y = drivers)) +
-  geom_point(aes(colour = law))
+bronx_shootings +
+  hotspot_map(basemap_type = "none")
 ```
 
 
 ::: {.callout-important title="If the error message changes, keep that line of code"}
 
-If we forgot to change `y = ksi_driver_rate` to `y = drivers`, or to remove an operator at the end of a shortened expression, the code could produce a different error. The purpose of producing a reprex is to find the minimum code that still produces _the same problem_ we are interested in. If you remove a line and the problem changes, put that line back.
+If we forgot to remove an operator at the end of a shortened expression, the code could produce a different error. The purpose of producing a reprex is to find the minimum code that still produces _the same problem_ we are interested in. If you remove a line and the problem changes, put that line back -- the fact that the error message changed means that line of code has some relevance to reproducing the error you're interested in.
 
 :::
 
@@ -873,50 +782,47 @@ If we forgot to change `y = ksi_driver_rate` to `y = drivers`, or to remove an o
 Even though we have removed most of the previous code, this shorter code still produces the same error message. The bug must therefore be in one of the few remaining expressions. This makes the problem much easier to understand than it was in the original script.
 
 
-::: {.callout-tip collapse="true" title="But wouldn't this chart look very different?"}
+::: {.callout-tip collapse="true" title="But wouldn't this map look very different?"}
 
-If this shortened code ran successfully rather than producing an error, the resulting chart would look very different to the original chart we wanted. But that does not matter, because what we are interested in is isolating the lines of code that produce the specific error we want to find and fix.
+If this shortened code ran successfully rather than producing an error, the resulting map would look very different to the original map we wanted. But in this context that does not matter, because what we are interested in is isolating the lines of code that produce the specific error we want to find and fix.
 :::
 
 
 
 #### Reproducible data
 
-Our shortened code would make a useful example except for one thing: the data file `road_deaths_data.csv` only exists on your computer. Someone trying to run the code elsewhere would instead get an error saying that the file could not be found.
+Our shortened code would make a useful example except for one thing: the data file `bronx_shootings.csv` only exists on your computer (because we downloaded it in a previous chapter). Someone trying to run the code elsewhere would instead get an error saying that the file could not be found.
 
 You might not be able to share the original data that your code uses, for example if it is sensitive or too large to share. Fortunately, many R packages include small datasets for learning and testing. You can see a list of the datasets available in loaded packages by typing `data()` in the R Console.
 
-To use one of these datasets, refer to its name as you would any other R object. One commonly used example is `mpg` from the ggplot2 package, which contains fuel-economy data for 38 models of car.
+To use one of these datasets, refer to its name as you would any other R object. The sfhotspot package comes with some small datasets specifically designed for testing the package functions, so since the issue might well be related to `hotspot_map()` we will use one of the sfhotspot example datasets (called `memphis_robberies_jan`) in place of the Bronx shooting data we used originally.
 
-The data are on a different topic, but that does not matter for this particular error because the bug is in the way we combine the data and `ggplot()`. For a data-dependent bug, a substitute dataset must preserve the relevant column types and problematic values or the bug might disappear. We can inspect `mpg` using `head()` as usual.
+The data are on a different topic, but that does not matter because we're only interested in the diagnosing the error. We can inspect `memphis_robberies_jan` using `head()` as usual.
 
 ```{r}
 #| filename: "R Console"
 
-head(mpg)
+head(memphis_robberies_jan)
 ```
 
-From this, we can see that there is: 
 
-- a `year` variable that we can use instead of `month_beginning`;
-- a numeric variable called `hwy` that we can use instead of `drivers`; and
-- a categorical variable called `trans` that we can use instead of `law`.
+We can see that the `memphis_robberies_jan` dataset is already an SF object, containing point locations, so we will be able to use it instead of the `bronx_shootings` object that is created in the original code. Since `memphis_robberies_jan` is already an SF object, we can also remove the `st_as_sf()` function from the code (and no longer need to load the sf package). Since `memphis_robberies_jan` is already available in the sfhotspot package, we can also remove the `read_csv()` function that loads the Bronx shootings data from a file (which means we don't need to load the here package, either).
 
-This means we can use this data instead of our own data, knowing that anyone on any computer with the ggplot2 package installed can run the code and should get the same result. It also makes our code slightly shorter still, since we no longer need to load the data from a file with `read_csv()`. All we need to do is load the ggplot2 package and replace the reference to the `road_deaths` object on line 5 of our shortened code to a reference to the built-in `mpg` object:
+Let's try substituting the `memphis_robberies_jan` dataset for the `bronx_shootings` dataset in our shortened code and check that the error message is still the same:
 
 
 ```{r}
 #| error: true
 #| filename: "R Console"
 
-library(ggplot2)
+pacman::p_load(sfhotspot, tidyverse)
 
-mpg +
-  ggplot(aes(x = year, y = hwy)) +
-  geom_point(aes(colour = trans))
+memphis_robberies_jan +
+  hotspot_map(basemap_type = "none")
 ```
 
-We have reduced the original script to four lines and made the example reproducible using a widely available dataset. The shorter code still produces the same error but is much easier to read.
+
+We have reduced the original script to three lines and made the example reproducible using a widely available dataset. The shorter code still produces the same error but is much easier to read.
 
 Most of the time, the act of producing a reprex will be enough for us to find and fix the error without any external help. Can you see the problem with our code that is making this error happen? If not, we will reveal it at the end of this chapter.
 
@@ -929,7 +835,7 @@ Now that you have the minimum code needed to reproduce the error, it's almost ti
 
 <a href="https://reprex.tidyverse.org/" aria-label="Visit the reprex package website"><img src="../images/reprex.png" class="right-side-image" alt=""></a>
 
-Make sure the `chapter_08.R` file now only contains the four-line minimal working example above, then save the file. Now run this command in the R Console:
+Make sure the `chapter_08.R` file now only contains the three-line minimal working example above, then save the file. Now run this command in the R Console:
 
 ```{r}
 #| eval: false
@@ -938,7 +844,27 @@ Make sure the `chapter_08.R` file now only contains the four-line minimal workin
 reprex::reprex(input = here("R", "chapter_08.R"))
 ```
 
-The reprex package runs the example in a separate R session (to avoid conflicts with your current workspace) and produces a preview containing both the code and its output. If clipboard support is available on your computer, it also copies the formatted code to your clipboard so that you can paste it into a message, web form or chat bot.
+The reprex package runs the example in a separate R session (to avoid conflicts with your current workspace) and produces a preview containing both the code and its output. In this case, the output from the reprex tool will look like this:
+
+
+```{r}
+#| eval: false
+
+# THIS CODE MUST BE RUN MANUALLY BEFORE THE CHAPTER IS RENDERED, OTHERWISE THE
+# `include` DIRECTIVE BELOW WON'T WORK
+
+reprex::reprex(
+  input = here::here("R", "chapter_08_minimal.R"),
+  html_preview = FALSE,
+  advertise = FALSE
+)
+```
+
+
+{{< include "../R/chapter_08_minimal_reprex.md" >}}
+
+You can see that the reprex tool produces a file that contains all the R code in the original script and the output from each line of code as a comment. This makes it easy for anyone (or any tool) that we send this output to to see exactly what code we ran and what output it produced, without needing to run the code themselves. We can also see that the error message is still the same as before.
+
 
 ::: {.callout-important title="Check for sensitive information before sharing"}
 
@@ -1024,17 +950,17 @@ AI tools are more likely to provide a useful answer if you give them the same in
 
 For example, a useful prompt might be:
 
-> I am learning R and using ggplot2. I want this code to make a scatter plot, but it produces the error pasted below. Explain the cause in beginner-friendly language, then suggest one change for me to test. Do not rewrite the whole script.
+> I am learning R. I want this code to make a basic map, but it produces the error pasted below. Explain the cause in beginner-friendly language, then suggest one change for me to test. Do not rewrite the whole script.
 >
+> ```r
+> pacman::p_load(sfhotspot, tidyverse)
+> 
+> memphis_robberies_jan +
+>   hotspot_map(basemap_type = "none")
+> #> Error in `UseMethod()`:
+> #> ! no applicable method for 'hotspot_map' applied to an object of class 
+> "character"
 > ```
-> library(ggplot2)
->
-> mpg +
->   ggplot(aes(x = year, y = hwy)) +
->   geom_point(aes(colour = trans))
-> ```
->
-> `Error in mpg + ggplot(...): non-numeric argument to binary operator`
 
 Asking for an explanation and one change helps you remain in control of the debugging process. Read the explanation, check it against the relevant R manual page, make the change yourself and then inspect the result. Do not accept code merely because it looks convincing or runs without an error: it could still contain a logic error.
 
@@ -1144,23 +1070,21 @@ For more detailed guidance, read [Twelve quick tips for AI-assisted coding in sc
 
 ## What caused the error in our reproducible example? {.unnumbered}
 
-The error in our reproducible example was very simple, but quite difficult to spot. On line 3 of the code below, we try to add the `ggplot()` function to the `mpg` object using the `+` operator when what we wanted to do was pass the `mpg` object to the `ggplot()` function using the `|>` operator. R does not know how to add a dataset to a function in this way, so it produced an error message.
+The error in our reproducible example was very simple, but quite difficult to spot. On line 3 of the code below, we try to add the `hotspot_map()` function to the `memphis_robberies_jan` object using the `+` operator when what we wanted to do was pass the `memphis_robberies_jan` object to the `hotspot_map()` function using the `|>` operator. R does not know how to add a dataset to a function in this way, so it produced an error message.
 
-If you replaced `+` with `|>` on line 3 of the code below, the code would now run normally. Since we have removed almost all of our original code to make a reproducible example, the resulting plot looks nothing like what we wanted. This does not matter -- when we are producing a reprex we only care about reliably producing *the same* error. Now that we have fixed the error, we could go back and fix the original code to produce the chart we wanted.
+If you replaced `+` with `|>` on line 3 of the code below, the code would now run normally. Since we have removed almost all of our original code to make a reproducible example, the resulting map looks nothing like what we wanted. This does not matter -- when we are producing a reprex we only care about reliably producing *the same* error. Now that we have fixed the error, we could go back and fix the original code to produce the map we wanted.
 
 ```{r}
 #| eval: false
 #| filename: "R Console"
 
-library(ggplot2)
+pacman::p_load(sfhotspot, tidyverse)
 
-mpg + # <---- THE `+` OPERATOR HERE SHOULD BE A `|>` OPERATOR INSTEAD
-  ggplot(aes(x = year, y = hwy)) +
-  geom_point(aes(colour = trans))
+memphis_robberies_jan + # <---- THE `+` OPERATOR HERE SHOULD BE A `|>` OPERATOR
+  hotspot_map(basemap_type = "none")
 ```
 
-The mistake in this code is easy to make because what `+` does inside a `ggplot()` stack is similar to what `|>` does in passing the result of one function to the next function in a data-wrangling pipeline. Remember that we use `+` to combine layers inside a `ggplot()` stack and `|>` to pass an object to a function.
-
+The mistake in this code is easy to make because what `+` does to add a layer to a map created with `hotspot_map()` is similar to what `|>` does to pass the result of one function to the next function in a data-wrangling pipeline. Remember that we use `+` to combine layers using functions from the ggplot2 package, and `|>` to pass an object to a function.
 
 
 
@@ -1223,7 +1147,7 @@ You can now:
 
 You can use the checklist in @sec-checklist-errors whenever you encounter a problem in your code.
 
-The corrected complete script from the reprex exercise is shown below. Replace the contents of `chapter_08.R` with this script. It uses the pipe operator to pass `road_deaths` to `ggplot()`.
+The corrected complete script from the reprex exercise is shown below. Replace the contents of `chapter_08.R` with this script. It uses the pipe operator to pass `bronx_shootings` to `hotspot_map()`.
 
 ```{r}
 #| label: complete-script

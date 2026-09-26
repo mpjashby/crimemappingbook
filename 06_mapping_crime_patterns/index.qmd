@@ -65,7 +65,7 @@ By the end of this chapter, you will have learned how to:
 - adjust grid-cell size and bandwidth;
 - choose an appropriate sequential colour scale;
 - clip a density layer to the area covered by the data using `hotspot_clip()`; and
-- add a base map, boundaries and neighbourhood labels.
+- add neighbourhood boundaries and labels.
 
 The process we will use to produce the map has four main stages:
 
@@ -114,21 +114,13 @@ In Chapter 5 you created `chapter_05.R`, which contains the code needed to downl
 
 Take care to copy the file rather than renaming the original. Keep `chapter_06.R` in the `R` folder throughout this chapter.
 
-Open `chapter_06.R` and update the line that loads packages so that it includes two new packages that we will need for this chapter: [ggspatial](https://paleolimbot.github.io/ggspatial/) and [sfhotspot](https://pkgs.lesscrime.info/sfhotspot/).
+Open `chapter_06.R` and remove the final line, which uses `hotspot_map()` to produce the previous dot map of bike thefts. During this chapter we will add new code to the `chapter_06.R` file to produce a map of crime density.
 
-```{r}
-#| output: false
-#| filename: "chapter_06.R"
-
-# Load packages
-pacman::p_load(crsuggest, ggspatial, here, httr2, sf, sfhotspot, tidyverse)
-```
-
-Run this line by clicking anywhere on it and pressing {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard.
+After you have removed the final line from the code, run the rest of the code in the file by selecting all the code and pressing {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard.
 
 
 
-## Mapping crime density
+## Mapping crime density {#sec-kde}
 
 When we speak about the _density_ of crime, we mean the relative concentration of points in each part of the area we are studying, i.e. how many points (in this case, representing bike thefts) are there in each part of the map _relative to all the other areas of the map_.
 
@@ -406,36 +398,19 @@ head(bike_theft_density)
 
 The `bike_theft_density` object created by `hotspot_kde()` contains three columns: `n` contains the count of bike thefts in each cell, `kde` contains the estimate of the density of thefts in each cell, and `geometry` contains the outline of each grid cell.
 
-Since `hotspot_kde()` produces an SF object, we can add it to a map using the `geom_sf()` function. We can also use the `fill` aesthetic to specify that the fill colour of each grid cell should be determined based on the values of the `kde` column in the `bike_theft_density` object.
+`hotspot_kde()` produces an object that `hotspot_map()` recognises and can use to automatically produce a density map. We will need to customise this map somewhat to make it useful, but for now we can use `hotspot_map()` to produce a basic density map of bike thefts in Vancouver:
 
 ```{r}
 #| filename: "R Console"
 #| fig-alt: "A basic density map of recorded bicycle thefts in Vancouver. Grid cells with higher KDE values are pale blue and cells with lower values are dark blue."
 
-ggplot() +
-  geom_sf(aes(fill = kde), data = bike_theft_density, colour = NA)
+hotspot_map(bike_theft_density)
 ```
-
-We have already seen that we can set aesthetics such as colour and shape manually, but the `aes()` function allows us to specify that the values of different aesthetics should be controlled by columns in the data. The `aes()` function takes as its arguments pairs of values (combined with an `=` symbol) where the first value is an aesthetic and the second value is the name of a column in the data. For example, to use the colour of points on a map to represent different types of crime that were stored in a column in the data called `type`, we could use `aes(colour = type)`. In the map above, we use `aes(fill = kde)` to specify that the fill colour of the grid cells on the map should be controlled by the `kde` column in the data. This is called _mapping_ a column to an aesthetic.
-
-
-::: {.callout-important title="When to specify values inside or outside `aes()`"}
-
-When should you specify the values of aesthetics inside `aes()` and when should you do it outside `aes()`?
-
-  * If you want an aesthetic to have a constant value for all the points, lines or other shapes in a layer, control the aesthetic _outside_ `aes()`. For example, you could use `geom_sf(data = bike_thefts, colour = "mediumblue")` to make all the shapes in that layer blue.
-  * If you want to vary the appearance of shapes according to values in the data, you should control the aesthetic _inside_ `aes()`. For example, you could use `geom_sf(aes(colour = month), data = bike_thefts)` to vary the colour of shapes in a layer according to values of the `month` column in the data.
-
-If you specify a constant value for an aesthetic (e.g. `colour = "mediumblue"`) this will override any mapping for that aesthetic provided by the `aes()` function (e.g. `aes(colour = month)`). If you have used `aes()` to specify that an aesthetic should be controlled based on a column in the data but find that the aesthetic is not changing based on the data, check you have not also specified a constant value for that aesthetic.
-
-`aes()` should normally be the first argument in a `geom_*()` function. If you want to specify the arguments in a different order then you must give the name of each argument, which means that for the `aes()` function you must specify `mapping = aes(...)` when `aes()` is not the first argument to whatever `geom_*()` function you are using.
-
-:::
 
 
 In this map, instead of seeing each crime as a separate point, we see the density of crime as the filled colour of cells in a grid. By comparing this density map to the point map we produced before, we can see that the density map makes the areas with the highest frequency of thefts slightly easier to identify (although we will improve it much further below).
 
-You can also see that our map now has a legend, showing that higher densities of bike thefts are shown on the map in light blue and lower densities are shown in dark blue. The exact values shown in the legend are not particularly meaningful, so we can ignore these for now.
+You can also see that our map now has a legend, showing that higher densities of bike thefts are shown on the map in dark blue and lower densities are shown in light blue.
 
 
 ::: {.callout-quiz .callout title="Density mapping"}
@@ -452,19 +427,10 @@ density_quiz1 <- c(
 )
 
 density_quiz2 <- c(
-  "`ggplot()`",
+  "`hotspot_map()`",
   "`hotspot_density()`",
   answer = "`hotspot_kde()`",
   "`st_point_to_kde()`"
-)
-
-density_quiz3 <- c("`colour`", answer = "`fill`", "`shape`", "`size`")
-
-density_quiz4 <- c(
-  answer = "Inside `aes()`",
-  "Outside `aes()`",
-  "Inside `ggplot()` but outside `geom_sf()`",
-  "Inside `labs()`"
 )
 ```
 
@@ -477,17 +443,6 @@ density_quiz4 <- c(
 **Which R function is used to create a density layer from point data?**
 
 `r webexercises::longmcq(density_quiz2)`
-
-
-**Which argument in `geom_sf()` is used to specify that the fill colour of grid cells should be determined by the KDE values?**
-
-`r webexercises::longmcq(density_quiz3)`
-
-
-**Where should you specify `fill = kde` when fill colour should vary according to values in the `kde` column?**
-
-`r webexercises::longmcq(density_quiz4)`
-
 
 :::
 
@@ -587,99 +542,6 @@ I recommend using a slightly smaller bandwidth than the default, so that your ma
 :::
 
 
-### Using colour to show density
-
-The final way we can control the appearance of our density layer is to change the colour scheme used to represent density. To do this, we can use another type of function from the ggplot2 package: _scales_. Functions in the `scale_*()` family of functions allow us to control how the mapping between a column in the data and an aesthetic (colour, size, etc.) is represented visually. For example, which colour scheme is used to represent the density of thefts on our map.
-
-There are many `scale_*()` functions, but the `scale_fill_distiller()` function produces several different colour scales that are specifically designed to be effective on maps. 
-
-Colour schemes can be divided into three types:
-
-  * *sequential* colour schemes are useful for showing values that vary from low to high,
-  * *diverging* colour schemes are useful for showing values relative to a meaningful central point, and
-  * *qualitative* colour schemes are useful for showing separate categories that can appear in any order and still be meaningful.
-
-In crime mapping we're usually interested in showing how crime varies from low to high, so we need to use a _sequential_ colour palette. There are `r nrow(filter(RColorBrewer::brewer.pal.info, colorblind, category == "seq"))` colour-blind-friendly sequential colour schemes (or _palettes_) available in `scale_fill_distiller()`, each with a name:
-
-```{r}
-#| label: kde-colours
-#| echo: false
-#| fig-alt: "Eighteen panels show colour-blind-friendly sequential palettes. Each palette runs from a pale colour for low values to a dark colour for high values."
-#| out-width: 100%
-
-RColorBrewer::brewer.pal.info |>
-  rownames_to_column(var = "name") |>
-  filter(colorblind, category == "seq") |>
-  pmap(function(...) {
-    current <- tibble(...)
-    ggplot() +
-      geom_raster(aes(x = 1:9, y = 1, fill = as.factor(1:9))) +
-      scale_fill_brewer(palette = current$name) +
-      labs(subtitle = current$name) +
-      theme_void() +
-      theme(
-        legend.position = "none",
-        plot.subtitle = element_text(size = 8)
-      )
-  }) |>
-  wrap_plots()
-```
-
-
-::: {.callout-important title="Choosing the right type of colour scale"}
-
-It is important to **only use the right type of colour scale in the right circumstances**, since using the wrong type of scale could end up misleading people reading your map. For example, a diverging colour scale gives the strong impression that the central point in the scale is meaningful. 
-
-In some circumstances this might be useful, for example if you wanted to show areas in which crime had increased in shades of one colour and areas in which crime had decreased in shades of another colour. In that case, a diverging scale would be appropriate because the central point represents something meaningful: no change in crime. If the central point is not meaningful, use a sequential colour scheme instead.
-
-If you want to represent a categorical variable, you should use a categorical colour scale unless the categories have a natural order. For example, if you wanted to show ethnic groups on a map you would use a categorical colour scale, since there is no one order of ethnic groups that is any more meaningful than any other. If you wanted to represent days of the week with colour, then you might want to use a sequential colour scheme since the days of the week have a meaningful order.
-:::
-
-
-By default, `scale_fill_distiller()` sets the _lowest_ values to have the darkest colour. This does not work well for density maps, since most people tend to interpret sequential colour schemes as if the palest or least-saturated colours represent the lowest values and the darkest or most-saturated colours represent the highest values. If we design maps that meet that expectation, people will generally find them easier to interpret. Fortunately we can do that by setting the argument `direction = 1`.
-
-```{r}
-#| label: direction-map
-#| echo: false
-#| fig-align: center
-#| fig-alt: "Two density maps compare colour-scale direction. With direction minus one, lower densities are dark and higher densities are pale. With direction one, lower densities are pale and higher densities are dark."
-#| out-width: 80%
-
-direction_map_neg <- ggplot() +
-  geom_sf(aes(fill = kde), data = bike_theft_density, colour = NA) +
-  scale_fill_distiller(direction = -1) +
-  labs(title = "direction = –1 (the default)") +
-  theme_void() +
-  theme(legend.position = "bottom")
-
-direction_map_pos <- ggplot() +
-  geom_sf(aes(fill = kde), data = bike_theft_density, colour = NA) +
-  scale_fill_distiller(direction = 1) +
-  labs(title = "direction = 1") +
-  theme_void() +
-  theme(legend.position = "bottom")
-
-direction_map_neg + direction_map_pos
-```
-
-You can think of all the functions that we can add to `ggplot()` as being like a stack of pancakes, with each new function being placed on the top of the stack. To change the colour of our map, we just add `scale_fill_distiller()` to the existing stack. Add this code to `chapter_06.R`:
-
-```{r}
-#| label: map-exercise8
-#| exercise: true
-#| fig-alt: "A density map of recorded bicycle thefts in Vancouver using a sequential orange colour scale. Darker cells have higher estimated density."
-#| filename: "chapter_06.R"
-
-# Plot density map
-ggplot() +
-  geom_sf(aes(fill = kde), data = bike_theft_density, colour = NA) +
-  scale_fill_distiller(palette = "Oranges", direction = 1)
-```
-
-
-You can see that on this map it's intuitively easier to see which areas have the highest density of bike thefts. But there is still more that we can do to improve this map.
-
-
 ::: {.callout-quiz .callout title="Making density maps"}
 
 
@@ -740,7 +602,7 @@ map_quiz4 <- c(
 
 
 
-## Clipping map layers
+## Clipping map layers {#sec-clipping-map-layers}
 
 There is one limitation of the KDE layer on our map that we need to deal with.
 The area covered by the KDE layer is determined by the area covered by the point
@@ -986,7 +848,7 @@ Before we clip the density layer to the city boundary, check that your file `cha
 #| filename: "chapter_06.R"
 
 # Load packages
-pacman::p_load(crsuggest, ggspatial, here, httr2, sf, sfhotspot, tidyverse)
+pacman::p_load(crsuggest, here, httr2, sf, sfhotspot, tidyverse)
 
 # Download the raw data
 request(
@@ -1021,9 +883,7 @@ bike_theft_density <- hotspot_kde(
 )
 
 # Plot density map
-ggplot() +
-  geom_sf(aes(fill = kde), data = bike_theft_density, colour = NA) +
-  scale_fill_distiller(palette = "Oranges", direction = 1)
+hotspot_map(bike_theft_density)
 ```
 
 
@@ -1043,7 +903,7 @@ bike_theft_density_clip <- bike_thefts |> # <1>
 2. use it to estimate the density of thefts _and then_
 3. clip the resulting density object to the boundary stored in the `vancouver_nbhds` object.
 
-If you aren't comfortable with how the pipe operator works, you might want to refer back to @sec-pipe-operator.
+If you aren't comfortable yet with how the pipe operator works, you might want to refer back to @sec-pipe-operator.
 
 
 ::: {.callout-important title="Both layers must use the same coordinate system"}
@@ -1057,25 +917,6 @@ st_transform(bike_theft_density, crs = st_crs(vancouver_nbhds))
 ```
 
 :::
-
-We can quickly check the effect of clipping the density layer to the city boundary by producing a very basic map that shows both layers in separate colours. Run this code in the R Console:
-
-
-```{r}
-#| filename: "R Console"
-#| fig-alt: "A diagnostic map comparing the original blue KDE grid with the green clipped grid. Blue cells extend beyond the black city boundary, while green cells stop at it."
-
-ggplot() +
-  # Add convex hull of bike thefts to map
-  geom_sf(data = bike_theft_density, fill = "blue") +
-  # Add clipped density layer to map
-  geom_sf(data = bike_theft_density_clip, fill = "green") +
-  # Add city boundary to map for comparison
-  geom_sf(data = vancouver_nbhds, colour = "black", fill = NA, linewidth = 1)
-```
-
-From this map, we can see that while the `bike_theft_density` object (shown in blue) contains cells outside the black city boundary, the `bike_theft_density_clip` object (shown in green) contains only cells inside the boundary.
-
 
 ::: {.callout-quiz .callout title="Clipping map layers"}
 
@@ -1112,13 +953,35 @@ clipping_quiz2 <- c(
 :::
 
 
+## Specifying a grid for kernel density estimation
+
+By default, `hotspot_kde()` calculates density estimates (KDE values) for every grid cell within the area (the convex hull) covered by the crime data. This is fine when at least a few crimes have occurred in all the parts of the area for which we have data. But if crime is heavily concentrated in a few places and there are large areas with no crimes, the density layer will not cover the whole area for which we have data. You can see this in the maps above (note Map D, in particular) -- some areas on the outskirts of the city are not covered by the convex hull of the `bike_thefts` data. When this is the case, it is important to extend the density layer manually to make it clear that the apparent low density of crime in some places is due to a genuine lack of recorded crime there, rather than because we do not have data for those places. 
+
+We can do this by providing `hotspot_kde()` with a grid of cells for which KDE values should be calculated, rather than letting `hotspot_kde()` create the grid automatically. The easiest way to do this is to use the `hotspot_grid()` function to create a grid that covers all the areas within a set boundary, such as a city boundary. 
+
+In the `chapter_06.R` file, replace the code that creates `bike_theft_density` with this code:
+
+```{r}
+# Estimate density of bike thefts and clip result
+bike_theft_density_clip <- bike_thefts |>
+  hotspot_kde(
+    grid = hotspot_grid(vancouver_nbhds, quiet = TRUE),
+    bandwidth_adjust = 0.5,
+    quiet = TRUE
+  ) |>
+  hotspot_clip(vancouver_nbhds)
+```
+
+You'll see below that the `bike_theft_density_clip` object now contains a grid that covers the whole of Vancouver and no areas outside Vancouver. This stops the density layer from possibly conveying misleading information.
+
+
 ## Isobands
 
 KDE maps are extremely useful because they allow us to visualise overall _patterns_ of crime much more easily than if we simply plot crimes on a dot map. But the density layers produced by `hotspot_kde()` can sometimes be hard to interpret on a map. One alternative way to visualise density is to convert the density surface to _isobands_. Isobands are polygons that represent areas of equal crime density. You might have seen them on weather maps, where they are sometimes used to visualise areas that are expected to have the same temperature:
 
 ![](../images/isotherm_map.gif){fig-alt="A weather map showing isotherms, which are lines that connect areas of equal temperature." width=80%}
 
-We can convert the output produced by `hotspot_kde()` to isobands using the `hotspot_isoband()` function from sfhotspot. This function takes a KDE layer and converts it to a set of polygons that represent areas of equal density. We can then plot these polygons on a map instead of the KDE layer. For example, we can just add `hotspot_isoband()` to the end of the code pipeline we used to create the clipped KDE layer, and then plot the result. Note that this needs a few changes to the `ggplot()` code, which are summarised below this code.
+We can convert the output produced by `hotspot_kde()` to isobands using the `hotspot_isoband()` function from sfhotspot. This function takes a KDE layer and converts it to a set of polygons that represent areas of equal density. We can then plot these polygons on a map instead of the KDE layer. For example, we can just add `hotspot_isoband()` to the end of the code pipeline we used to create the clipped KDE layer, and then plot the result.
 
 ```{r}
 #| label: map-isoband
@@ -1131,241 +994,126 @@ bike_theft_density_isoband <- bike_thefts |>
   hotspot_clip(vancouver_nbhds)
 
 # Plot density map
-ggplot() +
-  geom_sf(aes(fill = label), data = bike_theft_density_isoband) + #<2>
-  scale_fill_brewer(palette = "Oranges", direction = 1) #<3>
+hotspot_map(bike_theft_density_isoband)
 ```
 1. It is important to add `hotspot_isoband()` to the pipeline _before_ `hotspot_clip()`, since otherwise `hotspot_isoband()` is likely to produce an error.
-2. Instead of setting `fill = kde` as we do with `hotspot_kde()`, instead we set `fill = label` when we map `hotspot_isoband()`.
-3. `hotspot_isoband()` collapses KDE values into categories, so instead of using `scale_fill_distiller()` to represent a continuous KDE variable, we use `scale_fill_brewer()` to represent an ordered categorical variable.
 
 One potential drawback of using isobands is that they create the risk of the environmental fallacy: all the locations on the map within a particular isoband look on the map like they have exactly the same density of crime, when fact there will be some variation within each band because each band represents a _range_ of values. How big this problem is depends on how wide the range of values is in each isoband. We can control this by specifying how many different bands the range of KDE values should be split into. By default, `hotspot_isoband()` splits the range of values into 5 bands, but we can change this using the `breaks` argument. For example, if we wanted to split the range of values into 10 bands, we could use `hotspot_isoband(breaks = 10)`.
 
 Whether to visualise KDE values or generalise them into isobands first is up to you. Both are valid ways to visualise the density of a particular type of crime. You might want to experiment with both approaches to see which one better communicates the information you want to show on your map. In this book, we will generally visualise KDE layers rather than isobands to keep the code examples short, but you should feel free to experiment with both approaches.
 
 
-## Adding a base map {#sec-base-maps}
 
-The density map we have made is much more effective than a point map at allowing us to identify where the highest number of bike thefts in Vancouver occur. However, it's still quite difficult to know *where* those places are, because we cannot easily work out where in the city these places are. We can make this much easier by adding a *base map* underneath the density layer.
+## Adding more layers {#sec-other-layers}
 
-We can add a base map using the `annotation_map_tile()` function from the [ggspatial package](https://paleolimbot.github.io/ggspatial/). We can add `annotation_map_tile()` to a `ggplot()` stack in the same way that we would add `geom_*()` functions. Since we want the base map to appear _under_ the density layer, we add the base map layer to the `ggplot()` stack _first_. So that we can see the base map underneath the density layer, we will also make the density layer semi-transparent using the `alpha` argument to `geom_sf()`.
+<!-- <img src="../images/pancakes.jpg" alt="A stack of pancakes illustrating how map layers are placed on top of one another." class="right-side-image"> -->
 
-Replace the existing `ggplot()` stack in the `chapter_06.R` file with this code and then run it:
+One way make our density map more useful would be to add the boundaries of different neighbourhoods in Vancouver so that users could see where the different areas of high crime are located. This would also have the benefit of showing the outline of the city (the area for which we have data). 
+
+<a href="https://ggplot2.tidyverse.org/" aria-label="Visit the ggplot2 package website"><img src="../images/ggplot2.png" alt="" style="width: 33%; max-width: 150px; float: right; margin: 0 0 2em 2em;"></a>
+
+To add more layers to our map we need to learn about another R package: ggplot2. In the background, `hotspot_map()` uses functions from the ggplot2 package to put together the different parts of a map. That means we can use other functions from the ggplot2 package to build upon the map that `hotspot_map()` produces. Over the next few chapters we will learn about several families of functions that ggplot2 provides so that we can fine-tune the appearance of a map.
+
+
+::: {.callout-tip title="Why do we combine `hotspot_map()` with functions from ggplot2?" collapse="true"}
+The ggplot2 package is the most popular package for making visualisations of all types in R. ggplot2 gives us lots of control over how visualisations appear, but that high level of control can sometimes mean the code needed to produce a visualisation is long and complicated. 
+
+Since there are elements that are common to almost all maps, behind the scenes the `hotspot_map()` function uses ggplot2 (and another package called ggspatial) to produce a map quickly and easily. This means that we can use `hotspot_map()` to make maps quickly and easily, and then use functions from ggplot2 to fine-tune the appearance of those maps. 
+
+In the background, `hotspot_map()` sets up the basic combination of ggplot2 functions that are needed to produce a particular type of map. The combination of functions that is required depends on the type of map that we are making. For example, a density map requires a different combination of functions than a dot map. The `hotspot_map()` function takes care of this for us, so that we can focus on the parts of the map that we want to change. For example, when we run the code:
 
 ```{r}
-#| filename: "chapter_06.R"
-#| fig-alt: "A purple density layer of recorded bicycle thefts over a street base map of Vancouver. Darker areas show higher estimated density."
+#| eval: false
+
+hotspot_map(bike_theft_density)
+```
+
+in the background `hotspot_map()` combines these functions from ggplot2:
+
+```{r}
+#| eval: false
 
 ggplot() +
-  annotation_map_tile(zoomin = 0, progress = "none") +
-  geom_sf(
-    aes(fill = kde),
-    data = bike_theft_density_clip,
-    alpha = 0.7,
-    colour = NA
+  ggspatial::annotation_map_tile(zoomin = 0, progress = "none") +
+  geom_sf(aes(fill = kde), data = bike_theft_density, colour = NA) +
+  scale_fill_distiller(
+    type = "seq",
+    palette = "Blues",
+    direction = 1,
+    breaks = range(pull(bike_theft_density, kde)),
+    labels = c("low", "high"),
+    na.value = "transparent"
   ) +
-  scale_fill_distiller(palette = "Purples", direction = 1)
+  labs(
+    caption = "© OpenStreetMap contributors",
+    fill = "density"
+  ) +
+  theme_void()
 ```
 
-The base maps returned by `annotation_map_tile()` are available at many different [zoom levels](https://wiki.openstreetmap.org/wiki/Zoom_levels), from level 1 that is useful for mapping the whole world in one map, to level 20 that can be used to map a single building. By default, `annotation_map_tile()` downloads tiles with slightly less detail than we might want, but we can fix this by using the argument `zoomin = 0`. We could also set a specific zoom level using the `zoom` argument, but it's usually best to use `zoomin` instead. If you make a map and find the base map doesn't look right, check that you haven't accidentally set `zoom = 0` instead of `zoomin = 0`.
-
-We can see some of the different zoom levels available by looking at these maps, which show the same area around the UCL Jill Dando Institute with base maps at different zoom levels.
-
-```{r}
-#| label: make-zoom-map
-#| eval: false
-#| echo: false
-
-jdi <- c(-0.12979747256628416, 51.52501948280652) |>
-  st_point() |>
-  st_sfc(crs = "EPSG:4326") |>
-  st_transform("EPSG:27700") |>
-  st_buffer(2000)
-
-zoom_map <- map(8:16, function(zoom_level) {
-  ggplot() +
-    annotation_map_tile(zoom = zoom_level, progress = "none") +
-    geom_sf(data = jdi, colour = NA, fill = NA) +
-    labs(subtitle = str_glue("zoom level {zoom_level}")) +
-    theme_void() +
-    theme(
-      panel.border = element_rect(colour = "black", fill = NA, linewidth = 1),
-      plot.margin = unit(c(6, 6, 6, 6), "pt"),
-      plot.subtitle = element_text(size = 10)
-    )
-}) |>
-  wrap_plots(ncol = 3)
-
-ggsave(
-  here::here("images/zoom.jpg"),
-  zoom_map,
-  width = 1200 / 150,
-  height = 900 / 150,
-  dpi = 150
-)
-```
-
-```{r}
-#| label: zoom-map
-#| echo: false
-#| fig-align: center
-#| fig-alt: "Nine street maps of the same area around the UCL Jill Dando Institute at zoom levels 8 to 16. Lower zoom levels are pixelated, while higher levels show progressively more local detail."
-#| out-width: 100%
-
-knitr::include_graphics(here::here("images/zoom.jpg"))
-```
-
-Choosing the right zoom level is a matter of balancing the level of detail in the map and the clarity of the image. In the maps above, zoom levels less than 12 tend to have pixelated images because they do not contain enough detail, while zoom levels greater than 13 contain too much detail and so the information is hard to read. But if this map covered a smaller or larger area, a different zoom level might be better. In general, setting `zoomin = 0` and _not_ setting any value for the `zoom` argument -- so that `annotation_map_tile()` chooses the zoom level automatically -- will produce an acceptable map.
-
-`annotation_map_tile()` also gives us access to several different types of base map. The default style (seen in the maps above) is called 'osm' because it is the default style used by OpenStreetMap, the organisation that provides the map data. We can specify which style of base map we want using the `type` argument to `annotation_map_tile()`.
-
-```{r}
-#| label: make-basemaps-map
-#| eval: false
-#| echo: false
-
-basemaps_map <- c(
-  "osm",
-  "opencycle",
-  "hotstyle",
-  "stamenbw",
-  "stamenwatercolor",
-  "osmtransport",
-  "thunderforestlandscape",
-  "thunderforestoutdoors",
-  "cartodark",
-  "cartolight"
-) |>
-  map(function(x) {
-    ggplot() +
-      annotation_map_tile(type = x, zoom = 12, progress = "none") +
-      geom_sf(data = jdi, colour = NA, fill = NA) +
-      labs(subtitle = if_else(x == "osm", "osm (default)", x)) +
-      theme_void() +
-      theme(
-        panel.border = element_rect(colour = "black", fill = NA, linewidth = 1),
-        plot.margin = unit(c(6, 6, 6, 6), "pt"),
-        plot.subtitle = element_text(size = 10)
-      )
-  }) |>
-  wrap_plots(ncol = 3)
-
-ggsave(
-  here::here("images/basemaps.jpg"),
-  basemaps_map,
-  width = 1200 / 150,
-  height = 1200 / 150,
-  dpi = 150
-)
-```
-
-```{r}
-#| label: basemaps-map
-#| echo: false
-#| fig-align: center
-#| fig-alt: "Ten small maps compare available base-map styles, including OpenStreetMap, cycling, transport, landscape, outdoors, watercolour, light and dark designs."
-#| out-width: 100%
-
-knitr::include_graphics(here::here("images/basemaps.jpg"))
-```
-
-You may want to experiment with different base map styles by using the `type` argument to `annotation_map_tile()`, e.g. using `annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none")`.
-
-One final note about the `annotation_map_tile()` function: you might have noticed that when we have used it above we have always set the argument `progress = "none"`. This stops the function from printing a progress bar while it is downloading the map tiles. The progress bar can sometimes be useful, but when you include the output from an R function in a report (as you will learn to do in @sec-reports), the output from the progress bar is likely to interfere with the formatting of the report. To prevent that, we use the `progress = "none"` argument.
-
-
-::: {.callout-quiz .callout title="Base maps"}
-
-```{r}
-#| label: base_map_quiz
-#| echo: false
-
-base_map_quiz1 <- c(
-  "To provide information about socio-economic conditions in different places.",
-  answer = "To provide context on the locations of concentrations of crime.",
-  "To stop the map from appearing too visually cluttered",
-  "To make a map more visually attractive."
-)
-
-base_map_quiz2 <- c(
-  "`ggplot2`",
-  "`ggmap`",
-  answer = "`ggspatial`",
-  "`sfhotspot`"
-)
-
-base_map_quiz3 <- c(
-  answer = "To ensure that it does not distract from the crime data.",
-  "To fit the base map to the full extent of the dataset.",
-  "To remove all geographic details and focus only on crime locations.",
-  "To add unnecessary elements to the map."
-)
-```
-
-
-**What is the purpose of adding a base map to a crime map in R?**
-
-`r webexercises::longmcq(base_map_quiz1)`
-
-
-**Which R package is commonly used for adding base maps to crime maps?**
-
-`r webexercises::longmcq(base_map_quiz2)`
-
-
-**Why might you need to be careful in choosing the right base map when creating a crime map?**
-
-`r webexercises::longmcq(base_map_quiz3)`
-
-
+As you can see, the code `hotspot_map(bike_theft_density)` conceals quite a lot of complexity, so we can focus on other jobs. We will learn more about how ggplot2 works in @sec-no-maps, but for now we will just learn enough to be able to add more layers to our maps.
 :::
 
 
 
-## Adding more layers {#sec-other-layers}
+We can add functions from the ggplot2 package to `hotspot_map()` by using the `+` operator. This works in a very similar way to the pipe operator (`|>`) that we've already learned about -- it's just a quirk of ggplot2 that it uses `+` instead of `|>`. By convention, each function that we add to `hotspot_map()` to change the appearance of our map goes on a new line (this makes the code easier to read) and all but the first line is indented by two spaces. Positron does this indenting automatically if the previous line ends with a `+` symbol, since Positron then understands that there is more code to come on the next line.
 
-<img src="../images/pancakes.jpg" alt="A stack of pancakes illustrating how map layers are placed on top of one another." class="right-side-image">
+The first family of functions we will learn about is the `geom_*()` family. The `geom_` functions are used to add _data_ -- such as points, lines or polygons -- to a map. Since map data is usually stored in an SF object, we use the `geom_sf()` function to add a spatial dataset to a map.
 
-Adding a base map underneath our density layer makes it easier to understand where in Vancouver the highest densities of bike theft are. But our map could make it easier still to see where clusters of thefts occur. We could, for example, add the names of different neighbourhoods in the city, and show the city limits so that we can tell which areas have no crime because crimes in those areas are not included in our data.
+Update the map-plotting code in `chapter_06.R` to match this code:
 
-In an earlier section I suggested we can think of ggplot charts, including maps, as being like stacks of pancakes -- each function we use to amend the appearance of our chart is added to the top of the stack. So to add another layer to our map, we just add another `geom_` function to our plot.
 
-<a href="https://stringr.tidyverse.org/" aria-label="Visit the stringr package website"><img src="../images/stringr.png" class="right-side-image" alt=""></a>
+```{r}
+#| filename: "chapter_06.R"
 
-At the same time, we can also add labels to the plot at the centre of each neighbourhood using the `geom_sf_label()` function. `geom_sf_label()` works like `geom_sf()` in that it adds a spatial dataset to a map, but instead of adding the points, lines or polygons themselves, `geom_sf_label()` instead adds labels for those features. 
+# Plot density map
+hotspot_map(bike_theft_density_clip, basemap_type = "cartolight") +
+  # Add neighbourhood boundaries
+  geom_sf(data = vancouver_nbhds, colour = "seagreen3", fill = NA)
+```
 
-We use the `aes()` function to specify which column in the `vancouver_nbhds` dataset we want to use for the label text. If we used `head(vancouver_nbhds)` to look at the columns in the data, we would see the neighbourhood names are contained in the column called `name`. Normally, we would use the code `aes(label = name)` to do this because the label aesthetic is used to set the label text. But in this case we also want to wrap the labels so that they don't overlap adjacent neighbourhoods. To do this we can use `str_wrap()` from the [stringr package](https://stringr.tidyverse.org) (part of the tidyverse), so that instead our call to the `aes()` function becomes `aes(label = str_wrap(name, width = 10))`.
 
-To see how `geom_sf_label()` works, let's create a quick map in the R Console. Paste the following code into the Console and run it:
+It would also be useful to add labels showing the names of the different neighbourhoods. The challenge with adding labels to maps is to make sure those labels are legible while not obscuring the data layer, so we'll have to do this carefully.
+
+We can add labels to a map using the `geom_sf_label()` function from ggplot2. But to do that, we need to learn about another aspect of the ggplot2 ecosystem: specifying aspects of the appearance of a map based on columns in a dataset. You might remember that the `vancouver_nbhds` dataset contains a column called `name` that contains the names of the different neighbourhoods:
+
 
 ```{r}
 #| filename: "R Console"
-#| fig-alt: "A map of Vancouver neighbourhood polygons labelled with their names. Longer names wrap onto multiple lines."
 
-ggplot() +
-  geom_sf(data = vancouver_nbhds) +
-  geom_sf_label(aes(label = str_wrap(name, width = 10)), data = vancouver_nbhds)
+head(vancouver_nbhds)
 ```
 
-Now let's add these labels to the map in our script file. At the same time we will change the style of the labels so that they look better on the map. To do this, we will add several more arguments to `geom_sf_label()`, which are explained after the next piece of code.
+We can use the values in the `name` column to specify the text of the labels we want to add to the map. To do this, we need to use the `aes()` function from ggplot2, which is used to specify _aesthetics_. We mentioned aesthetics briefly in @sec-aesthetics, but in that section we only covered specifying static aesthetics that applied equally to all the elements in a layer. For example, we used `colour = "red"` to set the colour of all the points in a layer. In this case, we need to control the appearance of the labels based on the values in a column in the dataset, so we need to use _dynamic_ aesthetics. We can do that by using the `aes()` function to specify which column in the dataset we want to use for each aesthetic.
 
-Replace the existing `ggplot()` stack in the `chapter_06.R` file with this stack and then run that code:
+The `aes()` function takes as its arguments pairs of values (combined with an `=` symbol) where the first value is an aesthetic and the second value is the name of a column in the data. For example, to use the colour of points on a map to represent different types of crime that were stored in a column in the data called `type`, we could use `aes(colour = type)`. This is called _mapping_ a column to an aesthetic.
+
+
+::: {.callout-important title="When to specify values inside or outside `aes()`"}
+
+When should you specify the values of aesthetics inside `aes()` and when should you do it outside `aes()`?
+
+  * If you want an aesthetic to have a constant value for all the points, lines or other shapes in a layer, control the aesthetic _outside_ `aes()`. For example, you could use `hotspot_map(bike_thefts, colour = "mediumblue")` to make all the shapes in that layer blue.
+  * If you want to vary the appearance of shapes according to values in the data, you should control the aesthetic _inside_ `aes()`. For example, you could use `geom_sf(aes(colour = month), data = bike_thefts)` to vary the colour of shapes in a layer according to values of the `month` column in a dataset.
+
+If you specify a constant value for an aesthetic (e.g. `colour = "mediumblue"`) this will override any mapping for that aesthetic provided by the `aes()` function (e.g. `aes(colour = month)`). If you have used `aes()` to specify that an aesthetic should be controlled based on a column in the data but find that the aesthetic is not changing based on the data, check you have not also specified a constant value for that aesthetic.
+
+`aes()` should normally be the first argument in a `geom_*()` function. If you want to specify the arguments in a different order then you must give the name of each argument, which means that for the `aes()` function you must specify `mapping = aes(...)` when `aes()` is not the first argument to whatever `geom_*()` function you are using.
+
+:::
+
+<a href="https://stringr.tidyverse.org/" aria-label="Visit the stringr package website"><img src="../images/stringr.png" class="right-side-image" alt=""></a>
+
+Since we want the text of the labels to be the names of the neighbourhoods, we can use `aes(label = name)` to map the `name` column in the `vancouver_nbhds` dataset to the label aesthetic. This will make the text of each label equal to the value in the `name` column for that neighbourhood. However, some of the neighbourhood names are quite long, and so we will need to wrap the text of those labels onto multiple lines so that they do not overlap adjacent neighbourhoods. We can do this using the `str_wrap()` function from the [stringr package](https://stringr.tidyverse.org), which is part of the tidyverse. `str_wrap()` takes a string and wraps it onto multiple lines if it is longer than a specified width. We can use `str_wrap()` inside the `aes()` function to wrap the text of the labels based on the values in the `name` column. For example, we could use `aes(label = str_wrap(name, width = 10))` to wrap any neighbourhood names that are longer than 10 characters onto multiple lines.
+
+Replace the existing `hotspot_map()` stack in the `chapter_06.R` file with this stack and then run that code. You will see that as well as specifying the label aesthetic using `aes()`, we have also specified several other aesthetics outside of `aes()` to make sure the labels are less visually prominent than the density layer (because the most-important element on a map is always the data layer).
 
 ```{r}
 #| filename: "chapter_06.R"
 #| fig-alt: "A density map of recorded bicycle thefts in Vancouver in 2020. The highest estimated densities are in and around the Downtown and West End neighbourhoods. Neighbourhood boundaries and labels appear over a pale base map."
 
 # Plot density map
-ggplot() +
-  # Add base map
-  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
-  # Add density layer
-  geom_sf(
-    aes(fill = kde),
-    data = bike_theft_density_clip,
-    alpha = 0.75,
-    colour = NA
-  ) +
+hotspot_map(bike_theft_density_clip, basemap_type = "cartolight") +
   # Add neighbourhood boundaries
   geom_sf(data = vancouver_nbhds, colour = "seagreen3", fill = NA) +
   # Add neighbourhood names
@@ -1374,18 +1122,18 @@ ggplot() +
     data = vancouver_nbhds,
     alpha = 0.5, # <1>
     colour = "seagreen", # <2>
-    lineheight = 1, # <3>
-    size = 2.5, # <4>
-    linewidth = NA # <5>
-  ) +
-  # Set the colour scale
-  scale_fill_distiller(direction = 1)
+    fill = "white", #<3>
+    lineheight = 1, # <4>
+    size = 2.5, # <5>
+    linewidth = NA # <6>
+  )
 ```
-1. `alpha = 0.5` to make the label background semi-transparent so that we can see the density layer underneath it,
-2. `colour = "seagreen"` to slightly reduce the prominence of the label text to avoid distracting attention from the density layer,
-3. `lineheight = 1` to reduce the gap between lines in each label,
-4. `size = 2.5` to slightly reduce the size of the label text,
-5. `linewidth = NA` to remove the default border around the label background.
+1. `alpha = 0.5` makes the label background semi-transparent so that we can see the density layer underneath it,
+2. `colour = "seagreen"` slightly reduces the prominence of the label text to avoid distracting attention from the density layer,
+3. `fill = "white"` makes the label background white so that it is legible against the base map and density layer, remembering that since we have set `alpha = 0.5` the background will be semi-transparent,
+4. `lineheight = 1` reduces the gap between lines in each label,
+5. `size = 2.5` slightly reduces the size of the label text,
+6. `linewidth = NA` removes the default border around the label background.
 
 
 From this map, we can see that recorded bike theft in Vancouver is heavily concentrated in a handful of neighbourhoods, particularly Downtown and the West End. This map makes the broad pattern easier to see than the point map in @sec-second-map, and shows how the concentrations relate to different areas of the city.
@@ -1396,13 +1144,6 @@ From this map, we can see that recorded bike theft in Vancouver is heavily conce
 ```{r}
 #| label: map-layers-quiz
 #| echo: false
-
-map_layers_quiz1 <- c(
-  answer = "Before the density layer, so that it appears underneath",
-  "After the density layer, so that it covers the density values",
-  "Inside `scale_fill_distiller()`",
-  "The order of layers does not affect the map"
-)
 
 map_layers_quiz2 <- c(
   "`geom_sf()`",
@@ -1419,10 +1160,6 @@ map_layers_quiz3 <- c(
 )
 ```
 
-**Where should the base-map layer appear in a `ggplot()` stack?**
-
-`r webexercises::longmcq(map_layers_quiz1)`
-
 **Which function adds labels at the locations of spatial features?**
 
 `r webexercises::longmcq(map_layers_quiz2)`
@@ -1436,7 +1173,6 @@ map_layers_quiz3 <- c(
 
 ::: {.callout-tip title="Tips for producing effective density maps"}
 
-- Make density layers semi-transparent so that readers can see the base map underneath. Try `alpha = 0.7` in `geom_sf()`, then adjust the value until both the density layer and the geographic context are clear.
 - Produce separate density layers for different types of crime. Combining offences can hide distinct spatial patterns and will make the result more strongly influenced by whichever offence is most numerous.
 - Be cautious about mapping offences that are mainly found through police activity, such as drug or weapon possession. Their recorded locations can reflect where officers patrol as much as where offences occur.
 - Remember that a KDE map shows concentrations of recorded events, not the risk that an event will happen to a person or place. Interpreting risk also requires information about the relevant population or opportunities and will be covered in @sec-mapping-hotspots.
@@ -1455,7 +1191,7 @@ You can now:
 - adjust grid-cell size and bandwidth;
 - map density using an appropriate sequential colour scale;
 - clip a density layer with `hotspot_clip()`; and
-- add a base map, boundaries and labels in the correct layer order.
+- add boundaries and labels in the correct layer order.
 
 Your complete script should now look like this:
 
@@ -1475,7 +1211,6 @@ Save `chapter_06.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. To che
 You can learn more about:
 
 - the arguments and output of [`hotspot_kde()`](https://pkgs.lesscrime.info/sfhotspot/reference/hotspot_kde.html) in the sfhotspot documentation;
-- adding base maps and other spatial elements with the [ggspatial package](https://paleolimbot.github.io/ggspatial/);
 - choosing and using colour schemes in [_Working with colours in R_](https://nrennie.rbind.io/blog/colours-in-r/); and
 - exploring palettes using the [Color Palette Finder](https://r-graph-gallery.com/color-palette-finder).
 

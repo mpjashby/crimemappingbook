@@ -1,6 +1,6 @@
 # Your second crime map {#sec-second-map}
 
-![](../images/chapter_05_second_crime_map_illustration.png){fig-alt=""}
+<!-- ![](../images/chapter_05_second_crime_map_illustration.png){fig-alt=""} -->
 
 ::: {.abstract}
 In @sec-first-map you learned the basics of creating a crime map in R. In this chapter we will create a second crime map, this time focusing a bit more on the details. You will learn more about working with spatial data, including how to load data and convert it into a format suitable for mapping. By the end of this chapter you'll be able to visualise crime data effectively, creating a clear and accurate map. Let's dive into the process and start mapping!
@@ -20,7 +20,7 @@ In @sec-first-map you learned the basics of creating a crime map in R. In this c
 #| include: false
 
 # Load packages
-pacman::p_load(ggspatial, here, httr2, patchwork, sf, tidyverse)
+pacman::p_load(here, httr2, patchwork, sf, sfhotspot, tidyverse)
 ```
 
 
@@ -51,7 +51,7 @@ By the end of this chapter, you will have learned how to:
 - convert coordinate columns into an SF object;
 - filter an SF object to select particular crimes;
 - organise a multi-stage script using comments and blank lines; and
-- create and style a basic crime map using ggplot2.
+- create and style a basic crime map using `hotspot_map()`.
 
 The process we will use to produce the map has four main stages:
 
@@ -310,7 +310,7 @@ places_quiz5 <- c(
 
 <a href="https://r-spatial.github.io/sf/" aria-label="Visit the sf package website"><img src="../images/sf-package.gif" class="right-side-image" alt=""></a>
 
-There are several packages that handle raster map data from different sources – one of them is the [ggspatial package](https://paleolimbot.github.io/ggspatial/) that we have already used to load the base map of Atlanta for the homicide map we made in @sec-first-map. One of the most important spatial packages is the [sf package](https://r-spatial.github.io/sf/), which we use to handle spatial vector data. _SF_ stands for 'simple features', which is a standard for storing spatial data. SF objects are data frames that have a special column to hold the geometry (point, line or polygon) associated with each row in the data. SF objects also understand what coordinate system the geometry are described in. This means SF objects can be transformed between coordinate systems and combined together in layers on a map.
+There are several packages that handle raster map data from different sources. One of the most important spatial packages is the [sf package](https://r-spatial.github.io/sf/), which we use to handle spatial vector data. _SF_ stands for 'simple features', which is a standard for storing spatial data. SF objects are data frames that have a special column to hold the geometry (point, line or polygon) associated with each row in the data. SF objects also understand what coordinate system the geometry are described in. This means SF objects can be transformed between coordinate systems and combined together in layers on a map.
 
 There are lots of functions in the sf package for handling spatial data. Almost all of these functions begin with the letters `st_` (e.g. `st_read()`), which makes it easy to identify that those functions are designed to be used on SF objects.
 
@@ -748,7 +748,7 @@ Use a short comment above each distinct task to explain *why* that block exists.
 
 ```r
 # Load packages
-pacman::p_load(here, httr2, sf, tidyverse)
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse)
 
 # Load and prepare the theft data
 thefts <- here("data", "raw", "vancouver_thefts.csv.gz") |>
@@ -757,7 +757,7 @@ thefts <- here("data", "raw", "vancouver_thefts.csv.gz") |>
   st_as_sf(coords = c("x", "y"), crs = "EPSG:32610")
 ```
 
-Leave a blank line between separate tasks, but do not add blank lines within a pipeline or a ggplot2 stack. The result is code that is visually grouped in the same way as the analytical process.
+Leave a blank line between separate tasks, but do not add blank lines within a pipeline. The result is code that is visually grouped in the same way as the analytical process.
 
 For a longer script, a comment ending with at least four hyphens creates a section heading:
 
@@ -803,89 +803,39 @@ Now that we have our data, we can use it to create a map of bicycle theft in Van
 head(bike_thefts)
 ```
 
+Since we have converted the data to an SF object, it is easy to create a basic map using the `hotspot_map()` function that we were introduced to in @sec-first-map. In the background, this function does several things to put together a map so that we don't have to do that ourselves.
 
-### Introduction to ggplot2
+::: {.callout-important title="`hotspot_map()` only works with SF objects"}
 
-<p class="full-width-image"><img src="../images/ggplot2_masterpiece.jpg" alt="Cartoon showing several furry monsters with paint brushes painting several different types of chart. Above them is the text 'ggplot2: build a data masterpiece'."></p>
-
-A map is a specialised type of chart, so we can make maps using the [ggplot2 package](https://ggplot2.tidyverse.org/) that is widely used to create other types of chart in R. ggplot2 charts are made up of layers, so they're well suited to making maps.
-
-<a href="https://ggplot2.tidyverse.org/" aria-label="Visit the ggplot2 package website"><img src="../images/ggplot2.png" alt="" style="width: 33%; max-width: 150px; float: right; margin: 0 0 2em 2em;"></a>
-
-The most-basic crime map that we can make simply plots the locations of crimes with no context. However, this almost never makes a *good* crime map because if there are more than a few crimes it becomes hard to see patterns in the data. But we can use a basic dot map as the foundation on which we can build a better map later on.
-
-ggplot2 plots work by building up a chart using different functions, each of which adds or modifies some part of the chart. Building a plot starts with calling the `ggplot()` function, with each subsequent function being added to 
-the plot definition using the `+` operator. Note that while the package is called ggplot2, the function in that package used to create plots is called `ggplot()`, *not* `ggplot2()`.
-
-The most-important of the ggplot2 functions are those beginning with `geom_`, which add graphical elements to the chart. If you want to add a layer to your chart showing a scatter plot, you use the `geom_point()` function, while if you 
-want to make a line chart you use `geom_line()`.
-
-```{r}
-#| label: example-charts
-#| echo: false
-#| fig-align: center
-#| fig-alt: "Two example charts. The chart on the left is a scatter plot made from points; the chart on the right is a line chart joining ten values."
-#| out-width: 80%
-
-set.seed(2026)
-
-ex_point <- tibble(x = rnorm(50, 10, 1), y = rnorm(50, 10, 1)) |>
-  ggplot() +
-  aes(x = x, y = y) +
-  geom_point() +
-  labs(title = "A scatter plot using geom_point()") +
-  theme_minimal()
-
-ex_line <- tibble(x = 1:10, y = rpois(10, 5)) |>
-  ggplot() +
-  aes(x = x, y = y) +
-  geom_line() +
-  scale_y_continuous(limits = c(0, NA)) +
-  labs(title = "A line chart using geom_line()") +
-  theme_minimal()
-
-wrap_plots(ex_point, ex_line, ncol = 2)
-```
-
-There are lots of `geom_` functions available for representing data on charts in different ways. For maps, we can use the `geom_sf()` function that is designed to add spatial data (in the form of an SF object such as our `bike_thefts` data) to a chart, making it into a map. So to simply plot the points in our bicycle-theft data, we can use the code:
-
-```{r}
-#| filename: "R Console"
-#| fig-alt: "A basic point map of bicycle thefts in Vancouver. The many black points overlap heavily, especially in the north-central part of the city."
-
-ggplot() +
-  geom_sf(data = bike_thefts)
-```
-
-
-      
-     
-    
-::: {.callout-important title="`geom_sf()` only works with SF objects"}
-
-`geom_sf()` only works on SF objects, which is why we needed to convert the original tibble of data to an SF object using `st_as_sf()`. If you try to use `geom_sf()` on a dataset that is not stored as an SF object, R will produce an error.
+`hotspot_map()` only works on SF objects, which is why we needed to convert the original tibble of data to an SF object using `st_as_sf()`. If you try to use `hotspot_map()` on a dataset that is not stored as an SF object, R will produce an error.
 
 :::
 
 
-By convention, each function that we add to `ggplot()` to change the appearance of our map goes on a new line (this makes the code easier to read) and all but the first line is indented by two spaces. Positron does this indenting automatically if the previous line ends with a `+` symbol, since Positron then understands that there is more code to come on the next line.
+The most-basic crime map that we can make simply plots the locations of crimes, with no context other than a base map (we'll learn more about base maps in @sec-base-maps). Run this code in the R Console to produce a basic map:
 
-The map above shows the bike-theft data, but it is obviously not a very useful map. Fortunately, we can use the features of the ggplot2 package to build on this basic map.
+```{r}
+#| filename: "R Console"
+hotspot_map(bike_thefts)
+```
+
+
+The map above shows the bike-theft data, but it is obviously not a very useful map. Fortunately, we can use some features of the `hotspot_map()` function to improve it.
 
 
 ::: {.callout-important title="Avoid dot maps"}
 
-Unless we want to produce a map of only a very small number of crimes (like the Atlanta downtown homicides map we produced in @sec-first-map), it is unlikely that a point map will be very useful. 
+Unless we want to produce a map of only a very small number of crimes (like the Atlanta downtown homicides map we produced in @sec-first-map), it is unlikely that a point map will be very useful. A dot map like this almost never makes a *good* crime map because if there are more than a few crimes it becomes hard to see patterns in the data.
 
-In fact, **if you find yourself making a map with each crime represented by a separate point, you should probably stop and ask yourself if that is really the best way to achieve your goal** -- it will almost always be better to map the data in another way.
+**If you find yourself making a map with each crime represented by a separate point, you should probably stop and ask yourself if that is really the best way to achieve your goal** -- it will almost always be better to map the data in another way.
 
-We are only creating a dot map in this chapter because it is a simple way to introduce the ggplot2 package and the basic principles of making maps in R. In @sec-mapping-patterns we will learn how to make more useful maps that show the density of crime rather than just the locations of individual crimes.
+We are only creating a dot map in this chapter because it is a simple way to introduce the basic principles of making maps in R. In @sec-mapping-patterns we will learn how to make more useful maps that show patterns of crime more effectively.
 :::
 
 
-### Controlling aesthetics
+### Controlling aesthetics {#sec-aesthetics}
 
-We can change the appearance of the points by specifying various arguments to the `geom_sf()` function. These arguments are called *aesthetics*, because they control the aesthetic appearance of the geometric objects (points, lines etc.) that are produced by a `geom_` function. There are lots of aesthetics, but some of the most common are:
+We can change the appearance of the points by specifying various arguments to the `hotspot_map()` function. These arguments are called *aesthetics*, because they control the aesthetic appearance of the geometric objects (points, lines etc.) that are added to the map. There are lots of aesthetics, but some of the most common are:
 
   * `colour` controls the colour of points and lines (for polygons, it controls the colour of the border around the polygon edge) – you can also use the spelling `color` for this argument and get an identical result,
   * `fill` controls the colour used to fill polygons or points that use a shape capable of having different colours in the centre and around the edge (`fill` has no meaning for lines),
@@ -924,15 +874,14 @@ ggplot(data.frame(shape = 0:24), aes(0, 0, shape = shape)) +
   
 
 
-
-We use aesthetics such as `colour`, `fill`, etc. to change the appearance of layers on a map by adding the aesthetic as an argument to the `geom_*()` function that creates the relevant layer. For example, we could change the points on our map to be red squares rather than the default black circles using this code:
+We use aesthetics such as `colour`, `fill`, etc. to change the appearance of layers on a map by adding the aesthetic as an argument to the `hotspot_map()` function. For example, we could change the points on our map to be red squares rather than the default black circles using this code:
 
 ```{r}
 #| filename: "R Console"
 #| fig-alt: "A point map of bicycle thefts in Vancouver drawn using red square symbols. The points overlap heavily."
 
-ggplot() +
-  geom_sf(data = bike_thefts, shape = 15, colour = "red")
+# Create a basic crime map
+hotspot_map(bike_thefts, shape = 15, colour = "red")
 ```
 
 As we have said, this basic map is not very useful. We can see that there seems to be a cluster of bike thefts towards the top (north) of the map, but it is difficult to see how important this cluster is because so many of the points overlap. Overlapping points are a particular problem in maps, because if there are multiple crimes at the same location then the points representing those crimes will be exactly on top of one another and it will be impossible to see whether there is one crime at a particular location or 100.
@@ -947,26 +896,18 @@ Add this code to your script file:
 #| fig-alt: "A point map of bicycle thefts in Vancouver. Smaller semi-transparent points reveal some concentration in the north-central part of the city, but extensive overlap still makes the pattern difficult to interpret."
 
 # Create a basic crime map
-ggplot() +
-  geom_sf(data = bike_thefts, size = 0.75, alpha = 0.1)
+hotspot_map(bike_thefts, basemap_type = "cartolight", size = 0.7, alpha = 0.1)
 ```
 
 Making the points semi-transparent goes _some_ way to making it easier to see where bike theft is most common in Vancouver, but the pattern is not clear and it is not possible to tell which darker points represent a handful of crimes at the same location and which represent hundreds of crimes at the same location. 
 
-To make our map truly useful, we need to use a different technique. In chapter @sec-mapping-patterns we will learn how to identify crime patterns by mapping the _density_ of crime.
+To make our map truly useful, we need to use a different technique. In chapter @sec-mapping-patterns we will learn how to identify crime patterns by mapping the _density_ of crime. We will also learn more about aesthetics in @sec-other-layers.
 
 ::: {.callout-quiz .callout title="Producing maps in R"}
 
 ```{r}
 #| label: mapping-quiz
 #| echo: false
-
-mapping_quiz1 <- c(
-  "`ggplot()`",
-  "`geom_point()`",
-  answer = "`geom_sf()`",
-  "`st_as_sf()`"
-)
 
 mapping_quiz2 <- c(
   "It changes the coordinate reference system",
@@ -982,10 +923,6 @@ mapping_quiz3 <- c(
   "Dot maps can only display polygon data"
 )
 ```
-
-**Which function adds an SF object as a layer on a ggplot2 map?**
-
-`r webexercises::longmcq(mapping_quiz1)`
 
 **What is the effect of setting `alpha` to a value below 1?**
 
@@ -1014,7 +951,7 @@ You can now:
 - convert coordinate columns into an SF object;
 - use a pipeline to prepare spatial data;
 - organise a script using comments, blank lines and section headings; and
-- draw and style spatial points using `ggplot()` and `geom_sf()`.
+- draw and style spatial points using `hotspot_map()`.
 
 At the moment, your script file should look like this.
 
@@ -1027,7 +964,7 @@ At the moment, your script file should look like this.
 ::: {.callout-important title="The limitations of this map"}
 At the moment, it isn't very easy to see patterns on this map, since so many of the points overlap. In @sec-mapping-patterns, we will learn how to make this map much better by converting it into a density map. 
 
-Remember: whenever you create a dot map, ask yourself if a density map would be more useful.
+**Remember: whenever you find yourself creating a dot map, ask yourself if a density map would be more useful.**
 :::
 
 
@@ -1037,9 +974,9 @@ You can find out more about some of the things we have covered in this chapter u
 
   * Understand more about the history of trying to develop accurate map 
     projections in this short video: [Why all world maps are wrong](https://youtu.be/kIID5FDi2JQ).
-  * Find out more about making all sorts of charts (not just maps) with the 
+  <!-- * Find out more about making all sorts of charts (not just maps) with the 
     `ggplot2` package in the [Data Visualisation chapter of *R for Data Science*](https://r4ds.hadley.nz/data-visualize.html)
-    by Hadley Wickham, Mine Çetinkaya-Rundel and Garrett Grolemund.
+    by Hadley Wickham, Mine Çetinkaya-Rundel and Garrett Grolemund. -->
   * Learn more about making maps using simple features in [Chapter 1 of *Spatial Data Science*](https://r-spatial.org/book/01-hello.html)
     by Edzer Pebesma and Roger Bivand.
 

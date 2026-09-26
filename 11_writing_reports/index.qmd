@@ -15,7 +15,7 @@ In previous chapters we've learned how to make crime maps, but almost every anal
 ```{r}
 #| include: false
 
-pacman::p_load(ggspatial, here, httr2, sf, sfhotspot, tidyverse)
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse)
 ```
 
 
@@ -608,7 +608,7 @@ Add the following setup chunk to `chapter_11.qmd`.
 #| include: false
 
 # Load packages
-pacman::p_load(ggspatial, here, httr2, sf, sfhotspot, tidyverse)
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse)
 
 # Download the original data
 request(
@@ -708,7 +708,7 @@ Using `#| include: false` can be useful to stop an output document being littere
 
 Almost all the documents you produce in Quarto will include one or more maps, charts or tables. Quarto includes tools for providing captions for figures and tables, as well as the ability to refer to them elsewhere in a document.
 
-Maps, charts and tables in Quarto documents are usually the output produced by a chunk of R code. For example, we might use a `ggplot()` stack to make a map. To turn a code chunk into a figure we can reference, we need to add two chunk options at the start of the code chunk. We use the `#| label` chunk option to specify what text we will use throughout the rest of the document to refer to the figure or table produced by that code chunk. Note that chunk labels for figures and tables _must_ begin with either `fig-` for figures (charts and maps) or `tbl-` for tables. For example, we might label a map with the label `#| label: fig-homicides-map` or a table with the label `#| label: tbl-robbery-counts`. Note that chunk labels can contain letters, numbers and dashes (`-`), but not spaces or other characters.
+Maps, charts and tables in Quarto documents are usually the output produced by a chunk of R code. For example, we might use `hotspot_map()` to make a map. To turn a code chunk into a figure we can reference, we need to add two chunk options at the start of the code chunk. We use the `#| label` chunk option to specify what text we will use throughout the rest of the document to refer to the figure or table produced by that code chunk. Note that chunk labels for figures and tables _must_ begin with either `fig-` for figures (charts and maps) or `tbl-` for tables. For example, we might label a map with the label `#| label: fig-homicides-map` or a table with the label `#| label: tbl-robbery-counts`. Note that chunk labels can contain letters, numbers and dashes (`-`), but not spaces or other characters.
 
 The second chunk option we should add is either the `#| fig-cap` chunk option (for charts and maps) or the `#| tbl-cap` argument, to create a caption for the chart, map or table. Note that captions should be enclosed in quotes, e.g. `#| tbl-cap: "This is the table caption"`.
 
@@ -719,32 +719,22 @@ Add this code to the `chapter_11.qmd` Quarto file:
 
 ```{r}
 #| label: fig-homicides
+#| message: false
 #| fig-cap: "Density of homicides in Medellín, 2010 to 2019"
 #| fig-alt: "Street map of Medellín showing estimated homicide density. The highest density is concentrated in the central part of the city."
 
 # Note we don't have to set `#| include: true` for this code chunk, because that
-# is the default
+# is the default. We do, however, have to set `#| message: false` to suppress
+# the message about a coordinate system already being present when we add the
+# boundary layer to the map.
 
 # Plot a basic density map
-ggplot() +
-  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
-  geom_sf(
-    aes(fill = kde),
-    data = medellin_homicide_density,
-    alpha = 0.7,
-    colour = NA
-  ) +
-  geom_sf(data = medellin_boundary, colour = "grey25", fill = NA) +
-  scale_fill_distiller(
-    breaks = range(pull(medellin_homicide_density, kde)),
-    labels = c("low", "high"),
-    direction = 1
-  ) +
-  labs(
-    caption = "Homicide data: Alcaldía de Medellín (CC-BY-SA)",
-    fill = "homicide\ndensity"
-  ) +
-  theme_void()
+hotspot_map(
+  medellin_homicide_density,
+  basemap_type = "cartolight",
+  caption = "Homicide data: Alcaldía de Medellín (CC-BY-SA)"
+) +
+  geom_sf(data = medellin_boundary, colour = "grey25", fill = NA)
 ```
 ````
 
@@ -756,6 +746,9 @@ Once we have set the label and the caption for a code chunk, we can use that lab
 <iframe height="800" src="www/medellin_homicides.html" title="An HTML file produced by Quarto that shows a figure with a caption and a cross-reference in the text." style="width: 100%;"></iframe>
 ```
 :::
+
+
+You might have noticed we also added the chunk option `#| fig-alt` to the code chunk that produces the map. This is because we are producing an HTML document, and HTML documents should be accessible to people who use assistive technology such as screen readers. The `#| fig-alt` chunk option allows us to provide a short description of the figure that will be read out by a screen reader. You can find out more about accessibility in Quarto documents on the [Quarto website](https://quarto.org/docs/publishing/accessibility.html). 
 
 
 ::: {.callout-quiz .callout title="Using code in Quarto documents"}

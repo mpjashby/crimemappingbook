@@ -18,7 +18,7 @@ In this chapter, you will learn how to create crime maps that display data for g
 #| echo: false
 #| include: false
 
-pacman::p_load(ggspatial, here, httr2, leaflet, sf, sfhotspot, tidyverse)
+pacman::p_load(here, httr2, leaflet, sf, sfhotspot, tidyverse)
 ```
 
 
@@ -54,7 +54,7 @@ In the first analysis in this chapter, you will produce this map of carjacking o
 ```{r}
 #| label: show-final-carjacking-map
 #| echo: false
-#| fig-alt: "A choropleth map of carjacking offences in Mexico City in 2019. Darker orange boroughs have more recorded offences, with Gustavo A. Madero having the highest count."
+#| fig-alt: "A choropleth map of carjacking offences in Mexico City in 2019. Darker blue boroughs have more recorded offences, with Gustavo A. Madero having the highest count."
 #| out-width: 90%
 
 car_jacking_map
@@ -145,7 +145,7 @@ Carjacking is robbery in which a vehicle is stolen using violence or the threat 
 
 Create a new R script in Positron and save it as `chapter_09a.R` in the `R` folder. Write a comment at the top explaining that the script will show the number of carjacking offences in each alcaldía in Mexico City in 2019. Keep all the permanent code for this first analysis in this file.
 
-Add a line to the script file (with an appropriate comment above it) to load the ggspatial, here, httr2, sf, sfhotspot and tidyverse packages. If you need help with that code, look back to @sec-loading-packages.
+Add a line to the script file (with an appropriate comment above it) to load the here, httr2, sf, sfhotspot and tidyverse packages. If you need help with that code, look back to @sec-loading-packages.
 
 We need two datasets for this script: a dataset of carjackings and one of alcaldía boundaries. First download both original files into `data/raw`, then load the local files. Keeping the source files in `data/raw` makes the analysis easier to repeat and ensures that we do not accidentally edit the original data.
 
@@ -176,7 +176,7 @@ Once you have written the code to load the packages and data, click the **Soluti
 # 2019 and produces a choropleth map of those counts.
 
 # Load packages
-pacman::p_load(ggspatial, here, httr2, sf, sfhotspot, tidyverse)
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse)
 
 # Download the raw data
 request(
@@ -232,13 +232,14 @@ Run this code in the R Console:
 #| fig-asp: 0.3
 #| fig-alt: "A world map showing most carjacking records clustered in Mexico City and a smaller group at latitude and longitude zero in the Gulf of Guinea, a location known as Null Island."
 #| filename: "R Console"
+#| out-width: "100%"
 
-ggplot(cdmx_car_jacking) + annotation_map_tile(progress = "none") + geom_sf()
+hotspot_map(cdmx_car_jacking)
 ```
 
 This map shows that the points in the `cdmx_car_jacking` dataset are located in two parts of the world, which is not what we would expect. Some points appear in Mexico as we would expect, but some appear in the Gulf of Guinea off the coast of West Africa. These points are located on 'Null Island', which we will learn more about in @sec-null-island.
 
-There are `r nrow(cdmx_car_jacking) - sum(pull(car_jacking_counts, "n"))` points outside the boundary of Mexico City out of `r nrow(cdmx_car_jacking)` in total (`r scales::percent(1 - (sum(pull(car_jacking_counts, "n")) / nrow(cdmx_car_jacking)), accuracy = 0.1)`). All these points are excluded from the borough counts. We can continue with this example, but we should document the exclusion rather than assuming it has no effect. In a real analysis, we would also investigate how the errors arose and whether excluded records differ systematically from the records with valid locations.
+There are `r nrow(cdmx_car_jacking) - sum(pull(car_jacking_counts, "n"))` points outside the boundary of Mexico City out of `r scales::comma(nrow(cdmx_car_jacking))` in total (`r scales::percent(1 - (sum(pull(car_jacking_counts, "n")) / nrow(cdmx_car_jacking)), accuracy = 0.1)`). All these points are excluded from the borough counts. We can continue with this example, but we should document the exclusion rather than assuming it has no effect. In a real analysis, we would also investigate how the errors arose and whether excluded records differ systematically from the records with valid locations.
 
 
 ::: {.callout-quiz .callout title="Counting crimes"}
@@ -400,48 +401,24 @@ maup_quiz1 <- c(
 :::
 
 
-We have already loaded the data we need to create a map of carjackings in Mexico City, and counted how many offences occurred in each alcaldía. The `car_jacking_counts` object we created is an SF object, which means we can use `geom_sf()` to plot it on a map.
-
-```{r}
-#| filename: "R Console"
-#| fig-asp: 1
-#| fig-alt: "A basic map of Mexico City alcaldía boundaries. Every borough has the same grey fill, so the map does not yet show the number of carjacking offences."
-#| out-width: "90%"
-
-ggplot(car_jacking_counts) +
-  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
-  geom_sf() +
-  theme_void()
-```
-
-This map shows us where the alcaldía boundaries are, but doesn't yet tell us anything about the number of carjackings in each alcaldía. We can deal with that by changing the aesthetics for the `geom_sf()` layer in our code. Specifically, we can use `aes(fill = n)` to specify that the fill colour of the polygons should depend on the number of carjackings in each alcaldía. We can then use `scale_fill_distiller()` to apply a sequential colour scheme, in which darker shades represent larger counts. The legend is essential because colour alone does not tell a reader the values.
-
-Add this code to the `chapter_09a.R` file and run it.
+We have already loaded the data we need to create a map of carjackings in Mexico City, and counted how many offences occurred in each alcaldía. Since we used `hotspot_count()` from the sfhotspot package to count the offences, we can use `hotspot_map()` to create a map of the counts. Add this code to your script file and run it.
 
 ```{r}
 #| filename: "chapter_09a.R"
 #| fig-asp: 1
-#| fig-alt: "A choropleth map of carjacking offences in Mexico City in 2019. Darker orange boroughs have more recorded offences, with Gustavo A. Madero having the highest count."
+#| fig-alt: "A choropleth map of carjacking offences in Mexico City in 2019. Darker blue boroughs have more recorded offences, with Gustavo A. Madero having the highest count."
 #| out-width: "90%"
 
-ggplot(car_jacking_counts) +
-  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
-  # Add the alcaldía layer with colour controlled by the number of crimes
-  geom_sf(aes(fill = n), alpha = 0.67) +
-  # Use a better colour scheme than the default
-  scale_fill_distiller(palette = "Oranges", direction = 1) +
-  # Add some labels
-  labs(
-    title = "Carjacking offences in Mexico City, 2019",
-    fill = "number of\noffences",
-    caption = str_glue(
-      "Carjacking data: Mexico City Attorney General's Office (2019)\n",
-      "Basemap: © CARTO; © OpenStreetMap contributors (ODbL),\n",
-      "https://carto.com/attribution | https://openstreetmap.org/copyright"
-    )
-  ) +
-  theme_void()
+car_jacking_map <- hotspot_map(
+  car_jacking_counts,
+  basemap_type = "cartolight",
+  caption = "Carjacking data: Mexico City Attorney General's Office (2019)"
+) +
+  labs(title = "Carjacking offences in Mexico City, 2019")
+
+car_jacking_map
 ```
+
 
 We could build on this map in several ways. For example, in @sec-calculating-rates we will learn how to show crime _rates_ on a map, as an alternative to crime counts. But in the next section, we will learn how to make interactive crime maps.
 
@@ -460,7 +437,7 @@ Save `chapter_09a.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Keep 
 ## Making an interactive map
 
 
-So far in this course, all the maps we have made using `ggplot()` have been static images. These are useful for lots of different circumstances, and are usually the only choice if we want to produce a written report as a Word document or PDF. But in some circumstances it may be useful to produce a map that you can interact with by zooming in or panning around different areas. This can be useful when readers might want to look at areas of the map in more detail than is possible without zooming in.
+So far in this course, all the maps we have made using `hotspot_map()` have been static images. These are useful for lots of different circumstances, and are usually the only choice if we want to produce a written report as a Word document or PDF. But in some circumstances it may be useful to produce a map that you can interact with by zooming in or panning around different areas. This can be useful when readers might want to look at areas of the map in more detail than is possible without zooming in.
 
 In this section we will make an interactive map of counts of murders in each district in the state of Uttar Pradesh in northern India in 2014. Uttar Pradesh is India's most populous state, with more than 200 million residents.
 
@@ -610,9 +587,9 @@ For the current data, the result has 75 rows (one for each district), no duplica
 
 ### Interactive choropleth maps
 
-Static maps (and other types of chart) in R are made using the ggplot2 package. But interactive maps are made using a different package: leaflet. The functions in the leaflet package work in a similar way to ggplot2, but with a few differences.
+Data visualisations (including maps) in R are made using the ggplot2 package, sometimes in combination with specialist helper functions (such as `hotspot_map()`) for particular types of visualisation. But interactive maps are made using a different package: leaflet. The functions in the leaflet package work in a similar way to ggplot2, but with a few differences.
 
-To make maps with leaflet, we create a stack of functions in a similar way to the `ggplot()` stacks we have already created. Note that while the concept of a stack is similar, we cannot use functions from the ggplot2 package in a leaflet stack, or vice versa. Also, we construct leaflet stacks using the pipe operator `|>` rather than the plus operator `+` that we use in ggplot2.
+To make maps with leaflet, we create a stack of functions in a similar way to the stacks we have already created by combining functions from the ggplot2 package with `hotspot_map()`. Note that while the concept of a stack is similar, we cannot use functions from the ggplot2 package in a leaflet stack, or vice versa. Also, we construct leaflet stacks using the pipe operator `|>` rather than the plus operator `+` that we use in ggplot2.
 
 We can create a very basic leaflet map using the `leaflet()` function to create the stack, the `addProviderTiles()` function to add a base map and the `addPolygons()` function to add the district outlines. We have already loaded the leaflet package in our script file, so we can run this code in the R Console to create our first interactive map.
 
@@ -625,7 +602,7 @@ We can create a very basic leaflet map using the `leaflet()` function to create 
 # Create interactive map
 leaflet(district_murders) |>
   # Add base map
-  addProviderTiles("CartoDB.Voyager") |>
+  addProviderTiles("Stadia.AlidadeSmooth") |>
   # Add district polygons
   addPolygons(fillOpacity = 0.75)
 ```
@@ -634,9 +611,9 @@ leaflet(district_murders) |>
 
 You can interact with this map by clicking the buttons to zoom in and out, and by moving around the map area. For example, you can zoom out to see where Uttar Pradesh is relative to other places, or zoom in to see where particular cities are within Uttar Pradesh. This could be very useful in helping people understand the context of crime data.
 
-In this map we use the CartoDB.Voyager style of base map, but leaflet can use a large number of different base maps that you can [view in this online gallery](https://leaflet-extras.github.io/leaflet-providers/preview/).
+In this map we use the 'Stadia.AlidadeSmooth' style of base map, but leaflet can use a large number of different base maps that you can [view in this online gallery](https://leaflet-extras.github.io/leaflet-providers/preview/).
 
-However, this map isn't very useful for understanding murders in Uttar Pradesh because it doesn't show how many murders there were in each district. To do that, we need to specify that each district should be coloured according to the values in the `murder` column of the `district_murders` object. With a `ggplot()` map, we would do this with a function such as `scale_fill_distiller()`, but with a leaflet map the code we need is slightly more complicated and has two separate stages.
+However, this map isn't very useful for understanding murders in Uttar Pradesh because it doesn't show how many murders there were in each district. To do that, we need to specify that each district should be coloured according to the values in the `murder` column of the `district_murders` object. With a map created by combining ggplot2 functions with `hotspot_map()`, we would do this with a function such as `scale_fill_distiller()` (see @sec-map-colour), but with a leaflet map the code we need is slightly more complicated and has two separate stages.
 
 The first stage is to create a custom function that converts the values in the `murder` column of the `district_murders` object into colours. To do this, we use the `colorNumeric()` function from the leaflet package. Yes, this means that we are using a function to create a function, which we will then later use to set an argument of another function -- programming languages are very powerful, but that sometimes means they are complicated. Fortunately, you can use the following code as a template for creating interactive choropleth maps in future.
 
@@ -688,7 +665,7 @@ murder_colours <- colorNumeric(
 # Create interactive map
 leaflet(district_murders) |>
   # Add base map
-  addProviderTiles("CartoDB.Voyager") |>
+  addProviderTiles("Stadia.AlidadeSmooth") |>
   # Add district polygons coloured by number of murders
   addPolygons(
     fillColor = ~ murder_colours(murder),
@@ -725,7 +702,7 @@ Change the code in your script file to add the `addLegend()` function to the end
 # Create interactive map
 leaflet(district_murders) |>
   # Add base map
-  addProviderTiles("CartoDB.Voyager") |>
+  addProviderTiles("Stadia.AlidadeSmooth") |>
   # Add district polygons coloured by number of murders
   addPolygons(
     fillColor = ~ murder_colours(murder),
@@ -754,7 +731,7 @@ Update the leaflet stack in `chapter_09b.R` again to add the call to `addMiniMap
 # Create interactive map
 leaflet(district_murders) |>
   # Add base map
-  addProviderTiles("CartoDB.Voyager") |>
+  addProviderTiles("Stadia.AlidadeSmooth") |>
   # Add district polygons coloured by number of murders
   addPolygons(
     fillColor = ~ murder_colours(murder),
@@ -785,7 +762,7 @@ Change the existing call to `addPolygons()` to add the district labels:
 # Create interactive map
 leaflet(district_murders) |>
   # Add base map
-  addProviderTiles("CartoDB.Voyager") |>
+  addProviderTiles("Stadia.AlidadeSmooth") |>
   # Add district polygons coloured by number of murders
   addPolygons(
     fillColor = ~ murder_colours(murder),
@@ -990,7 +967,7 @@ Whenever we map a crime _rate_, it is important that we are explicit about how t
 :::
 
 
-Whenever we need to use a longer legend title, or other text, it can be useful to break the text over multiple lines. Since leaflet maps are built using the same technologies as web pages, the way we wrap text is slightly different to how we do it for maps created with ggplot2. Rather than using the new-line character (`\n`) or the `str_wrap()` function, we will instead use the HTML new-line separator `<br>` and wrap the whole legend title in the `HTML()` function from the `htmltools` package.
+Whenever we need to use a longer legend title, or other text, it can be useful to break the text over multiple lines. Since leaflet maps are built using the same technologies as web pages, the way we wrap text is slightly different to how we do it when we are creating static maps. Rather than using the new-line character (`\n`) or the `str_wrap()` function, we will instead use the HTML new-line separator `<br>` and wrap the whole legend title in the `HTML()` function from the `htmltools` package.
 
 Add this code to `chapter_09b.R`. Then read through the notes below it to understand how it differs from the map of murder counts.
 

@@ -1,6 +1,6 @@
 # Your first crime map {#sec-first-map}
 
-![](../images/chapter_02_first_crime_map_illustration.png){fig-alt=""}
+<!-- ![](../images/chapter_02_first_crime_map_illustration.png){fig-alt=""} -->
 
 ::: {.abstract}
 This chapter provides a beginner-friendly introduction to creating crime maps in R. We will walk through the essential steps, including loading pre-prepared crime data, processing it into a usable format, and visualising it on a map. This chapter introduces key R concepts like working with spatial data and using simple features (SF) objects. You’ll learn to distinguish between temporary and permanent code, understand the basics of coordinate reference systems, and produce a basic map. Let’s get started!
@@ -53,7 +53,7 @@ ggsave(
 #| label: show-final-map
 #| echo: false
 #| fig-align: center
-#| fig-alt: "A map of homicides in downtown Atlanta, Georgia, in 2019. The map shows a street map of the area with four points marking the locations of homicides. Each point is labelled with a description of when and where the homicide occurred."
+#| fig-alt: "A map of homicides in downtown Atlanta, Georgia, in 2019. The map shows a street map of the area with four points marking the locations of homicides."
 #| out-width: 80%
 
 knitr::include_graphics(here("images", "atlanta_downtown_homicides.jpg"))
@@ -179,7 +179,7 @@ Copy the code below and paste it into the blank file `chapter_02a.R` that you cr
 #| filename: "chapter_02a.R"
 
 # Load the R packages we need to analyse this data
-pacman::p_load(ggspatial, here, httr2, sf, tidyverse)
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse)
 ```
 
 To run this code in Positron, you highlight the lines of code you want to run and then either:
@@ -568,36 +568,27 @@ based on the wrangled data
 
 So that people viewing the map will understand where the homicides occurred, we will plot the homicides on top of a _base map_ showing streets, parks and other geographic features obtained from an online web mapping service. Almost all crime maps need a base map, otherwise it would be very difficult to understand where the crimes occurred.
 
-The code needed to produce the map looks quite complicated, but we don't need to understand it all at this point -- we will go through this code in @sec-second-map. For now, copy the code into the `chapter_02a.R` file, put the cursor somewhere on the line that includes the function `ggplot()`, then press {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard.
+To do that we will use a function called `hotspot_map()` from the sfhotspot R package. This is a package we will use a lot in this book, since it is specifically designed for analysing concentrations of crime. The `hotspot_map()` function is designed to make maps quickly using sensible defaults about what a map should generally look like. In future chapters we'll learn much more about how to make customised maps, but for now we will use the default settings to produce a simple map of the homicides.
+
+Copy the code into the `chapter_02a.R` file, put the cursor somewhere on the line that includes the function `hotspot_map()`, then press {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard.
 
 
 ```{r}
 #| filename: chapter_02a.R
-#| fig-alt: "A map of homicides in downtown Atlanta, Georgia, in 2019. The map shows a street map of the area with four points marking the locations of homicides. Each point is labelled with a description of when and where the homicide occurred."
+#| fig-alt: "A map of homicides in downtown Atlanta, Georgia, in 2019. The map shows a street map of the area with four points marking the locations of homicides."
 
 # Create the map
-ggplot(homicides_sf_trans) +
-  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
-  geom_sf_label(
-    aes(label = label),
-    fill = "white",
-    hjust = 1,
-    size = 2,
-    vjust = 0
-  ) +
-  geom_sf(colour = "orangered1", size = 4) +
-  scale_x_continuous(expand = expansion(mult = 0.5)) +
-  scale_y_continuous(expand = expansion(mult = 0.2)) +
-  labs(
-    title = "Homicides in Downtown Atlanta, 2019",
-    caption = "Background map by OpenStreetMap"
-  ) +
-  theme_void()
+hotspot_map(
+  homicides_sf_trans,
+  basemap_type = "cartolight",
+  colour = "orangered1",
+  size = 4
+)
 ```
 
 When you run this code in Positron, you should see a map like the one above appear in the Plots panel in the bottom-right of the Positron window. Depending on the size of the screen you are using, the map might be quite small. If so, you might want to split the Plots panel out into a separate window so that you can see the map more clearly. To do this, look for two icons in the top-right corner of the Plots panel. The icon on the right is a rubbish bin, but the icon to the left of it looks like a square with an arrow pointing out of it. Click the small downward-facing triangle between the two icons and then click **Open Plots Gallery in New Window**. You will now see a larger version of the map in a separate window -- you can resize this window to make the map as large as you want on your screen.
 
-The map we have created with this code is very basic. Later in the course we will learn to make much better maps. For now, you can experiment with changing the appearance of the map by changing various parts of the code above. For example, you could change the colour of the points that mark the homicides by changing the code `colour = "orangered1"` to `colour = "mediumblue"`, or change the base map to a different style by changing the code `type = "cartolight"` to `type = "cartodark"`. Try some of these out -- after you make each change, press {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard to run the code again to see how the map changes.
+The map we have created with this code is very basic. Later in the course we will learn to make much better maps. For now, you can experiment with changing the appearance of the map by changing various parts of the code above. For example, you could change the colour of the points that mark the homicides by changing the code `colour = "orangered1"` to `colour = "mediumblue"`, or change the base map to a different style by changing the code `basemap_type = "cartolight"` to `basemap_type = "cartodark"`. Try some of these out -- after you make each change, press {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard to run the code again to see how the map changes.
 
 When you have finished experimenting with this code, save the `chapter_02a.R` file by hitting {{< kbd win="Ctrl-S" mac="Command-S" >}} on your keyboard.
 
@@ -617,22 +608,8 @@ drawing_map_quiz1 <- c(
 drawing_map_quiz2 <- c(
   "`read_csv()`",
   "`st_as_sf()`",
-  answer = "`ggplot()`",
+  answer = "`hotspot_map()`",
   "`req_perform()`"
-)
-
-drawing_map_quiz3 <- c(
-  answer = "`annotation_map_tile()`",
-  "`geom_sf()`",
-  "`labs()`",
-  "`theme_void()`"
-)
-
-drawing_map_quiz4 <- c(
-  "It changes the colour of the homicide points.",
-  "It selects the style of the base map.",
-  answer = "It specifies the column used to label each homicide.",
-  "It sets the title of the map."
 )
 ```
 
@@ -646,15 +623,6 @@ drawing_map_quiz4 <- c(
 
 `r webexercises::longmcq(drawing_map_quiz2)`
 
-
-**Which function adds the base map showing streets, parks and other geographic features?**
-
-`r webexercises::longmcq(drawing_map_quiz3)`
-
-
-**What does `aes(label = label)` do in the map code?**
-
-`r webexercises::longmcq(drawing_map_quiz4)`
 
 :::
 
@@ -675,7 +643,7 @@ Create a new script file in Positron by clicking the **File** menu then **New Fi
 ```{r}
 #| echo: false
 #| file: "../R/chapter_02b.R"
-#| fig-alt: "A map of homicides in Glenrose Heights, Atlanta, Georgia, in 2019. The map shows a street map of the area with four points marking the locations of homicides. Each point is labelled with a description of when and where the homicide occurred."
+#| fig-alt: "A map of homicides in Glenrose Heights, Atlanta, Georgia, in 2019. The map shows a street map of the area with four points marking the locations of homicides."
 ```
 
 When we want to run all the code in a file, it would be tedious to run each chunk of code separately. Instead, we can run all the code in a file in one go by clicking anywhere in the file, pressing {{< kbd win="Ctrl-A" mac="Command-A" >}} to select all the code, then pressing {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} to run all the code at once. You should see some messages appear in the R Console, and the final map appear in the Plots panel.
@@ -703,9 +671,7 @@ You do not need to be able to reproduce the whole script from memory. Analysts r
 
 ::: {.callout-note title="Keep these files"}
 
-Keep both `chapter_02a.R` and `chapter_02b.R` in your `R` folder. They are
-working examples that you can return to when you need to remember how to
-load spatial data or begin a new crime map.
+Keep both `chapter_02a.R` and `chapter_02b.R` in your `R` folder. They are working examples that you can return to when you need to remember how to load spatial data or begin a new crime map.
 
 :::
 

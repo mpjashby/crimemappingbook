@@ -997,8 +997,6 @@ cairo_suspects |>
 #| label: cairo-suspects-maps
 #| echo: false
 #| eval: false
-library(ggspatial)
-
 cairo_suspects <- cairo_suspects |>
   st_as_sf(coords = c("lon", "lat"), crs = "EPSG:4326", remove = FALSE)
 
@@ -1217,7 +1215,7 @@ We will also add the city, state and country to the end of each address, since a
 # This script prepares and geocodes fictional incident addresses in Chicago.
 
 # Load packages
-pacman::p_load(ggspatial, sf, tidygeocoder, tidyverse)
+pacman::p_load(sf, sfhotspot, tidygeocoder, tidyverse)
 
 # Create example dataset of addresses to be geocoded
 addresses <- tribble(
@@ -1363,11 +1361,7 @@ addresses_sf <- addresses_final |>
   drop_na(long, lat) |>
   st_as_sf(coords = c("long", "lat"), crs = "EPSG:4326")
 
-ggplot(addresses_sf) +
-  annotation_map_tile(type = "osm", zoomin = 0, progress = "none") +
-  geom_sf(colour = "#CC0000") +
-  labs(caption = "Basemap: © OpenStreetMap contributors") +
-  theme_void()
+hotspot_map(addresses_sf, colour = "#CC0000")
 ```
 
 All eight points should appear within Chicago. A missing point or a point far outside the city would tell us that we need to inspect the corresponding address and geocoding result before continuing with the analysis.

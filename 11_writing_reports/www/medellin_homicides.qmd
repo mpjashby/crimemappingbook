@@ -15,7 +15,7 @@ execute:
 #| include: false
 
 # Load packages
-pacman::p_load(ggspatial, here, httr2, sf, sfhotspot, tidyverse)
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse)
 
 # Download the original data into the project
 request(
@@ -57,30 +57,20 @@ medellin_homicide_density <- medellin_homicides |>
 
 ```{r}
 #| label: fig-homicides
+#| message: false
 #| fig-cap: "Density of homicides in Medellín, 2010 to 2019"
 #| fig-alt: "Street map of Medellín showing estimated homicide density. The highest density is concentrated in the central part of the city."
 
 # Note we don't have to set `#| include: true` for this code chunk, because that
-# is the default
+# is the default. We do, however, have to set `#| message: false` to suppress
+# the message about a coordinate system already being present when we add the
+# boundary layer to the map.
 
 # Plot a basic density map
-ggplot() +
-  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
-  geom_sf(
-    aes(fill = kde),
-    data = medellin_homicide_density,
-    alpha = 0.7,
-    colour = NA
-  ) +
-  geom_sf(data = medellin_boundary, colour = "grey25", fill = NA) +
-  scale_fill_distiller(
-    breaks = range(pull(medellin_homicide_density, kde)),
-    labels = c("low", "high"),
-    direction = 1
-  ) +
-  labs(
-    caption = "Homicide data: Alcaldía de Medellín (CC-BY-SA)",
-    fill = "homicide\ndensity"
-  ) +
-  theme_void()
+hotspot_map(
+  medellin_homicide_density,
+  basemap_type = "cartolight",
+  caption = "Homicide data: Alcaldía de Medellín (CC-BY-SA)"
+) +
+  geom_sf(data = medellin_boundary, colour = "grey25", fill = NA)
 ```

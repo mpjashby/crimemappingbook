@@ -1,35 +1,38 @@
 # Load packages
-pacman::p_load(here, tidyverse)
+pacman::p_load(here, sf, sfhotspot, tidyverse)
 
-# Load a dataset from the workspace and wrangle it
-road_deaths <- read_csv(here("data", "raw", "road_deaths_data.csv")) |>
+# Load Bronx shootings dataset and wrangle it
+bronx_shootings <- here("data", "raw", "bronx_shootings.csv") |>
+  read_csv() |>
   janitor::clean_names() |>
-  rename(ksi_drivers = drivers, ksi_pass_front = front, ksi_pass_rear = rear) |>
-  select(-petrol_price, -van_killed) |>
-  mutate(
-    law = as.logical(law),
-    ksi_driver_rate = ksi_drivers / (kms / 1000)
-  )
+  st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326") |>
+  rename(shooting_date = occur_date, fatal = murder) |>
+  # Keep only fatal shootings
+  filter(fatal == TRUE) |>
+  select(shooting_date, incident_key)
 
-# Make a time-series chart of two continuous variables, coloured by a
-# categorical variable, then add a trend line
-road_deaths |>
-  ggplot(aes(x = month_beginning, y = ksi_driver_rate)) +
-  geom_point(aes(colour = law)) +
-  geom_smooth() +
-  scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
-  scale_y_continuous(labels = scales::comma_format(), limits = c(0, NA)) +
-  scale_colour_brewer(type = "qual") +
-  labs(
-    x = NULL,
-    y = "drivers killed or seriously injured per 1,000km travelled",
-    colour = "after seat belts made mandatory"
+# Load NYPD precincts and filter to keep just those from the Bronx
+bronx_precincts <- here("data", "raw", "nyc_precincts.gpkg") |>
+  read_sf() |>
+  janitor::clean_names() |>
+  # Filter just those precincts that are in the Bronx (40th to 52nd)
+  filter(precinct %in% 40:52)
+
+# Map shootings
+bronx_shootings |>
+  hotspot_map(
+    basemap_type = "none",
+    caption = "Shootings data: NYC Open Data",
+    alpha = 0.5,
+    colour = "red2"
   ) +
-  theme_minimal() +
+  # Add precinct boundaries
+  geom_sf(data = bronx_precincts, colour = "grey50", fill = NA) +
+  labs(
+    title = "Fatal shootings in the Bronx",
+    subtitle = "January to December 2019"
+  ) +
   theme(
-    axis.line.x = element_line(colour = "grey90"),
-    axis.ticks = element_line(colour = "grey90"),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    legend.position = "bottom"
+    plot.title = element_text(colour = "grey30", face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5)
   )
