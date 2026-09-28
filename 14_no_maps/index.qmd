@@ -1,42 +1,72 @@
-# Presenting spatial data without maps {#sec-no-maps}
+# Presenting spatial information without maps {#sec-no-maps}
 
 
 ::: {.abstract}
-Maps are a powerful tool for visualizing spatial data, but they are not always the best choice. This chapter explores alternative methods for presenting spatial data effectively, including tables and charts. By understanding when to use these techniques, you will learn how to communicate spatial information clearly and concisely. The chapter covers key scenarios where maps may be less effective, such as when summarizing small datasets or comparing multiple variables.
+Maps are powerful tools for visualising spatial data, but they are not always the best choice. In this chapter, we will learn to choose between maps, tables and charts, then use the ggplot2 and gt packages to communicate spatial information clearly. We will create tables, bar charts, distribution plots and scatter plots, each suited to answering a different type of question.
 :::
 
 
-::: {.callout-tip}
-#### Before you start
+::: {.callout-tip title="Before you start"}
 
-Open RStudio or -- if you already have RStudio open -- click `Session` then `Restart R`. Make sure you're working inside the Crime Mapping RStudio project you created in @sec-create-project, then you're ready to start mapping.
+1. Open Positron or -- if you already have Positron open -- start a new R session by clicking the **Restart R** (**&#10227;**) button in the **Console** panel. This makes sure no code you ran previously will interfere with the work you do in this chapter.
+2. Make sure you are working in the crime mapping project workspace you created in @sec-create-project. In the top-right corner of the Positron window, you should see a folder icon and the words `crime-mapping`. If not, click the **File** menu, then **Open Folder ...** and choose the `crime-mapping` folder.
 :::
 
 
 
 ## Introduction
 
-Making maps is the core of analysing spatial data. But just because a particular dataset has a spatial element to it does not always mean that a map is the best way to present that data. In this chapter we will learn some other techniques for presenting data that can be more effective than maps for answering certain questions about spatial data. 
+Making maps is the core of analysing spatial data. But just because a particular dataset has a spatial element to it does not always mean that a map is the best way to present insights from that data. In this chapter we will learn some other techniques for presenting data that can be more effective than maps for answering certain questions about spatial data.
 
-As with so much in spatial analysis, whether it is best to make a map or use some other technique to convey information will depend on the circumstances. When you decide how to communicate information about the data you are analysing, you will need to consider the questions you are trying to answer, the audience that you are communicating to, what they will be using the information for and in what circumstances they will be using it.
+By the end of this chapter, you will know how to:
+
+- choose whether a map, table or chart is most appropriate for a particular question and audience;
+- prepare data for presentation in a table;
+- format a clear table using the gt package;
+- use `ggauto()` to create a useful first version of a chart;
+- build a chart from the beginning using `ggplot()`;
+- choose an appropriate geom for the variables you want to show;
+- create and refine bar charts, raincloud plots, ridge plots and scatter plots; and
+- check whether chart colours are accessible to people with different colour vision.
+
+The process we will use for making charts in this chapter is:
+
+```{mermaid}
+%%| fig-alt: "Flow chart for making a chart. Start by identifying the question, audience and variables; use ggauto to create a first chart; decide whether that chart is appropriate; refine it with ggplot2 or rebuild it using ggplot; check labels, colours and accessibility; then save the code and test the complete script."
+flowchart TD
+  A[Identify the question, audience and variables] --> B[Use ggauto to create a first chart]
+  B --> C{Is the chart appropriate for the audience and purpose?}
+  C -- Yes --> D[Refine it with ggplot2]
+  C -- No --> E[Rebuild it using ggplot and an appropriate geom]
+  D --> F[Check labels, colours and accessibility]
+  E --> F
+  F --> G[Save the code and test the complete script]
+```
+
+As with so much in spatial analysis, whether it is best to make a map or use some other technique to convey information will depend on the circumstances. When you decide how to communicate information about the data you are analysing, you will need to consider the questions you are trying to answer, the audience that you are communicating with, what they will be using the information for and in what circumstances they will be using it.
 
 While the best choice of how to communicate spatial information will depend on the circumstances, there are a few instances in which maps are typically *not* the best way to communicate your data. These include:
 
 
 #### When you only need to convey a handful of pieces of information {.unnumbered}
   
-Maps are very effective for communicating detailed information, such as the density of crime across thousands of cells in a KDE grid. But to do this, maps typically encode information into aesthetics such as colour, size and so on. This is necessary for communicating large amounts of information, but it makes the connection between the data and the visual representation of the data less direct. If you only need to communicate a small amount of information, there is less justification for forcing your audience to mentally translate the aesthetic into whatever it represents. 
+Maps are very effective for communicating detailed information, such as the density of crime across thousands of cells in a KDE grid. But to do this, maps typically encode information into aesthetics such as colour, size and so on. This is necessary for communicating large amounts of information, but it makes the connection between the data and the visual representation of the data less direct than for other forms of data visualisation. If you only need to communicate a small amount of information, there is less justification for forcing your audience to mentally translate the fill aesthetic into whatever it represents.
 
 For example, if you wanted to show the number of violent and sexual offences in each of the seven districts in Northamptonshire in England, a choropleth map is less clear than a bar chart (for example, in being able to decipher if there were more offences in Kettering or in Wellingborough). 
 
 
-```{r northants-district-maps, echo=FALSE, eval=FALSE}
+```{r}
+#| label: northants-district-maps
+#| echo: false
+#| eval: false
 library(patchwork)
 
 # Load crime data
 data_dir <- str_glue("{tempdir()}/crime_data")
 unzip(
-  zipfile = here::here("inst/tutorials/prep/code/northamptonshire_crimes_2020.zip"),
+  zipfile = here::here(
+    "inst/tutorials/prep/code/northamptonshire_crimes_2020.zip"
+  ),
   exdir = data_dir
 )
 violence <- data_dir %>%
@@ -47,12 +77,22 @@ violence <- data_dir %>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
 
 # Load boundary data
-districts <- read_sf("https://opendata.arcgis.com/datasets/0e07a8196454415eab18c40a54dfbbef_0.geojson") %>%
+districts <- read_sf(
+  "https://opendata.arcgis.com/datasets/0e07a8196454415eab18c40a54dfbbef_0.geojson"
+) %>%
   janitor::clean_names() %>%
-  filter(lad19nm %in% c(
-    "South Northamptonshire", "Northampton", "Daventry", "Wellingborough",
-    "Kettering", "Corby", "East Northamptonshire"
-  )) %>%
+  filter(
+    lad19nm %in%
+      c(
+        "South Northamptonshire",
+        "Northampton",
+        "Daventry",
+        "Wellingborough",
+        "Kettering",
+        "Corby",
+        "East Northamptonshire"
+      )
+  ) %>%
   select(lad19nm, geometry)
 
 # Calculate violence counts at district level
@@ -73,7 +113,12 @@ base_map <- violence_counts %>%
 
 # Create map
 violence_map <- ggmap(base_map) +
-  geom_sf(aes(fill = n), data = violence_counts, inherit.aes = FALSE, alpha = 0.8) +
+  geom_sf(
+    aes(fill = n),
+    data = violence_counts,
+    inherit.aes = FALSE,
+    alpha = 0.8
+  ) +
   geom_sf_label(
     aes(label = str_replace_all(lad19nm, "\\s", "\n")),
     data = violence_counts,
@@ -156,14 +201,18 @@ violence_chart <- violence_counts %>%
   )
 
 # Create violence map and chart combo
-violence_combined <- violence_map + violence_chart + plot_annotation(
-  title = "Violent and sexual offences in Northamptonshire, 2020",
-  caption = "Contains public sector information licensed under the Open Government Licence v3.0."
-)
+violence_combined <- violence_map +
+  violence_chart +
+  plot_annotation(
+    title = "Violent and sexual offences in Northamptonshire, 2020",
+    caption = "Contains public sector information licensed under the Open Government Licence v3.0."
+  )
 
 # Save violence map and chart combo
 ggsave(
-  filename = here::here("inst/tutorials/15_no_maps/images/map_vs_bar_chart.png"),
+  filename = here::here(
+    "inst/tutorials/15_no_maps/images/map_vs_bar_chart.png"
+  ),
   plot = violence_combined,
   width = 1200 / 150,
   height = 800 / 150,
@@ -189,7 +238,9 @@ chart_reference <-
 
 # Save chart with reference map
 ggsave(
-  filename = here::here("inst/tutorials/15_no_maps/images/bar_chart_ref_map.png"),
+  filename = here::here(
+    "inst/tutorials/15_no_maps/images/bar_chart_ref_map.png"
+  ),
   plot = chart_reference,
   width = 1200 / 150,
   height = 800 / 150,
@@ -216,13 +267,12 @@ One exception to this is when you present multiple maps side by side, each showi
 
 #### When the geographic relationship between places on the map is not the most important thing about them {.unnumbered}
 
-Maps emphasise the spatial relationship between different places, but they do this at the expense of making non-spatial relationships between those places less obvious. If the spatial relationships are the most important thing that you want to convey, a map makes sense. For example, a hotspot map is often a very good way to communicate where crime is most concentrated. But in other cases the geographic relationships between variables will be much less important. For example, if you wanted to show the relationship between the amount of crime in an area and the level of poverty there, a scatter plot would probably be a more-effective way to do this than a map would be.
+Maps emphasise the spatial relationship between different places, but they do this at the expense of making non-spatial relationships between those places less obvious. If the spatial relationships are the most important thing that you want to convey, a map makes sense. For example, a hotspot map is often a very good way to communicate where crime is most concentrated. But in other cases the geographic relationships between variables will be much less important. For example, if you wanted to show the relationship between the amount of crime in an area and the level of poverty there, a scatter plot would probably be a more effective way to do this than a map would be.
 
+::: {.callout-quiz .callout title="Maps, charts and tables"}
 
-::: {.callout-quiz .callout}
-#### Maps, charts and tables
-
-```{r viz-type-quiz}
+```{r}
+#| label: viz-type-quiz
 #| echo: false
 
 viz_type_quiz1 <- c(
@@ -233,14 +283,14 @@ viz_type_quiz1 <- c(
 )
 
 viz_type_quiz2 <- c(
-  "The software used to create the visualization",
+  "The software used to create the visualisation",
   answer = "The question being answered and the audience’s needs",
   "The geographic location of the data",
   "The number of colours available in the mapping tool"
 )
 ```
 
-**What is one reason why spatial relationships might not be important in some visualizations?**
+**What is one reason why spatial relationships might not be important in some visualisations?**
 
 `r webexercises::longmcq(viz_type_quiz1)`
 
@@ -256,29 +306,57 @@ viz_type_quiz2 <- c(
 
 ## Tables
 
-Well-designed tables can be a very effective way of communicating information, whereas badly-design tables can be confusing and even lead your audience to give up trying to engage with the information you're trying to communicate. 
+Well-designed tables can be a very effective way of communicating information, whereas badly designed tables can be confusing and even lead your audience to give up trying to engage with the information you're trying to communicate.
 
 Tables used to present information almost always show only a summary of the available data, so the first step in preparing a table is to wrangle the data into the right format. In @sec-summarise we learned about the `summarise()` function from the dplyr package that we can use to produce summaries of rows of data.
 
 To learn about creating a good table for displaying summary data in a report, we will use the example of the frequency of different types of violence in the different states of Malaysia in 2017. 
 
-Open a new R script file and save it as `chapter14a.R`. Copy this code into that file and run it.
+Create a new R script file inside the `R` folder of your crime-mapping workspace and save it as `chapter_14a.R`. Copy this code into that file and run it.
 
 
 ```{r}
-#| filename: "chapter14a.R"
+#| filename: "chapter_14a.R"
+#| eval: false
 
 # Load packages
-pacman::p_load(gt, paletteer, tidyverse)
+pacman::p_load(gt, here, httr2, tidyverse)
 
-# Load annual counts of different types of violence in Malaysia, 2006 to 2017
-violence <- read_rds("https://mpjashby.github.io/crimemappingdata/malaysia_violence_counts.rds") |> 
+# Download annual counts of different types of violence in Malaysia
+request(
+  "https://mpjashby.github.io/crimemappingdata/malaysia_violence_counts.rds"
+) |>
+  req_perform(path = here("data", "raw", "malaysia_violence_counts.rds"))
+
+# Load the local copy and keep only counts from 2017
+violence <- here("data", "raw", "malaysia_violence_counts.rds") |>
+  read_rds() |>
   # Keep only counts from 2017
   filter(year == 2017)
 ```
 
 
-We can get a feel for the data by looking at a random sample of rows using the `slice_sample()` function function from the dplyr package (remember dplyr was loaded automatically when we loaded tidyverse).
+```{r}
+#| echo: false
+
+# Load packages
+pacman::p_load(gt, here, httr2, tidyverse)
+
+# Download annual counts of different types of violence in Malaysia
+request(
+  "https://mpjashby.github.io/crimemappingdata/malaysia_violence_counts.rds"
+) |>
+  req_perform(path = here("data", "raw", "malaysia_violence_counts.rds"))
+
+# Load the local copy and keep only counts from 2017
+violence <- here("data", "raw", "malaysia_violence_counts.rds") |>
+  read_rds() |>
+  # Keep only counts from 2017
+  filter(year == 2017)
+```
+
+
+We can get a feel for the data by looking at a random sample of rows using the `slice_sample()` function from the dplyr package.
 
 
 ```{r}
@@ -295,23 +373,22 @@ The output of `slice_sample()` looks acceptable as a table, especially if it is 
 
 One issue with printing the `violence` object as a table is that it has `r scales::comma(nrow(violence))` rows, so it will take up a lot of space on a page or screen. We can make the data more compact by converting it from long format to wide format. In @sec-messy-data we learned that data are often easier to analyse in long format. But it is often better to _present_ data in a table in wide format. When you are choosing between storing data in long versus wide format, remember: analyse in long format, present in wide format.
 
-As you learned in @sec-messy-data, we can convert the table to a wider format using `pivot_wider()` from the tidyr package. Here, the `names_from` argument identifies the column whose values should become new column names, while `values_from` identifies the column containing the values to put in those new columns.
+As we learned in @sec-messy-data, we can convert the table to a wider format using `pivot_wider()` from the tidyr package. Here, the `names_from` argument identifies the column whose values should become new column names, while `values_from` identifies the column containing the values to put in those new columns.
 
 
 ```{r}
 #| filename: "R Console"
 
 # Produce table of crime counts in each Malaysian state
-violence |> 
+violence |>
   # Convert data to have one row per state
-  pivot_wider(names_from = crime_type, values_from = count) |> 
+  pivot_wider(names_from = crime_type, values_from = count) |>
   # Convert new column names (the former values of `crime_type`) to snake case
   janitor::clean_names()
 ```
 
 
-::: {.callout-tip collapse="true"}
-#### Why does this code include `janitor::clean_names()`
+::: {.callout-tip collapse="true" title="Why does this code include `janitor::clean_names()`?"}
 
 You will be used to seeing `janitor::clean_names()` used to clean the column names in a dataset that has just been loaded. In this case, the new columns created by `pivot_wider()` will have spaces in them, because the names are taken from the values of the `crime_type` column in the original dataset. Column names with spaces in them a harder to work with, so this code converts them to snake case so that they are easier to work with. 
 
@@ -326,14 +403,19 @@ Now the table has only `r nrow(pivot_wider(violence, names_from = crime_type, va
 #| filename: "R Console"
 
 # Produce table of crime counts in each Malaysian state
-violence |> 
+violence |>
   # Convert data to have one row per state
-  pivot_wider(names_from = crime_type, values_from = count) |> 
+  pivot_wider(names_from = crime_type, values_from = count) |>
   # Convert new column names (the former values of `crime_type`) to snake case
-  janitor::clean_names() |> 
+  janitor::clean_names() |>
   # Choose only the columns we want to show in the table
   select(
-    region, state, murder, rape, aggravated_assault, armed_robbery, 
+    region,
+    state,
+    murder,
+    rape,
+    aggravated_assault,
+    armed_robbery,
     unarmed_robbery
   )
 ```
@@ -341,7 +423,7 @@ violence |>
 
 ### Using the gt package to make better tables
 
-<a href="https://gt.rstudio.com/"><img src="../images/gt.png" alt="gt package hex sticker" class="right-side-image"></a>
+<a href="https://gt.rstudio.com/" aria-label="Visit the gt package website"><img src="../images/gt.png" alt="" class="right-side-image"></a>
 
 The table we created in the last section was better than simply showing the raw data to readers of a report. But we can create much better display tables with the [gt package](https://gt.rstudio.com/), which is designed to format data for display. The gt package works in a similar way to the `ggplot2` package, in that tables are made up of stacks of functions that contribute to the appearance of the final table. One difference is that the layers in a gt stack are joined using the pipe operator (`|>`)
 rather than the plus operator (`+`).
@@ -353,16 +435,21 @@ We can create a very basic gt table by just passing a data frame or tibble to th
 #| filename: "R Console"
 
 # Produce table of crime counts in each Malaysian state
-violence |> 
+violence |>
   # Convert data to have one row per state
-  pivot_wider(names_from = crime_type, values_from = count) |> 
+  pivot_wider(names_from = crime_type, values_from = count) |>
   # Convert new column names (the former values of `crime_type`) to snake case
-  janitor::clean_names() |> 
+  janitor::clean_names() |>
   # Choose only the columns we want to show in the table
   select(
-    region, state, murder, rape, aggravated_assault, armed_robbery, 
+    region,
+    state,
+    murder,
+    rape,
+    aggravated_assault,
+    armed_robbery,
     unarmed_robbery
-  ) |> 
+  ) |>
   # Functions from tidyverse above and functions from gt below
   gt(rowname_col = "state")
 ```
@@ -381,18 +468,23 @@ We don't want the numbers in the table to have any decimal places (since the cri
 #| filename: "R Console"
 
 # Produce table of crime counts in each Malaysian state
-violence |> 
+violence |>
   # Convert data to have one row per state
-  pivot_wider(names_from = crime_type, values_from = count) |> 
+  pivot_wider(names_from = crime_type, values_from = count) |>
   # Convert new column names (the former values of `crime_type`) to snake case
-  janitor::clean_names() |> 
+  janitor::clean_names() |>
   # Choose only the columns we want to show in the table
   select(
-    region, state, murder, rape, aggravated_assault, armed_robbery, 
+    region,
+    state,
+    murder,
+    rape,
+    aggravated_assault,
+    armed_robbery,
     unarmed_robbery
-  ) |> 
+  ) |>
   # Functions from tidyverse above and functions from gt below
-  gt(rowname_col = "state") |> 
+  gt(rowname_col = "state") |>
   # Format numbers with thousand separators and no decimals
   fmt_number(columns = where(is.numeric), decimals = 0)
 ```
@@ -409,20 +501,25 @@ The `region` column only has two values: `West Malaysia` for states and territor
 #| filename: "R Console"
 
 # Produce table of crime counts in each Malaysian state
-violence |> 
+violence |>
   # Convert data to have one row per state
-  pivot_wider(names_from = crime_type, values_from = count) |> 
+  pivot_wider(names_from = crime_type, values_from = count) |>
   # Convert new column names (the former values of `crime_type`) to snake case
-  janitor::clean_names() |> 
+  janitor::clean_names() |>
   # Choose only the columns we want to show in the table
   select(
-    region, state, murder, rape, aggravated_assault, armed_robbery, 
+    region,
+    state,
+    murder,
+    rape,
+    aggravated_assault,
+    armed_robbery,
     unarmed_robbery
-  ) |> 
+  ) |>
   # Specify the table rows should be grouped by the values of `region`
-  group_by(region) |> 
+  group_by(region) |>
   # Functions from tidyverse above and functions from gt below
-  gt(rowname_col = "state") |> 
+  gt(rowname_col = "state") |>
   # Format numbers with thousand separators and no decimals
   fmt_number(columns = where(is.numeric), decimals = 0)
 ```
@@ -432,7 +529,7 @@ In tables containing lots of numbers it can be difficult to see patterns. One wa
 
 In this example, we will only colour the values in two columns, so we will pass the column names to the `columns` argument.
 
-The easiest way to specify a colour palette is to use one of the built-in colour palettes that the gt package understands automatically. These use the same colour palette names we have used in previous chapters when using functions such as `scale_fill_distiller()`.
+The easiest way to specify a colour palette is to use one of the built-in colour palettes that the gt package understands automatically. These use the same colour palette names we have used @sec-map-colour when using functions such as `scale_fill_distiller()`.
 
 
 ```{r}
@@ -440,32 +537,36 @@ The easiest way to specify a colour palette is to use one of the built-in colour
 #| code-line-numbers: "12-13"
 
 # Produce table of crime counts in each Malaysian state
-violence |> 
+violence |>
   # Convert data to have one row per state
-  pivot_wider(names_from = crime_type, values_from = count) |> 
+  pivot_wider(names_from = crime_type, values_from = count) |>
   # Convert new column names (the former values of `crime_type`) to snake case
-  janitor::clean_names() |> 
+  janitor::clean_names() |>
   # Choose only the columns we want to show in the table
   select(
-    region, state, murder, rape, aggravated_assault, armed_robbery, 
+    region,
+    state,
+    murder,
+    rape,
+    aggravated_assault,
+    armed_robbery,
     unarmed_robbery
-  ) |> 
+  ) |>
   # Specify the table rows should be grouped by the values of `region`
-  group_by(region) |> 
+  group_by(region) |>
   # Functions from tidyverse above and functions from gt below
-  gt(rowname_col = "state") |> 
+  gt(rowname_col = "state") |>
   # Format numbers with thousand separators and no decimals
-  fmt_number(columns = where(is.numeric), decimals = 0) |> 
+  fmt_number(columns = where(is.numeric), decimals = 0) |>
   # Show distribution of values in some columns using colour
-  data_color(columns = unarmed_robbery, palette = "Oranges") |> 
+  data_color(columns = unarmed_robbery, palette = "Oranges") |>
   data_color(columns = rape, palette = "Blues")
 ```
 
 
-::: {.callout-important}
-#### Avoid using the same colour across multiple columns
+::: {.callout-important title="Avoid using the same colour across multiple columns"}
 
-In this table we use two different colours to show the patterns in the frequency of murder and unarmed robbery. This is because we want readers to remember that different types of crime are *different* and so comparisons that treat crimes as being equivalent to one another are likely to be flawed. If we used the same colour across columns, readers might end up seeing that the shade used for unarmed robberies in Kuala Lumpur was darker than the shade showing the number of murders and conclude that unarmed robberies were a bigger problem than murders. This would be a potentially false conclusion because a single murder and a single unarmed robbery are not the same in terms of their seriousness.
+In this table we use two different colours to show the patterns in the frequency of rape and unarmed robbery. This is because we want readers to remember that different types of crime are *different* and so comparisons that treat crimes as being equivalent to one another are likely to be flawed. If we used the same colour across columns, readers might end up seeing that the shade used for unarmed robberies in Kuala Lumpur was darker than the shade showing the number of rapes and conclude that unarmed robberies were a bigger problem than rapes. This would be a potentially false conclusion because a single rape and a single unarmed robbery are not the same in terms of their seriousness.
 
 For the same reason the table does not include a column showing the total number of crimes in each state -- when we total all types of crime together, we are implicitly assuming that all types of crime are the same when that is obviously untrue.
 :::
@@ -473,7 +574,7 @@ For the same reason the table does not include a column showing the total number
 
 ### Changing column names
 
-Now that we have formatted the data, we can move onto changing the column labels. At the moment these are taken from the column names in the data, which means we have column labels such as `aggravated_assault`. Underscore characters (`_`) aren't standard in English text, so we can should change the labels to remove them. We can do this by adding the `cols_label()` function to the `gt()` stack. As well as removing the underscores, we can also use `cols_label()` to abbreviate labels or split them over multiple lines so that the column labels don't force the columns to be wider than necessary.
+Now that we have formatted the data, we can move onto changing the column labels. At the moment these are taken from the column names in the data, which means we have column labels such as `aggravated_assault`. Underscore characters (`_`) aren't standard in English text, so we should change the labels to remove them. We can do this by adding the `cols_label()` function to the `gt()` stack. As well as removing the underscores, we can also use `cols_label()` to abbreviate labels or split them over multiple lines so that the column labels don't force the columns to be wider than necessary.
 
 We can use the `md()` helper function to use Markdown formatting to control the appearance of the labels. As well as using markup such as asterisks to create `**strongly emphasised text**` we can also use HTML markup to add more-advanced formatting. For example, we can use the code `<br>` to insert a line break to split labels over multiple lines.
 
@@ -482,25 +583,30 @@ We can use the `md()` helper function to use Markdown formatting to control the 
 #| filename: "R Console"
 
 # Produce table of crime counts in each Malaysian state
-violence |> 
+violence |>
   # Convert data to have one row per state
-  pivot_wider(names_from = crime_type, values_from = count) |> 
+  pivot_wider(names_from = crime_type, values_from = count) |>
   # Convert new column names (the former values of `crime_type`) to snake case
-  janitor::clean_names() |> 
+  janitor::clean_names() |>
   # Choose only the columns we want to show in the table
   select(
-    region, state, murder, rape, aggravated_assault, armed_robbery, 
+    region,
+    state,
+    murder,
+    rape,
+    aggravated_assault,
+    armed_robbery,
     unarmed_robbery
-  ) |> 
+  ) |>
   # Specify the table rows should be grouped by the values of `region`
-  group_by(region) |> 
+  group_by(region) |>
   # Functions from tidyverse above and functions from gt below
-  gt(rowname_col = "state") |> 
+  gt(rowname_col = "state") |>
   # Format numbers with thousand separators and no decimals
-  fmt_number(columns = where(is.numeric), decimals = 0) |> 
+  fmt_number(columns = where(is.numeric), decimals = 0) |>
   # Show distribution of values in some columns using colour
-  data_color(columns = unarmed_robbery, palette = "Oranges") |> 
-  data_color(columns = rape, palette = "Blues") |> 
+  data_color(columns = unarmed_robbery, palette = "Oranges") |>
+  data_color(columns = rape, palette = "Blues") |>
   # Add column labels
   cols_label(
     "aggravated_assault" ~ "agg. assault",
@@ -513,52 +619,57 @@ violence |>
 
 ### Adding summary rows
 
-The final thing we will add to this table is a summary row containing the total number of each type of crime across all the states and territories. We do this using the `summary_rows()` function from gt. We specify the columns we want to summarise using the `columns` argument as we did for `fmt_number()`. 
+The final structural feature we will add is a summary row containing the total number of each type of crime across all the states and territories. We do this using the `summary_rows()` function from gt. We specify the columns we want to summarise using the `columns` argument as we did for `fmt_number()`.
 
-Summary rows can be produced using lots of different R functions. For example, we could use the `mean()` function to produce a summary row showing the mean (average) number of crimes of each time across the states. In this case, we want to know the total number of each type of crime across all states, so we will use the `sum()` function. To specify this, we pass the `fns` argument to `summary_rows()`. The `fns` argument has two parts, separated by a tilde (`~`). On the left-hand side we specify the label we want the summary row to have, and on the right-hand side we specify the function we want to use to calculate the summary. In this case, we can specify `fns = "regional total" ~ sum(.)` to say we want the summary row to have the label 'total' and that we want to summarise the rows using the `sum()` function. The `.` in the code `fns = "regional total" ~ sum(.)` is a place-holder that represent the data we want to summarise.
+Summary rows can be produced using lots of different R functions. For example, we could use the `mean()` function to produce a summary row showing the mean (average) number of crimes of each type across the states. In this case, we want to know the total number of each type of crime across all states, so we will use the `sum()` function. To specify this, we pass the `fns` argument to `summary_rows()`. The `fns` argument has two parts, separated by a tilde (`~`). On the left-hand side we specify the label we want the summary row to have, and on the right-hand side we specify the function we want to use to calculate the summary. In this case, we can specify `fns = "regional total" ~ sum(.)` to say we want the summary row to have the label 'regional total' and that we want to summarise the rows using the `sum()` function. The `.` in the code `fns = "regional total" ~ sum(.)` is a placeholder that represents the data we want to summarise.
 
-As well as summarising the data in each column, we want to specify how the summary values should be formatted. To do that, we use the `fmt` argument of `summary_rows()`. This is also a  two-sided ('formula') argument, with the two sides separated by a `~`. On the left-hand side we specify which summary values we want to format. In this case we want all the summary values to be formatted as numbers, so we can use the `everything()` helper function. On the right-hand side we use a call to one of the `fmt_*()` family of functions we used earlier: in this case, we use `fmt_number()`. Looking at the code below, you'll notice that the code `fmt = everything() ~ fmt_number(., decimals = 0)` again uses the `.` place-holder to specify that we want to format the summary value produced by `sum()`.
+As well as summarising the data in each column, we want to specify how the summary values should be formatted. To do that, we use the `fmt` argument of `summary_rows()`. This is also a two-sided ('formula') argument, with the two sides separated by a `~`. On the left-hand side we specify which summary values we want to format. In this case we want all the summary values to be formatted as numbers, so we can use the `everything()` helper function. On the right-hand side we use a call to one of the `fmt_*()` family of functions we used earlier: in this case, we use `fmt_number()`. Looking at the code below, you'll notice that the code `fmt = everything() ~ fmt_number(., decimals = 0)` again uses the `.` placeholder to specify that we want to format the summary value produced by `sum()`.
 
 The `summary_rows()` function produces a summary for each group of rows (in the case of this table, one summary for each region). As well as having a regional total, it would also be useful to have a total for all the groups together (i.e. for the whole country of Malaysia). To do that, we add the `grand_summary_rows()` function to our `gt()` stack, using the same arguments as for the `summary_rows()` function.
 
-Paste this code into the `chapter14a.R` file and run it.
+Paste this code into the `chapter_14a.R` file and run it.
 
 
 ```{r}
-#| filename: "chapter14a.R"
+#| filename: "chapter_14a.R"
 
 # Produce table of crime counts in each Malaysian state
-violence |> 
+violence |>
   # Convert data to have one row per state
-  pivot_wider(names_from = crime_type, values_from = count) |> 
+  pivot_wider(names_from = crime_type, values_from = count) |>
   # Convert new column names (the former values of `crime_type`) to snake case
-  janitor::clean_names() |> 
+  janitor::clean_names() |>
   # Choose only the columns we want to show in the table
   select(
-    region, state, murder, rape, aggravated_assault, armed_robbery, 
+    region,
+    state,
+    murder,
+    rape,
+    aggravated_assault,
+    armed_robbery,
     unarmed_robbery
-  ) |> 
+  ) |>
   # Specify the table rows should be grouped by the values of `region`
-  group_by(region) |> 
+  group_by(region) |>
   # Functions from tidyverse above and functions from gt below
-  gt(rowname_col = "state") |> 
+  gt(rowname_col = "state") |>
   # Format numbers with thousand separators and no decimals
-  fmt_number(columns = where(is.numeric), decimals = 0) |> 
+  fmt_number(columns = where(is.numeric), decimals = 0) |>
   # Show distribution of values in some columns using colour
-  data_color(columns = unarmed_robbery, palette = "Oranges") |> 
-  data_color(columns = rape, palette = "Blues") |> 
+  data_color(columns = unarmed_robbery, palette = "Oranges") |>
+  data_color(columns = rape, palette = "Blues") |>
   # Add column labels
   cols_label(
     "aggravated_assault" ~ "agg. assault",
     "armed_robbery" ~ md("robbery<br>(armed)"),
     "unarmed_robbery" ~ md("robbery<br>(unarmed)")
-  ) |> 
+  ) |>
   # Add a summary row showing the total number of crimes in each region
   summary_rows(
     columns = where(is.numeric),
     fns = "regional total" ~ sum(.),
     fmt = everything() ~ fmt_number(., decimals = 0)
-  ) |> 
+  ) |>
   # Add a summary row showing the total number of crimes in Malaysia
   grand_summary_rows(
     columns = where(is.numeric),
@@ -567,16 +678,24 @@ violence |>
   )
 ```
 
+Save `chapter_14a.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your complete table script should now look like this:
 
-::: {.callout-important}
-#### Tables are not good at showing patterns
+```{r}
+#| file: "../R/chapter_14a.R"
+#| eval: false
+#| filename: "chapter_14a.R"
+```
 
-Tables are good for showing detailed information, particularly when we want to present multiple pieces of information about a single place. But it can be hard to spot patterns in tables even with coloured cells. For this reason, **do not use tables when you are primarily trying to show the relationship between two or more variables**. In the next section, we will learn to create bar chart in R to show patterns more effectively.
+To check that the analysis is reproducible, restart R using the **Restart R** (**&#10227;**) button in Positron's **Console** panel, then run the script from beginning to end.
+
+
+::: {.callout-important title="Tables are not good at showing patterns"}
+
+Tables are good for showing detailed information, particularly when we want to present multiple pieces of information about a single place. But it can be hard to spot patterns in tables even with coloured cells. For this reason, **do not use tables when you are primarily trying to show the relationship between two or more variables**. In the next section, we will learn to create a bar chart in R to show patterns more effectively.
 :::
 
 
-::: {.callout-quiz .callout}
-#### Tables
+::: {.callout-quiz .callout title="Tables"}
 
 ```{r}
 #| echo: false
@@ -584,12 +703,12 @@ Tables are good for showing detailed information, particularly when we want to p
 tables_quiz1 <- c(
   answer = "When communicating multiple values about each area",
   "When displaying detailed spatial relationships",
-  "When visualizing trends over time",
-  "When analyzing spatial clusters"
+  "When visualising trends over time",
+  "When analysing spatial clusters"
 )
 
 tables_quiz2 <- c(
-  "It makes the data easier to analyze using statistical models",
+  "It makes the data easier to analyse using statistical models",
   answer = "It allows for easier comparisons across categories in a table",
   "It is the default format for spatial data in R",
   "It makes maps easier to interpret"
@@ -621,306 +740,298 @@ tables_quiz3 <- c(
 
 
 
-## Bar charts
+## Making charts with ggplot2 and ggauto
 
-Bar charts are useful for showing values of one _continuous_ variable (e.g. a count of crimes) for each value of one _categorical_ variable (e.g. states of a country). Bar charts are very common, but there are several things we can do to make them more useful. In this section we will learn how to construct a good bar chart.
+<a href="https://ggplot2.tidyverse.org/" aria-label="Visit the ggplot2 package website"><img src="../images/ggplot2.png" alt="" class="right-side-image"></a>
 
-You're already an expert at making maps using functions from the ggplot2 package. We can use these same functions to create many other types of graphics. For example, we can use `geom_bar()` to create bar charts just as we use `geom_sf()` to create a map using data stored in an SF object. 
+In previous chapters, all the visualisations we have created have been maps made with `hotspot_map()` and refined with functions from the ggplot2 package. Behind the scenes, `hotspot_map()` constructs a map using other functions from the ggplot2 package, by default making choices that try to produce a good map. We can't use `hotspot_map()` to make these choices for us when we are creating charts because it is specialised for creating maps. Instead, we can use the `ggauto()` function (from the package of the same name) to automatically choose a type of chart that is likely to be appropriate for the data we are working with. We can then use functions from the ggplot2 package to refine the chart in the same way we have refined maps.
 
-`geom_bar()` calculates the length of each bar on a chart by counting the number of rows of data in each category. This isn't what we want to do to visualise the `violence` object, since the data provided by the Royal Malaysian Police are already in the form of counts of crimes. Instead, we will use the `geom_col()` function, which creates bar charts from this type of summary data.
-
-To create a simple bar chart, we will work with the original (long-format) data and filter it to show only the number of murders in each state.
+`ggauto()` can create several different types of chart automatically. It chooses which type of chart to make based on how many variables we want to visualise and whether the variables are continuous (e.g. numbers), dates/times (which we will learn more about in @sec-mapping-time), ordered categories or unordered categories. There are some types of chart that `ggauto()` can't handle, or for which the chart produced by `ggauto()` might not be appropriate for particular audiences. In those cases, we can use functions from the ggplot2 package to create a chart from scratch and then refine it to suit our needs.
 
 
-```{r}
-#| filename: "R Console"
 
-# Create bar chart of murder counts
-violence |> 
-  # Keep only rows representing murder counts
-  filter(crime_type == "murder") |> 
-  ggplot() +
-  # Translate columns in the data to aesthetics on the chart
-  aes(x = state, y = count) +
-  # Add bars
-  geom_col()
-```
-
-
-You might notice that this code uses the `aes()` function differently to what we've seen in previous chapters. As we learned in @sec-mapping-patterns, `aes()` is used to specify which aspects of a map or chart should be controlled by the values of particular columns in a dataset. When we use `aes()` inside a `geom_*()` function (as we have done with `geom_sf()` in previous chapters), the _mapping_ between columns in a dataset and aspects of the map or chart appearance applies only to that layer. In a map, that is usually what we want because there is typically only one layer (e.g. a layer showing the density of crime) that represents values in a dataset. But we can also use `aes()` _outside_ a `geom_*()` function by adding it to the stack directly after the call to `ggplot()` itself. In that case, the mapping between data and chart will apply to all the layers on the chart.
-
-We can improve this basic chart in several ways:
-
-  * We can switch the order of the variables used for the `x` and `y` aesthetics so that the bars are horizontal rather than vertical, which will stop the state names from overlapping. It is almost always better for bar charts to use horizontal bars rather than vertical bars, to avoid overlapping labels.
-  * We can use `labs()` to add a title and caption, as well as controlling the `x` and `y` axis titles on the chart. In the code below, we set `y = NULL` to remove the title for the vertical axis, since a title is unnecessary when it is obvious from the context what the values on that axis represent (Malaysian states).
-  * We can reduce the visual clutter in the chart using `theme_minimal()`. While `theme_void()` is generally the best ggplot2 theme for maps, for charts it's almost always best to use `theme_minimal()`.
-
-
-```{r bars-exercise2, exercise=TRUE}
-#| filename: "R Console"
-
-# Create bar chart of murder counts
-violence |> 
-  # Keep only rows representing murder counts
-  filter(crime_type == "murder") |> 
-  ggplot() +
-  # Translate columns in the data to aesthetics on the chart
-  aes(x = count, y = state) +
-  # Add bars
-  geom_col() +
-  # Add labels
-  labs(
-    title = "Murders in Malaysian states, 2017",
-    caption = "Data from the Royal Malaysian Police",
-    x = "number of murders",
-    y = NULL
-  ) +
-  # Remove unnecessary map elements
-  theme_minimal()
-```
-
-
-This chart is better, but we can improve it further. For example, we can reduce the space between the state names and the bars by setting the `expand` argument to the `scale_x_continuous()` function. `scale_x_continuous()` works in a similar way to the other scale functions we have used already, such as using `scale_fill_brewer()` to control the colour of areas in a choropleth map.
-
-Although we are trying to reduce the gap between the bars and labels on the *y* axis, we use a function that change the *x* axis. This is because the space we are reducing is created by R by-default adding some space to each end of any continuous axis, such as the count of murders. 
-
-We can specify the space at the end of each axis using the helper function `expansion()`. In this case we just want to remove the space completely, so we can set `expand = expansion(0)`.
-
-At the same time, we can also remove the grid lines on the *y* axis (i.e. those running along the length of the bars) since they don't really make it any easier to understand the chart. As a general principle, we want to remove anything on a chart that does not contribute to communicating information, since unnecessary chart elements can distract readers from understanding the data.
-
-We can remove the grid lines by setting the `panel.grid.major.y` and `panel.grid.minor.y` arguments to the `theme()` function. The value we want to use is the helper function `element_blank()`, which sets the grid lines to be blank.
+To see how this works, let's start by creating a bar chart. Bar charts are useful for showing values of one _numeric_ variable (e.g. a count of crimes) for each value of one _categorical_ variable (e.g. states of a country). Before we create a bar chart, create a new R script file in the `R` folder of your crime-mapping workspace and save it as `chapter_14b.R`. Copy this code into that file and run it.
 
 
 ```{r}
-#| filename: "R Console"
+#| filename: "chapter_14b.R"
+#| eval: false
 
-# Create bar chart of murder counts
-violence |> 
-  # Keep only rows representing murder counts
-  filter(crime_type == "murder") |> 
-  ggplot() +
-  # Translate columns in the data to aesthetics on the chart
-  aes(x = count, y = state) +
-  # Add bars
-  geom_col() +
-  # Remove space at either end of horizontal axis
-  scale_x_continuous(expand = c(0, 0)) +
-  # Add labels
+# This script creates several charts as examples of how to make charts in R
+
+# Load packages
+pacman::p_load(ggplot2, here, httr2, paletteer, tidyverse)
+
+# Download annual counts of different types of violence in Malaysia
+request(
+  "https://mpjashby.github.io/crimemappingdata/malaysia_violence_counts.rds"
+) |>
+  req_perform(path = here("data", "raw", "malaysia_violence_counts.rds"))
+
+# Load the local copy and keep only counts from 2017
+violence <- here("data", "raw", "malaysia_violence_counts.rds") |>
+  read_rds() |>
+  # Keep only counts from 2017
+  filter(year == 2017)
+```
+
+```{r}
+#| filename: "chapter_14b.R"
+#| echo: false
+
+# This script creates several charts as examples of how to make charts in R
+
+# Load packages
+pacman::p_load(ggplot2, here, httr2, paletteer, tidyverse)
+
+# Download annual counts of different types of violence in Malaysia
+request(
+  "https://mpjashby.github.io/crimemappingdata/malaysia_violence_counts.rds"
+) |>
+  req_perform(path = here("data", "raw", "malaysia_violence_counts.rds"))
+
+# Load the local copy and keep only counts from 2017
+violence <- here("data", "raw", "malaysia_violence_counts.rds") |>
+  read_rds() |>
+  # Keep only counts from 2017
+  filter(year == 2017)
+```
+
+
+By default, `ggauto()` produces a useful starting point for a bar chart, so let's use it to show the number of murders in each Malaysian state in 2017. We will use the `violence` object we created earlier, which contains counts of different types of violence in each state.
+
+```{r}
+#| label: ggauto-bar-basic
+#| filename: "R Console"
+#| fig-alt: "A horizontal bar chart showing the number of murders recorded in each Malaysian state in 2017, ordered from the smallest value at the bottom to the largest at the top."
+
+violence |>
+  filter(crime_type == "murder") |>
+  ggauto::ggauto(state, count)
+```
+
+::: {.callout-tip collapse="true" title="Why do we write `ggauto::ggauto()`?"}
+
+The `::` notation tells R to use the `ggauto()` function from the ggauto package without first loading the whole package. We only use ggauto interactively in the R Console in this chapter, rather than using it in the scripts we are building, so there is no need to load it at the start of those scripts. The ggauto package must still be installed on your computer for this code to work.
+:::
+
+There are several features of the bar chart created by `ggauto()` that make the chart easier for readers to use than many bar charts produced by default in other software. Specifically:
+
+* The bars are horizontal, not vertical. This means that the state labels can also be horizontal, which is very useful because in English we read text horizontally and so it's easier to read horizontal text than vertical text. Horizontal bar charts are almost always better than vertical ones when we need to show non-numeric category labels.
+* A lot of clutter that is sometimes included in default charts has been removed if it isn't needed for this particular type of chart. For example, there are no _tick marks_ between the bars and the state names.
+* The chart includes a title for the horizontal axis (known as the _x-axis_) so that readers know what the numbers represent, but there is no title for the vertical axis (known as the _y-axis_) because it is obvious from the context that the vertical axis shows the names of the states.
+* The states have been ordered so that the states with the most murders have been shown at the top of the chart and the states with the fewest murders have been shown at the bottom. This makes it easy for readers to see which states have the most and fewest murders. Ordering the bars like this is almost always better than using the default alphabetical order of the state names.
+
+The chart produced by `ggauto()` is a useful starting point, but we can make it more informative by adding a title and caption. We can do this using the `labs()` function from the ggplot2 package that we learned about in @sec-titles. Let's add a title showing what the chart shows and a caption giving the source of the data. In this case, the data comes from an [academic paper written by Hashom Hakim and colleagues](https://doi.org/10.1016/j.dib.2019.104449).
+
+```{r}
+#| label: ggauto-bar-labelled
+#| filename: "R Console"
+#| fig-alt: "A horizontal bar chart showing the number of murders recorded in each Malaysian state in 2017, with a title and source caption."
+
+violence |>
+  filter(crime_type == "murder") |>
+  ggauto::ggauto(state, count) +
   labs(
-    title = "Murders in Malaysian states, 2017",
-    caption = "Data from the Royal Malaysian Police",
-    x = "number of murders",
-    y = NULL
-  ) +
-  # Remove unnecessary map elements
-  theme_minimal() +
-  # Remove unnecessary horizontal grid lines
-  theme(
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor.y = element_blank()
+    title = "Murders in Each Malaysian State (2017)",
+    caption = "Source: Hakim et al. (2019)"
   )
 ```
 
+Note that because `ggauto()` produces a chart, we need to add subsequent functions such as `labs()` with the `+` operator rather than the `|>` operator.
 
-::: {.callout-important}
-#### Bars on a bar chart should always start at zero
+`ggauto()` has produced a useful bar chart, but to go any further we need to learn to construct charts ourselves using the full range of functions from the ggplot2 package. For example, we might need to do this if we wanted to change the colour of the bars so that the bar for each state was coloured according to which region it was in.
 
-One of the reasons why bar charts are easy to interpret is that the *length* of each bar directly corresponds to the relative size of that particular value. But this direct relationship between bar length and value only applies if the bars start at zero. If you create a bar chart in which the bars  don't start at zero, readers are likely to be mislead, so remember *bar charts should always start at zero*. But don't worry -- `ggplot()` will handle this for you automatically.
-:::
+We can start to learn how to create charts from scratch using functions from ggplot2 by looking at the code that would be needed to reproduce the bar chart above without using `ggauto()`. Look through this code and the explanations below it.
 
 
-### Ordering bar charts by value
+```{r}
+#| label: bar-chart-ggplot
+#| lst-label: lst-bar-chart-ggplot
+#| lst-cap: ""
+#| filename: "R Console"
+#| fig-alt: "A horizontal bar chart showing the number of murders recorded in each Malaysian state in 2017, ordered by value and drawn with blue bars."
 
-If you were trying to find the three Malaysian states or territories with the most murders from this chart, it would be pretty easy to see that Selangor had the most murders, followed by Johor. But at a glance, it's not so easy to see which state or territory comes third. We can make this easier to see by changing the order of the bars from the default alphabetical order to an order based on how many murders there were.
+# Create bar chart of murder counts
+violence |>
+  # Keep only rows representing murder counts
+  filter(crime_type == "murder") |>
+  # Re-order states according to number of murders
+  mutate(state = fct_reorder(state, count)) |> #<1>
+  # Initialise chart
+  ggplot() + #<2>
+  # Translate columns in the data to aesthetics on the chart
+  aes(x = count, y = state) + #<3>
+  # Add bars
+  geom_col(fill = "#4477AA") + #<4>
+  # Add labels
+  labs(
+    title = "Murders in Each Malaysian State (2017)", #<5>
+    caption = "Source: Hakim et al. (2019)", #<5>
+    x = "Count", #<5>
+    y = NULL #<5>
+  ) +
+  # Remove unnecessary chart elements
+  theme_minimal() + #<6>
+  theme(
+    axis.title.x = element_text(hjust = 1), #<7>
+    panel.grid.major.y = element_blank(), #<7>
+    panel.grid.minor.y = element_blank(), #<7>
+    plot.title.position = "plot" #<7>
+  )
+```
+1. In order for the bars to be displayed in descending order of the number of murders, we need to reorder the `state` column in the data. To do this we convert that column to something R calls a _factor_, which is capable of storing a meaningful order for the categories. We will learn more about this in @sec-factors.
+2. The `ggplot()` function takes a dataset and initiates a new chart. However, `ggplot()` (unlike `ggauto()`) doesn't produce a chart on its own. We need to add more components to the chart before it can be displayed. You can think of `ggplot()` as telling R "I want to make a chart using this data".
+3. The `aes()` function specifies which columns in the data will control which _aesthetics_ of the chart. We learned about aesthetics in @sec-aesthetics and about the `aes()` function in @sec-other-layers. In this case, we want the `count` column to control the horizontal position of the end of each bar and the `state` column to control the vertical order of the bars.
+4. The `geom_col()` function tells R that the chart we want to create should be a bar chart. While `ggplot()` says "I want to make a chart using this data", `geom_col()` says "the chart should be a bar chart". The argument `fill = "#4477AA"` specifies what colour we want the bars to be.
+5. The `labs()` function adds titles and captions to the chart, as we learned in @sec-titles. We can also use `labs()` to control the titles of the axes on the chart. In this case, we set `y = NULL` to remove the title for the vertical axis, since a title is unnecessary when it is obvious from the context what the values on that axis represent (Malaysian states).
+6. The `theme_minimal()` function controls which ggplot2 _theme_ the chart uses. Themes control the supporting elements of a visualisation, such as the appearance of grid lines, which font is used for text, etc. We will learn more about themes in @sec-themes.
+7. The `theme()` function allows us to make further refinements to the theme used by the chart. There are lots of ways we can customise a chart theme. In this case we've removed the default horizontal grid lines (which aren't useful for horizontal bar charts), made the x-axis title right-aligned and moved the chart title to the top-left corner of the chart.
 
-To do this, we need to convert the `state` column in the data to a new type of variable: a *factor*. Factors are what R calls categorical variables that have a defined set of possible values. For example, a factor recording if a person was under or over 18 might have two possible values: 'adult' and 'child'.
+Now you've seen how much code is needed to create a bar chart from scratch, you can see why `ggauto()` is useful for quickly producing a sensible starting point. However, sometimes we will need to go beyond what `ggauto()` can do, so it's useful to know how to create charts from scratch. Before we go beyond what `ggauto()` can do for us, we will first delve a bit deeper into some aspects of the code above that we haven't already covered.
+
+
+### Controlling the order of categorical variables {#sec-factors}
+
+If you were trying to find the three Malaysian states or territories with the most murders from this chart, it would be pretty easy to see on any bar chart that Selangor had the most murders, followed by Johor. But at a glance, it might not so easy to see which state or territory comes third unless the bars are ordered by their values. This is why alphabetical ordering of bars (which is the default used by ggplot2) is almost never the best choice for a bar chart.
+
+To order the bars according to the number of murders in each state, we need to convert the `state` column in the data to a new type of variable: a *factor*. Factors are what R calls categorical variables that have (a) a defined set of possible values and optionally (b) a defined order of values.
 
 One of the benefits of storing a variable as a factor is that we can specify an order for the categories. This is useful for categories that have a meaningful order, such as 'bad', 'acceptable', 'good', 'excellent'. But we can also use
 this feature of factors to specify that values should appear in a particular order in any charts produced from the data, whatever the order of the values in the data itself.
 
-<a href="https://forcats.tidyverse.org/"><img src="../images/forcats.png" alt="forcats package hex sticker" class="right-side-image"></a>
+<a href="https://forcats.tidyverse.org/" aria-label="Visit the forcats package website"><img src="../images/forcats.png" alt="" class="right-side-image"></a>
 
-To work with factors in R we can use the [forcats package](https://forcats.tidyverse.org/), so-called because it's *for* working with *categories*. forcats is loaded as part of tidyverse, so we don't need to load it separately. 
+To work with factors in R we can use the [forcats package](https://forcats.tidyverse.org/), so-called because it's *for* working with *categories*. forcats is loaded as part of tidyverse, so we don't need to load it separately.
 
-All the functions in the forcats package start with the letters `fct_`, just as all the functions in the SF package start `st_`. For our bar chart, we will use the `fct_reorder()` function. This takes a factor or character variable (such as the names of the Malaysian states and territories) and sets the order of the categories according to the values of a numeric variable (such as the number of murders in a state). So to re-order the `state` variable according to the count of murders, we can use `fct_reorder(state, count)`. Since we're changing an existing variable, we will do this inside a call to the `mutate()` function.
+All the functions in the forcats package start with the letters `fct_`, just as all the functions in the sfhotspot package start `hotspot_`. For our bar chart, we will use the `fct_reorder()` function. This takes a factor or character variable (such as the names of the Malaysian states and territories) and sets the order of the categories according to the values of a numeric variable (such as the number of murders in a state). So to re-order the `state` variable according to the count of murders, we can use `fct_reorder(state, count)`. Since we're changing an existing variable, we do this inside a call to the `mutate()` function that we learned about in @sec-mutate. Look back to the code in @lst-bar-chart-ggplot and you will see the line `mutate(state = fct_reorder(state, count))`.
 
+
+### ggplot2 themes {#sec-themes}
+
+The `theme_*()` family of functions in ggplot2 allows us to control all the _non-data_ elements of a chart. These are the elements that support the data shown by the geoms (e.g. bars, points, lines) in a chart, such as the background, grid lines, axis text and the appearance of titles and legends. It's important to note the distinction about what we can control with themes and what we cannot. Themes control the supporting elements of a visualisation rather than the data shown by its geoms. Changing the theme will not change anything about how the data is represented in a chart, such as the colour of bars.
+
+There are many different themes that you can add to a `ggplot()` stack. Some of these are built into the ggplot2 package, and some are part of other packages that extend what ggplot2 can do. Some organisations (such as the BBC) have [their own ggplot2 themes](https://github.com/bbc/bbplot) for creating maps and charts that follow their corporate style guide.
+
+Different themes can give charts very different appearances, even when they use the same data. For example, these four charts show what happens when different themes are applied to the end of the same `ggplot()` stack:
 
 ```{r}
-#| filename: "R Console"
+#| label: compare-themes
+#| echo: false
+#| fig-asp: 1
+#| fig-alt: "Four versions of the same Malaysian murder bar chart compare the grey, classic, light and dark ggplot2 themes. The data are identical but the backgrounds, grid lines and text treatments differ."
+#| fig-format: jpeg
+#| layout-ncol: 2
+#| out-width: 100%
 
-# Create bar chart of murder counts
-violence |> 
+# Create chart object
+murder_chart_themes <- violence |>
   # Keep only rows representing murder counts
-  filter(crime_type == "murder") |> 
+  filter(crime_type == "murder") |>
   # Re-order states according to number of murders
-  mutate(state = fct_reorder(state, count)) |> 
-  ggplot() +
-  # Translate columns in the data to aesthetics on the chart
-  aes(x = count, y = state) +
-  # Add bars
-  geom_col() +
-  # Remove space at either end of horizontal axis
-  scale_x_continuous(expand = c(0, 0)) +
+  mutate(state = fct_reorder(state, count)) |> #<1>
+  ggplot() + #<2>
+  aes(x = count, y = state) + #<3>
+  geom_col(fill = "#4477AA") + #<4>
   # Add labels
   labs(
-    title = "Murders in Malaysian states, 2017",
-    caption = "Data from the Royal Malaysian Police",
-    x = "number of murders",
+    #<5>
+    title = "Murders in Each Malaysian State (2017)",
+    caption = "Source: Hakim et al. (2019)",
+    x = "Count",
     y = NULL
-  ) +
-  # Remove unnecessary map elements
-  theme_minimal() +
-  theme(
-    # Remove unnecessary horizontal grid lines
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor.y = element_blank()
   )
+
+custom_theme_elements <- theme(
+  legend.position = "none",
+  plot.title.position = "plot"
+)
+
+plot_theme1 <- murder_chart_themes +
+  labs(title = "theme_grey()") +
+  theme_grey() +
+  custom_theme_elements
+plot_theme2 <- murder_chart_themes +
+  labs(title = "theme_classic()") +
+  theme_classic() +
+  custom_theme_elements
+plot_theme3 <- murder_chart_themes +
+  labs(title = "theme_light()") +
+  theme_light() +
+  custom_theme_elements
+plot_theme4 <- murder_chart_themes +
+  labs(title = "theme_dark()") +
+  theme_dark() +
+  custom_theme_elements
+
+plot_theme1
+plot_theme2
+plot_theme3
+plot_theme4
 ```
 
+If we don't specify a theme, ggplot2 will use the default theme, which is called `theme_grey()`. This theme is useful for exploring data because it includes grid lines and other elements that make it easier to see the values of the data. But when we are creating a chart for an audience, we usually want to remove unnecessary elements that don't communicate useful information. It's important to remove any unnecessary elements from our charts to help the audience focus on the most-important elements. For that reason, we will usually use `theme_minimal()` for charts, which removes the background colour and panel border while retaining grid lines that can help readers estimate values. If you look back at the code in @lst-bar-chart-ggplot you can see that it uses `theme_minimal()` and then removes the horizontal grid lines that are not useful for this chart.
+
+One of the `theme_*()` family of functions can go a long way to improving the appearance of a chart, but we will sometimes also need to make further adjustments to make sure the chart is as clear as possible. We can do this using the `theme()` function, which allows us to make further refinements to the theme used by the chart.
+
+There are many different elements of a chart that we can control using the `theme()` function. For example, we can control the appearance of the chart title, the axis titles, the axis text, the legend and the background. In @lst-bar-chart-ggplot we used several arguments of the `theme()` function.
+
+* We set `axis.title.x` to `element_text(hjust = 1)` to right-align the title of the horizontal axis. `element_text()` is one of a family of helper functions that ggplot2 provides so that we can easily control the appearance of different elements within a theme. As the name suggests, `element_text()` is the function within this family that we can use to control the appearance of non-data text on the chart, such as the chart title, axis labels, etc. The `hjust` argument controls the horizontal alignment of text, with a value of 0 meaning left-aligned, a value of 1 meaning right-aligned and a value of 0.5 (the default) meaning centred.
+* We set `panel.grid.major.y` and `panel.grid.minor.y` to `element_blank()` to remove the horizontal grid lines that run along the length of the bars, since they don't really make it any easier to understand the chart. `element_blank()` is a helper function that sets the specified element to be blank.
+* We set `plot.title.position = "plot"` to specify that we want the chart title to appear in the top-left corner of the whole chart rather than being aligned only with the edge of the plotting area. We almost always want the chart title to appear in this way, so we will use this code often.
 
 
 ### Colour in bar charts
 
-We can further improve our bar chart by using colour to indicate which states are in which of the two regions of Malaysia. To do this, we will:
+Now that we have successfully used `ggplot()` to recreate the bar chart created by `ggauto()`, and understood all the code needed to do that, we can go on to further improve the chart by adding colour to the bars to indicate which region of Malaysia each state is in.
 
-  * specify in the call to `aes()` that the fill colour of the bars should be controlled by the `region` column in the data,
-  * specify in the call to `labs()` that we don't want the legend to have a title, since the meaning is obvious from the values 'East Malaysia' and 'West Malaysia', and
-  * specify in the call to `theme()` that we would like the legend use up some of the empty space in the bottom-right corner of the chart, rather than making the chart smaller to give space for the legend on the right-hand side.
-    
-To move the legend, we need to specify several different arguments in the `theme()` function. `legend.position` determines where around the plot the legend should be placed: 'top', 'right', 'bottom', 'left' or 'inside'. In this case we want the legend to appear in some spare space on the plot itself, so we will set `legend.position = "inside"`. We then use the `legend.position.inside` argument to `theme()` to specify exactly _where_ inside the plot we want the legend to appear. We do that by specifying where the legend should appear horizontally and vertically, as a proportion of the axis
-length, on a scale from zero to one. 
-
-
-```{r legend-position-inside}
-#| echo: false
-#| label: "Examples of where legends will be placed inside the chart area based on the value provided to the `legend.position.inside` argument of `theme()`"
-#| fig-align: "center"
-#| fig.asp: 1
-
-tibble(
-  x = rep(rep(seq(0, 1, by = 0.25)), each = 5), 
-  y = rep(rep(seq(0, 1, by = 0.25)), times = 5)
-) |> 
-  mutate(
-    label = str_glue(
-      "{scales::number(x, accuracy = 0.01)}, ",
-      "{scales::number(y, accuracy = 0.01)}"
-    )
-  ) |> 
-  ggplot(aes(x = x, y = y, label = label)) +
-  geom_point() +
-  geom_label() +
-  scale_x_continuous(
-    expand = expansion(0.1), 
-    position = "top", 
-    sec.axis = dup_axis(name = NULL)
-  ) +
-  scale_y_continuous(
-    expand = expansion(0.1), 
-    sec.axis = dup_axis(name = NULL)
-  ) +
-  coord_fixed() +
-  labs(
-    x = "the first number gives the value on horizontal (x) axis",
-    y = "the second number gives the value on vertical (y) axis"
-  ) +
-  theme_minimal()
-```
-
-
-Using this specification, we can place the legend in the right-most point on the horizontal axis and the bottom-most point on the vertical axis by specifying `legend.position.inside = c(1, 0)`.
-
-`legend.position.inside` sets the _anchor_ point from which the legend is created, with the actual size of the legend depending on how much space is required by its contents. By default, a legend will spread out in all directions from the anchor point, i.e. the legend will be horizontally and vertically centred on the anchor point. As we have positioned the legend in a corner of the plot, this is probably not what we want since some of the legend will be hidden outside the
-plot area. Instead, we can set the `legend.justifcation` argument of `theme()` using a similar specification to that for `legend.position.inside` based on which way we want the legend to grow.
-
-
-```{r legend-justification}
-#| echo: false
-#| fig-align: "center"
-#| fig-asp: 0.33
-
-tibble(
-  x = c(1.1, 1.1, 0.9, 0.9, 1.1, 0.9, 1, 1),
-  xend = c(1.25, 1.25, 0.75, 0.75, 1.25, 0.75, 1, 1),
-  y = c(1.1, 0.9, 1.1, 0.9, 1, 1, 0.9, 1.1),
-  yend = c(1.25, 0.75, 1.25, 0.75, 1, 1, 0.75, 1.25),
-  h = c(0, 0, 1, 1, 0, 1, 0.5, 0.5),
-  v = c(0, 1, 0, 1, 0.5, 0.5, 1, 0)
-)  |>  
-  mutate(
-    label = str_glue(
-      "{scales::number(h, accuracy = 0.1)}, {scales::number(v, accuracy = 0.1)}"
-    )
-  ) |> 
-  ggplot() +
-  geom_segment(
-    aes(x = x, y = y, xend = xend, yend = yend), 
-    linewidth = 1, 
-    arrow = arrow(length = unit(3, "mm"), type = "closed")
-  ) +
-  geom_label(aes(x = xend, y = yend, hjust = h, vjust = v, label = label)) +
-  geom_point(aes(x = x, y = y), size = 4) +
-  scale_x_continuous(expand = expansion(3)) +
-  scale_y_continuous(expand = expansion(0.5)) +
-  coord_fixed() +
-  theme_void()
-```
-
-
-If you want the legend to grow 'inwards' from a corner, just set `legend.justification` to the same value as you used for `legend.position.inside`. In this case, we want the legend to be anchored in the bottom-right corner and to grow inwards from it, so we will set both arguments to `c(1, 0)`.
-
-Add this code to your script file and run it.
-
+To do that, we need to add another _mapping_ to the `aes()` function that is included in @lst-bar-chart-ggplot and which controls which columns in the `violence` dataset control which elements of the chart. `aes()` already specifies that the `count` column controls the horizontal position of the end of each bar and that the `state` column controls the vertical order of the bars. We can add another mapping to `aes()` to specify that the fill colour of the bars should be controlled by the `region` column in the data. This will colour each bar according to which region of Malaysia it is in. Run this code in the R console to see the result. Note that this time we are saving the result in an object called `malaysia_murder_bar_chart` so that we can use the result again shortly.
 
 ```{r}
+#| label: bar-chart-region-colours
+#| lst-label: lst-bar-chart-fill
+#| lst-cap: ""
 #| filename: "R Console"
+#| fig-alt: "A horizontal bar chart showing murder counts in Malaysian states, with bars coloured according to whether each state is in East or West Malaysia."
 
 # Create bar chart of murder counts
-malaysia_murder_bar_chart <- violence |> 
+malaysia_murder_bar_chart <- violence |>
   # Keep only rows representing murder counts
-  filter(crime_type == "murder") |> 
+  filter(crime_type == "murder") |>
   # Re-order states according to number of murders
-  mutate(state = fct_reorder(state, count)) |> 
+  mutate(state = fct_reorder(state, count)) |>
+  # Initialise chart
   ggplot() +
   # Translate columns in the data to aesthetics on the chart
   aes(x = count, y = state, fill = region) +
   # Add bars
   geom_col() +
-  # Remove space at either end of horizontal axis
-  scale_x_continuous(expand = c(0, 0)) +
   # Add labels
   labs(
-    title = "Murders in Malaysian states, 2017",
-    caption = "Data from the Royal Malaysian Police",
-    x = "number of murders",
+    title = "Murders in Each Malaysian State (2017)",
+    caption = "Source: Hakim et al. (2019)",
+    x = "Count",
     y = NULL
   ) +
-  # Remove unnecessary map elements
+  # Remove unnecessary chart elements
   theme_minimal() +
   theme(
-    # Move legend to bottom-right corner and give it a solid white background
-    legend.background = element_rect(colour = NA, fill = "white"),
-    legend.justification = c(1, 0),
-    legend.position = "inside",
-    legend.position.inside = c(1, 0),
-    # Remove unnecessary horizontal grid lines
+    axis.title.x = element_text(hjust = 1),
     panel.grid.major.y = element_blank(),
-    panel.grid.minor.y = element_blank()
+    panel.grid.minor.y = element_blank(),
+    plot.title.position = "plot"
   )
-```
-
-
-```{r}
-#| filename: "R Console"
 
 malaysia_murder_bar_chart
 ```
 
 
+
+As well as changing `aes(x = count, y = state)` to `aes(x = count, y = state, fill = region)` there is one other difference between the @lst-bar-chart-fill and @lst-bar-chart-ggplot: we have changed `geom_col(fill = "#4477AA")` to `geom_col()`. If we had not done that, specifying which column in the data should control the fill aesthetic would have had no effect, since static aesthetics specified in `geom_col()` override the same aesthetic specified inside `aes()`. If you ever specify the `colour` or `fill` aesthetics inside `aes()` and it doesn't seem to have any effect, check that you haven't also specified a constant value for the same aesthetic inside the `geom_*()` function.
+
 One issue with this chart is that the default colours that `ggplot()` produces are not easy for everyone to discern. In particular, people with colour blindness may struggle to distinguish between some combinations of colours. Some colour combinations are also hard (or impossible) to distinguish even for people with normal colour vision if a chart is printed in black and white or viewed on a screen in some lighting conditions.
 
 We can check how well people with different colour vision will be able to read a chart using the `cvd_grid()` function from the colorblindr package. This function takes an existing `ggplot()` stack and prints several versions of the chart that simulate how different people will see it.
-
 
 The colorblindr package is not on CRAN, the repository we usually install R packages from. That means we need to use slightly different code to install it. Instead of installing from CRAN, we will instead install the package from GitHub, a website that programmers use to store versions of their code. To install packages from GitHub we can use the `p_install_gh()` function from the pacman package (the same package we use to load packages at the start of each R script).
 
@@ -936,12 +1047,14 @@ pacman::p_install_gh("clauswilke/colorblindr")
 
 Remember that because we only need to install a package once on each computer we use R on, you should never install packages inside an R script. This means you should only ever run `pacman::p_install_gh()` in the R Console, never in an R script.
 
-Once you've installed the colorblindr package, you can use it to check how different people are likely to see the chart of murder in Malaysia.
+Once you've installed the colorblindr package, you can use it to check how different people are likely to see the chart of murders in Malaysia.
 
 
 ```{r}
+#| label: colour-vision-default
 #| filename: "R Console"
 #| fig-asp: 1
+#| fig-alt: "Four versions of the Malaysian murder bar chart simulate several types of colour vision and a greyscale display. Some simulations make the two default bar colours difficult to distinguish."
 
 # Check if chart colours are safe for different people
 colorblindr::cvd_grid(malaysia_murder_bar_chart)
@@ -951,7 +1064,7 @@ colorblindr::cvd_grid(malaysia_murder_bar_chart)
 From this we can see that this combination of colours works well for people with some types of colour blindness, but is likely to be hard for some people, and indeed for everyone if the chart is printed on a black-and-white printer.
 
 
-[![](../images/paletteer.png){.right-side-image fig-alt="paletteer website"}](https://emilhvitfeldt.github.io/paletteer/)
+[![](../images/paletteer.png){.right-side-image fig-alt="paletteer package logo"}](https://emilhvitfeldt.github.io/paletteer/)
 
 
 Fortunately, there are lots of different R packages that provide colour palettes that are suitable for people with different colour vision. The [paletteer package](https://emilhvitfeldt.github.io/paletteer/) brings a lot of these colour palettes together in one place. paletteer provides three pairs of functions for different types of colour scale:
@@ -962,51 +1075,43 @@ Fortunately, there are lots of different R packages that provide colour palettes
 
 We can use each of these functions in the same way we have used functions like `scale_fill_distiller()` in previous chapters. The first argument to all the main functions in the paletteer package is the name of a colour palette, of which a total of `r scales::comma(nrow(paletteer::palettes_d_names) + nrow(paletteer::palettes_c_names) + nrow(paletteer::palettes_dynamic_names))` different palettes are available. We can specify which palette to use using the same syntax we have sometimes used to refer to R functions: `package_name::palette_name`. For example, to create a discrete colour scale using the OKeeffe2 palette from the [MetBrewer package](https://github.com/BlakeRMills/MetBrewer) (a palette inspired by the painting [_Red and Yellow Cliffs_ by Georgia O'Keeffe](https://www.metmuseum.org/art/collection/search/484833)) we could use `scale_colour_paletteer_d("MetBrewer::OKeeffe2")`.
 
-There are many useful colour palettes in the [PrettyCols package](https://nrennie.rbind.io/PrettyCols/). Let's use the Bright palette from this package to control the colours on the chart.
+There are many useful colour palettes in the [PrettyCols package](https://nrennie.rbind.io/PrettyCols/). Let's use the Bright palette from this package to control the colours on the chart. This is the final version of the code needed to make the bar chart we want, so we will save it in the `chapter_14b.R` file and then run it to see the finished result.
 
 
 ```{r}
-#| filename: "chapter14a.R"
+#| label: bar-chart-accessible-colours
+#| filename: "chapter_14b.R"
+#| fig-alt: "A horizontal bar chart of murder counts in Malaysian states. Accessible blue and orange fills distinguish East and West Malaysia."
 
 # Create bar chart of murder counts
-malaysia_murder_bar_chart <- violence |> 
+malaysia_murder_bar_chart <- violence |>
   # Keep only rows representing murder counts
-  filter(crime_type == "murder") |> 
+  filter(crime_type == "murder") |>
   # Re-order states according to number of murders
-  mutate(state = fct_reorder(state, count)) |> 
+  mutate(state = fct_reorder(state, count)) |>
+  # Initialise chart
   ggplot() +
   # Translate columns in the data to aesthetics on the chart
   aes(x = count, y = state, fill = region) +
   # Add bars
   geom_col() +
-  # Remove space at either end of horizontal axis
-  scale_x_continuous(expand = c(0, 0)) +
   # Specify colour-blind-safe fill colours
   scale_fill_paletteer_d("PrettyCols::Bright") +
   # Add labels
   labs(
-    title = "Murders in Malaysian states, 2017",
-    caption = "Data from the Royal Malaysian Police",
-    x = "number of murders",
+    title = "Murders in Each Malaysian State (2017)",
+    caption = "Source: Hakim et al. (2019)",
+    x = "Count",
     y = NULL
   ) +
-  # Remove unnecessary map elements
+  # Remove unnecessary chart elements
   theme_minimal() +
   theme(
-    # Move legend to bottom-right corner and give it a solid white background
-    legend.background = element_rect(colour = NA, fill = "white"),
-    legend.justification = c(1, 0),
-    legend.position = "inside",
-    legend.position.inside = c(1, 0),
-    # Remove unnecessary horizontal grid lines
+    axis.title.x = element_text(hjust = 1),
     panel.grid.major.y = element_blank(),
-    panel.grid.minor.y = element_blank()
+    panel.grid.minor.y = element_blank(),
+    plot.title.position = "plot"
   )
-```
-
-
-```{r}
-#| filename: "R Console"
 
 malaysia_murder_bar_chart
 ```
@@ -1016,8 +1121,10 @@ To see if these colours are likely to work for different people, we can again ch
 
 
 ```{r}
+#| label: colour-vision-accessible
 #| filename: "R Console"
 #| fig-asp: 1
+#| fig-alt: "Four versions of the Malaysian murder bar chart simulate several types of colour vision and a greyscale display. The blue and orange palette remains distinguishable across the simulations."
 
 # Check if chart colours are safe for different people
 colorblindr::cvd_grid(malaysia_murder_bar_chart)
@@ -1033,15 +1140,26 @@ There are lots of other ways to control colours on charts and maps in R. For mor
 
 Bar charts are a very common way of presenting a numeric variable for each value of a categorical variable. Bar charts are easy to interpret, even for people who are not used to interpreting charts or who only have time to look at the chart for a few seconds.
 
+Save `chapter_14b.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your complete bar-chart script should now look like this:
 
-::: {.callout-quiz .callout}
+```{r}
+#| file: "../R/chapter_14b.R"
+#| eval: false
+#| filename: "chapter_14b.R"
+```
 
-```{r bar-chart-quiz}
+To check that the analysis is reproducible, restart R using the **Restart R** (**&#10227;**) button in Positron's **Console** panel, then run the script from beginning to end. If the code does not run successfully, that might mean you have forgotten to include some of the code that is needed to make the chart.
+
+
+::: {.callout-quiz .callout title="Bar charts"}
+
+```{r}
+#| label: bar-chart-quiz
 #| echo: false
 
 bar_chart_quiz1 <- c(
   "To follow the alphabetical order of locations",
-  "To avoid using colors in the chart",
+  "To avoid using colours in the chart",
   answer = "To make it easier to see which rows have the highest values",
   "To ensure a map is not needed"
 )
@@ -1050,7 +1168,7 @@ bar_chart_quiz2 <- c(
   "To make the bar chart look more visually appealing",
   "To display non-spatial variables",
   "To replace the need for a table",
-  answer = "To provide context for areas that the audience may not recognize"
+  answer = "To provide context for areas that the audience may not recognise"
 )
 
 bar_chart_quiz3 <- c(
@@ -1085,111 +1203,103 @@ bar_chart_quiz3 <- c(
 
 Bar charts show a single piece of information about each category present in a dataset. So we might use a bar chart to show, for example, the average number of burglaries in neighbourhoods in different districts. But what if the average values masked substantial differences in the number of burglaries within each district? Averages often mask variation, and can sometimes be misleading as a result. In those circumstances it would be better to show more detail rather than a misleading average.
 
-Let's start with the simple example of showing the distribution of burglary counts within a single district. Restart R (`Session > Restart R`), open a new R script file and save it as `chapter14b.R`. Use this code to load a dataset of burglaries in each lower-layer super output area (LSOA) in Northamptonshire in England in 2020.
+Let's start with the simple example of showing the distribution of burglary counts within the English county of Northamptonshire. Start a new R session by clicking the **Restart R** (**&#10227;**) button in Positron's **Console** panel. Create a new R script inside the `R` folder and save it as `chapter_14c.R`. Use this code to download and load a dataset of burglaries in each lower-layer super output area (LSOA) in Northamptonshire in England in 2020. LSOAs are small geographic areas that are used for many statistical purposes in England. Each LSOA covers about 1,500 households.
 
 
 ```{r}
-#| filename: "chapter14b.R"
+#| filename: "chapter_14c.R"
+#| eval: false
 
 # Load packages
-pacman::p_load(tidyverse)
+pacman::p_load(ggridges, here, httr2, tidyverse)
 
-# Load data
-burglary <- read_rds("https://mpjashby.github.io/crimemappingdata/northants_burglary_counts.rds")
+# Download the burglary data
+request(
+  "https://mpjashby.github.io/crimemappingdata/northants_burglary_counts.rds"
+) |>
+  req_perform(path = here("data", "raw", "northants_burglary_counts.rds"))
+
+# Load the local copy of the burglary data
+burglary <- here("data", "raw", "northants_burglary_counts.rds") |>
+  read_rds()
 ```
 
 
-To show the distribution of burglary counts we can create a *histogram* using `geom_histogram()`. A histogram divides the range of values present in the data into a number of equally sized _bins_, then shows bars representing the number of observations (rows) in the data that have values fitting into each bin. We can either allow `geom_histogram()` to set the number of bins automatically, or set it ourself with the `binwidth` argument.
-
-We will set the `binwidth` argument of the `geom_histogram()` function to `binwidth = 1` so that each bar on the chart will show now many LSOAs have each individual value. We will also add some labels to help readers interpret the chart.
-
-
 ```{r}
-#| filename: "chapter14b.R"
+#| filename: "chapter_14c.R"
+#| echo: false
 
-# Create histogram of burglary counts
-burglary |> 
-  ggplot() +
-  # Specify which column in the data contains the value we're interested in
-  aes(x = count) +
-  # Add a histogram to the chart
-  geom_histogram(binwidth = 1) +
-  # Remove unnecessary space at either end of both axes
-  scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0)) +
-  # Add labels
-  labs(
-    title = "Number of burglaries in Northamptonshire neighbourhoods",
-    x = "count of burglaries, 2020",
-    y = "number of LSOAs"
-  ) +
-  theme_minimal() +
-  theme(
-    # Remove unnecessary vertical grid lines
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank()
-  )
+# Load packages
+pacman::p_load(ggridges, here, httr2, tidyverse)
+
+# Download the burglary data
+request(
+  "https://mpjashby.github.io/crimemappingdata/northants_burglary_counts.rds"
+) |>
+  req_perform(path = here("data", "raw", "northants_burglary_counts.rds"))
+
+# Load the local copy of the burglary data
+burglary <- here("data", "raw", "northants_burglary_counts.rds") |>
+  read_rds()
 ```
 
 
-Interpreting histograms can be slightly counter-intuitive. The important thing to remember is that the horizontal position of each bar represents a number of burglaries and the vertical height of the bar represents how many neighbourhoods had that number of burglaries. This is the opposite of a bar chart, where the length of the bar represents the number of burglaries.
-
-In this chart, we can see on this chart that most LSOAs had only a few burglaries in 2020 (represented by the tallest bars are to the left of the chart), while a few LSOAs had a larger number (the bars to the right of the chart). This is what we would expect, since we know the crimes are generally concentrated in a few places.
-
-
-### Plotting density curves
-
-Histograms are one way to show the distribution of a variable (in this case, the count of burglaries). Another way to show the distribution of a variable is to create a _density curve_ with `geom_density()`. A density curve is a _smoothed_ version of a histogram, which is useful to show the general distribution of a variable (in this case, the number of LSOAs with different numbers of burglaries) at the cost of not showing the exact data. The mathematical procedure used by `geom_density()` to calculate a density curve is the same as the kernel-density estimation process we have already learned to use to show concentrations of crime on a map.
+So that we can see what this dataset looks like, we first run `head()` in the R Console:
 
 
 ```{r}
-#| filename: "chapter14b.R"
+#| filename: "R Console"
 
-# Create a density plot of burglaries
-burglary |> 
-  ggplot() +
-  # Specify which column in the data contains the value we're interested in
-  aes(x = count) +
-  # Add a density curve to the chart
-  geom_density(colour = "red", linewidth = 1) +
-  # Remove unnecessary space at either end of both axes
-  scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(labels = scales::label_percent()) +
-  # Add labels
-  labs(
-    title = "Number of burglaries in Northamptonshire neighbourhoods",
-    x = "count of burglaries, 2020",
-    y = "percentage of LSOAs"
-  ) +
-  theme_minimal() +
-  theme(
-    # Remove unnecessary vertical grid lines
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank()
-  )
+head(burglary)
 ```
 
 
-We can use density curves to show the distribution of a variable across multiple categories at once. For example, we could show the distribution of burglary counts at the neighbourhood level for all the districts in Northamptonshire. To do this we use the `geom_density_ridges()` function from the ggridges package to create a *ridge plot*. Although this function does not come from the ggplot2 package, it is designed to be used inside a `ggplot()` stack.
+We can start the process of producing a chart by seeing what type of chart `ggauto()` produces when we give it a continuous (numeric) variable rather than (as in the bar chart example above) a categorical variable. Run this code in the R console to see the result.
 
 
 ```{r}
-#| filename: "chapter14b.R"
+#| label: ggauto-raincloud
+#| filename: "R Console"
+#| fig-alt: "A raincloud plot of burglary counts in Northamptonshire neighbourhoods. Most neighbourhoods have low counts, while a small number have much higher counts."
+
+burglary |>
+  ggauto::ggauto(count)
+```
+
+
+This type of chart is called a _raincloud plot_, because it looks like rain falling from a cloud. It shows us the distribution of the data in three ways:
+
+* At the top is a density plot showing us the overall distribution of the count of burglaries in LSOAs in Northamptonshire.
+* In the middle is a black bar, which shows the _inter-quartile range_ of the data: the range of values that contains the middle 50% of the data. The ends of the black bar show the first and third quartiles, which are the values that divide the lowest 25% and highest 25% of the data from the middle 50%. The black dot in the middle of the black bar shows the median value, which is the value that divides the lower half of the data from the upper half.
+* At the bottom is a plot in which each LSOA is shown as a dot and the dots are stacked according to how many burglaries occurred in that LSOA.
+
+All three of these elements show the same information, but in different ways. We can, for example, see that most LSOAs had only a few burglaries in 2020, while a small number of LSOAs had substantially more. This is what we would expect, since we learned in @sec-crime-concentration that crime is heavily concentrated in a few places.
+
+Raincloud plots can be very useful, but really only if your audience is already familiar with interpreting them. Many audiences for crime analysis, such as police leaders or community representatives, may not be familiar with raincloud plots and so might find them confusing or off-putting. A simpler way of showing the distribution of a numeric variable is a _ridge plot_, which shows only the density plot from a raincloud plot.
+
+We can create a ridge plot with the `geom_density_ridges()` function from the ggridges package. This function does not come from the ggplot2 package, but is designed to be used inside a `ggplot()` stack. Ridge plots are particularly useful for showing the distribution of a numeric variable across multiple categories at once. For example, we could show the distribution of burglary counts at the neighbourhood level for all the districts in Northamptonshire.
+
+Add this code to the `chapter_14c.R` file and run it.
+
+```{r}
+#| label: burglary-ridge-plot
+#| filename: "chapter_14c.R"
+#| fig-alt: "Overlapping density curves compare burglary-count distributions across the seven districts of Northamptonshire. Every distribution is concentrated at low counts and has a tail towards higher counts."
 
 # Add ridge plot of Northamptonshire burglary
-burglary |> 
+burglary |>
   # Wrap the district names by replacing any space in a name with a new-line
-  mutate(district = str_replace_all(district, "\\s", "\n")) |> 
+  mutate(district = str_replace_all(district, "\\s", "\n")) |>
   ggplot() +
   # Specify which columns in the data contain the values we're interested in
   aes(x = count, y = district) +
   # Add ridge plot
-  ggridges::geom_density_ridges() +
+  geom_density_ridges() +
   # Remove unnecessary space at either end of x axis
   scale_x_continuous(expand = c(0, 0)) +
   # Add labels
   labs(
-    title = "Number of burglaries in Kettering neighbourhoods",
+    title = "Number of burglaries in Northamptonshire neighbourhoods",
     x = "count of burglaries, 2020",
     y = NULL
   ) +
@@ -1197,113 +1307,130 @@ burglary |>
 ```
 
 
-::: {.callout-tip collapse="true"}
-#### What does the message `Picking joint bandwidth of 1.98` mean?
+::: {.callout-tip collapse="true" title="What does the message `Picking joint bandwidth of 1.98` mean?"}
 
 As you know from previous chapters, density estimation depends on us choosing a _bandwidth_ to control the degree of smoothing between data points. By default, `geom_density_ridges()` chooses a suitable bandwidth automatically and reports this in a message. The bandwidth is referred to as 'joint' because the same bandwidth is used for all the density curves on a chart.
 
 If you wanted to include a ridge plot in a Quarto document, you would probably not want this message to appear in your report. To suppress the message, you can use the Quarto chunk option `#| message: false`.
 :::
 
+The ridge plot shows the distribution of burglary counts in LSOAs within each district, with the distributions overlapping slightly to save space. From this we can see that across all districts most LSOAs have few burglaries, with a small number of LSOAs having more. We can also see (top-right of the chart) there are a small number of LSOAs (probably, in fact, just one LSOA) in Wellingborough district with a much higher number of burglaries than anywhere else in Northamptonshire.
 
-The ridge plot shows the distribution of burglary counts in LSOAs within each district, with the distributions overlapping slightly to save space. From this we can see that across all districts most LSOAs have few burglaries, with a small number of LSOAs having more. We can also see there are a small number of LSOAs (probably, in fact, just one LSOA) in Wellingborough district with a much higher number of burglaries than anywhere else in Northamptonshire.
-
-
-```{r}
-#| include: false
-
-burglary_district_counts <- count(burglary, district, sort = TRUE)
-```
-
-
-### Small-multiple charts
-
-Density plots can be helpful to summarise a lot of information, but they have some disadvantages. In particular, they don't show that the number of LSOAs in each district is quite different: there are `r pluck(burglary_district_counts, "n", 1)` LSOAs in `r pluck(burglary_district_counts, "district", 1)` but only `r pluck(burglary_district_counts, "n", nrow(burglary_district_counts))` LSOAs in `r pluck(burglary_district_counts, "district", nrow(burglary_district_counts))`. To make this clearer we can instead produce several dot plots, one for each district -- what are called *small-multiple* charts.
-
-We could create small-multiple charts by producing a separate histogram for each district and then combine them with the patchwork package, but that would involve a lot of repeated code. Fortunately, we can use a feature of the ggplot2 package called *faceting* to split our single histogram into multiple plots based on a column in the data (in this case, the district name).
-
-Adding `facet_wrap()` to a `ggplot()` stack will cause R to create multiple plots and wrap them across multiple rows and columns so that they approximately fit into the available space. If we only want the small multiples to appear on top of each other (i.e. in multiple rows) or next to each other (i.e. in multiple columns), we can use the `facet_grid()` function. In this case we want the small multiples to appear on top of each other, so we will use `facet_grid()` and say that the small multiples (which ggplot2 calls *facets*) should be based on the `district` column in the data by specifying `rows = vars(district)` (it is necessary to wrap the name of the column that you want to use as the basis of the small multiples in the `vars()` helper function, but we do not need to go into why).
-
+Save `chapter_14c.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your complete distribution-analysis script should now look like this:
 
 ```{r}
-#| filename: "chapter14b.R"
-#| fig-asp: 1
-
-# Create histogram of burglary counts
-burglary |> 
-  ggplot() +
-  # Specify which column in the data contains the value we're interested in
-  aes(x = count) +
-  # Add a histogram to the chart
-  geom_histogram(binwidth = 1) +
-  # Split chart into small multiples, one for each district
-  facet_grid(rows = vars(district), labeller = label_wrap_gen(width = 10)) +
-  # Remove unnecessary space at either end of both axes
-  scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0)) +
-  # Add labels
-  labs(
-    title = "Number of burglaries in Northamptonshire neighbourhoods",
-    x = "count of burglaries, 2020",
-    y = "number of LSOAs"
-  ) +
-  theme_minimal() +
-  theme(
-    # Remove unnecessary vertical grid lines
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    # Control alignment of facet titles
-    strip.text.y = element_text(angle = 0, hjust = 0)
-  )
+#| file: "../R/chapter_14c.R"
+#| eval: false
+#| filename: "chapter_14c.R"
 ```
 
+To check that the analysis is reproducible, restart R using the **Restart R** (**&#10227;**) button in Positron's **Console** panel, then run the script from beginning to end.
 
-You might have noticed we made some other changes to our code for this chart to 
-make it clearer:
 
-  * Wrapped the facet labels using the `label_wrap_gen()` helper function so that some of the longer district names don't take up too much space horizontally.
-  * Made the facet labels easier to read by making the text horizontal (rather than the default vertical text) using the `strip.text.y` attribute to `theme()` and the `element_text()` helper function. `angle` sets the rotation of the text (or in this case, specifies that there should be no rotation) and `hjust = 0` specifies that the text should be left aligned.
+::: {.callout-quiz .callout title="Visualising distributions"}
 
-There are many more-technical ways to show distributions, such as box plots or violin plots. However, these can be difficult to interpret for people who are not used to looking at those particular types of chart, so they should probably be avoided for communicating with general audiences.
+```{r}
+#| label: distributions-quiz
+#| echo: false
+
+distributions_quiz1 <- c(
+  "A density curve only",
+  answer = "A density curve, an interval-and-median summary and individual observations",
+  "A fitted trend line and confidence interval",
+  "A separate bar for every category"
+)
+
+distributions_quiz2 <- c(
+  "They show exact values for every observation",
+  "They are always familiar to general audiences",
+  answer = "They make it easier to compare distributions across several categories",
+  "They can only be used when every category has the same number of observations"
+)
+```
+
+**Which elements are combined in the raincloud plot produced by `ggauto()`?**
+
+`r webexercises::longmcq(distributions_quiz1)`
+
+
+**Why can ridge plots be useful when a numeric variable is divided into several categories?**
+
+`r webexercises::longmcq(distributions_quiz2)`
+
+:::
 
 
 
 ## Comparing continuous variables
 
-So far we have used bar charts to communicate a single number (in our example, a number of murders) for each value of a categorical variable (the name of each Malaysian state or territory), and histograms to show multiple numbers (burglary counts for each neighbourhood) for each value of a categorical variable (districts in Northamptonshire). 
+So far we have used bar charts to communicate a single number (in our example, a number of murders) for each value of a categorical variable (the name of each Malaysian state or territory), and ridge plots to show multiple numbers (burglary counts for each neighbourhood) for each value of a categorical variable (districts in Northamptonshire).
 
-Both these types of chart compare a numeric variable to a categorical one. But sometimes we may want to compare two categorical variables. We can do this with a *scatter plot*.
+Both these types of chart compare a numeric variable to a categorical one. But sometimes we may want to compare two numeric variables. We can do this with a *scatter plot*.
 
-Restart R (`Session > Restart R`), open a new R script file and save it as `chapter14c.R`. Use this code to load rates of thefts of and from motor vehicles per 1,000 households saying they own a vehicle for a selection of municipalities in South Africa.
+Start a new R session by clicking the **Restart R** (**&#10227;**) button in Positron's **Console** panel. Create a new R script inside the `R` folder and save it as `chapter_14d.R`. Use this code to download and load rates of thefts of and from motor vehicles per 1,000 households saying they own a vehicle for a selection of municipalities in South Africa.
 
 
 ```{r}
-#| filename: "chapter14c.R"
+#| filename: "chapter_14d.R"
+#| eval: false
 
 # Load packages
-pacman::p_load(ggrepel, tidyverse)
+pacman::p_load(ggrepel, here, httr2, tidyverse)
 
-# Load South African vehicle theft rates
-vehicle_theft <- read_rds("https://mpjashby.github.io/crimemappingdata/south_africa_vehicle_theft.rds")
+# Download South African vehicle-theft rates
+request(
+  "https://mpjashby.github.io/crimemappingdata/south_africa_vehicle_theft.rds"
+) |>
+  req_perform(path = here("data", "raw", "south_africa_vehicle_theft.rds"))
+
+# Load the local copy of the vehicle-theft rates
+vehicle_theft <- here("data", "raw", "south_africa_vehicle_theft.rds") |>
+  read_rds()
+```
+
+```{r}
+#| filename: "chapter_14d.R"
+#| echo: false
+
+# Load packages
+pacman::p_load(ggrepel, here, httr2, tidyverse)
+
+# Download South African vehicle-theft rates
+request(
+  "https://mpjashby.github.io/crimemappingdata/south_africa_vehicle_theft.rds"
+) |>
+  req_perform(path = here("data", "raw", "south_africa_vehicle_theft.rds"))
+
+# Load the local copy of the vehicle-theft rates
+vehicle_theft <- here("data", "raw", "south_africa_vehicle_theft.rds") |>
+  read_rds()
+```
+
+Let's look at the dataset in the R Console in the usual way:
+
+
+```{r}
+#| filename: "R Console"
+
+head(vehicle_theft)
 ```
 
 
-Since thefts *of* vehicle and thefts *from* vehicles are different but related crimes, we might want to see if there is a relationship between counts of each type.
+Since thefts *of* vehicles and thefts *from* vehicles are different but related crimes, we might want to see if there is a relationship between the rates of each type. We can do that using a _scatter plot_.
 
-To create a `ggplot()` scatter plot we use `geom_point()`, the same function we previously used to create point maps. This makes sense, since point maps are a specialised type of scatter plot in which the *x* and *y* axes of the chart show the latitude and longitude or easting and northing of each crime location.
+The data in the `vehicle_theft` object are in long format, with each row representing a crime rate in a particular category for a particular municipality. To make a scatter plot where each point represents a municipality, we need to have all the data for a municipality in a single row of data, so we will transform the data with `pivot_wider()` (as we did for some of the tables at the start of this chapter). This converts the values of the `crime_category` column into column names. These names are quite long, so we first convert them to snake case using `janitor::clean_names()` and then use `rename()` to shorten the names so they are easier to work with.
 
-The data in the `vehicle_theft` object are in long format, with each row representing a count of crime in a particular category for a particular municipality. To make a scatter plot where each point represents a municipality, we need to have all the data for a municipality in a single row of data, so we will need to transform the data with `pivot_wider()` (as we did for some of the tables at the start of this chapter). Since this converts the values of the `crime_category` column into column names. These names are quite long, so we first convert them to snake case using `janitor::clean_names()` and then use `rename()` to shorten the names so they are easier to work with.
-
-Add this code to the R script file.
+Replace the code in `chapter_14d.R` that loads the data with this code.
 
 
 ```{r}
-#| filename: "chapter14c.R"
+#| filename: "chapter_14d.R"
 
-# Convert vehicle theft data to wide format
-vehicle_theft_wider <- vehicle_theft |> 
-  pivot_wider(names_from = crime_category, values_from = theft_rate) |> 
-  janitor::clean_names() |> 
+# Load the local copy of the vehicle-theft rates
+vehicle_theft <- here("data", "raw", "south_africa_vehicle_theft.rds") |>
+  read_rds() |>
+  pivot_wider(names_from = crime_category, values_from = theft_rate) |>
+  janitor::clean_names() |>
   rename(
     theft_of = theft_of_motor_vehicle,
     theft_from = theft_out_of_or_from_motor_vehicle
@@ -1311,23 +1438,44 @@ vehicle_theft_wider <- vehicle_theft |>
 ```
 
 
-We can now make a basic scatter plot.
+We can now use `ggauto()` to make a basic scatter plot.
 
 
 ```{r}
+#| label: ggauto-scatter
 #| filename: "R Console"
 #| fig-asp: 1
+#| fig-alt: "A scatter plot comparing rates of theft of and theft from motor vehicles across South African municipalities. Most points cluster at low rates, with a few municipalities having high rates of one type."
+
+vehicle_theft |>
+  ggauto::ggauto(theft_of, theft_from) +
+  labs(
+    title = "Vehicle thefts in South African municipalities",
+    subtitle = "each dot represents one municipality, 2018-19",
+    x = "rate of thefts of motor vehicles per 1,000 vehicle-owning households",
+    y = "rate of thefts from motor vehicles per 1,000 vehicle-owning households"
+  )
+```
+
+
+This chart generally looks good, but you might be able to spot a problem: the y-axis is not labelled correctly. In the background, `ggauto()` tries to use a trick to make the y-axis label appear horizontally, so it is easier to read. Unfortunately that trick doesn't work when we specify a subtitle for the plot, or when we try to specify the y-axis title with `labs()`. Fortunately, the code needed to replicate this chart with `ggplot()` is quite simple, so in this example we don't add much more complexity by not using `ggauto()`.
+
+Run this code in the R Console.
+
+
+```{r}
+#| label: scatter-plot-basic
+#| filename: "R Console"
+#| fig-asp: 1
+#| fig-alt: "A scatter plot comparing rates of theft of and theft from motor vehicles across South African municipalities. Most points cluster at low rates, with a few municipalities having high rates of one type."
 
 # Create scatter plot of vehicle theft
-ggplot(vehicle_theft_wider) +
+ggplot(vehicle_theft) +
   # Specify which columns in the data should control the x and y positions of
   # each point
   aes(x = theft_of, y = theft_from) +
   # Add the points
   geom_point() +
-  # Specify the format for the axis labels
-  scale_x_continuous(labels = scales::comma_format()) +
-  scale_y_continuous(labels = scales::comma_format()) +
   # Add labels
   labs(
     title = "Vehicle thefts in South African municipalities",
@@ -1335,11 +1483,12 @@ ggplot(vehicle_theft_wider) +
     x = "rate of thefts of motor vehicles per 1,000 vehicle-owning households",
     y = "rate of thefts from motor vehicles per 1,000 vehicle-owning households"
   ) +
+  # Remove unnecessary chart elements
   theme_minimal()
 ```
 
 
-From this plot we can see that most areas have low rates of both theft of and theft from motor vehicles, with a few areas having very-high rates of one type or the other (but none have high rates of both).
+From this plot we can see that most areas have low rates of both theft of and theft from motor vehicles, with a few areas having very high rates of one type or the other (but none have high rates of both).
 
 Looking at the bottom-left corner of the chart we can see that we have again encountered the problem of overlapping points making patterns less clear. We can try to deal with this by making the points semi-transparent using the `alpha` argument to `geom_point()`.
 
@@ -1351,46 +1500,46 @@ To add text annotations we use the `annotate()` function from ggplot2, which all
 
 
 ```{r}
+#| label: fig-scatter-label-areas
 #| filename: "R Console"
 #| fig-asp: 1
+#| fig-alt: "A scatter plot of municipal vehicle-theft rates divided by dashed median lines. Annotations explain the upper-left and lower-right areas, and semi-transparent points reveal overlapping observations."
+#| fig-cap: ""
 
 # Create scatter plot of vehicle theft
-ggplot(vehicle_theft_wider) +
+ggplot(vehicle_theft) +
   # Specify which columns in the data should control the x and y positions of
   # each point
   aes(x = theft_of, y = theft_from) +
   # Add vertical line showing median rate of theft of a vehicle
   geom_vline(
-    xintercept = median(pull(vehicle_theft_wider, "theft_of")),
+    xintercept = median(pull(vehicle_theft, "theft_of")),
     linetype = "22"
   ) +
   # Add horizontal line showing median rate of theft from a vehicle
   geom_hline(
-    yintercept = median(pull(vehicle_theft_wider, "theft_from")),
+    yintercept = median(pull(vehicle_theft, "theft_from")),
     linetype = "22"
   ) +
   # Add points
   geom_point(alpha = 0.5) +
   # Add annotations to aid interpretation
   annotate(
-    geom = "text", 
-    x = 20, 
-    y = 0, 
-    label = "high rate of thefts of vehicles\nlow rate of thefts from vehicles", 
+    geom = "text",
+    x = 20,
+    y = 0,
+    label = "high rate of thefts of vehicles\nlow rate of thefts from vehicles",
     hjust = 1,
     lineheight = 1
   ) +
   annotate(
-    geom = "text", 
-    x = 1, 
-    y = 75, 
-    label = "low rate of thefts of vehicles\nhigh rate of thefts from vehicles", 
+    geom = "text",
+    x = 1,
+    y = 75,
+    label = "low rate of thefts of vehicles\nhigh rate of thefts from vehicles",
     hjust = 0,
     lineheight = 1
   ) +
-  # Specify the format for the axis labels
-  scale_x_continuous(labels = scales::comma_format()) +
-  scale_y_continuous(labels = scales::comma_format()) +
   # Add labels
   labs(
     title = "Vehicle thefts in South African municipalities",
@@ -1405,41 +1554,44 @@ ggplot(vehicle_theft_wider) +
 ```
 
 
-From this plot we can now see that half of municipalities have very low rates of both types of theft (shown by the dots below and to the left of the median lines).
+Each median line divides the municipalities into two equal-sized groups for one variable. For example, the dots below and to the left of both lines are municipalities with below-median rates of both types of theft.
 
-We can make some further changes to this chart. For example, instead of labelling areas on the plot we could instead label the municipalities with high rates of vehicle theft (we cannot include both types of label because they would overlap). To do that, we will create a new column in the data containing either the municipality name (for high-rate municipalities) or `NA` (meaning `ggplot()` will not create a label for that row if we set `na.rm = TRUE`). We can then use `geom_label_repel()` to add the labels to the chart, remembering to add `label = label` to the `aes()` function so `ggplot()` knows which column in the data to use for the labels.
+We can make some further changes to this chart. For example, instead of labelling areas on the plot we could label the municipalities with unusually high rates of vehicle theft. If we add too much text to the chart then the chart will become cluttered and the text may overlap, so we will probably need to choose between labelling municipalities with unusually high values and labelling the regions as in @fig-scatter-label-areas. Which you choose is a judgement call for you to make based on what you think is most likely to be useful for a particular audience. Many audiences for crime analysis will be particularly interested in municipalities with unusually high values, so we will choose to label those.
+
+If we labelled every dot directly using `geom_label()`, labels at their exact data positions could obscure the dots and overlap one another. The ggrepel package extends ggplot2 with `geom_label_repel()`, which automatically moves labels apart and draws connecting lines where necessary. This makes selected labels much easier to read on a crowded scatter plot.
+
+To use it, we will create a new column in the data called `label`. This column will contain the municipality name for municipalities with high rates and `NA` for all other rows. We will then use the `na.rm = TRUE` argument to `geom_label_repel()` to tell the function to ignore the deliberately missing labels without producing a warning. We will also specify `aes(label = label)` to tell ggplot2 which column contains the text to display. The thresholds of 17 and 65 below were chosen to label a manageable number of municipalities with unusually high values; they are not the result of a formal statistical test for outliers.
 
 
 ```{r}
+#| label: scatter-plot-repelled-labels
 #| filename: "R Console"
 #| fig-asp: 1
+#| fig-alt: "A scatter plot of vehicle-theft rates with non-overlapping labels identifying municipalities that have unusually high rates of either theft of or theft from motor vehicles."
 
 # Create scatter plot of vehicle theft
-vehicle_theft_wider |> 
+vehicle_theft |>
   # Create a new column in the data, either containing the municipality name or
   # `NA` depending on the values of `theft_of` and `theft_from`
-  mutate(label = if_else(theft_of > 17 | theft_from > 65, municipality, NA)) |> 
+  mutate(label = if_else(theft_of > 17 | theft_from > 65, municipality, NA)) |>
+  # Initiate plot
   ggplot() +
-  # Specify which columns in the data should control the x and y positions of
-  # each point and the labels (for those points that have labels)
-  aes(x = theft_of, y = theft_from, label = label) +
+  # Specify which columns control the position of all the chart layers
+  aes(x = theft_of, y = theft_from) +
   # Add vertical line showing median rate of theft of a vehicle
   geom_vline(
-    xintercept = median(pull(vehicle_theft_wider, "theft_of")),
+    xintercept = median(pull(vehicle_theft, "theft_of")),
     linetype = "22"
   ) +
   # Add horizontal line showing median rate of theft from a vehicle
   geom_hline(
-    yintercept = median(pull(vehicle_theft_wider, "theft_from")),
+    yintercept = median(pull(vehicle_theft, "theft_from")),
     linetype = "22"
   ) +
   # Add points
   geom_point(alpha = 0.5) +
-  # Add labels
-  geom_label_repel(na.rm = TRUE, label.size = 0, lineheight = 1) +
-  # Specify the format for the axis labels
-  scale_x_continuous(labels = scales::comma_format()) +
-  scale_y_continuous(labels = scales::comma_format()) +
+  # Add labels for municipalities with unusually high rates
+  geom_label_repel(aes(label = label), na.rm = TRUE, linewidth = 0) +
   # Add labels
   labs(
     title = "Vehicle thefts in South African municipalities",
@@ -1454,43 +1606,47 @@ vehicle_theft_wider |>
 ```
 
 
-Finally, we can add a trend line to the plot. We do this using the `geom_smooth()` function from ggplot2. `geom_smooth()` can add different types of trend line to a plot, but in this example we will specify a simple linear trend line by setting `method = "lm"`. We will also specify `formula = y ~ x` (the default) to avoid `geom_smooth()` producing a message to tell us what formula it used to calculate the trend.
+Finally, we can add a trend line to the plot. We do this using the `geom_smooth()` function from ggplot2. `geom_smooth()` can add different types of trend line to a plot, but in this example we will specify a simple linear trend line by setting `method = "lm"` ('lm' stands for _linear model_). We will also specify `formula = y ~ x` (the default) to avoid `geom_smooth()` producing a message to tell us what formula it used to calculate the trend. By default, `geom_smooth()` also adds a shaded uncertainty interval around the line. Statistical inference is outside the scope of this course, so we set `se = FALSE` to omit that interval.
 
-Add this code to the R script file and run it.
+Add this code to the `chapter_14d.R` file and run it.
 
 
 ```{r}
-#| filename: "chapter14c.R"
+#| label: scatter-plot-final
+#| filename: "chapter_14d.R"
 #| fig-asp: 1
+#| fig-alt: "A scatter plot comparing rates of theft of and theft from motor vehicles. Dashed median lines divide the plot, selected municipalities are labelled without overlaps and a straight trend line slopes slightly upward."
 
 # Create scatter plot of vehicle theft
-vehicle_theft_wider |> 
+vehicle_theft |>
   # Create a new column in the data, either containing the municipality name or
   # `NA` depending on the values of `theft_of` and `theft_from`
-  mutate(label = if_else(theft_of > 17 | theft_from > 65, municipality, NA)) |> 
+  mutate(label = if_else(theft_of > 17 | theft_from > 65, municipality, NA)) |>
+  # Initiate plot
   ggplot() +
-  # Specify which columns in the data should control the x and y positions of
-  # each point and the labels (for those points that have labels)
-  aes(x = theft_of, y = theft_from, label = label) +
+  # Specify which columns control the position of all the chart layers
+  aes(x = theft_of, y = theft_from) +
   # Add vertical line showing median rate of theft of a vehicle
   geom_vline(
-    xintercept = median(pull(vehicle_theft_wider, "theft_of")),
+    xintercept = median(pull(vehicle_theft, "theft_of")),
     linetype = "22"
   ) +
   # Add horizontal line showing median rate of theft from a vehicle
   geom_hline(
-    yintercept = median(pull(vehicle_theft_wider, "theft_from")),
+    yintercept = median(pull(vehicle_theft, "theft_from")),
     linetype = "22"
   ) +
   # Add trend line
-  geom_smooth(method = "lm", formula = y ~ x, colour = "grey20") +
+  geom_smooth(
+    method = "lm",
+    formula = y ~ x,
+    se = FALSE,
+    colour = "grey20"
+  ) +
   # Add points
   geom_point(alpha = 0.5) +
-  # Add labels
-  geom_label_repel(na.rm = TRUE, label.size = 0, lineheight = 1) +
-  # Specify the format for the axis labels
-  scale_x_continuous(labels = scales::comma_format()) +
-  scale_y_continuous(labels = scales::comma_format()) +
+  # Add labels for municipalities with unusually high rates
+  geom_label_repel(aes(label = label), na.rm = TRUE, linewidth = 0) +
   # Add labels
   labs(
     title = "Vehicle thefts in South African municipalities",
@@ -1505,47 +1661,50 @@ vehicle_theft_wider |>
 ```
 
 
-::: {.callout-tip collapse="true"}
-#### Why does this code produce a warning `The following aesthetics were dropped ...`?
+::: {.callout-tip title="Why is `aes(label = label)` inside `geom_label_repel()`?"}
 
-The code that produces the chart above also produces a warning saying some aesthetics were dropped during a statistical transformation. This is because `geom_smooth()` does not know how to use the `label` aesthetic. There are two options to prevent this warning appearing in a Quarto document. First, you could set the `#| warning: false` chunk option, although this will suppress any other warnings produced by this code chunk, so you should only add this chunk option once you are sure the code runs without any problems.
-
-The second option is to remove `label = label` from the call to `aes()` on line 9 of the code and add `aes(label = label)` separately on line 21.
+The `theft_of` and `theft_from` columns control the position of every layer, so we map them to `x` and `y` in the main call to `aes()`. Only the label layer needs the `label` column, so we map it inside `geom_label_repel()`. If we mapped `label` in the main call, `geom_smooth()` would inherit an aesthetic it cannot use and would produce a warning.
 :::
 
 
 From this chart, we can see which municipalities have particularly unusual vehicle-theft rates. For example, we might well want to explore the rates of theft from vehicles in Beaufort West or Stellenbosch municipalities to see what makes them so different from the others, and similarly for the rate of theft of vehicles in Ethekwini.
 
-One note of caution when using `geom_smooth()`: this function will show the _direction_ of the relationship between two variables regardless of the _strength_ of that relationship. In extreme cases, that could mean that a chart would show a trend line between two variables even if the variables had almost no relationship to one another.
+One note of caution when using `geom_smooth()`: this function will show the _direction_ of the estimated relationship between two variables even when that relationship is weak. A trend line can also be strongly influenced by unusual observations or fail to represent a relationship that is not approximately linear.
 
 For example, `geom_smooth()` produces a line showing the direction of the relationship between the two variables in each of these three charts, even though the relationship on the right is much stronger than the one on the left.
 
 
-```{r geom-smooth-relationships}
+```{r}
+#| label: geom-smooth-relationships
 #| echo: false
 #| fig-asp: 0.33
 #| out-width: "100%"
+#| fig-alt: "Three scatter plots compare weak, moderate and strong relationships. Each has an upward-sloping trend line, although the points are much more dispersed in the weak relationship than in the strong one."
 
 tibble(
   group = factor(
-    c("weak relationship", "moderate relationship", "strong relationship"), 
-    levels = c("weak relationship", "moderate relationship", "strong relationship")
+    c("weak relationship", "moderate relationship", "strong relationship"),
+    levels = c(
+      "weak relationship",
+      "moderate relationship",
+      "strong relationship"
+    )
   ),
   x = list(1:10, 1:10, 1:10)
-) |> 
+) |>
   mutate(
     sd = recode(
-      group, 
-      "weak relationship" = 10, 
-      "moderate relationship" = 4, 
+      group,
+      "weak relationship" = 10,
+      "moderate relationship" = 4,
       "strong relationship" = 0.5
     )
-  ) |> 
-  mutate(y = list(rnorm(10, sd = sd)), .by = sd) |> 
-  unnest(c(x, y)) |> 
-  mutate(y = scales::rescale(x + y, to = c(0, 10))) |> 
-  ungroup() |> 
-  ggplot() + 
+  ) |>
+  mutate(y = list(rnorm(10, sd = sd)), .by = sd) |>
+  unnest(c(x, y)) |>
+  mutate(y = scales::rescale(x + y, to = c(0, 10))) |>
+  ungroup() |>
+  ggplot() +
   aes(x = x, y = y, colour = group) +
   geom_smooth(method = "lm", formula = "y ~ x", se = FALSE, na.rm = TRUE) +
   geom_point() +
@@ -1563,44 +1722,63 @@ tibble(
 ```
 
 
-::: {.callout-important}
-#### Don't try to interpret the strength of a relationship from a trend line
+::: {.callout-important title="Don't try to interpret the strength of a relationship from a trend line"}
 
-Be very careful about trying to interpret the strength of relationships between two variables by plotting them on a chart. It is much better to measure the strength of the relationship using a statistical test such as a correlation test, but statistical tests are outside the scope of this course.
+Be very careful about trying to interpret the strength of a relationship from the slope of a trend line. A correlation coefficient can summarise the strength of a linear relationship, while statistical inference can help quantify uncertainty, but those techniques and their assumptions are outside the scope of this course. For now, inspect the spread and shape of the points as well as the line, and avoid making claims that the chart cannot support.
 :::
 
+Save `chapter_14d.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your complete scatter-plot script should now look like this:
 
-::: {.callout-quiz .callout}
-#### Visualising distributions
+```{r}
+#| file: "../R/chapter_14d.R"
+#| eval: false
+#| filename: "chapter_14d.R"
+```
 
-```{r distributions-quiz}
+To check that the analysis is reproducible, restart R using the **Restart R** (**&#10227;**) button in Positron's **Console** panel, then run the script from beginning to end.
+
+
+::: {.callout-quiz .callout title="Comparing continuous variables"}
+
+```{r}
+#| label: scatter-plot-quiz
 #| echo: false
 
-distributions_quiz1 <- c(
-  "Pie chart",
-  answer = "Density plot",
-  "Bar chart",
-  "Scatter plot"
+scatter_plot_quiz1 <- c(
+  "Two categorical variables",
+  answer = "Two numeric variables",
+  "One spatial object and one categorical variable",
+  "One numeric variable only"
 )
 
-distributions_quiz2 <- c(
-  answer = "Density plots do not require binning data into categories",
-  "Density plots always provide exact numerical values",
-  "Density plots are only used for categorical data",
-  "Density plots cannot be used for crime analysis"
+scatter_plot_quiz2 <- c(
+  answer = "It moves labels apart to reduce overlaps",
+  "It removes points that do not have labels",
+  "It converts labels into a legend",
+  "It calculates a trend line through the points"
+)
+
+scatter_plot_quiz3 <- c(
+  "Exactly half of the points must be below and to the left of both lines",
+  "The lines prove that the two variables are related",
+  answer = "Each line divides the observations in half for one variable",
+  "Points above either line are statistical outliers"
 )
 ```
 
+**What type of variables does a scatter plot usually compare?**
 
-**Which of these types of visualization is best used to show the distribution of a single continuous variable?**
-
-`r webexercises::longmcq(distributions_quiz1)`
+`r webexercises::longmcq(scatter_plot_quiz1)`
 
 
-**What is an advantage of using a density plot over a histogram?**
+**Why might you use `geom_label_repel()` rather than `geom_label()`?**
 
-`r webexercises::longmcq(distributions_quiz2)`
+`r webexercises::longmcq(scatter_plot_quiz2)`
 
+
+**What can we conclude from horizontal and vertical median lines on a scatter plot?**
+
+`r webexercises::longmcq(scatter_plot_quiz3)`
 
 :::
 
@@ -1612,26 +1790,42 @@ In this chapter we have learned how to present data about crime at places withou
 
 Whether to use a map or a chart, and which type of map or chart to use, are design decisions for you to make. When you make these decisions, always remember that what is most important is that your audience understands your message. This makes it very important that you understand your audience.
 
+You can now:
+
+- choose between a map, table or chart based on the question and audience;
+- prepare long-format data for presentation in a wide table;
+- format and label tables using the gt package;
+- use `ggauto()` to create a useful first version of a chart;
+- build a visualisation from `ggplot()`, aesthetic mappings and geoms;
+- use geoms, labels and themes in a ggplot2 stack;
+- create clear bar charts and order their categories by value;
+- use accessible colour palettes and check charts for common colour-vision differences;
+- visualise distributions with raincloud plots and ridge plots; and
+- compare two numeric variables using an annotated scatter plot.
+
 
 ::: {.box .reading}
 
 Visualising data with charts is a very large topic and there are lots of resources available to help you learn more. To get started, you might want to look at:
 
+  * The [Datawrapper guide to choosing a chart type](https://www.datawrapper.de/blog/chart-types-guide) for help matching a chart to the question you want to answer.
+  * The [Data visualisation chapter of *R for Data Science*](https://r4ds.hadley.nz/data-visualize.html) by Hadley Wickham, Mine Çetinkaya-Rundel and Garrett Grolemund.
   * [An Introduction to ggplot2](https://uc-r.github.io/ggplot_intro) from the University of Cincinnati Business Analytics team.
-  * The [ggplot2 cheat sheet](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf) by the team that develops the ggplot2 package.
+  * The [ggplot2 cheat sheet](https://github.com/rstudio/cheatsheets/blob/main/data-visualization-2.1.pdf) by the team that develops the ggplot2 package.
+  * The official introductions to the [gt package](https://gt.rstudio.com/articles/gt.html) and [ggauto package](https://nrennie.rbind.io/ggauto/).
   * The [R Graph Gallery](https://www.r-graph-gallery.com/) for examples of many other types of chart that you can produce in R.
 
 :::
 
 
-::: {.callout-quiz .callout}
-#### Check your knowledge: Revision questions
+::: {.callout-quiz .callout title="Check your knowledge: Revision questions"}
 
 Answer these questions to check you have understood the main points covered in this chapter. Write between 50 and 100 words to answer each question.
 
 1. Explain at least two scenarios where using a table or a chart would be more effective than a map for presenting spatial data.
-2. Why might you choose to use a bar chart rather than a choropleth map for displaying crime data in some circumstances?
-3. When should you use a table instead of a bar chart to convey information about a continuous variable for each of several categories?
-4. When is it useful to include a reference map alongside a chart, and when is it unnecessary?
-5. What factors should you consider when choosing the best way to present spatial data?
+2. What is `ggauto()` useful for, and why might you subsequently choose to rebuild its output using `ggplot()` and a `geom_*()` function?
+3. Explain the difference between mapping a column to an aesthetic inside `aes()` and setting an aesthetic to a constant value inside a `geom_*()` function.
+4. How do raincloud plots and ridge plots represent distributions, and what should you consider when deciding which is suitable for an audience?
+5. Why should you check how a chart appears to people with different colour vision, and how can you do this in R?
+6. How can median lines and selected non-overlapping labels help an audience interpret a scatter plot?
 :::
