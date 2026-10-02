@@ -119,120 +119,14 @@ In this chapter we will learn how to create this composite map of the locations 
 
 
 ```{r}
-#| eval: false
 #| echo: false
+#| include: false
+#| file: "../R/chapter_16.R"
+```
 
-# Prepare data -----------------------------------------------------------------
-
-# Create dataset of lines joining shootings in sequence
-hungerford_lines <- hungerford_shootings |>
-  arrange(order) |>
-  rename(x_end = easting, y_end = northing) |>
-  mutate(x_start = lag(x_end), y_start = lag(y_end)) |>
-  # Remove the first row, which contains missing values and which we don't need
-  drop_na(x_start, y_start)
-
-
-# Make component maps ----------------------------------------------------------
-
-# Create map showing overall locations of shootings
-hungerford_map_overall <- ggplot() +
-  # Plot base map
-  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
-  # Plot lines between points
-  geom_curve(
-    aes(x = x_start, y = y_start, xend = x_end, yend = y_end),
-    data = hungerford_lines,
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    curvature = -0.2,
-    colour = "darkorange4"
-  ) +
-  # Add points
-  geom_point(
-    aes(x = easting, y = northing),
-    data = hungerford_shootings,
-    shape = 21,
-    colour = "white",
-    fill = "darkorange4",
-    size = 3
-  ) +
-  # Add labels
-  geom_label_repel(
-    aes(x = easting, y = northing, label = order),
-    data = filter(hungerford_shootings, order %in% 1:2),
-    colour = "white",
-    fill = "darkorange4",
-    fontface = "bold",
-    linewidth = 0
-  ) +
-  # Add scale bar
-  annotation_scale(style = "ticks", line_col = "grey40", text_col = "grey40") +
-  # Expand the map to show a larger area above/below the data
-  scale_y_continuous(expand = expansion(2)) +
-  # Specify coordinate system
-  coord_sf(crs = "EPSG:27700") +
-  labs(title = "Shootings in Wiltshire") +
-  theme_void() +
-  theme(
-    panel.border = element_rect(colour = "grey20", fill = NA),
-    plot.title = element_text(margin = margin(b = -18))
-  )
-
-# Create detail map showing shootings in Hungerford town
-hungerford_map_town <- ggplot() +
-  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
-  # Add lines between points
-  geom_curve(
-    aes(x = x_start, y = y_start, xend = x_end, yend = y_end),
-    data = slice(hungerford_lines, 3:n()),
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    curvature = -0.2,
-    colour = "darkorange4"
-  ) +
-  # Add points
-  geom_point(
-    aes(x = easting, y = northing),
-    data = slice(hungerford_shootings, 3:n()),
-    shape = 21,
-    colour = "white",
-    fill = "darkorange4",
-    size = 3
-  ) +
-  # Add labels
-  geom_label_repel(
-    aes(x = easting, y = northing, label = order),
-    data = slice(hungerford_shootings, 3:n()),
-    colour = "white",
-    fill = "darkorange4",
-    fontface = "bold",
-    linewidth = 0
-  ) +
-  # Add scale bar
-  annotation_scale(style = "ticks", line_col = "grey40", text_col = "grey40") +
-  # Expand the map to show a larger area around the data
-  scale_x_continuous(expand = expansion(0.3)) +
-  scale_y_continuous(expand = expansion(0.3)) +
-  # Specify coordinate system
-  coord_sf(crs = "EPSG:27700") +
-  labs(title = "Shootings in Hungerford town") +
-  theme_void() +
-  theme(
-    panel.border = element_rect(colour = "grey20", fill = NA),
-    plot.margin = margin(t = 12)
-  )
-
-
-# Combine maps and add titles --------------------------------------------------
-
-hungerford_map <- (hungerford_map_overall / hungerford_map_town) +
-  plot_annotation(
-    title = "Shootings during the Hungerford massacre",
-    caption = "Data from the official report into the shootings",
-    theme = theme(
-      plot.caption = element_text(colour = "grey40", hjust = 0),
-      plot.title = element_text(colour = "grey50", face = "bold", size = 14)
-    )
-  )
+```{r}
+#| echo: false
+#| include: false
 
 ggsave(
   here::here("images/hungerford_map.jpg"),
@@ -252,7 +146,7 @@ By the end of this chapter, you will be able to:
 - prepare an ordered sequence of events for mapping using `arrange()` and `lag()`;
 - connect event locations using curved lines and directional arrows;
 - expand the area displayed on a map;
-- add labels that avoid overlapping other map features;
+- add labels that are automatically offset from the points they relate to;
 - create overview and detailed maps of the same events; and
 - combine multiple maps into one output using the patchwork package.
 
@@ -261,6 +155,31 @@ Create a new R script file in Positron and save it as `chapter_16.R` in the `R` 
 
 ```{r}
 #| filename: "chapter_16.R"
+#| eval: false
+
+# This script creates a combination of maps showing the sequence of shootings
+# during the Hungerford massacre in 1987
+
+# Load data --------------------------------------------------------------------
+
+# Load packages
+pacman::p_load(ggrepel, ggspatial, here, httr2, patchwork, tidyverse)
+
+# Download the original shootings data
+request(
+  "https://mpjashby.github.io/crimemappingdata/hungerford_shootings.csv"
+) |>
+  req_perform(path = here("data", "raw", "hungerford_shootings.csv"))
+
+# Load the local copy of the shootings data
+hungerford_shootings <- here("data", "raw", "hungerford_shootings.csv") |>
+  read_csv() |>
+  arrange(order)
+```
+
+```{r}
+#| filename: "chapter_16.R"
+#| echo: false
 
 # This script creates a combination of maps showing the sequence of shootings
 # during the Hungerford massacre in 1987
@@ -316,10 +235,17 @@ One way to do that is to draw lines on the map connecting each incident in turn.
 
 # Create dataset of lines joining shootings in sequence
 hungerford_lines <- hungerford_shootings |>
+  # Arrange the rows in order of the sequence of shootings
   arrange(order) |>
+  # Make it clear the coordinates refer to the coordinates we want to use for
+  # the *end* of each line, to distinguish them from the second set of
+  # coordinates we'll create next
   rename(x_end = easting, y_end = northing) |>
+  # Copy the coordinates from the row above each row to create a second set of
+  # coordinates for the *start* of each line
   mutate(x_start = lag(x_end), y_start = lag(y_end)) |>
-  # Remove the first row, which contains missing values and which we don't need
+  # Remove the first row, which now contains missing values for `y_start` and
+  # `x_start`, and which we don't need
   drop_na(x_start, y_start)
 ```
 
@@ -337,9 +263,9 @@ You might notice that the values in the first row of the `x_start` and `y_start`
 :::
 
 
-This method for creating lines between points is one of several ways we could achieve the same result. For example, we could create lines connecting the points and store them as SF objects. However, the code to do that is more complicated and gives us slightly less control over the appearance of the lines, so we will not use that method. 
+This method for creating lines between points is one of several ways we could achieve the same result. For example, we could create lines connecting the points and store them as SF objects. However, the code to do that is more complicated and would give us slightly less control over the appearance of the lines.
 
-Using this method means the points and lines we want to put on our map are not SF objects, so we cannot use `geom_sf()` to add them to the map. Instead, we will add the points representing shooting locations to the map using `geom_point()` and add the lines between points using `geom_segment()`, both from the ggplot2 package. 
+Using this method means the points and lines we want to put on our map are not SF objects, so we cannot use `geom_sf()` to add them to the map. Instead, we will add the points representing shooting locations to the map using `geom_point()` and add the lines between points using `geom_segment()`, both from the ggplot2 package. Since `hotspot_map()` only works for SF objects, we cannot use `hotspot_map()` in this case, either. That means we have to do some things manually that would normally be done for us automatically. The extra code is explained in the notes below the code chunk.
 
 Run this code in the R Console.
 
@@ -352,7 +278,7 @@ Run this code in the R Console.
 # Plot a basic map
 ggplot() +
   # Add base map
-  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") + #<1>
   # Add lines between points
   geom_segment(
     aes(x = x_start, y = y_start, xend = x_end, yend = y_end),
@@ -362,9 +288,15 @@ ggplot() +
   geom_point(aes(x = easting, y = northing), data = hungerford_shootings) +
   # Since our layers are not an SF object, tell `ggplot()` what coordinate
   # system to use
-  coord_sf(crs = "EPSG:27700") +
-  theme_void()
+  coord_sf(crs = "EPSG:27700") + #<2>
+  # Add base map attribution statement
+  labs(caption = "Map tiles ©: CARTO; data © OpenStreetMap contributors") + #<3>
+  theme_void() #<4>
 ```
+1. When we make a map using `hotspot_map()`, in the background that function uses the `annotation_map_tile()` function (from the ggspatial package) to add a base map to the map. Since we're not using `hotspot_map()`, we have to do this ourselves.
+2. Since we aren't using SF objects, we need to tell `ggplot()` how to translate the coordinates in our data to locations on the map. We do this with the `coord_sf()` function.
+3. `hotspot_map()` automatically adds a caption to the map to acknowledge the source of the base map tiles used on a particular map (see @sec-base-maps), so here we have to do this ourselves.
+4. We use `theme_void()` to remove information that is often useful for a chart but not for a map, such as labels along the x- and y-axes showing coordinates.
 
 
 This map is not particularly useful -- we will return to that in a minute.
@@ -374,7 +306,7 @@ If you look at this code, you'll see that we've included the function `coord_sf(
 The map we have made above shows the sequence of events, but there are at least four ways that we can make it better.
 
   1. It would be useful to be able to see a larger area around the shooting locations, to see more of the town surrounding the area in which the crimes occurred.
-  2. We don't know which order to move through the sequence of lines. We can deal with this by adding arrows to show the direction that the offender travelled.
+  2. We don't know which order to move through the sequence of lines. We can deal with this by adding arrows to show the direction in which the sequence progressed.
   3. The straight lines make it look like the offender travelled across fields between locations, which is probably not true. Since we do not have data on what routes the offender took, we can replace the straight lines with curves to indicate that the exact route is unknown.
   4. Because the first two shootings occurred outside the town, the map has to cover a large area and this makes it harder to see the sequence of events in the town itself.
 
@@ -412,6 +344,8 @@ ggplot() +
   scale_y_continuous(expand = expansion(2)) +
   # Specify coordinate system
   coord_sf(crs = "EPSG:27700") +
+  # Add base map attribution statement
+  labs(caption = "Map tiles ©: CARTO; data © OpenStreetMap contributors") +
   theme_void()
 ```
 
@@ -458,6 +392,8 @@ ggplot() +
   scale_y_continuous(expand = expansion(2)) +
   # Specify coordinate system
   coord_sf(crs = "EPSG:27700") +
+  # Add base map attribution statement
+  labs(caption = "Map tiles ©: CARTO; data © OpenStreetMap contributors") +
   theme_void()
 ```
 
@@ -465,9 +401,9 @@ This makes it easier to see that the shootings started at the point on the left 
 
 In the map above, we used the `geom_segment()` function to add the lines to our map. If we change this to `geom_curve()` the lines will become curved rather than straight. By specifying `curvature = -0.2` we get a slightly straighter line than the default, and a left-hand curve because the value of `curvature` is negative. These curves show only the sequence in which the locations were visited. They do not show the route travelled between locations, which is not recorded in the data.
 
-The other change we can make at this point is to add a layer of labels showing the order in which the shootings occurred. We don't want the labels to overlap the points, so instead of adding labels with the `geom_label()` function from the ggplot2 package we will use `geom_label_repel()` from the ggrepel package. `geom_label_repel()` creates labels that are automatically offset from the points they relate to. For now, we will just label the first two locations. 
+The other change we can make at this point is to add a layer of labels showing the order in which the shootings occurred. We don't want the labels to overlap the points, so instead of adding labels with the `geom_label()` function from the ggplot2 package we will use `geom_label_repel()` from the ggrepel package that we learned about in @sec-chart-continuous. `geom_label_repel()` creates labels that are automatically offset from the points they relate to. For now, we will just label the first two locations.
 
-At this point we can also make some minor changes to the map -- adding a title and scale bar, putting a border around the map -- the purpose of which will become clear in the next section.
+At this point we can also make some minor changes to the map: adding a title and scale bar, putting a border around the map, and temporarily removing the base map attribution statement. The purpose of those changes will become clear in the next section.
 
 Add this code to the `chapter_16.R` script file and run it.
 
@@ -515,6 +451,7 @@ hungerford_map_overall <- ggplot() +
   scale_y_continuous(expand = expansion(2)) +
   # Specify coordinate system
   coord_sf(crs = "EPSG:27700") +
+  # Add title
   labs(title = "Shootings in Wiltshire") +
   theme_void() +
   theme(
@@ -593,7 +530,7 @@ Our existing map is difficult to understand because we have a mix of some events
 
 <a href="https://patchwork.data-imaginist.com/"><img src="../images/patchwork.png" alt="patchwork package logo" class="right-side-image"></a>
 
-To deal with this problem we can display two maps: an *overview map* showing the whole area covered by the points and a *detail map* showing only the events in the town of Hungerford itself. As you learned in @sec-no-maps, we can use the [patchwork package](https://patchwork.data-imaginist.com/) to combine multiple visualisations made using `ggplot()`.
+To deal with this problem we can display two maps: an *overview map* showing the whole area covered by the points and a *detail map* showing only the events in the town of Hungerford itself. In @sec-small-multiple we created small-multiple maps with `facet_grid()`, but what we want to do here is slightly different. In this case the maps show the same data at different scales, rather than different data for the same area. To combine these maps, we need to use the [patchwork package](https://patchwork.data-imaginist.com/), which can combine multiple maps or charts made using `ggplot()` into a single output.
 
 We have already saved the overview map as `hungerford_map_overall`. We can create a detail map showing only the shootings in Hungerford itself by removing the first two points from `hungerford_shootings` (since they represent shootings outside the town itself). We can do this for all the existing layers using the `slice()` function from the dplyr package.
 
@@ -659,9 +596,9 @@ hungerford_map_town
 ```
 
 
-You used the `|` operator from patchwork in @sec-no-maps to place two charts beside one another. To place one plot on top of another, we instead use the `/` operator (you can combine plots in more-complicated ways by combining these operators, together with parentheses).
+Now we have two maps, we can use patchwork to combine them. The patchwork package uses mathematical operators to combine multiple ggplot2 objects. To place two plots beside one another, we would use the `|` operator. In this case we want to place one plot on top of another, so we use the `/` operator. You can combine plots in more-complicated ways by combining these operators, together with parentheses.
 
-So to position the town detail map (stored in `hungerford_map_town`) below the overview map (stored in `hungerford_map_overall`), we can use this code:
+To position the town detail map (stored in `hungerford_map_town`) below the overview map (stored in `hungerford_map_overall`), we can use this code:
 
 
 ```{r}
@@ -669,13 +606,15 @@ So to position the town detail map (stored in `hungerford_map_town`) below the o
 #| fig-asp: 1
 #| fig-alt: "Two maps arranged vertically. The overview map shows the first two shooting locations outside Hungerford, while the detailed map shows locations 3 to 16 in the town."
 
-(hungerford_map_overall / hungerford_map_town)
+hungerford_map_overall / hungerford_map_town
 ```
 
 
 When we created the `hungerford_map_overall` object in the previous section, we gave the map title a _negative_ margin using the `plot.title` argument to the `theme()` function. This had the effect of moving the title downwards onto the map to save space, since the top-left corner of the map was empty. We also added a scale bar, since when you present two related maps of different scales next to one another, it is useful to show the scales of both maps to help readers relate them to one another. You can see on the maps above, for example, the very different scales of the two maps.
 
-We can add shared titles and captions to combined maps created with patchwork using the `plot_annotation()` function. This function has a `theme` argument, which we can use to change the appearance of the shared title and caption just as we use `theme()` to change the appearance of elements on single maps.
+We can add shared titles and captions to combined maps created with patchwork using the `plot_annotation()` function. We will add an overall title for the combined maps, as well as adding back the base map attribution statement, since it applies to both maps so there is no need to take up space by adding it to each map individually.
+
+`plot_annotation()` also has a `theme` argument, which we can use to change the appearance of the shared title and caption just as we use `theme()` to change the appearance of elements on single maps. Finally, we can use `ggsave()` to save the combined map to an image file, as we learned to do in @sec-saving-maps.
 
 Add this code to the script file and run it.
 
@@ -690,14 +629,15 @@ Add this code to the script file and run it.
 hungerford_map <- (hungerford_map_overall / hungerford_map_town) +
   plot_annotation(
     title = "Shootings during the Hungerford massacre",
-    caption = "Data from the official report into the shootings",
+    caption = str_glue(
+      "Data from the official report into the shootings\nMap tiles ©: CARTO; ",
+      "data © OpenStreetMap contributors"
+    ),
     theme = theme(
       plot.caption = element_text(colour = "grey40", hjust = 0),
       plot.title = element_text(colour = "grey50", face = "bold", size = 14)
     )
   )
-
-hungerford_map
 
 ggsave(
   here("output", "hungerford_map.jpg"),
@@ -767,7 +707,7 @@ In this chapter, you have learned how to:
 - use `lag()` to associate each location with the previous location;
 - connect locations using curves and directional arrows;
 - expand the area displayed on a map;
-- add non-overlapping labels with `geom_label_repel()`;
+- add labels that are automatically offset from their points with `geom_label_repel()`;
 - create overview and detailed maps; and
 - combine multiple maps using the patchwork package.
 
