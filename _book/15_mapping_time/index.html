@@ -403,7 +403,7 @@ quarto book
   </div>
 </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container">
+  <div class="sidebar-item-container"> 
   <a href="../appendices/resources.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">Example reports and templates</span></span></a>
   </div>
@@ -1451,7 +1451,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/chicago_po
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-label="1"></a>assault_weekly_counts <span class="sc">|&gt;</span> ggauto<span class="sc">::</span><span class="fu">ggauto</span>(week_date, count)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output-display">
-<div id="fig-weekly-assaults-chart-ggauto" class="quarto-float quarto-figure quarto-figure-center anchored" width="672" alt="Time-series chart of weekly aggravated-assault counts in Chicago between 2010 and 2019, showing a downward trend until 2014, seasonal peaks and substantial week-to-week variation.">
+<div id="fig-weekly-assaults-chart-ggauto" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Time-series chart of weekly aggravated-assault counts in Chicago between 2010 and 2019, showing a downward trend until 2014, seasonal peaks and substantial week-to-week variation." width="672">
 <figure class="quarto-float quarto-float-fig figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-weekly-assaults-chart-ggauto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;15.1
@@ -1762,7 +1762,7 @@ Figure&nbsp;15.1
 <span id="cb38-19"><a href="#cb38-19" aria-label="19"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output-display">
-<div id="fig-hourly-assault-chart" class="quarto-float quarto-figure quarto-figure-center anchored" width="672" alt="Line chart comparing hourly aggravated-assault totals for each day of the week in Chicago between 2010 and 2019.">
+<div id="fig-hourly-assault-chart" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Line chart comparing hourly aggravated-assault totals for each day of the week in Chicago between 2010 and 2019." width="672">
 <figure class="quarto-float quarto-float-fig figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-hourly-assault-chart-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;15.2
@@ -2955,6 +2955,42 @@ window.onload = function() {
   update_total_correct();
 }
 
+</script>
+<script>
+(() => {
+const query = new URLSearchParams(window.location.search).get("q");
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".callout-transcript").forEach((callout) => {
+    const header = callout.querySelector(".callout-header");
+    const body = callout.querySelector(".callout-collapse");
+    if (!header || !body) return;
+
+    // Quarto's collapsed callout headers support clicks but are not tab stops.
+    header.setAttribute("role", "button");
+    header.setAttribute("tabindex", "0");
+    header.setAttribute("aria-label",
+      callout.getAttribute("title") || "Video transcript");
+    header.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        header.click();
+      }
+    });
+
+    // Search highlighting can finish after Quarto removes ?q= from the URL.
+    const revealSearchMatch = () => {
+      if (body.querySelector("mark") ||
+          (query && body.textContent.toLowerCase().includes(query.toLowerCase()))) {
+        bootstrap.Collapse.getOrCreateInstance(body, { toggle: false }).show();
+        observer.disconnect();
+      }
+    };
+    const observer = new MutationObserver(revealSearchMatch);
+    observer.observe(body, { childList: true, subtree: true });
+    revealSearchMatch();
+  });
+});
+})();
 </script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {

@@ -403,7 +403,7 @@ quarto book
   </div>
 </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container">
+  <div class="sidebar-item-container"> 
   <a href="./appendices/resources.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">Example reports and templates</span></span></a>
   </div>
@@ -893,6 +893,42 @@ window.onload = function() {
   update_total_correct();
 }
 
+</script>
+<script>
+(() => {
+const query = new URLSearchParams(window.location.search).get("q");
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".callout-transcript").forEach((callout) => {
+    const header = callout.querySelector(".callout-header");
+    const body = callout.querySelector(".callout-collapse");
+    if (!header || !body) return;
+
+    // Quarto's collapsed callout headers support clicks but are not tab stops.
+    header.setAttribute("role", "button");
+    header.setAttribute("tabindex", "0");
+    header.setAttribute("aria-label",
+      callout.getAttribute("title") || "Video transcript");
+    header.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        header.click();
+      }
+    });
+
+    // Search highlighting can finish after Quarto removes ?q= from the URL.
+    const revealSearchMatch = () => {
+      if (body.querySelector("mark") ||
+          (query && body.textContent.toLowerCase().includes(query.toLowerCase()))) {
+        bootstrap.Collapse.getOrCreateInstance(body, { toggle: false }).show();
+        observer.disconnect();
+      }
+    };
+    const observer = new MutationObserver(revealSearchMatch);
+    observer.observe(body, { childList: true, subtree: true });
+    revealSearchMatch();
+  });
+});
+})();
 </script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
