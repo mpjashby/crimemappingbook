@@ -18,14 +18,16 @@ This is an example report used to help students understand how different types o
 :::
 
 
-```{r setup}
+```{r}
+#| label: setup
 #| include: false
 
 pacman::p_load(ggspatial, gt, patchwork, scales, sf, sfhotspot, tidyverse)
 ```
 
 
-```{r load-data}
+```{r}
+#| label: load-data
 #| include: false
 #| cache: true
 
@@ -135,7 +137,8 @@ districts <- summarise(
 This report has been prepared for Edmonton Fire Rescue Services (EFRS) to identify hotspot locations for fires in the city of Edmonton during the calendar year 2024. This report is based on the [EFRS Fire Response dataset](https://data.edmonton.ca/d/7hsn-idqi). The information in this dataset is recorded by EFRS staff while co-ordinating the response to each incident. The large volume of incidents and rapid pace of operations in a fire control room mean it is likely the data will contain some errors, but it is not possible to quantify these or assess how they might affect the conclusions drawn in this report. However, it is likely the majority of recording errors are effectively random, and so are unlikely to bias this analysis towards a particular conclusion.
 
 
-```{r incident-type-count}
+```{r}
+#| label: incident-type-count
 
 # Create a character value containing an list of incidents by type, ordered by
 # incident frequency with the most frequent types first
@@ -186,7 +189,8 @@ daily_incident_count <- incidents |>
 Between 1 January and 31 December 2024, EFRS responded to a total of `r comma(nrow(incidents))` incidents, with an average of `r number(daily_incident_count, accuracy = 1)` per day. Of those, `r knitr::combine_words(pull(incident_type_count, "label"))`. The rest of this report will focus on the `r percent(pluck(filter(incident_type_count, event_description == "fire"), "prop", 1))` of incidents that were categorised as fires.
 
 
-```{r fire-kde}
+```{r}
+#| label: fire-kde
 #| include: false
 #| cache: true
 
@@ -211,7 +215,7 @@ downtown_count <- hotspot_count(fires, grid = downtown_buffer, quiet = TRUE)
 ```
 
 
-```{r fire-map}
+```{r}
 #| label: fig-fire-map
 #| fig-asp: 0.8
 #| fig-cap: "Locations of calls to fires in Edmonton, 2024"
@@ -256,7 +260,8 @@ fires_kde |>
 @fig-fire-map shows locations in the city of Edmonton with more fires than would be expected by chance. The map shows that fires are very heavily concentrated in a small area in downtown Edmonton. There were `r comma(pluck(downtown_count, "n"))` fires within 1 kilometre of this point in 2024, around `r percent(pluck(downtown_count, "n") / nrow(fires))` of all fires in Edmonton in that period. This is despite that area being only `r percent(as.numeric(st_area(downtown_buffer) / st_area(st_union(neighbourhoods))), accuracy = 0.1)` of the area of the city.
 
 
-```{r downtown-kde}
+```{r}
+#| label: downtown-kde
 #| include: false
 #| cache: true
 
@@ -276,7 +281,7 @@ downtown_kde <- fires |>
 ```
 
 
-```{r downtown-map}
+```{r}
 #| label: fig-downtown-map
 #| fig-asp: 0.8
 #| fig-cap: "Locations of calls to fires in downtown Edmonton, 2024"
@@ -385,7 +390,8 @@ fires |>
 @fig-fire-types shows the number of fires of each type that were recorded as occurring in Edmonton in 2024. More than two thirds of fires were outdoor fires, e.g. a fire caused by a lightning strike or illegal burning of rubbish. The majority of structure fires were in residential structures.
 
 
-```{r fire-types-kde}
+```{r}
+#| label: fire-types-kde
 #| include: false
 #| cache: true
 
@@ -438,7 +444,7 @@ fire_types_district_counts <- fires |>
 `r percent(pluck(filter(fire_types_district_counts, fire_subtype == "outside fire"), "prop", 1), accuracy = 1)` of all outside fires occurred in the `r pluck(filter(fire_types_district_counts, fire_subtype == "outside fire"), "district", 1)` district (one of `r nrow(districts)` districts in Edmonton), the district with the highest proportion of residential structure fires had only `r percent(pluck(filter(fire_types_district_counts, fire_subtype == "residential structure fire"), "prop", 1), accuracy = 1)` of all such fires in the city. @tbl-district-counts shows the number of fires of each type in each district.
 
 
-```{r fire-types-map}
+```{r}
 #| label: fig-types-map
 #| fig-asp: 1.4
 #| fig-cap: "Locations of calls to different types of fire in Edmonton, 2024"
@@ -489,7 +495,7 @@ fire_types_kde |>
 ```
 
 
-```{r district-counts-table}
+```{r}
 #| label: tbl-district-counts
 #| tbl-cap: "Number of fires of each type in each Edmonton district, 2024"
 #| warning: false

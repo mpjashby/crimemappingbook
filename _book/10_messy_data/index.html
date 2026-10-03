@@ -425,15 +425,15 @@ quarto book
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">10.1</span> Introduction</a></li>
   <li><a href="#tidying-the-structure-of-data" id="toc-tidying-the-structure-of-data" class="nav-link" data-scroll-target="#tidying-the-structure-of-data"><span class="header-section-number">10.2</span> Tidying the structure of data</a>
   <ul class="collapse">
-  <li><a href="#reshaping-data-between-long-and-wide-formats" id="toc-reshaping-data-between-long-and-wide-formats" class="nav-link" data-scroll-target="#reshaping-data-between-long-and-wide-formats"><span class="header-section-number">10.2.1</span> Reshaping data between long and wide formats</a></li>
-  <li><a href="#skipping-unwanted-rows-in-imported-data" id="toc-skipping-unwanted-rows-in-imported-data" class="nav-link" data-scroll-target="#skipping-unwanted-rows-in-imported-data"><span class="header-section-number">10.2.2</span> Skipping unwanted rows in imported data</a></li>
-  <li><a href="#separating-multiple-variables-stored-in-a-single-column" id="toc-separating-multiple-variables-stored-in-a-single-column" class="nav-link" data-scroll-target="#separating-multiple-variables-stored-in-a-single-column"><span class="header-section-number">10.2.3</span> Separating multiple variables stored in a single column</a></li>
+  <li><a href="#sec-messy-data-reshaping-data-between-long-and-wide-formats" id="toc-sec-messy-data-reshaping-data-between-long-and-wide-formats" class="nav-link" data-scroll-target="#sec-messy-data-reshaping-data-between-long-and-wide-formats"><span class="header-section-number">10.2.1</span> Reshaping data between long and wide formats</a></li>
+  <li><a href="#sec-messy-data-skipping-unwanted-rows-in-imported-data" id="toc-sec-messy-data-skipping-unwanted-rows-in-imported-data" class="nav-link" data-scroll-target="#sec-messy-data-skipping-unwanted-rows-in-imported-data"><span class="header-section-number">10.2.2</span> Skipping unwanted rows in imported data</a></li>
+  <li><a href="#sec-messy-data-separating-multiple-variables-stored-in-a-single-column" id="toc-sec-messy-data-separating-multiple-variables-stored-in-a-single-column" class="nav-link" data-scroll-target="#sec-messy-data-separating-multiple-variables-stored-in-a-single-column"><span class="header-section-number">10.2.3</span> Separating multiple variables stored in a single column</a></li>
   </ul></li>
   <li><a href="#tidying-the-content-of-cells" id="toc-tidying-the-content-of-cells" class="nav-link" data-scroll-target="#tidying-the-content-of-cells"><span class="header-section-number">10.3</span> Tidying the content of cells</a>
   <ul class="collapse">
-  <li><a href="#converting-between-types-of-variable" id="toc-converting-between-types-of-variable" class="nav-link" data-scroll-target="#converting-between-types-of-variable"><span class="header-section-number">10.3.1</span> Converting between types of variable</a></li>
-  <li><a href="#recoding-categorical-variables" id="toc-recoding-categorical-variables" class="nav-link" data-scroll-target="#recoding-categorical-variables"><span class="header-section-number">10.3.2</span> Recoding categorical variables</a></li>
-  <li><a href="#missing-values" id="toc-missing-values" class="nav-link" data-scroll-target="#missing-values"><span class="header-section-number">10.3.3</span> Missing values</a></li>
+  <li><a href="#sec-messy-data-converting-between-types-of-variable" id="toc-sec-messy-data-converting-between-types-of-variable" class="nav-link" data-scroll-target="#sec-messy-data-converting-between-types-of-variable"><span class="header-section-number">10.3.1</span> Converting between types of variable</a></li>
+  <li><a href="#sec-messy-data-recoding-categorical-variables" id="toc-sec-messy-data-recoding-categorical-variables" class="nav-link" data-scroll-target="#sec-messy-data-recoding-categorical-variables"><span class="header-section-number">10.3.2</span> Recoding categorical variables</a></li>
+  <li><a href="#sec-messy-data-missing-values" id="toc-sec-messy-data-missing-values" class="nav-link" data-scroll-target="#sec-messy-data-missing-values"><span class="header-section-number">10.3.3</span> Missing values</a></li>
   <li><a href="#sec-null-island" id="toc-sec-null-island" class="nav-link" data-scroll-target="#sec-null-island"><span class="header-section-number">10.3.4</span> Null Island</a></li>
   </ul></li>
   <li><a href="#geocoding-locations" id="toc-geocoding-locations" class="nav-link" data-scroll-target="#geocoding-locations"><span class="header-section-number">10.4</span> Geocoding locations</a></li>
@@ -536,12 +536,21 @@ quarto book
 </div>
 </div>
 <p>Let’s get started by loading the packages we will need. We will mainly be working in the R Console in this chapter, so we will load the packages there rather than creating a script file at this stage:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-load-messy-data-packages" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-load-messy-data-packages-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.1
+</figcaption>
+<div aria-describedby="lst-messy-data-load-messy-data-packages-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(httr2, janitor, readxl, tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(httr2, janitor, readxl, tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <div class="callout callout-style-default callout-quiz callout-titled" title="Tidy data">
@@ -555,16 +564,16 @@ quarto book
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Why is tidy data preferred for analysis in R?</strong></p>
-<div id="radio_XZXZKMXDCG" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_XZXZKMXDCG" value=""> <span>It minimises the number of columns in a dataset</span></label><label><input type="radio" autocomplete="off" name="radio_XZXZKMXDCG" value=""> <span>It ensures all data is stored as character strings</span></label><label><input type="radio" autocomplete="off" name="radio_XZXZKMXDCG" value="answer"> <span>It follows a consistent structure that makes analysis easier</span></label><label><input type="radio" autocomplete="off" name="radio_XZXZKMXDCG" value=""> <span>It eliminates the need for data wrangling</span></label>
+<div id="radio_TJUYTRFJUA" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_TJUYTRFJUA" value=""> <span>It minimises the number of columns in a dataset</span></label><label><input type="radio" autocomplete="off" name="radio_TJUYTRFJUA" value=""> <span>It ensures all data is stored as character strings</span></label><label><input type="radio" autocomplete="off" name="radio_TJUYTRFJUA" value="answer"> <span>It follows a consistent structure that makes analysis easier</span></label><label><input type="radio" autocomplete="off" name="radio_TJUYTRFJUA" value=""> <span>It eliminates the need for data wrangling</span></label>
 </div>
 <p><strong>What is a characteristic of tidy data?</strong></p>
-<div id="radio_DIDDRRIDZA" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_DIDDRRIDZA" value=""> <span>Each column contains multiple variables</span></label><label><input type="radio" autocomplete="off" name="radio_DIDDRRIDZA" value="answer"> <span>Each row represents a single observation</span></label><label><input type="radio" autocomplete="off" name="radio_DIDDRRIDZA" value=""> <span>Column names are always numeric</span></label><label><input type="radio" autocomplete="off" name="radio_DIDDRRIDZA" value=""> <span>The data must be stored in alphabetical order</span></label>
+<div id="radio_NRTJLCINGQ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_NRTJLCINGQ" value=""> <span>Each column contains multiple variables</span></label><label><input type="radio" autocomplete="off" name="radio_NRTJLCINGQ" value="answer"> <span>Each row represents a single observation</span></label><label><input type="radio" autocomplete="off" name="radio_NRTJLCINGQ" value=""> <span>Column names are always numeric</span></label><label><input type="radio" autocomplete="off" name="radio_NRTJLCINGQ" value=""> <span>The data must be stored in alphabetical order</span></label>
 </div>
 <p><strong>Why might a dataset be messy when obtained from an external source?</strong></p>
-<div id="radio_VECHXFQMFY" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_VECHXFQMFY" value="answer"> <span>Data producers often structure it for human readability rather than analysis</span></label><label><input type="radio" autocomplete="off" name="radio_VECHXFQMFY" value=""> <span>All government datasets are always tidy by default</span></label><label><input type="radio" autocomplete="off" name="radio_VECHXFQMFY" value=""> <span>R requires data to be stored in JSON format</span></label><label><input type="radio" autocomplete="off" name="radio_VECHXFQMFY" value=""> <span>Messy data is a requirement for proper statistical analysis</span></label>
+<div id="radio_LCNELWIUTC" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_LCNELWIUTC" value="answer"> <span>Data producers often structure it for human readability rather than analysis</span></label><label><input type="radio" autocomplete="off" name="radio_LCNELWIUTC" value=""> <span>All government datasets are always tidy by default</span></label><label><input type="radio" autocomplete="off" name="radio_LCNELWIUTC" value=""> <span>R requires data to be stored in JSON format</span></label><label><input type="radio" autocomplete="off" name="radio_LCNELWIUTC" value=""> <span>Messy data is a requirement for proper statistical analysis</span></label>
 </div>
 </div>
 </div>
@@ -574,8 +583,8 @@ quarto book
 <p class="full-width-image">
 <img src="../images/tidydata_2.jpg" alt="Cartoon explaining that the standard structure of tidy data means that all tidy datasets are alike but every messy dataset is messy in its own way.">
 </p>
-<section id="reshaping-data-between-long-and-wide-formats" class="level3" data-number="10.2.1">
-<h3 data-number="10.2.1" class="anchored" data-anchor-id="reshaping-data-between-long-and-wide-formats"><span class="header-section-number">10.2.1</span> Reshaping data between long and wide formats</h3>
+<section id="sec-messy-data-reshaping-data-between-long-and-wide-formats" class="level3" data-number="10.2.1">
+<h3 data-number="10.2.1" class="anchored" data-anchor-id="sec-messy-data-reshaping-data-between-long-and-wide-formats"><span class="header-section-number">10.2.1</span> Reshaping data between long and wide formats</h3>
 <p>Every messy dataset is messy in its own unique way, but often messiness comes from the <em>structure</em> of data not being tidy. Tabular data can come in two general formats: <em>long</em> and <em>wide</em>. For example, imagine a dataset showing counts of several different types of crime in several different areas. We could store this data in <em>wide</em> format, where there is a column for the name of the area and then a column for each type of crime.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -615,12 +624,18 @@ quarto book
 <p>It is usually better to have the names of different categories stored as a single variable rather than as the names of several variables because they are easier to work with that way. For example, if the data are in long format you could sort the categories alphabetically using <code>arrange(crime_counts, type)</code>, or you could transform the names to title case using <code>mutate(crime_counts, type = str_to_title(type))</code>. Both these operations would be harder to do if the data were in wide format.</p>
 <p>One sign that your data has this problem of variables hiding in column names is if several of the columns form a group of columns, separate from the others. In the dataset above, there is a group of columns that show crime counts that is different from the other column that shows the area name. When your data includes a group of columns, consider whether a variable is ‘hiding’ in the column names.</p>
 <p>Fortunately, we can easily convert this data (which we can create and store in the object <code>crime_counts</code>) into long format using the <code>pivot_longer()</code> function from the tidyr package (another of the packages loaded automatically when we load the tidyverse package). To use <code>pivot_longer()</code>, we have to specify which columns we want to <em>gather</em> together into one column to store the category names. We do this using the <code>cols</code> argument. We can specify the columns we want to gather as a vector, i.e.&nbsp;<code>c(assault, burglary, robbery)</code>.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-reshape-crime-counts-long" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-reshape-crime-counts-long-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.2
+</figcaption>
+<div aria-describedby="lst-messy-data-reshape-crime-counts-long-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a><span class="co"># Create a dataset of crime counts in 'wide' format</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a><span class="co"># Create a dataset of crime counts in 'wide' format</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-label="2"></a>crime_counts <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
 <span id="cb2-3"><a href="#cb2-3" aria-label="3"></a>  <span class="sc">~</span>area        , <span class="sc">~</span>assault , <span class="sc">~</span>robbery , <span class="sc">~</span>burglary ,</span>
 <span id="cb2-4"><a href="#cb2-4" aria-label="4"></a>  <span class="st">"Northville"</span> ,        <span class="dv">4</span> ,        <span class="dv">2</span> ,        <span class="dv">10</span> ,</span>
@@ -630,6 +645,9 @@ quarto book
 <span id="cb2-8"><a href="#cb2-8" aria-label="8"></a></span>
 <span id="cb2-9"><a href="#cb2-9" aria-label="9"></a><span class="co"># Convert the dataset to 'long' format</span></span>
 <span id="cb2-10"><a href="#cb2-10" aria-label="10"></a><span class="fu">pivot_longer</span>(crime_counts, <span class="at">cols =</span> <span class="fu">c</span>(assault, burglary, robbery))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 9 × 3
@@ -664,18 +682,27 @@ quarto book
 </div>
 </div>
 <p>By default, <code>pivot_longer()</code> calls the new column of category names <code>name</code> and the new column of values <code>value</code>. We can specify more-descriptive names using the <code>names_to</code> and <code>values_to</code> arguments.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-reshape-with-custom-column-names" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-reshape-with-custom-column-names-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.3
+</figcaption>
+<div aria-describedby="lst-messy-data-reshape-with-custom-column-names-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a><span class="co"># Convert dataset to 'long' format with custom column names</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a><span class="co"># Convert dataset to 'long' format with custom column names</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-label="2"></a><span class="fu">pivot_longer</span>(</span>
 <span id="cb4-3"><a href="#cb4-3" aria-label="3"></a>  crime_counts,</span>
 <span id="cb4-4"><a href="#cb4-4" aria-label="4"></a>  <span class="at">cols =</span> <span class="fu">c</span>(assault, burglary, robbery),</span>
 <span id="cb4-5"><a href="#cb4-5" aria-label="5"></a>  <span class="at">names_to =</span> <span class="st">"type"</span>,</span>
 <span id="cb4-6"><a href="#cb4-6" aria-label="6"></a>  <span class="at">values_to =</span> <span class="st">"count"</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-label="7"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 9 × 3
@@ -698,12 +725,18 @@ quarto book
 <li>which existing column contains the values that should become new column <em>names</em>, using the <code>names_from</code> argument, and</li>
 <li>which existing column contains the <em>values</em> to put in those columns, using the <code>values_from</code> argument.</li>
 </ol>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-reshape-crime-counts-wide" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-reshape-crime-counts-wide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.4
+</figcaption>
+<div aria-describedby="lst-messy-data-reshape-crime-counts-wide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-label="1"></a><span class="co"># Store the long-format data</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-label="1"></a><span class="co"># Store the long-format data</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-label="2"></a>crime_counts_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(</span>
 <span id="cb6-3"><a href="#cb6-3" aria-label="3"></a>  crime_counts,</span>
 <span id="cb6-4"><a href="#cb6-4" aria-label="4"></a>  <span class="at">cols =</span> <span class="fu">c</span>(assault, burglary, robbery),</span>
@@ -713,6 +746,9 @@ quarto book
 <span id="cb6-8"><a href="#cb6-8" aria-label="8"></a></span>
 <span id="cb6-9"><a href="#cb6-9" aria-label="9"></a><span class="co"># Convert the data back to wide format</span></span>
 <span id="cb6-10"><a href="#cb6-10" aria-label="10"></a><span class="fu">pivot_wider</span>(crime_counts_long, <span class="at">names_from =</span> type, <span class="at">values_from =</span> count)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 3 × 4
@@ -724,12 +760,18 @@ quarto book
 </div>
 </div>
 <p><code>pivot_wider()</code> sometimes introduces missing (<code>NA</code>) values into a dataset. This happens when there are no rows in the long dataset that correspond to one of the new columns that are created by <code>pivot_wider()</code>. For example, if we create a tiny dataset in long format:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-pivot-wider-missing1" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-pivot-wider-missing1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.5
+</figcaption>
+<div aria-describedby="lst-messy-data-pivot-wider-missing1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-label="1"></a>crime_counts_tiny <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-label="1"></a>crime_counts_tiny <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
 <span id="cb8-2"><a href="#cb8-2" aria-label="2"></a>  <span class="sc">~</span>area        , <span class="sc">~</span>crime_type , <span class="sc">~</span>count ,</span>
 <span id="cb8-3"><a href="#cb8-3" aria-label="3"></a>  <span class="st">"Northville"</span> , <span class="st">"fraud"</span>     ,     <span class="dv">35</span> ,</span>
 <span id="cb8-4"><a href="#cb8-4" aria-label="4"></a>  <span class="st">"Northville"</span> , <span class="st">"extortion"</span> ,      <span class="dv">2</span> ,</span>
@@ -737,13 +779,25 @@ quarto book
 <span id="cb8-6"><a href="#cb8-6" aria-label="6"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>If we convert this data to wide format, we’ll see that the <code>extortion</code> column for the row containing counts for Southam has a missing value:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-pivot-wider-missing2" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-pivot-wider-missing2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.6
+</figcaption>
+<div aria-describedby="lst-messy-data-pivot-wider-missing2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="fu">pivot_wider</span>(crime_counts_tiny, <span class="at">names_from =</span> crime_type, <span class="at">values_from =</span> count)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="fu">pivot_wider</span>(crime_counts_tiny, <span class="at">names_from =</span> crime_type, <span class="at">values_from =</span> count)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 2 × 3
@@ -757,17 +811,26 @@ quarto book
 <p>The second reason is that it’s possible that no extortion offences occurred in Southam in the period covered by the crime counts, and whatever system or process generated the data doesn’t include a crime type in a dataset when zero crimes of that type have occurred. We can see this might be a possibility, particularly because the crime counts for Northville suggest extortion is much less common than fraud. If that’s the reason for the missing count, then the <code>NA</code> value actually represents a count of zero for extortion offences in Southam.</p>
 <p>There is no way for us to know solely by looking at the data which of these two reasons is the explanation for the missing extortion count. To work out which is the reason, we would have to ask whomever provided us with the data. Going back to the data provider to clarify this sort of issue is a very common part of tidying and analysing data.</p>
 <p>If, <em>and only if</em>, we have confirmed that the reason for the missing count is that exactly zero extortion offences occurred in Southam in the time period covered by the data, we can deal with that using the <code>values_fill</code> argument to <code>pivot_wider()</code>.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-pivot-wider-missing3" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-pivot-wider-missing3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.7
+</figcaption>
+<div aria-describedby="lst-messy-data-pivot-wider-missing3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="fu">pivot_wider</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="fu">pivot_wider</span>(</span>
 <span id="cb11-2"><a href="#cb11-2" aria-label="2"></a>  crime_counts_tiny,</span>
 <span id="cb11-3"><a href="#cb11-3" aria-label="3"></a>  <span class="at">names_from =</span> crime_type,</span>
 <span id="cb11-4"><a href="#cb11-4" aria-label="4"></a>  <span class="at">values_from =</span> count,</span>
 <span id="cb11-5"><a href="#cb11-5" aria-label="5"></a>  <span class="at">values_fill =</span> <span class="dv">0</span></span>
 <span id="cb11-6"><a href="#cb11-6" aria-label="6"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 2 × 3
@@ -835,12 +898,18 @@ quarto book
 </div>
 <p>Storing data in this way is particularly awkward because variable names can only contain text, so R does not know that the column names represent dates. This means, for example, that we could not filter the dataset to only include data from after a certain date.</p>
 <p>When we want to gather a large number of columns together, it can get tedious to type all the column names for the <code>cols</code> argument to <code>pivot_longer()</code>. Instead, since we want to gather all the columns except one, we can just specify that we should <em>not</em> gather the <code>area</code> column, which implicitly tells <code>pivot_longer()</code> to gather all the other columns. We tell <code>pivot_longer()</code> not to gather the area column by specifying <code>cols = -area</code> (note the minus sign in front of the column name).</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-reshape-monthly-crime-counts" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-reshape-monthly-crime-counts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.8
+</figcaption>
+<div aria-describedby="lst-messy-data-reshape-monthly-crime-counts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-label="1"></a><span class="co"># Create a dataset of monthly crime counts in wide format</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-label="1"></a><span class="co"># Create a dataset of monthly crime counts in wide format</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-label="2"></a>monthly_counts <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
 <span id="cb13-3"><a href="#cb13-3" aria-label="3"></a>  <span class="sc">~</span>area        , <span class="sc">~</span>jan_2020 , <span class="sc">~</span>feb_2020 , <span class="sc">~</span>mar_2020 , <span class="sc">~</span>apr_2020 , <span class="sc">~</span>may_2020 ,</span>
 <span id="cb13-4"><a href="#cb13-4" aria-label="4"></a>  <span class="st">"Northville"</span> ,        <span class="dv">13</span> ,        <span class="dv">10</span> ,        <span class="dv">12</span> ,         <span class="dv">9</span> ,        <span class="dv">10</span> ,</span>
@@ -855,6 +924,9 @@ quarto book
 <span id="cb13-13"><a href="#cb13-13" aria-label="13"></a>  <span class="at">names_to =</span> <span class="st">"month"</span>,</span>
 <span id="cb13-14"><a href="#cb13-14" aria-label="14"></a>  <span class="at">values_to =</span> <span class="st">"count"</span></span>
 <span id="cb13-15"><a href="#cb13-15" aria-label="15"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 15 × 3
@@ -879,26 +951,35 @@ quarto book
 </div>
 <p>There is still a problem with this data, which is that the <code>month</code> variable contains not date values but instead the month and year stored as text. We will learn how to deal with that issue in <a href="../15_mapping_time/index.html" class="quarto-xref"><span>Chapter 15</span></a>.</p>
 </section>
-<section id="skipping-unwanted-rows-in-imported-data" class="level3" data-number="10.2.2">
-<h3 data-number="10.2.2" class="anchored" data-anchor-id="skipping-unwanted-rows-in-imported-data"><span class="header-section-number">10.2.2</span> Skipping unwanted rows in imported data</h3>
+<section id="sec-messy-data-skipping-unwanted-rows-in-imported-data" class="level3" data-number="10.2.2">
+<h3 data-number="10.2.2" class="anchored" data-anchor-id="sec-messy-data-skipping-unwanted-rows-in-imported-data"><span class="header-section-number">10.2.2</span> Skipping unwanted rows in imported data</h3>
 <p>Data released by government organisations are often designed to be viewed by humans rather than processed by statistical software. We can see this in this screenshot of a <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/crimeandjustice/datasets/crimeinenglandandwalesexperimentaltables">dataset produced by the UK Office for National Statistics on cybercrime in the UK</a> based on responses to the Crime Survey for England and Wales.</p>
 <p class="full-width-image">
 <img src="../images/ons_data1.png" alt="Screen shot of an Excel sheet of data from the UK Office for National Statistics, showing that there are multiple header rows above the data and blank rows within the data.">
 </p>
 <p>Looking at the row numbers on the left-hand side, we can see that the first row is taken up not with the column names (as they would be in a tidy dataset) but with the title of the dataset. The next row is blank, and the third row then contains some metadata to say that the data relates to England and Wales and to adults aged 16 and over. Only on row four do we see the column names. There are also blank rows within the data that are used to separate out different categories of data.</p>
 <p>If we try to import this data using, for example, the <code>read_excel()</code> function from the <code>readxl</code> package, we will find various problems.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-download-cybercrime-spreadsheet" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-download-cybercrime-spreadsheet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.9
+</figcaption>
+<div aria-describedby="lst-messy-data-download-cybercrime-spreadsheet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a><span class="co"># Download the original spreadsheet into the `data/raw` folder</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a><span class="co"># Download the original spreadsheet into the `data/raw` folder</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-label="2"></a><span class="fu">request</span>(</span>
 <span id="cb15-3"><a href="#cb15-3" aria-label="3"></a>  <span class="st">"https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/crimeandjustice/datasets/crimeinenglandandwalesexperimentaltables/yearendingdecember2018/additionalfraudandcybercrimetablesyearendingdecember2018correction.xlsx"</span></span>
 <span id="cb15-4"><a href="#cb15-4" aria-label="4"></a>) <span class="sc">|&gt;</span></span>
 <span id="cb15-5"><a href="#cb15-5" aria-label="5"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"cybercrime.xlsx"</span>))</span>
 <span id="cb15-6"><a href="#cb15-6" aria-label="6"></a></span>
 <span id="cb15-7"><a href="#cb15-7" aria-label="7"></a><span class="fu">read_excel</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"cybercrime.xlsx"</span>), <span class="at">sheet =</span> <span class="st">"Table E1"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <div class="cell">
@@ -929,16 +1010,25 @@ quarto book
 </div>
 </div>
 <p>It’s clear that this dataset has not loaded in the way that we want, because the first row doesn’t contain the column names. Fortunately, we can deal with this problem using the <code>skip</code> argument to the <code>read_excel()</code> function. This allows us to specify a number of rows to ignore at the start of the dataset. In this case, we want to ignore the first three rows of the data (the table title, a blank line and the metadata line), so we can specify <code>skip = 3</code>. The same <code>skip</code> argument also exists in the <code>read_csv()</code> function for reading CSV data and the <code>read_tsv()</code> function for reading tab-separated data.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-skip-cybercrime-header-rows" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-skip-cybercrime-header-rows-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.10
+</figcaption>
+<div aria-describedby="lst-messy-data-skip-cybercrime-header-rows-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-label="1"></a><span class="fu">read_excel</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-label="1"></a><span class="fu">read_excel</span>(</span>
 <span id="cb18-2"><a href="#cb18-2" aria-label="2"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"cybercrime.xlsx"</span>),</span>
 <span id="cb18-3"><a href="#cb18-3" aria-label="3"></a>  <span class="at">sheet =</span> <span class="st">"Table E1"</span>,</span>
 <span id="cb18-4"><a href="#cb18-4" aria-label="4"></a>  <span class="at">skip =</span> <span class="dv">3</span></span>
 <span id="cb18-5"><a href="#cb18-5" aria-label="5"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <div class="cell">
@@ -973,23 +1063,41 @@ quarto book
 <li>row four of the original spreadsheet has become our column names,</li>
 </ul>
 <p>so row 34 on the spreadsheet is actually row 30 in our loaded dataset. Knowing this, we can remove all the rows below row 30 using the <code>slice()</code> function from the dplyr package:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-trim-cybercrime-footer-rows" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-trim-cybercrime-footer-rows-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.11
+</figcaption>
+<div aria-describedby="lst-messy-data-trim-cybercrime-footer-rows-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-label="1"></a>cybercrime <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"cybercrime.xlsx"</span>) <span class="sc">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-label="1"></a>cybercrime <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"cybercrime.xlsx"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-label="2"></a>  <span class="fu">read_excel</span>(<span class="at">sheet =</span> <span class="st">"Table E1"</span>, <span class="at">skip =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
 <span id="cb20-3"><a href="#cb20-3" aria-label="3"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>It’s important to check that we’ve sliced the correct number of rows, since it’s easy to miscalculate and get this wrong. We can check by using <code>view()</code> to open the whole dataset in a separate tab in Positron, or use the <code>tail()</code> function to print the last few rows of the data in the R Console:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-tail-cybercrime" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-tail-cybercrime-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.12
+</figcaption>
+<div aria-describedby="lst-messy-data-tail-cybercrime-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-label="1"></a><span class="fu">tail</span>(cybercrime)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-label="1"></a><span class="fu">tail</span>(cybercrime)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 6 × 5
@@ -1008,12 +1116,18 @@ quarto book
 </div>
 </div>
 <p>The final problem with the structure of this dataset is the blank rows that are used to separate different crime categories in the original table. We can deal with this using the <code>remove_empty()</code> function from the janitor package, which removes all rows and/or columns that contain only <code>NA</code> values. We will also clean the column names at the same time and then rename the columns to be shorter, which will make it easier to refer to them in our code.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-remove-empty-cybercrime-columns" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-remove-empty-cybercrime-columns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.13
+</figcaption>
+<div aria-describedby="lst-messy-data-remove-empty-cybercrime-columns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-label="1"></a>cybercrime <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"cybercrime.xlsx"</span>) <span class="sc">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-label="1"></a>cybercrime <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"cybercrime.xlsx"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-label="2"></a>  <span class="fu">read_excel</span>(<span class="at">sheet =</span> <span class="st">"Table E1"</span>, <span class="at">skip =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-label="3"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>) <span class="sc">|&gt;</span></span>
 <span id="cb23-4"><a href="#cb23-4" aria-label="4"></a>  <span class="fu">remove_empty</span>(<span class="at">which =</span> <span class="st">"rows"</span>) <span class="sc">|&gt;</span></span>
@@ -1027,6 +1141,9 @@ quarto book
 <span id="cb23-12"><a href="#cb23-12" aria-label="12"></a>  )</span>
 <span id="cb23-13"><a href="#cb23-13" aria-label="13"></a></span>
 <span id="cb23-14"><a href="#cb23-14" aria-label="14"></a><span class="fu">head</span>(cybercrime)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <div class="cell">
@@ -1044,8 +1161,8 @@ quarto book
 </div>
 <p>This dataset now has a tidy structure: each row represents an observation (in this case, data about a particular type of crime), each column represents a piece of information about the observation and each cell represents a single value. We still need to clean up the footnote numbers that appear in some of the values, but we will deal with that later in this chapter.</p>
 </section>
-<section id="separating-multiple-variables-stored-in-a-single-column" class="level3" data-number="10.2.3">
-<h3 data-number="10.2.3" class="anchored" data-anchor-id="separating-multiple-variables-stored-in-a-single-column"><span class="header-section-number">10.2.3</span> Separating multiple variables stored in a single column</h3>
+<section id="sec-messy-data-separating-multiple-variables-stored-in-a-single-column" class="level3" data-number="10.2.3">
+<h3 data-number="10.2.3" class="anchored" data-anchor-id="sec-messy-data-separating-multiple-variables-stored-in-a-single-column"><span class="header-section-number">10.2.3</span> Separating multiple variables stored in a single column</h3>
 <p>Sometimes datasets include multiple variables in a single column. For example, data about crime victims stored in an object called <code>victims</code> might include a single column representing both age and sex.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -1089,12 +1206,18 @@ quarto book
 </div>
 <p>It would be easier to wrangle this data (e.g.&nbsp;to filter by age) if the data in the <code>age_sex</code> column was stored in two separate columns. Making this change would also make sure our data meets the definition of being tidy: every variable should be stored in a separate column.</p>
 <p>We can split the <code>age_sex</code> column into two using the <code>separate_wider_delim()</code> function from the tidyr package. We specify the existing column we want to split, the names of the new columns using the <code>names</code> argument and the character that separates the two pieces of data using the <code>delim</code> argument (in this case, <code>/</code>).</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-separate-victim-age-and-sex" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-separate-victim-age-and-sex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.14
+</figcaption>
+<div aria-describedby="lst-messy-data-separate-victim-age-and-sex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-label="1"></a><span class="co"># Create an example dataset of fictional crime victims</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-label="1"></a><span class="co"># Create an example dataset of fictional crime victims</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-label="2"></a>victims <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
 <span id="cb25-3"><a href="#cb25-3" aria-label="3"></a>  <span class="sc">~</span>first_name , <span class="sc">~</span>last_name  , <span class="sc">~</span>age_sex ,</span>
 <span id="cb25-4"><a href="#cb25-4" aria-label="4"></a>  <span class="st">"Kareem"</span>    , <span class="st">"David"</span>     , <span class="st">"26/M"</span>   ,</span>
@@ -1112,6 +1235,9 @@ quarto book
 <span id="cb25-16"><a href="#cb25-16" aria-label="16"></a>  <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">"sex"</span>)</span>
 <span id="cb25-17"><a href="#cb25-17" aria-label="17"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</div>
+</figure>
+</div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `separate_wider_delim()`:
 ! Expected 2 pieces in each element of `age_sex`.
@@ -1122,12 +1248,18 @@ quarto book
 </div>
 <p>This code produces an error because the second row of the data contains only one of the two expected pieces – we don’t know the value of the new column called <code>sex</code> for the row of data for Lyda Gartrell. In this example, we want the value <code>40</code> to go into the <code>age</code> column and the missing <code>sex</code> value to be recorded as <code>NA</code>. We can do this by specifying <code>too_few = "align_start"</code>.</p>
 <p>Because the original <code>age_sex</code> column stored text, both new columns initially contain text, too. Since age is numeric, we can convert it after separating the columns using <code>parse_number()</code>.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-handle-incomplete-victim-values" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-handle-incomplete-victim-values-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.15
+</figcaption>
+<div aria-describedby="lst-messy-data-handle-incomplete-victim-values-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-label="1"></a>victims <span class="sc">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-label="1"></a>victims <span class="sc">|&gt;</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-label="2"></a>  <span class="fu">separate_wider_delim</span>(</span>
 <span id="cb27-3"><a href="#cb27-3" aria-label="3"></a>    <span class="at">cols =</span> age_sex,</span>
 <span id="cb27-4"><a href="#cb27-4" aria-label="4"></a>    <span class="at">delim =</span> <span class="st">"/"</span>,</span>
@@ -1135,6 +1267,9 @@ quarto book
 <span id="cb27-6"><a href="#cb27-6" aria-label="6"></a>    <span class="at">too_few =</span> <span class="st">"align_start"</span></span>
 <span id="cb27-7"><a href="#cb27-7" aria-label="7"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb27-8"><a href="#cb27-8" aria-label="8"></a>  <span class="fu">mutate</span>(<span class="at">age =</span> <span class="fu">parse_number</span>(age))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 5 × 4
@@ -1159,20 +1294,20 @@ quarto book
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What issue might arise when working with wide-format data?</strong></p>
-<div id="radio_SABXSNHKQD" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_SABXSNHKQD" value=""> <span>It requires a greater number of observations</span></label><label><input type="radio" autocomplete="off" name="radio_SABXSNHKQD" value=""> <span>It cannot store numeric values</span></label><label><input type="radio" autocomplete="off" name="radio_SABXSNHKQD" value="answer"> <span>It makes it harder to filter, sort or summarise data</span></label><label><input type="radio" autocomplete="off" name="radio_SABXSNHKQD" value=""> <span>It eliminates missing values</span></label>
+<div id="radio_MEHGDRLCZF" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_MEHGDRLCZF" value=""> <span>It requires a greater number of observations</span></label><label><input type="radio" autocomplete="off" name="radio_MEHGDRLCZF" value=""> <span>It cannot store numeric values</span></label><label><input type="radio" autocomplete="off" name="radio_MEHGDRLCZF" value="answer"> <span>It makes it harder to filter, sort or summarise data</span></label><label><input type="radio" autocomplete="off" name="radio_MEHGDRLCZF" value=""> <span>It eliminates missing values</span></label>
 </div>
 <p><strong>Which of the following best describes a tidy dataset?</strong></p>
-<div id="radio_YGEHYALEPC" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_YGEHYALEPC" value=""> <span>All data is stored in a single column</span></label><label><input type="radio" autocomplete="off" name="radio_YGEHYALEPC" value=""> <span>Each column represents a different data type (numeric, character, etc.)</span></label><label><input type="radio" autocomplete="off" name="radio_YGEHYALEPC" value=""> <span>Each row represents a variable and each column represents an observation</span></label><label><input type="radio" autocomplete="off" name="radio_YGEHYALEPC" value="answer"> <span>Each row represents an observation and each column represents a variable</span></label>
+<div id="radio_ZAINHNMXFH" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_ZAINHNMXFH" value=""> <span>All data is stored in a single column</span></label><label><input type="radio" autocomplete="off" name="radio_ZAINHNMXFH" value=""> <span>Each column represents a different data type (numeric, character, etc.)</span></label><label><input type="radio" autocomplete="off" name="radio_ZAINHNMXFH" value=""> <span>Each row represents a variable and each column represents an observation</span></label><label><input type="radio" autocomplete="off" name="radio_ZAINHNMXFH" value="answer"> <span>Each row represents an observation and each column represents a variable</span></label>
 </div>
 <p><strong>Which function is used to convert wide data to long format in R?</strong></p>
-<div id="radio_NAUXKUJHMQ" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_NAUXKUJHMQ" value=""> <span><code>spread()</code></span></label><label><input type="radio" autocomplete="off" name="radio_NAUXKUJHMQ" value="answer"> <span><code>pivot_longer()</code></span></label><label><input type="radio" autocomplete="off" name="radio_NAUXKUJHMQ" value=""> <span><code>gather_rows()</code></span></label><label><input type="radio" autocomplete="off" name="radio_NAUXKUJHMQ" value=""> <span><code>transpose()</code></span></label>
+<div id="radio_OTMZNTQVLU" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_OTMZNTQVLU" value=""> <span><code>spread()</code></span></label><label><input type="radio" autocomplete="off" name="radio_OTMZNTQVLU" value="answer"> <span><code>pivot_longer()</code></span></label><label><input type="radio" autocomplete="off" name="radio_OTMZNTQVLU" value=""> <span><code>gather_rows()</code></span></label><label><input type="radio" autocomplete="off" name="radio_OTMZNTQVLU" value=""> <span><code>transpose()</code></span></label>
 </div>
 <p><strong>You want each crime type in a long dataset to become a separate column in a presentation table. What should you do?</strong></p>
-<div id="radio_OVAUKBQIHV" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_OVAUKBQIHV" value=""> <span>Use <code>pivot_longer()</code> because it creates more rows</span></label><label><input type="radio" autocomplete="off" name="radio_OVAUKBQIHV" value="answer"> <span>Use <code>pivot_wider()</code> because values from one column should become several columns</span></label><label><input type="radio" autocomplete="off" name="radio_OVAUKBQIHV" value=""> <span>Use <code>separate_wider_delim()</code> because the data contains several crime types</span></label><label><input type="radio" autocomplete="off" name="radio_OVAUKBQIHV" value=""> <span>Use <code>remove_empty()</code> because wide tables must not contain missing values</span></label>
+<div id="radio_PZRYFADYOD" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_PZRYFADYOD" value=""> <span>Use <code>pivot_longer()</code> because it creates more rows</span></label><label><input type="radio" autocomplete="off" name="radio_PZRYFADYOD" value="answer"> <span>Use <code>pivot_wider()</code> because values from one column should become several columns</span></label><label><input type="radio" autocomplete="off" name="radio_PZRYFADYOD" value=""> <span>Use <code>separate_wider_delim()</code> because the data contains several crime types</span></label><label><input type="radio" autocomplete="off" name="radio_PZRYFADYOD" value=""> <span>Use <code>remove_empty()</code> because wide tables must not contain missing values</span></label>
 </div>
 </div>
 </div>
@@ -1261,12 +1396,18 @@ quarto book
 </div>
 </div>
 <p>We don’t need this constant value for analysis, and for large datasets it can unnecessarily increase the size of the data when we save it to a file. For this reason we might want to remove this constant value using the <code>str_remove()</code> function. To see how this works, let’s create a small example dataset similar to the UK police open data and then remove the constant text from the <code>location</code> column.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-remove-location-prefix" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-remove-location-prefix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.16
+</figcaption>
+<div aria-describedby="lst-messy-data-remove-location-prefix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-label="1"></a><span class="co"># Create example dataset similar to UK police open data</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-label="1"></a><span class="co"># Create example dataset similar to UK police open data</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-label="2"></a>uk_data <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
 <span id="cb29-3"><a href="#cb29-3" aria-label="3"></a>  <span class="sc">~</span>month    , <span class="sc">~</span>longitude , <span class="sc">~</span>latitude , <span class="sc">~</span>location                  , <span class="sc">~</span>lsoa_name                 ,</span>
 <span id="cb29-4"><a href="#cb29-4" aria-label="4"></a>  <span class="st">"2020-01"</span> , <span class="sc">-</span><span class="fl">1.12</span>      , <span class="fl">53.3</span>      , <span class="st">"On or near Supermarket"</span>   , <span class="st">"Bassetlaw 013C"</span>           ,</span>
@@ -1276,6 +1417,9 @@ quarto book
 <span id="cb29-8"><a href="#cb29-8" aria-label="8"></a></span>
 <span id="cb29-9"><a href="#cb29-9" aria-label="9"></a><span class="co"># Remove constant text from the location column</span></span>
 <span id="cb29-10"><a href="#cb29-10" aria-label="10"></a>uk_data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">location =</span> <span class="fu">str_remove</span>(location, <span class="st">"On or near "</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 3 × 5
@@ -1295,15 +1439,24 @@ quarto book
 <li><code>$</code> means match the end of the string.</li>
 </ul>
 <p>So <code>\\s\\w{4}$</code> means match exactly one white-space character followed by exactly four word characters at the end of the string. We can use this pattern as the second argument to the <code>str_remove()</code> function to remove the characters matched by the pattern.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-extract-district-name" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-extract-district-name-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.17
+</figcaption>
+<div aria-describedby="lst-messy-data-extract-district-name-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-label="1"></a>uk_data <span class="sc">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-label="1"></a>uk_data <span class="sc">|&gt;</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-label="2"></a>  <span class="fu">mutate</span>(<span class="at">district =</span> <span class="fu">str_remove</span>(lsoa_name, <span class="st">"</span><span class="sc">\\</span><span class="st">s</span><span class="sc">\\</span><span class="st">w{4}$"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb31-3"><a href="#cb31-3" aria-label="3"></a>  <span class="co"># Extract two columns to make them easier to compare</span></span>
 <span id="cb31-4"><a href="#cb31-4" aria-label="4"></a>  <span class="fu">select</span>(lsoa_name, district)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 3 × 2
@@ -1315,20 +1468,29 @@ quarto book
 </div>
 </div>
 <p>Instead of using a regular expression to remove characters, we could instead use regular expressions together with <code>str_extract()</code> to keep only the characters matched by the pattern, <code>str_replace()</code> to replace the first group of characters matched by the pattern and <code>str_replace_all()</code> to replace all the groups of characters matched by the pattern. For more tips on using regular expressions together with functions from the stringr package, see the <a href="https://github.com/rstudio/cheatsheets/blob/main/strings.pdf">stringr package cheat sheet</a> or visit <a href="https://regexr.com/">regexr.com</a>.</p>
-<section id="converting-between-types-of-variable" class="level3" data-number="10.3.1">
-<h3 data-number="10.3.1" class="anchored" data-anchor-id="converting-between-types-of-variable"><span class="header-section-number">10.3.1</span> Converting between types of variable</h3>
+<section id="sec-messy-data-converting-between-types-of-variable" class="level3" data-number="10.3.1">
+<h3 data-number="10.3.1" class="anchored" data-anchor-id="sec-messy-data-converting-between-types-of-variable"><span class="header-section-number">10.3.1</span> Converting between types of variable</h3>
 <p>Sometimes columns in your data will be stored as the wrong type of variable. <code>read_csv()</code> and other functions from the readr package try to guess what type of variable is contained in each column based on what is contained in the first few rows, but this does not always work. For example, a variable containing numbers might be stored as characters, meaning functions like <code>mean()</code> will not work.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-show-character-number-error" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-show-character-number-error-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.18
+</figcaption>
+<div aria-describedby="lst-messy-data-show-character-number-error-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-label="1"></a><span class="co"># Some numbers stored as text (note the quote marks around each number)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-label="1"></a><span class="co"># Some numbers stored as text (note the quote marks around each number)</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-label="2"></a>numbers_as_text <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"14"</span>, <span class="st">"6"</span>, <span class="st">"17"</span>)</span>
 <span id="cb33-3"><a href="#cb33-3" aria-label="3"></a></span>
 <span id="cb33-4"><a href="#cb33-4" aria-label="4"></a><span class="co"># Trying to find the mean of these numbers stored as characters will produce</span></span>
 <span id="cb33-5"><a href="#cb33-5" aria-label="5"></a><span class="co"># `NA` and a warning</span></span>
 <span id="cb33-6"><a href="#cb33-6" aria-label="6"></a><span class="fu">mean</span>(numbers_as_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre data-code-line-numbers=""><code>Warning in mean.default(numbers_as_text): argument is not numeric or logical:
@@ -1339,13 +1501,22 @@ returning NA</code></pre>
 </div>
 </div>
 <p>In cases like this, we can use the <code>parse_number()</code> function from the readr package (part of tidyverse) to convert the character variable into a numeric variable.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-parse-character-numbers" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-parse-character-numbers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.19
+</figcaption>
+<div aria-describedby="lst-messy-data-parse-character-numbers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-label="1"></a><span class="co"># If we use `parse_number()` then `mean()` now works</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-label="1"></a><span class="co"># If we use `parse_number()` then `mean()` now works</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-label="2"></a><span class="fu">mean</span>(<span class="fu">parse_number</span>(numbers_as_text))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>[1] 12.33333</code></pre>
@@ -1369,16 +1540,22 @@ returning NA</code></pre>
 </div>
 <p>If there are multiple columns in a dataset that store non-text data as character values, we can also use the <code>type_convert()</code> function from the readr package to automatically convert them all.</p>
 </section>
-<section id="recoding-categorical-variables" class="level3" data-number="10.3.2">
-<h3 data-number="10.3.2" class="anchored" data-anchor-id="recoding-categorical-variables"><span class="header-section-number">10.3.2</span> Recoding categorical variables</h3>
+<section id="sec-messy-data-recoding-categorical-variables" class="level3" data-number="10.3.2">
+<h3 data-number="10.3.2" class="anchored" data-anchor-id="sec-messy-data-recoding-categorical-variables"><span class="header-section-number">10.3.2</span> Recoding categorical variables</h3>
 <p>Crime data often includes categorical variables, such as crime types or location categories. It can be useful to change these categories, for example so that we can join two datasets or abbreviate category names for use in the axis labels of a chart.</p>
 <p>We can use the <code>if_else()</code> function from the dplyr package to change particular values, but this only allows us to change a single value and can produce slightly untidy code. Instead we can use the <code>replace_values()</code> function from the dplyr package to change one or more values at the same time. For example, imagine we wanted to change the value <code>Supermarket</code> to <code>Shop</code> in the UK police data.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-recode-unknown-locations" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-recode-unknown-locations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.20
+</figcaption>
+<div aria-describedby="lst-messy-data-recode-unknown-locations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-label="1"></a>uk_data <span class="sc">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-label="1"></a>uk_data <span class="sc">|&gt;</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-label="2"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb38-3"><a href="#cb38-3" aria-label="3"></a>    <span class="co"># Once again we will first remove the unnecessary 'On or near ' using</span></span>
 <span id="cb38-4"><a href="#cb38-4" aria-label="4"></a>    <span class="co"># `str_remove()`</span></span>
@@ -1388,6 +1565,9 @@ returning NA</code></pre>
 <span id="cb38-8"><a href="#cb38-8" aria-label="8"></a>      <span class="st">"Supermarket"</span> <span class="sc">~</span> <span class="st">"Shop"</span></span>
 <span id="cb38-9"><a href="#cb38-9" aria-label="9"></a>    )</span>
 <span id="cb38-10"><a href="#cb38-10" aria-label="10"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 3 × 5
@@ -1400,12 +1580,18 @@ returning NA</code></pre>
 </div>
 <p>The first argument to <code>replace_values()</code> is the name of the variable containing values to be replaced. That is followed by one or more formulas showing which values should be changed and what they should be changed to. The old and new values are separated by a tilde (<code>~</code>), with the old value on the left. Any values that do not match a formula keep their existing values.</p>
 <p>We can use <code>replace_values()</code> to make more-complicated changes. For example, we can change multiple values at the same time, including merging different values into the same new value:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-recode-locations-with-case-match" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-recode-locations-with-case-match-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.21
+</figcaption>
+<div aria-describedby="lst-messy-data-recode-locations-with-case-match-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-label="1"></a>uk_data <span class="sc">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-label="1"></a>uk_data <span class="sc">|&gt;</span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-label="2"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb40-3"><a href="#cb40-3" aria-label="3"></a>    <span class="co"># Once again we will first remove the unnecessary 'On or near ' using</span></span>
 <span id="cb40-4"><a href="#cb40-4" aria-label="4"></a>    <span class="co"># `str_remove()`</span></span>
@@ -1417,6 +1603,9 @@ returning NA</code></pre>
 <span id="cb40-10"><a href="#cb40-10" aria-label="10"></a>    )</span>
 <span id="cb40-11"><a href="#cb40-11" aria-label="11"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</div>
+</figure>
+</div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 3 × 5
   month   longitude latitude location         lsoa_name               
@@ -1427,16 +1616,22 @@ returning NA</code></pre>
 </div>
 </div>
 </section>
-<section id="missing-values" class="level3" data-number="10.3.3">
-<h3 data-number="10.3.3" class="anchored" data-anchor-id="missing-values"><span class="header-section-number">10.3.3</span> Missing values</h3>
+<section id="sec-messy-data-missing-values" class="level3" data-number="10.3.3">
+<h3 data-number="10.3.3" class="anchored" data-anchor-id="sec-messy-data-missing-values"><span class="header-section-number">10.3.3</span> Missing values</h3>
 <p>We have already encountered the <code>NA</code> value, which R uses to represent a value that is missing from a dataset. While R uses <code>NA</code> to represent missing values, some data providers use other codes. For example, a data provider might use a dash (<code>-</code>) or two periods (<code>..</code>) to represent missing values. Fortunately, we can convert any value to <code>NA</code> so that we know that it represents a missing value.</p>
 <p>Imagine that you have been provided with a dataset of burglaries that includes an estimate of the value of the goods that were stolen in British pounds. You have been told that when the value of the stolen goods wasn’t known, this is recorded as the value <code>-1</code> in the data. If we use <code>mean()</code> to estimate the average value of property stolen, the value <code>-1</code> will give us an incorrect result.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-show-missing-value-sentinel" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-show-missing-value-sentinel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.22
+</figcaption>
+<div aria-describedby="lst-messy-data-show-missing-value-sentinel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-label="1"></a><span class="co"># Create a dataset of burglary dates/times with the value of goods stolen</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-label="1"></a><span class="co"># Create a dataset of burglary dates/times with the value of goods stolen</span></span>
 <span id="cb42-2"><a href="#cb42-2" aria-label="2"></a>burglary_values <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
 <span id="cb42-3"><a href="#cb42-3" aria-label="3"></a>  <span class="sc">~</span>crime_number , <span class="sc">~</span>value ,</span>
 <span id="cb42-4"><a href="#cb42-4" aria-label="4"></a>         <span class="dv">182304</span> ,   <span class="dv">1320</span> ,</span>
@@ -1450,22 +1645,34 @@ returning NA</code></pre>
 <span id="cb42-12"><a href="#cb42-12" aria-label="12"></a><span class="co"># `pull()` is used to extract the `value` column from `burglary_values`</span></span>
 <span id="cb42-13"><a href="#cb42-13" aria-label="13"></a>burglary_values <span class="sc">|&gt;</span> <span class="fu">pull</span>(<span class="st">"value"</span>) <span class="sc">|&gt;</span> <span class="fu">mean</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</div>
+</figure>
+</div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>[1] 924</code></pre>
 </div>
 </div>
 <p>If we instead convert the value <code>-1</code> to <code>NA</code> first, <code>mean()</code> will know to ignore that value as long as we specify the argument <code>na.rm = TRUE</code>.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-replace-sentinel-with-na" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-replace-sentinel-with-na-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.23
+</figcaption>
+<div aria-describedby="lst-messy-data-replace-sentinel-with-na-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-label="1"></a><span class="co"># Convert `-1` to `NA` first, now you get the correct mean value</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-label="1"></a><span class="co"># Convert `-1` to `NA` first, now you get the correct mean value</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-label="2"></a>burglary_values <span class="sc">|&gt;</span></span>
 <span id="cb44-3"><a href="#cb44-3" aria-label="3"></a>  <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">if_else</span>(value <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, <span class="cn">NA</span>, value)) <span class="sc">|&gt;</span></span>
 <span id="cb44-4"><a href="#cb44-4" aria-label="4"></a>  <span class="co"># Calculate the mean value again, now excluding the missing value</span></span>
 <span id="cb44-5"><a href="#cb44-5" aria-label="5"></a>  <span class="fu">pull</span>(<span class="st">"value"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb44-6"><a href="#cb44-6" aria-label="6"></a>  <span class="fu">mean</span>(<span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>[1] 1155.25</code></pre>
@@ -1473,12 +1680,18 @@ returning NA</code></pre>
 </div>
 <p>Excluding the value <code>-1</code> makes a substantial difference to the mean, increasing it by over £100.</p>
 <p>Sometimes a row cannot be used for a particular analysis because a value that the analysis needs is missing. The <code>drop_na()</code> function removes rows containing <code>NA</code> in the columns we specify. For example, this code removes only rows in which the <code>address</code> value is missing:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-show-missing-addresses" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-show-missing-addresses-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.24
+</figcaption>
+<div aria-describedby="lst-messy-data-show-missing-addresses-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-label="1"></a>example_addresses <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-label="1"></a>example_addresses <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
 <span id="cb46-2"><a href="#cb46-2" aria-label="2"></a>  <span class="sc">~</span>incident , <span class="sc">~</span>address          , <span class="sc">~</span>category  ,</span>
 <span id="cb46-3"><a href="#cb46-3" aria-label="3"></a>          <span class="dv">1</span> , <span class="st">"10 HIGH STREET"</span>  , <span class="st">"burglary"</span> ,</span>
 <span id="cb46-4"><a href="#cb46-4" aria-label="4"></a>          <span class="dv">2</span> , <span class="cn">NA</span>                , <span class="st">"robbery"</span>  ,</span>
@@ -1486,6 +1699,9 @@ returning NA</code></pre>
 <span id="cb46-6"><a href="#cb46-6" aria-label="6"></a>)</span>
 <span id="cb46-7"><a href="#cb46-7" aria-label="7"></a></span>
 <span id="cb46-8"><a href="#cb46-8" aria-label="8"></a><span class="fu">drop_na</span>(example_addresses, address)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 2 × 3
@@ -1534,9 +1750,18 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </div>
 </div>
 <p>So if you see any coordinates on your map located in the Gulf of Guinea, off the coast of West Africa, you know that there are almost certainly rows in your data that have coordinates located at Null Island.</p>
+<div id="map-null-island-world" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-null-island-world-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <p class="full-width-image">
-<img src="../images/null_island.jpg" alt="A globe centred on the Atlantic Ocean marks Null Island at zero degrees longitude and zero degrees latitude, off the coast of West Africa.">
+<img src="../images/null_island.jpg" alt="A globe centred on the Atlantic Ocean marks Null Island at zero degrees longitude and zero degrees latitude, off the coast of West Africa." class="figure-img">
 </p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-null-island-world-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;10.1
+</figcaption>
+</figure>
+</div>
 <p>When we make crime maps we are generally dealing with small areas such as cities and counties. So if you plot a dataset on a map and instead of seeing a map of the area you are interested in, you see a large area of the world with the place you are interested in in one corner and Null Island in the opposite corner, that almost certainly means some coordinates are located at Null Island.</p>
 <p>As an example, imagine we were trying to create a map of the home addresses of several (fictional) suspects for bank fraud in and around Cairo, Egypt. The data contain 10 rows stored in an object called <code>cairo_suspects</code> that looks like this:</p>
 <div class="cell">
@@ -1622,22 +1847,46 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </div>
 </div>
 <p>If we plotted these locations on a map, we might expect to see something like this:</p>
+<div id="map-cairo-locations" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-cairo-locations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <p class="full-width-image">
-<img src="../images/null_island_cairo1.jpg" alt="A map showing several points in the city of Cairo, Egypt">
+<img src="../images/null_island_cairo1.jpg" alt="A map showing several points in the city of Cairo, Egypt" class="figure-img">
 </p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-cairo-locations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;10.2
+</figcaption>
+</figure>
+</div>
 <p>But look again at the final row of data in the table above – the coordinates for the final row are both zero. There are several reasons why this might be. Perhaps the address was recorded incorrectly in a police database and that meant that when the addresses were run through geocoding software (which we will learn more about in the next section), no coordinates for that row could be found. What this means is that when we plot the data on a map, that map will actually look like this:</p>
+<div id="map-cairo-and-null-island" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-cairo-and-null-island-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <p class="full-width-image">
-<img src="../images/null_island_cairo2.jpg" alt="A map showing a large proportion of Africa, with several points clustered around the city of Cairo, Egypt in the top-right corner and a single point located in the Atlantic Ocean off the coast of Ghana.">
+<img src="../images/null_island_cairo2.jpg" alt="A map showing a large proportion of Africa, with several points clustered around the city of Cairo, Egypt in the top-right corner and a single point located in the Atlantic Ocean off the coast of Ghana." class="figure-img">
 </p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-cairo-and-null-island-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;10.3
+</figcaption>
+</figure>
+</div>
 <p>What we can see here is that most of the points on this map are correctly located in and around Cairo, but a single point is incorrectly located at Null Island.</p>
 <p>We can deal with the problem of our data including points located at Null Island using the <code>hotspot_clip()</code> function that we previously used to clip datasets to the boundaries of other datasets. In this case, <code>hotspot_clip()</code> removes any rows from the data that are not within the area that the data is supposed to cover.</p>
 <p>For example, we know that all the addresses of bank fraud suspects are supposed to be in Egypt, so we can safely clip the suspect data to the boundary of Egypt before mapping the data. There are lots of sources of data on the outlines of countries, but perhaps the most convenient to use in R is the data provided by the rnaturalearth package. We can use the <code>ne_countries()</code> function to retrieve the outline of Egypt as an SF object, which we can then use to clip the suspect dataset.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-null-island-exercise1" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-null-island-exercise1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.25
+</figcaption>
+<div aria-describedby="lst-messy-data-null-island-exercise1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-label="1"></a><span class="co"># Create dataset of fictional fraud suspects in Cairo</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-label="1"></a><span class="co"># Create dataset of fictional fraud suspects in Cairo</span></span>
 <span id="cb48-2"><a href="#cb48-2" aria-label="2"></a><span class="co"># Note these lines are more than 80 characters long, since if we don't keep each</span></span>
 <span id="cb48-3"><a href="#cb48-3" aria-label="3"></a><span class="co"># row in the dataset on a single line of code, it becomes very difficult to work</span></span>
 <span id="cb48-4"><a href="#cb48-4" aria-label="4"></a><span class="co"># out which fields will end up in which rows</span></span>
@@ -1666,6 +1915,9 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 <span id="cb48-27"><a href="#cb48-27" aria-label="27"></a><span class="co"># Clip dataset to the boundary of Egypt</span></span>
 <span id="cb48-28"><a href="#cb48-28" aria-label="28"></a>cairo_suspects_valid <span class="ot">&lt;-</span> <span class="fu">hotspot_clip</span>(cairo_suspects, egypt_outline)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</div>
+</figure>
+</div>
 <div class="cell-output cell-output-stderr">
 <pre data-code-line-numbers=""><code>Warning in hotspot_clip(cairo_suspects, egypt_outline): `data` has points with the co-ordinates "0, 0".
 ℹ This usually indicates a problem with the data.
@@ -1687,20 +1939,20 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What does <code>str_squish()</code> do?</strong></p>
-<div id="radio_DUKZQMZREA" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_DUKZQMZREA" value=""> <span>It changes every value to upper case</span></label><label><input type="radio" autocomplete="off" name="radio_DUKZQMZREA" value="answer"> <span>It removes leading and trailing whitespace and reduces repeated whitespace to one space</span></label><label><input type="radio" autocomplete="off" name="radio_DUKZQMZREA" value=""> <span>It converts character values to numbers</span></label><label><input type="radio" autocomplete="off" name="radio_DUKZQMZREA" value=""> <span>It replaces every missing value with an empty string</span></label>
+<div id="radio_EUSDQYEISX" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_EUSDQYEISX" value=""> <span>It changes every value to upper case</span></label><label><input type="radio" autocomplete="off" name="radio_EUSDQYEISX" value="answer"> <span>It removes leading and trailing whitespace and reduces repeated whitespace to one space</span></label><label><input type="radio" autocomplete="off" name="radio_EUSDQYEISX" value=""> <span>It converts character values to numbers</span></label><label><input type="radio" autocomplete="off" name="radio_EUSDQYEISX" value=""> <span>It replaces every missing value with an empty string</span></label>
 </div>
 <p><strong>What happens to values that do not match a formula supplied to <code>replace_values()</code>?</strong></p>
-<div id="radio_NPXEVOACCP" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_NPXEVOACCP" value=""> <span>Every value that does not appear in a formula is replaced with <code>NA</code></span></label><label><input type="radio" autocomplete="off" name="radio_NPXEVOACCP" value=""> <span>Only one existing value can be changed in each call</span></label><label><input type="radio" autocomplete="off" name="radio_NPXEVOACCP" value="answer"> <span>Values that do not match a formula keep their existing values</span></label><label><input type="radio" autocomplete="off" name="radio_NPXEVOACCP" value=""> <span>It can only be used with numeric variables</span></label>
+<div id="radio_EJPZVRSAMF" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_EJPZVRSAMF" value=""> <span>Every value that does not appear in a formula is replaced with <code>NA</code></span></label><label><input type="radio" autocomplete="off" name="radio_EJPZVRSAMF" value=""> <span>Only one existing value can be changed in each call</span></label><label><input type="radio" autocomplete="off" name="radio_EJPZVRSAMF" value="answer"> <span>Values that do not match a formula keep their existing values</span></label><label><input type="radio" autocomplete="off" name="radio_EJPZVRSAMF" value=""> <span>It can only be used with numeric variables</span></label>
 </div>
 <p><strong>A row has no address but contains other useful information. What should you do?</strong></p>
-<div id="radio_SJWMAGTOCT" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_SJWMAGTOCT" value=""> <span>Remove every row that contains any missing value</span></label><label><input type="radio" autocomplete="off" name="radio_SJWMAGTOCT" value="answer"> <span>Remove a row only if the missing address makes it unusable for geocoding</span></label><label><input type="radio" autocomplete="off" name="radio_SJWMAGTOCT" value=""> <span>Replace the missing address with the address from the previous row</span></label><label><input type="radio" autocomplete="off" name="radio_SJWMAGTOCT" value=""> <span>Convert every value in the row to <code>NA</code></span></label>
+<div id="radio_QUITLKSFEY" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_QUITLKSFEY" value=""> <span>Remove every row that contains any missing value</span></label><label><input type="radio" autocomplete="off" name="radio_QUITLKSFEY" value="answer"> <span>Remove a row only if the missing address makes it unusable for geocoding</span></label><label><input type="radio" autocomplete="off" name="radio_QUITLKSFEY" value=""> <span>Replace the missing address with the address from the previous row</span></label><label><input type="radio" autocomplete="off" name="radio_QUITLKSFEY" value=""> <span>Convert every value in the row to <code>NA</code></span></label>
 </div>
 <p><strong>What is the most likely explanation if one point appears at Null Island?</strong></p>
-<div id="radio_MAHDBWPQDY" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_MAHDBWPQDY" value=""> <span>The coordinates use the wrong number of decimal places</span></label><label><input type="radio" autocomplete="off" name="radio_MAHDBWPQDY" value="answer"> <span>Missing coordinates may have been recorded as zero</span></label><label><input type="radio" autocomplete="off" name="radio_MAHDBWPQDY" value=""> <span>The map has been transformed to a local coordinate system</span></label><label><input type="radio" autocomplete="off" name="radio_MAHDBWPQDY" value=""> <span>The dataset contains too many rows</span></label>
+<div id="radio_DMQQWUEDNV" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_DMQQWUEDNV" value=""> <span>The coordinates use the wrong number of decimal places</span></label><label><input type="radio" autocomplete="off" name="radio_DMQQWUEDNV" value="answer"> <span>Missing coordinates may have been recorded as zero</span></label><label><input type="radio" autocomplete="off" name="radio_DMQQWUEDNV" value=""> <span>The map has been transformed to a local coordinate system</span></label><label><input type="radio" autocomplete="off" name="radio_DMQQWUEDNV" value=""> <span>The dataset contains too many rows</span></label>
 </div>
 </div>
 </div>
@@ -1807,12 +2059,18 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </div>
 <p>Since most geocoding services limit the number of addresses you can look up at a time, the first step in geocoding is removing duplicate addresses and rows with missing address values. This avoids us geocoding identical addresses several times, which would otherwise unnecessarily increase our chance of hitting the limit on geocoding queries each day.</p>
 <p>We will also add the city, state and country to the end of each address, since at the moment (as with much data produced by local organisations) it includes only the building number and street. Including the country applies the same principle that we would use when geocoding addresses outside the United States.</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_10.R">
+<div id="lst-messy-data-script-10-prepare" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-script-10-prepare-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.26
+</figcaption>
+<div aria-describedby="lst-messy-data-script-10-prepare-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_10.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-label="1"></a><span class="co"># This script prepares and geocodes fictional incident addresses in Chicago.</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51" data-filename="chapter_10.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-label="1"></a><span class="co"># This script prepares and geocodes fictional incident addresses in Chicago.</span></span>
 <span id="cb51-2"><a href="#cb51-2" aria-label="2"></a></span>
 <span id="cb51-3"><a href="#cb51-3" aria-label="3"></a><span class="co"># Load packages</span></span>
 <span id="cb51-4"><a href="#cb51-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, sfhotspot, tidygeocoder, tidyverse)</span>
@@ -1849,6 +2107,9 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 <span id="cb51-35"><a href="#cb51-35" aria-label="35"></a>  <span class="fu">distinct</span>(address)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 8 × 1
@@ -1865,36 +2126,62 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </div>
 </div>
 <p>Run this code in the R Console to inspect the prepared addresses:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-script-10-preview-addresses" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-script-10-preview-addresses-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.27
+</figcaption>
+<div aria-describedby="lst-messy-data-script-10-preview-addresses-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-label="1"></a><span class="fu">head</span>(addresses_for_geocoding)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-label="1"></a><span class="fu">head</span>(addresses_for_geocoding)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>Since two addresses in the data were duplicates and one address was missing, we now have eight unique addresses, stored in a tibble with a single column. The <code>drop_na(address)</code> call removes only the row that cannot be geocoded, rather than discarding rows because values in unrelated columns are missing.</p>
 <p>We can use this object as the input to the <code>geocode()</code> function from the tidygeocoder package. tidygeocoder sends address text to a geocoding service and returns matching coordinates. The <code>address</code> argument specifies which column contains the addresses and the <code>method</code> argument specifies which geocoding service to use. Nominatim is based on OpenStreetMap data, so we choose it by specifying <code>method = "osm"</code>.</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_10.R">
+<div id="lst-messy-data-script-10-geocode" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-script-10-geocode-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.28
+</figcaption>
+<div aria-describedby="lst-messy-data-script-10-geocode-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_10.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-label="1"></a><span class="co"># Geocode each address using Nominatim</span></span>
-<span id="cb54-2"><a href="#cb54-2" aria-label="2"></a></span>
-<span id="cb54-3"><a href="#cb54-3" aria-label="3"></a>addresses_geocoded <span class="ot">&lt;-</span> tidygeocoder<span class="sc">::</span><span class="fu">geocode</span>(</span>
-<span id="cb54-4"><a href="#cb54-4" aria-label="4"></a>  addresses_for_geocoding,</span>
-<span id="cb54-5"><a href="#cb54-5" aria-label="5"></a>  <span class="at">address =</span> <span class="st">"address"</span>,</span>
-<span id="cb54-6"><a href="#cb54-6" aria-label="6"></a>  <span class="at">method =</span> <span class="st">"osm"</span></span>
-<span id="cb54-7"><a href="#cb54-7" aria-label="7"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54" data-filename="chapter_10.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-label="1"></a><span class="co"># Geocode each address using Nominatim</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-label="2"></a>addresses_geocoded <span class="ot">&lt;-</span> tidygeocoder<span class="sc">::</span><span class="fu">geocode</span>(</span>
+<span id="cb54-3"><a href="#cb54-3" aria-label="3"></a>  addresses_for_geocoding,</span>
+<span id="cb54-4"><a href="#cb54-4" aria-label="4"></a>  <span class="at">address =</span> <span class="st">"address"</span>,</span>
+<span id="cb54-5"><a href="#cb54-5" aria-label="5"></a>  <span class="at">method =</span> <span class="st">"osm"</span></span>
+<span id="cb54-6"><a href="#cb54-6" aria-label="6"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
-<div class="cell">
+</figure>
+</div>
+</div>
+<div class="cell" data-filename="R Console">
+<div id="lst-messy-data-script-10-inspect-geocoded" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-script-10-inspect-geocoded-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.29
+</figcaption>
+<div aria-describedby="lst-messy-data-script-10-inspect-geocoded-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-label="1"></a>addresses_geocoded</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-label="1"></a>addresses_geocoded</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 8 × 3
@@ -1911,28 +2198,36 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </div>
 </div>
 <p>Now that we have the latitude and longitude for each address, we can join them back to the original data using the address column to match the two datasets together. To do this we will create a temporary column in the original <code>addresses</code> object that matches the formatting changes we made to the original address.</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_10.R">
+<div id="lst-messy-data-script-10-join" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-script-10-join-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.30
+</figcaption>
+<div aria-describedby="lst-messy-data-script-10-join-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_10.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-label="1"></a><span class="co"># Join the geocoded coordinates back to the original rows</span></span>
-<span id="cb57-2"><a href="#cb57-2" aria-label="2"></a></span>
-<span id="cb57-3"><a href="#cb57-3" aria-label="3"></a>addresses_final <span class="ot">&lt;-</span> addresses <span class="sc">|&gt;</span></span>
-<span id="cb57-4"><a href="#cb57-4" aria-label="4"></a>  <span class="co"># Create a temporary address column to use in matching the geocoded addresses</span></span>
-<span id="cb57-5"><a href="#cb57-5" aria-label="5"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb57-6"><a href="#cb57-6" aria-label="6"></a>    <span class="at">temp_address =</span> <span class="fu">str_to_upper</span>(<span class="fu">str_glue</span>(</span>
-<span id="cb57-7"><a href="#cb57-7" aria-label="7"></a>      <span class="st">"{address}, CHICAGO, IL, UNITED STATES"</span></span>
-<span id="cb57-8"><a href="#cb57-8" aria-label="8"></a>    ))</span>
-<span id="cb57-9"><a href="#cb57-9" aria-label="9"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb57-10"><a href="#cb57-10" aria-label="10"></a>  <span class="co"># `left_join()` keeps all the rows in the left-hand dataset (the original</span></span>
-<span id="cb57-11"><a href="#cb57-11" aria-label="11"></a>  <span class="co"># `addresses` object) and matching rows in the right-hand dataset (the</span></span>
-<span id="cb57-12"><a href="#cb57-12" aria-label="12"></a>  <span class="co"># geocoding results)</span></span>
-<span id="cb57-13"><a href="#cb57-13" aria-label="13"></a>  <span class="fu">left_join</span>(addresses_geocoded, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"temp_address"</span> <span class="ot">=</span> <span class="st">"address"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb57-14"><a href="#cb57-14" aria-label="14"></a>  <span class="co"># Remove the temporary address column</span></span>
-<span id="cb57-15"><a href="#cb57-15" aria-label="15"></a>  <span class="fu">select</span>(<span class="sc">-</span>temp_address)</span>
-<span id="cb57-16"><a href="#cb57-16" aria-label="16"></a></span>
-<span id="cb57-17"><a href="#cb57-17" aria-label="17"></a>addresses_final</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57" data-filename="chapter_10.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-label="1"></a><span class="co"># Join the geocoded coordinates back to the original rows</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-label="2"></a>addresses_final <span class="ot">&lt;-</span> addresses <span class="sc">|&gt;</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-label="3"></a>  <span class="co"># Create a temporary address column to use in matching the geocoded addresses</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-label="4"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb57-5"><a href="#cb57-5" aria-label="5"></a>    <span class="at">temp_address =</span> <span class="fu">str_to_upper</span>(<span class="fu">str_glue</span>(</span>
+<span id="cb57-6"><a href="#cb57-6" aria-label="6"></a>      <span class="st">"{address}, CHICAGO, IL, UNITED STATES"</span></span>
+<span id="cb57-7"><a href="#cb57-7" aria-label="7"></a>    ))</span>
+<span id="cb57-8"><a href="#cb57-8" aria-label="8"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb57-9"><a href="#cb57-9" aria-label="9"></a>  <span class="co"># `left_join()` keeps all the rows in the left-hand dataset (the original</span></span>
+<span id="cb57-10"><a href="#cb57-10" aria-label="10"></a>  <span class="co"># `addresses` object) and matching rows in the right-hand dataset (the</span></span>
+<span id="cb57-11"><a href="#cb57-11" aria-label="11"></a>  <span class="co"># geocoding results)</span></span>
+<span id="cb57-12"><a href="#cb57-12" aria-label="12"></a>  <span class="fu">left_join</span>(addresses_geocoded, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"temp_address"</span> <span class="ot">=</span> <span class="st">"address"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb57-13"><a href="#cb57-13" aria-label="13"></a>  <span class="co"># Remove the temporary address column</span></span>
+<span id="cb57-14"><a href="#cb57-14" aria-label="14"></a>  <span class="fu">select</span>(<span class="sc">-</span>temp_address)</span>
+<span id="cb57-15"><a href="#cb57-15" aria-label="15"></a></span>
+<span id="cb57-16"><a href="#cb57-16" aria-label="16"></a>addresses_final</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 10 × 5
@@ -1952,19 +2247,30 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </div>
 <p>Geocoding services return possible matches rather than guaranteed correct answers. Check for missing results and plot the returned coordinates to make sure they are in plausible locations before using them in an analysis.</p>
 <p>We can now use this data as we would any other spatial data. We will convert <code>addresses_final</code> to an SF object using <code>st_as_sf()</code>. Geocoding services return longitude and latitude using the WGS84 coordinate reference system, so we specify <code>crs = "EPSG:4326"</code>. We first remove the row with the missing address, since it could not be geocoded and therefore has no coordinates.</p>
-<div class="cell">
+<div id="lst-messy-data-script-10-map" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-script-10-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.31
+</figcaption>
+<div aria-describedby="lst-messy-data-script-10-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_10.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-label="1"></a><span class="co"># Convert the geocoded results to an SF object and plot them over a basemap</span></span>
-<span id="cb59-2"><a href="#cb59-2" aria-label="2"></a></span>
-<span id="cb59-3"><a href="#cb59-3" aria-label="3"></a>addresses_sf <span class="ot">&lt;-</span> addresses_final <span class="sc">|&gt;</span></span>
-<span id="cb59-4"><a href="#cb59-4" aria-label="4"></a>  <span class="fu">drop_na</span>(long, lat) <span class="sc">|&gt;</span></span>
-<span id="cb59-5"><a href="#cb59-5" aria-label="5"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"long"</span>, <span class="st">"lat"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>)</span>
-<span id="cb59-6"><a href="#cb59-6" aria-label="6"></a></span>
-<span id="cb59-7"><a href="#cb59-7" aria-label="7"></a><span class="fu">hotspot_map</span>(addresses_sf, <span class="at">colour =</span> <span class="st">"#CC0000"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59" data-filename="chapter_10.R" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-label="1"></a><span class="co"># Convert the geocoded results to an SF object and plot them over a basemap</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-label="2"></a>addresses_sf <span class="ot">&lt;-</span> addresses_final <span class="sc">|&gt;</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-label="3"></a>  <span class="fu">drop_na</span>(long, lat) <span class="sc">|&gt;</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-label="4"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"long"</span>, <span class="st">"lat"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>)</span>
+<span id="cb59-5"><a href="#cb59-5" aria-label="5"></a></span>
+<span id="cb59-6"><a href="#cb59-6" aria-label="6"></a><span class="fu">hotspot_map</span>(addresses_sf, <span class="at">colour =</span> <span class="st">"#CC0000"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</div>
+</figure>
+</div>
+<div id="map-chicago-geocoded-addresses" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-chicago-geocoded-addresses-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-filename="chapter_10.R">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1972,6 +2278,12 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </figure>
 </div>
 </div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-chicago-geocoded-addresses-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;10.4
+</figcaption>
+</figure>
 </div>
 <p>All eight points should appear within Chicago. A missing point or a point far outside the city would tell us that we need to inspect the corresponding address and geocoding result before continuing with the analysis.</p>
 <div class="callout callout-style-default callout-quiz callout-titled" title="Geocoding locations">
@@ -1985,16 +2297,16 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>How should you prepare a dataset before sending its addresses to a rate-limited geocoding service?</strong></p>
-<div id="radio_EBNUQVZTEZ" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_EBNUQVZTEZ" value=""> <span>Send every row to the service so that no information is lost</span></label><label><input type="radio" autocomplete="off" name="radio_EBNUQVZTEZ" value=""> <span>Remove duplicated rows from every column in the original dataset</span></label><label><input type="radio" autocomplete="off" name="radio_EBNUQVZTEZ" value="answer"> <span>Remove missing addresses and send each distinct address only once</span></label><label><input type="radio" autocomplete="off" name="radio_EBNUQVZTEZ" value=""> <span>Convert every address to latitude and longitude manually</span></label>
+<div id="radio_YOBXPXGGLW" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_YOBXPXGGLW" value=""> <span>Send every row to the service so that no information is lost</span></label><label><input type="radio" autocomplete="off" name="radio_YOBXPXGGLW" value=""> <span>Remove duplicated rows from every column in the original dataset</span></label><label><input type="radio" autocomplete="off" name="radio_YOBXPXGGLW" value="answer"> <span>Remove missing addresses and send each distinct address only once</span></label><label><input type="radio" autocomplete="off" name="radio_YOBXPXGGLW" value=""> <span>Convert every address to latitude and longitude manually</span></label>
 </div>
 <p><strong>What does tidygeocoder do in this exercise?</strong></p>
-<div id="radio_PLMIUQWOSD" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_PLMIUQWOSD" value=""> <span>It retrieves all mapped buildings near an address</span></label><label><input type="radio" autocomplete="off" name="radio_PLMIUQWOSD" value="answer"> <span>It sends address text to a service and returns possible coordinates</span></label><label><input type="radio" autocomplete="off" name="radio_PLMIUQWOSD" value=""> <span>It guarantees that every returned location is correct</span></label><label><input type="radio" autocomplete="off" name="radio_PLMIUQWOSD" value=""> <span>It converts an existing longitude and latitude to a different CRS</span></label>
+<div id="radio_IRJLLKEVYN" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_IRJLLKEVYN" value=""> <span>It retrieves all mapped buildings near an address</span></label><label><input type="radio" autocomplete="off" name="radio_IRJLLKEVYN" value="answer"> <span>It sends address text to a service and returns possible coordinates</span></label><label><input type="radio" autocomplete="off" name="radio_IRJLLKEVYN" value=""> <span>It guarantees that every returned location is correct</span></label><label><input type="radio" autocomplete="off" name="radio_IRJLLKEVYN" value=""> <span>It converts an existing longitude and latitude to a different CRS</span></label>
 </div>
 <p><strong>What should you do with geocoding results before relying on them?</strong></p>
-<div id="radio_PISAMRJOIY" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_PISAMRJOIY" value=""> <span>Accept every result because the service has already checked it</span></label><label><input type="radio" autocomplete="off" name="radio_PISAMRJOIY" value=""> <span>Delete any result that is not an exact text match</span></label><label><input type="radio" autocomplete="off" name="radio_PISAMRJOIY" value="answer"> <span>Check for missing results and map the coordinates to assess whether they are plausible</span></label><label><input type="radio" autocomplete="off" name="radio_PISAMRJOIY" value=""> <span>Round every coordinate to a whole number</span></label>
+<div id="radio_HVYBZLAWXO" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_HVYBZLAWXO" value=""> <span>Accept every result because the service has already checked it</span></label><label><input type="radio" autocomplete="off" name="radio_HVYBZLAWXO" value=""> <span>Delete any result that is not an exact text match</span></label><label><input type="radio" autocomplete="off" name="radio_HVYBZLAWXO" value="answer"> <span>Check for missing results and map the coordinates to assess whether they are plausible</span></label><label><input type="radio" autocomplete="off" name="radio_HVYBZLAWXO" value=""> <span>Round every coordinate to a whole number</span></label>
 </div>
 </div>
 </div>
@@ -2012,12 +2324,18 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 <li>prepare, geocode and check address data.</li>
 </ul>
 <p>Your complete <code>chapter_10.R</code> script should now look like this:</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_10.R">
+<div id="lst-messy-data-show-chapter-10-script" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-messy-data-show-chapter-10-script-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;10.32
+</figcaption>
+<div aria-describedby="lst-messy-data-show-chapter-10-script-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_10.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-label="1"></a><span class="co"># This script prepares and geocodes fictional incident addresses in Chicago.</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60" data-filename="chapter_10.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-label="1"></a><span class="co"># This script prepares and geocodes fictional incident addresses in Chicago.</span></span>
 <span id="cb60-2"><a href="#cb60-2" aria-label="2"></a></span>
 <span id="cb60-3"><a href="#cb60-3" aria-label="3"></a><span class="co"># Load packages</span></span>
 <span id="cb60-4"><a href="#cb60-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, sfhotspot, tidygeocoder, tidyverse)</span>
@@ -2086,6 +2404,9 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 <span id="cb60-67"><a href="#cb60-67" aria-label="67"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"long"</span>, <span class="st">"lat"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>)</span>
 <span id="cb60-68"><a href="#cb60-68" aria-label="68"></a></span>
 <span id="cb60-69"><a href="#cb60-69" aria-label="69"></a><span class="fu">hotspot_map</span>(addresses_sf, <span class="at">colour =</span> <span class="st">"#CC0000"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>Save <code>chapter_10.R</code> by pressing <kbd title="mac: Command-S, windows: Ctrl-S" aria-hidden="true" data-mac="Command-S" data-windows="Ctrl-S"></kbd><span class="visually-hidden"></span>.</p>

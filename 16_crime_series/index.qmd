@@ -10,6 +10,7 @@ In this chapter we will learn to map _crime series_, a sequence of crimes commit
 
 
 ```{r}
+#| label: create-hungerford-shootings
 #| echo: false
 #| include: false
 
@@ -25,7 +26,7 @@ hungerford_shootings <- crimemappingdata::hungerford_shootings |>
 Up until now we've mapped each crime in a dataset as a separate event. This is very common in crime mapping, and is useful for many purposes. But a large proportion of crimes are committed by a relatively small proportion of all the people who commit crime. These persistent or repeat offenders commit crimes frequently, maybe several times a day in the case of some people. One type of repeat offending is the *crime series*, in which an offender or group of offenders commits the same or related crimes in different places over time. If we are trying to understand a crime series, it is important to map the sequence of events, rather than treating each crime as a separate event. In this chapter we will learn how to map crime series.
 
 
-### Case linkage
+### Case linkage {#sec-crime-series-case-linkage}
 
 One of the difficulties in studying serial offending is in identifying which offences are committed by the same offender. *Case linkage* is the process of identifying crime series by looking for similarities in the method used by an offender (e.g. entering a house by breaking a lock on a side door out of sight from the street) or by evidence left at the scene (such as fingerprints or DNA). Case linkage is typically an imperfect process -- investigators might believe that two offences were committed by the same person, but in most cases they are unlikely to know for sure unless the offender has been caught (and sometimes not even then).
 
@@ -87,12 +88,13 @@ case_linkage_quiz3 <- c(
 :::
 
 
-### The case used in this chapter
+### The case used in this chapter {#sec-crime-series-the-case-used-in-this-chapter}
 
 Due to the inherent uncertainty of case linkage, there is little publicly available data on the locations of serial crimes. The available data tend to focus on serial murders, since murder is the crime that is most likely to be solved (in most developed countries, a very high proportion of murders are solved). To minimise the likelihood of anyone reading this book having been directly affected by -- or knowing anyone affected by -- the cases we use in this chapter, we will use a historical example.
 
 
 ```{r}
+#| label: create-hungerford-murder-count
 #| include: false
 
 hungerford_murder_count <- hungerford_shootings |>
@@ -108,6 +110,7 @@ known as a spree offender) killed `r hungerford_murder_count` people and shot ma
 
 
 ```{r}
+#| label: preview-hungerford-victims
 #| echo: false
 
 hungerford_shootings |>
@@ -121,12 +124,14 @@ In this chapter we will learn how to create this composite map of the locations 
 
 
 ```{r}
+#| label: display-chapter-16-script
 #| echo: false
 #| include: false
 #| file: "../R/chapter_16.R"
 ```
 
 ```{r}
+#| label: save-hungerford-intro-map
 #| echo: false
 #| include: false
 
@@ -140,7 +145,11 @@ ggsave(
 ```
 
 
+::: {#map-hungerford-shooting-sequence}
+
 <p class="full-width-image"><img src="../images/hungerford_map.jpg" alt="Two maps showing the sequence of shooting locations during the Hungerford massacre. An overview map shows locations 1 and 2 in Wiltshire, while a detailed map shows locations 3 to 16 in Hungerford town. Numbered points and curved arrows show the order of events." style="max-height: 900px;"></p>
+
+:::
 
 
 In this chapter, we will learn how to:
@@ -157,6 +166,8 @@ Create a new R script file in Positron and save it as `chapter_16.R` in the `R` 
 
 ```{r}
 #| label: script-16-prepare
+#| lst-label: lst-crime-series-script-16-prepare
+#| lst-cap: ""
 #| filename: "chapter_16.R"
 #| eval: false
 
@@ -181,6 +192,7 @@ hungerford_shootings <- here("data", "raw", "hungerford_shootings.csv") |>
 ```
 
 ```{r}
+#| label: prepare-hungerford-script
 #| filename: "chapter_16.R"
 #| echo: false
 
@@ -214,6 +226,7 @@ Mapping crime series can be useful for several reasons. For example, a map of a 
 At the moment, the `hungerford_shootings` dataset contains the *point* location of each event and the order in which they occurred. To show a sequence of events on a map, we need to link each event with those that happened immediately before and after it. 
 
 ```{r}
+#| label: preview-hungerford-script-data
 #| echo: false
 
 hungerford_shootings |>
@@ -233,6 +246,8 @@ One way to do that is to draw lines on the map connecting each incident in turn.
 
 ```{r}
 #| label: script-16-lines
+#| lst-label: lst-crime-series-script-16-lines
+#| lst-cap: ""
 #| filename: "chapter_16.R"
 
 # Prepare data -----------------------------------------------------------------
@@ -254,6 +269,9 @@ hungerford_lines <- hungerford_shootings |>
 ```
 
 ```{r}
+#| label: head-hungerford-lines
+#| lst-label: lst-crime-series-head-hungerford-lines
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(hungerford_lines)
@@ -274,7 +292,12 @@ Using this method means the points and lines we want to put on our map are not S
 Run this code in the R Console.
 
 
+::: {#map-hungerford-shootings-straight-lines}
+
 ```{r}
+#| label: draw-hungerford-shootings-straight-lines
+#| lst-label: lst-crime-series-draw-hungerford-shootings-straight-lines
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 0.3
 #| fig-alt: "A basic map of the Hungerford shooting locations connected by straight black lines. The wide extent makes the sequence within the town difficult to distinguish."
@@ -297,6 +320,8 @@ ggplot() +
   labs(caption = "Map tiles ©: CARTO; data © OpenStreetMap contributors") + #<3>
   theme_void() #<4>
 ```
+
+:::
 1. When we make a map using `hotspot_map()`, in the background that function uses the `annotation_map_tile()` function (from the ggspatial package) to add a base map to the map. Since we're not using `hotspot_map()`, we have to do this ourselves.
 2. Since we aren't using SF objects, we need to tell `ggplot()` how to translate the coordinates in our data to locations on the map. We do this with the `coord_sf()` function.
 3. `hotspot_map()` automatically adds a caption to the map to acknowledge the source of the base map tiles used on a particular map (see @sec-base-maps), so here we have to do this ourselves.
@@ -307,7 +332,7 @@ This map is not particularly useful -- we will return to that in a minute.
 
 If you look at this code, you'll see that we've included the function `coord_sf()` in our `ggplot()` stack. In all the previous maps that we have made, we have used `geom_sf()` to plot geographic data on our maps. `geom_sf()` understands how to translate coordinates specified using different coordinate systems to locations on the surface of each map. Other functions in the `geom_*()` family of functions do not know how to do this automatically, so we must specify the coordinate system by adding the `coord_sf()` function to the stack. We only need to use one argument to `coord_sf()`: the `crs` argument to specify the coordinate system that our data uses. In this case, we know that the coordinates in the `hungerford_shootings` and `hungerford_lines` objects are specified using the British National Grid, which has the EPSG code EPSG:27700.
 
-The map we have made above shows the sequence of events, but there are at least four ways that we can make it better.
+@map-hungerford-shootings-straight-lines shows the sequence of events, but there are at least four ways that we can make it better.
 
   1. It would be useful to be able to see a larger area around the shooting locations, to see more of the town surrounding the area in which the crimes occurred.
   2. We don't know which order to move through the sequence of lines. We can deal with this by adding arrows to show the direction in which the sequence progressed.
@@ -315,7 +340,7 @@ The map we have made above shows the sequence of events, but there are at least 
   4. Because the first two shootings occurred outside the town, the map has to cover a large area and this makes it harder to see the sequence of events in the town itself.
 
 
-### Extending the map area
+### Extending the map area {#sec-crime-series-extending-the-map-area}
 
 By default, `ggplot()` works out the limits of the area shown on the map based on the area covered by the data we add to each stack with functions from the `geom_*()` family of functions. Usually this works well, but in this case the distribution of the shootings means that the map shows only a small slice of the town of Hungerford and the surrounding area. It would be useful for readers to be able to see a larger area, to be able to better identify where the shootings occurred. 
 
@@ -328,7 +353,12 @@ The easiest way to set the correct values for the `expand` argument is to use th
 Run this code in the R Console.
 
 
+::: {#map-hungerford-shootings-expanded-extent}
+
 ```{r}
+#| label: draw-hungerford-shootings-expanded-extent
+#| lst-label: lst-crime-series-draw-hungerford-shootings-expanded-extent
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 0.3
 #| fig-alt: "A wide map of the Hungerford shooting locations with additional space above and below the points. Straight black lines connect consecutive locations."
@@ -353,13 +383,15 @@ ggplot() +
   theme_void()
 ```
 
+:::
+
 ::: {.callout-important title="`scale_x_continuous()` vs `scale_y_continuous()`"}
 
 The `scale_y_continuous()` function specifically controls the vertical (Y) axis of the map, so it only adds space above and below the data on the map. If we wanted to add space to the left and right of the data, we would need to use the `scale_x_continuous()` function. But in this case, since the map is already very wide relative to its height, we will not make the map any wider.
 :::
 
 
-### Adding arrows and curves
+### Adding arrows and curves {#sec-crime-series-adding-arrows-and-curves}
 
 To add an arrow to the end of each line segment we can use the `arrow()` helper function from the `ggplot2` package to specify the `arrow` argument of the `geom_segment()` function in our `ggplot()` stack. Here, we make the arrowhead smaller than the default by setting `length = unit(3, "mm")` and choose the style of the arrowhead with `type = "closed"`.
 
@@ -368,7 +400,12 @@ To prevent the arrowheads from obscuring the points, we will give the points a t
 Run this code in the R Console.
 
 
+::: {#map-hungerford-shootings-arrowheads}
+
 ```{r}
+#| label: draw-hungerford-shootings-arrowheads
+#| lst-label: lst-crime-series-draw-hungerford-shootings-arrowheads
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 0.3
 #| fig-alt: "A wide map of the Hungerford shooting locations. Dark-orange points are connected in sequence by dark-orange lines with arrowheads."
@@ -401,9 +438,11 @@ ggplot() +
   theme_void()
 ```
 
+:::
+
 This makes it easier to see that the shootings started at the point on the left of the map, but makes the problem of understanding the sequence of events in the town itself even worse. We will deal with this in the next section.
 
-In the map above, we used the `geom_segment()` function to add the lines to our map. If we change this to `geom_curve()` the lines will become curved rather than straight. By specifying `curvature = -0.2` we get a slightly straighter line than the default, and a left-hand curve because the value of `curvature` is negative. These curves show only the sequence in which the locations were visited. They do not show the route travelled between locations, which is not recorded in the data.
+In @map-hungerford-shootings-arrowheads, we used the `geom_segment()` function to add the lines to our map. If we change this to `geom_curve()` the lines will become curved rather than straight. By specifying `curvature = -0.2` we get a slightly straighter line than the default, and a left-hand curve because the value of `curvature` is negative. These curves show only the sequence in which the locations were visited. They do not show the route travelled between locations, which is not recorded in the data.
 
 The other change we can make at this point is to add a layer of labels showing the order in which the shootings occurred. We don't want the labels to overlap the points, so instead of adding labels with the `geom_label()` function from the ggplot2 package we will use `geom_label_repel()` from the ggrepel package that we learned about in @sec-chart-continuous. `geom_label_repel()` creates labels that are automatically offset from the points they relate to. For now, we will just label the first two locations.
 
@@ -414,6 +453,8 @@ Add this code to the `chapter_16.R` script file and run it.
 
 ```{r}
 #| label: script-16-overview
+#| lst-label: lst-crime-series-script-16-overview
+#| lst-cap: ""
 #| filename: "chapter_16.R"
 #| fig-asp: 0.3
 #| fig-alt: "An overview map of the Hungerford shooting locations. Numbered dark-orange labels and curved arrows show that the sequence begins with two locations outside the town."
@@ -469,13 +510,20 @@ hungerford_map_overall <- ggplot() +
 Since we have saved this latest map to an object called `hungerford_map_overall`, we need to run the object name in the R Console in order to print the map in Positron's **Plots** pane.
 
 
+::: {#map-hungerford-shootings-overview}
+
 ```{r}
+#| label: draw-hungerford-shootings-overview
+#| lst-label: lst-crime-series-draw-hungerford-shootings-overview
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 0.3
 #| fig-alt: "An overview map of the Hungerford shooting locations. Numbered dark-orange labels and curved arrows show that the sequence begins with two locations outside the town."
 
 hungerford_map_overall
 ```
+
+:::
 
 
 Now we have added arrowheads and curved lines, in the next section we will learn how to solve the problem of the events in the town itself being unclear on the map.
@@ -546,6 +594,8 @@ Add this code to your script file and run it.
 
 ```{r}
 #| label: script-16-town
+#| lst-label: lst-crime-series-script-16-town
+#| lst-cap: ""
 #| filename: "chapter_16.R"
 #| fig-alt: "A detailed map of shooting locations 3 to 16 in Hungerford town. Numbered dark-orange labels and curved arrows show the sequence of events."
 
@@ -593,7 +643,12 @@ hungerford_map_town <- ggplot() +
   )
 ```
 
+::: {#map-hungerford-shootings-town}
+
 ```{r}
+#| label: draw-hungerford-shootings-town
+#| lst-label: lst-crime-series-draw-hungerford-shootings-town
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 1
 #| fig-alt: "A detailed map of shooting locations 3 to 16 in Hungerford town. Numbered dark-orange labels and curved arrows show the sequence of events."
@@ -601,13 +656,20 @@ hungerford_map_town <- ggplot() +
 hungerford_map_town
 ```
 
+:::
+
 
 Now we have two maps, we can use patchwork to combine them. The patchwork package uses mathematical operators to combine multiple ggplot2 objects. To place two plots beside one another, we would use the `|` operator. In this case we want to place one plot on top of another, so we use the `/` operator. You can combine plots in more-complicated ways by combining these operators, together with parentheses.
 
 To position the town detail map (stored in `hungerford_map_town`) below the overview map (stored in `hungerford_map_overall`), we can use this code:
 
 
+::: {#map-hungerford-shootings-combined}
+
 ```{r}
+#| label: draw-hungerford-shootings-combined
+#| lst-label: lst-crime-series-draw-hungerford-shootings-combined
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 1
 #| fig-alt: "Two maps arranged vertically. The overview map shows the first two shooting locations outside Hungerford, while the detailed map shows locations 3 to 16 in the town."
@@ -615,8 +677,10 @@ To position the town detail map (stored in `hungerford_map_town`) below the over
 hungerford_map_overall / hungerford_map_town
 ```
 
+:::
 
-When we created the `hungerford_map_overall` object in the previous section, we gave the map title a _negative_ margin using the `plot.title` argument to the `theme()` function. This had the effect of moving the title downwards onto the map to save space, since the top-left corner of the map was empty. We also added a scale bar, since when you present two related maps of different scales next to one another, it is useful to show the scales of both maps to help readers relate them to one another. You can see on the maps above, for example, the very different scales of the two maps.
+
+When we created the `hungerford_map_overall` object in the previous section, we gave the map title a _negative_ margin using the `plot.title` argument to the `theme()` function. This had the effect of moving the title downwards onto the map to save space, since the top-left corner of the map was empty. We also added a scale bar, since when you present two related maps of different scales next to one another, it is useful to show the scales of both maps to help readers relate them to one another. You can see in @map-hungerford-shootings-combined, for example, the very different scales of the two maps.
 
 We can add shared titles and captions to combined maps created with patchwork using the `plot_annotation()` function. We will add an overall title for the combined maps, as well as adding back the base map attribution statement, since it applies to both maps so there is no need to take up space by adding it to each map individually.
 
@@ -627,6 +691,8 @@ Add this code to the script file and run it.
 
 ```{r}
 #| label: script-16-combine
+#| lst-label: lst-crime-series-script-16-combine
+#| lst-cap: ""
 #| filename: "chapter_16.R"
 #| fig-asp: 1
 #| fig-alt: "A composite map showing the sequence of the Hungerford shootings. An overview of Wiltshire is placed above a detailed map of Hungerford town."
@@ -748,6 +814,9 @@ The complete script below contains everything needed to download the original da
 {{< include /include/_check-reproducibility.qmd >}}
 
 ```{r}
+#| label: show-chapter-16-script
+#| lst-label: lst-crime-series-show-chapter-16-script
+#| lst-cap: ""
 #| file: "../R/chapter_16.R"
 #| eval: false
 #| filename: "chapter_16.R"

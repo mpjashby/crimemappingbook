@@ -23,7 +23,11 @@ pacman::p_load(here, httr2, leaflet, sf, sfhotspot, tidyverse)
 
 In previous chapters we have produced maps based on the locations of individual crimes, either showing the individual locations directly on a point map or showing patterns derived from the individual points on a density map. Data that includes the locations of individual crimes is sometimes known as _point data_ because we know the point in space at which each crime occurred. 
 
+::: {#map-mexico-city-carjacking-representations}
+
 <p class="full-width-image"><img src="../images/cdmx_north_map.jpg" alt="Three maps of the same carjacking data in northern Mexico City. The point map shows individual offences, the density map smooths those points to show local concentrations, and the choropleth map shades each entire borough according to its total count. The choropleth map hides variation within each borough." style="max-height: 1000px;"></p>
+
+:::
 
 Another type of crime data is _area data_. The most common type of area data used for crime mapping is data that does not include the locations of individual crimes but instead consists of _counts_ of the number of crimes occurring in one or more _areas_. Maps of area data can be useful for several purposes:
 
@@ -47,6 +51,8 @@ In the first analysis in this chapter, you will produce this map of carjacking o
 #| file: "../R/chapter_09b.R"
 ```
 
+::: {#map-mexico-city-carjackings-introduction}
+
 ```{r}
 #| label: show-final-carjacking-map
 #| echo: false
@@ -55,6 +61,8 @@ In the first analysis in this chapter, you will produce this map of carjacking o
 
 car_jacking_map
 ```
+
+:::
 
 In this chapter, we will learn how to:
 
@@ -117,7 +125,7 @@ To calculate counts of crimes for areas, we need
 In this chapter, we will count how many carjacking offences occurred in each alcaldía (borough) of Mexico City in 2019. The result will be an SF object containing the outline of each borough and its carjacking count:
 
 ```{r}
-#| label: car-jacking_table
+#| label: car-jacking-table
 #| echo: false
 #| fig-align: "center"
 
@@ -137,7 +145,7 @@ Carjacking is robbery in which a vehicle is stolen using violence or the threat 
 :::
 
 
-### Load the data
+### Load the data {#sec-mapping-areas-load-the-data}
 
 Create a new R script in Positron and save it as `chapter_09a.R` in the `R` folder. Write a comment at the top explaining that the script will show the number of carjacking offences in each alcaldía in Mexico City in 2019. Keep all the permanent code for this first analysis in this file.
 
@@ -166,6 +174,8 @@ Once you have written the code to load the packages and data, click the **Soluti
 
 ```{r}
 #| label: script-09a-prepare
+#| lst-label: lst-mapping-areas-script-09a-prepare
+#| lst-cap: ""
 #| filename: "chapter_09a.R"
 #| output: false
 
@@ -198,7 +208,7 @@ cdmx_alcaldias <- here("data", "raw", "cdmx_alcaldias.gpkg") |>
 
 
 
-### Count crimes in each borough
+### Count crimes in each borough {#sec-mapping-areas-count-crimes-in-each-borough}
 
 Now that we have loaded our data, the next step is to count the number of offences in each borough and produce an R object that contains the boundaries of the boroughs together with the number of offences in each one. We can use the `hotspot_count()` function from the sfhotspot package to do this.
 
@@ -206,6 +216,8 @@ By default, `hotspot_count()` produces counts of points in cells in a grid (we s
 
 ```{r}
 #| label: script-09a-count
+#| lst-label: lst-mapping-areas-script-09a-count
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_09a.R"
 
@@ -216,6 +228,7 @@ car_jacking_counts <- hotspot_count(cdmx_car_jacking, grid = cdmx_alcaldias)
 Run this code now. When you run it, you will see warnings appear in the R Console:
 
 ```{r}
+#| label: create-car-jacking-counts
 #| echo: false
 
 car_jacking_counts <- hotspot_count(cdmx_car_jacking, grid = cdmx_alcaldias)
@@ -227,7 +240,12 @@ If any error happened before you were given the data, there is probably little y
 
 Run this code in the R Console:
 
+::: {#map-mexico-city-carjackings-null-island}
+
 ```{r}
+#| label: draw-mexico-city-carjackings-null-island
+#| lst-label: lst-mapping-areas-draw-mexico-city-carjackings-null-island
+#| lst-cap: ""
 #| fig-asp: 0.3
 #| fig-alt: "A world map showing most carjacking records clustered in Mexico City and a smaller group at latitude and longitude zero in the Gulf of Guinea, a location known as Null Island."
 #| filename: "R Console"
@@ -235,6 +253,8 @@ Run this code in the R Console:
 
 hotspot_map(cdmx_car_jacking)
 ```
+
+:::
 
 This map shows that the points in the `cdmx_car_jacking` dataset are located in two parts of the world, which is not what we would expect. Some points appear in Mexico as we would expect, but some appear in the Gulf of Guinea off the coast of West Africa. These points are located on 'Null Island', which we will learn more about in @sec-null-island.
 
@@ -373,7 +393,7 @@ Nevertheless, in some circumstances a choropleth map will be the best choice eit
 :::
 
 
-### Boundaries can change the pattern
+### Boundaries can change the pattern {#sec-mapping-areas-boundaries-can-change-the-pattern}
 
 The pattern shown on a choropleth map also depends on the boundaries used to divide the study area. If the same point data were counted using neighbourhoods, police districts or a regular grid, each set of areas would group the points differently and could produce a different-looking pattern. Results can also change when small areas are combined into larger ones.
 
@@ -408,8 +428,12 @@ maup_quiz1 <- c(
 
 We have already loaded the data we need to create a map of carjackings in Mexico City, and counted how many offences occurred in each alcaldía. Since we used `hotspot_count()` from the sfhotspot package to count the offences, we can use `hotspot_map()` to create a map of the counts. Add this code to your script file and run it.
 
+::: {#map-mexico-city-carjacking-counts}
+
 ```{r}
 #| label: script-09a-map
+#| lst-label: lst-mapping-areas-script-09a-map
+#| lst-cap: ""
 #| filename: "chapter_09a.R"
 #| fig-asp: 1
 #| fig-alt: "A choropleth map of carjacking offences in Mexico City in 2019. Darker blue boroughs have more recorded offences, with Gustavo A. Madero having the highest count."
@@ -426,12 +450,17 @@ car_jacking_map <- hotspot_map(
 car_jacking_map
 ```
 
+:::
+
 
 We could build on this map in several ways. For example, in @sec-calculating-rates we will learn how to show crime _rates_ on a map, as an alternative to crime counts. But in the next section, we will learn how to make interactive crime maps.
 
 Your complete script for this analysis should now look like this:
 
 ```{r}
+#| label: show-chapter-09a-script
+#| lst-label: lst-mapping-areas-show-chapter-09a-script
+#| lst-cap: ""
 #| eval: false
 #| file: "../R/chapter_09a.R"
 #| filename: "chapter_09a.R"
@@ -449,7 +478,7 @@ So far in this course, all the maps we have made using `hotspot_map()` have been
 In this section we will make an interactive map of counts of murders in each district in the state of Uttar Pradesh in northern India in 2014. Uttar Pradesh is India's most populous state, with more than 200 million residents.
 
 
-### Combining datasets
+### Combining datasets {#sec-mapping-areas-combining-datasets}
 
 Restart R using the **Restart R** (**&#10227;**) button in Positron's **Console** panel. Create a new R script and save it as `chapter_09b.R` in the `R` folder. Keep all the permanent code for the Uttar Pradesh analysis in this file.
 
@@ -457,6 +486,8 @@ Paste the following code into `chapter_09b.R`, then run it by pressing {{< kbd w
 
 ```{r}
 #| label: script-09b-prepare
+#| lst-label: lst-mapping-areas-script-09b-prepare
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_09b.R"
 
@@ -499,6 +530,9 @@ To start, let's look at the two datasets in the R Console:
 
 
 ```{r}
+#| label: head-murders
+#| lst-label: lst-mapping-areas-head-murders
+#| lst-cap: ""
 #| filename: "R Console"
 #| results: hold
 
@@ -507,6 +541,9 @@ head(murders)
 
 
 ```{r}
+#| label: head-districts
+#| lst-label: lst-mapping-areas-head-districts
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(districts)
@@ -556,6 +593,8 @@ Copy this code into your script file and run it.
 
 ```{r}
 #| label: script-09b-initial-join
+#| lst-label: lst-mapping-areas-script-09b-initial-join
+#| lst-cap: ""
 #| filename: "chapter_09b.R"
 
 # WRANGLE ----------------------------------------------------------------------
@@ -574,6 +613,7 @@ To check the result produced by this code, run `head(district_murders)` in the R
 
 
 ```{r}
+#| label: head-district-murders
 #| echo: false
 
 head(district_murders)
@@ -598,7 +638,7 @@ For the current data, the result has 75 rows (one for each district), no duplica
 
 
 
-### Interactive choropleth maps
+### Interactive choropleth maps {#sec-mapping-areas-interactive-choropleth-maps}
 
 Data visualisations (including maps) in R are made using the ggplot2 package, sometimes in combination with specialist helper functions (such as `hotspot_map()`) for particular types of visualisation. But interactive maps are made using a different package: leaflet. The functions in the leaflet package work in a similar way to ggplot2, but with a few differences.
 
@@ -607,7 +647,13 @@ To make maps with leaflet, we create a stack of functions in a similar way to th
 We can create a very basic leaflet map using the `leaflet()` function to create the stack, the `addProviderTiles()` function to add a base map and the `addPolygons()` function to add the district outlines. We have already loaded the leaflet package in our script file, so we can run this code in the R Console to create our first interactive map.
 
 ::: {aria-label="Basic interactive map showing district boundaries in Uttar Pradesh"}
+::: {#map-uttar-pradesh-districts-interactive role="group" aria-label="An interactive map of district boundaries in Uttar Pradesh over a street base map. The districts have a uniform fill before murder counts are added."}
+
 ```{r}
+#| fig-alt: "An interactive map of district boundaries in Uttar Pradesh over a street base map. The districts have a uniform fill before murder counts are added."
+#| label: draw-uttar-pradesh-districts-interactive
+#| lst-label: lst-mapping-areas-draw-uttar-pradesh-districts-interactive
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 1
 #| out-width: "100%"
@@ -619,6 +665,8 @@ leaflet(district_murders) |>
   # Add district polygons
   addPolygons(fillOpacity = 0.75)
 ```
+
+:::
 :::
 
 
@@ -634,6 +682,7 @@ The `colorNumeric()` function (note the spelling of "color") allows us to specif
 
 
 ```{r}
+#| label: show-sequential-palettes
 #| echo: false
 #| fig-alt: "Nine horizontal sequential colour palettes suitable for colour-vision deficiencies. Each palette progresses from a very light shade to a dark shade of one or more colours."
 #| out-width: "100%"
@@ -664,8 +713,13 @@ Once we have created a custom colour palette function using `colorNumeric()`, we
 Let's see this in action: add this code to the `chapter_09b.R` script file:
 
 ::: {aria-label="Interactive map with districts in Uttar Pradesh shaded by murder count, without a legend or labels"}
+::: {#map-uttar-pradesh-murder-count-colours role="group" aria-label="An interactive choropleth map of recorded murders in Uttar Pradesh districts in 2014. Darker shading represents larger murder counts."}
+
 ```{r}
+#| fig-alt: "An interactive choropleth map of recorded murders in Uttar Pradesh districts in 2014. Darker shading represents larger murder counts."
 #| label: script-09b-count-palette
+#| lst-label: lst-mapping-areas-script-09b-count-palette
+#| lst-cap: ""
 #| filename: "chapter_09b.R"
 #| fig-asp: 1
 #| out-width: 100%
@@ -690,6 +744,8 @@ leaflet(district_murders) |>
     color = "black"
   )
 ```
+
+:::
 :::
 
 
@@ -713,6 +769,8 @@ Change the code in your script file to add the `addLegend()` function to the end
 
 ```{r}
 #| label: script-09b-count-legend
+#| lst-label: lst-mapping-areas-script-09b-count-legend
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_09b.R"
 
@@ -743,6 +801,8 @@ Update the leaflet stack in `chapter_09b.R` again to add the call to `addMiniMap
 
 ```{r}
 #| label: script-09b-count-minimap
+#| lst-label: lst-mapping-areas-script-09b-count-minimap
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_09b.R"
 
@@ -772,8 +832,13 @@ Finally, we can add labels to the districts, which will appear when we move the 
 Change the existing call to `addPolygons()` to add the district labels:
 
 ::: {aria-label="Interactive choropleth map of murder counts in districts in Uttar Pradesh in 2014"}
+::: {#map-uttar-pradesh-murder-count-popups role="group" aria-label="An interactive choropleth map of murder counts in Uttar Pradesh districts in 2014, with a legend, an inset map and district popups."}
+
 ```{r}
+#| fig-alt: "An interactive choropleth map of murder counts in Uttar Pradesh districts in 2014, with a legend, an inset map and district popups."
 #| label: script-09b-count-map
+#| lst-label: lst-mapping-areas-script-09b-count-map
+#| lst-cap: ""
 #| filename: "chapter_09b.R"
 #| fig-asp: 1
 #| out-width: "100%"
@@ -799,6 +864,8 @@ leaflet(district_murders) |>
   # Add inset map
   addMiniMap(toggleDisplay = TRUE)
 ```
+
+:::
 :::
 
 
@@ -858,7 +925,7 @@ The map of murders in Uttar Pradesh has a major limitation: it counts murders at
 When we have crime counts for areas with populations of different sizes, it is often more useful to map crime _rates_ instead of crime _counts_. A crime rate is an expression of the frequency of crime that in some way controls for the population that is exposed to crime. We often use choropleth maps for this because we typically only have population counts for areas, rather than having access to data on where each individual person lives.
 
 
-### Types of crime rate
+### Types of crime rate {#sec-mapping-areas-types-of-crime-rate}
 
 There are three common types of crime rate, each of which measures risk in a different way. The most common, and the type of rate that people almost always mean if they talk about a 'crime rate' without specifying another type, is the *incidence rate*. This is the number of crimes in an area divided by the number of people, households or places against which a crime could occur. For example, the incidence rate of burglary in an area might be calculated as the number of crimes per 1,000 households, while the incidence rate of homicide might be expressed as the number of homicides per 100,000 people.
 
@@ -896,7 +963,7 @@ All three types of crime rate are average values for an area as a whole, so we a
 :::
 
 
-### Choosing a population measure
+### Choosing a population measure {#sec-mapping-areas-choosing-a-population-measure}
 
 To calculate a crime rate, we need to be able to measure the population that is at risk from that crime. It is very common for analysts to calculate rates based on the number of people who live in an area, not least because that information is often easily available. However, there are many situations in which the residential population of an area is a poor measure of the population at risk for crime there. For example:
 
@@ -907,7 +974,7 @@ To calculate a crime rate, we need to be able to measure the population that is 
 In all these cases, the residential population is a poor measure of the population at risk from crime. Unfortunately, other measures of population (such as counts of people on public transport or walking along a shopping street) are often expensive or difficult to obtain. This is known as the *denominator dilemma*: should we use residential population to calculate crime rates just because it is the only data that is available?
 
 
-### Calculating murder rates in Uttar Pradesh
+### Calculating murder rates in Uttar Pradesh {#sec-mapping-areas-calculating-murder-rates-in-uttar-pradesh}
 
 Residential population is a conventional denominator for homicide rates and is a reasonable starting point for this example, but it is not perfect. Some victims will be killed in a different district from the one in which they live, and population counts may refer to a different year from the crime data. A detailed investigation should assess both issues before interpreting differences between districts, especially when those differences are small.
 
@@ -918,6 +985,8 @@ To calculate an incidence rate, we once again need to join two datasets together
 
 ```{r}
 #| label: script-09b-population
+#| lst-label: lst-mapping-areas-script-09b-population
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_09b.R"
 
@@ -938,6 +1007,8 @@ If we look at the column names in this new dataset, we will see that it includes
 
 ```{r}
 #| label: script-09b-population-join
+#| lst-label: lst-mapping-areas-script-09b-population-join
+#| lst-cap: ""
 #| filename: "chapter_09b.R"
 
 # Join murder counts and population to district boundaries
@@ -952,6 +1023,9 @@ district_murders <- districts |>
 Add this code to your script file in place of the previous code that joined together the `districts` and `murders` datasets. Now look at the new `district_murders` object you've just created:
 
 ```{r}
+#| label: preview-district-murder-rates
+#| lst-label: lst-mapping-areas-preview-district-murder-rates
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(district_murders)
@@ -964,6 +1038,8 @@ Now that we have a single dataset containing all the variables we need, we can c
 
 ```{r}
 #| label: script-09b-rate-join
+#| lst-label: lst-mapping-areas-script-09b-rate-join
+#| lst-cap: ""
 #| filename: "chapter_09b.R"
 
 # WRANGLE ----------------------------------------------------------------------
@@ -981,7 +1057,7 @@ district_murders <- districts |>
 
 
 
-### Mapping crime rates
+### Mapping crime rates {#sec-mapping-areas-mapping-crime-rates}
 
 To create a choropleth map of the murder rate using `leaflet`, we simply use the code from our previous interactive map but specify that the `murder_rate` column be used to determine the colour of each district polygon rather than the `murder` column. We will also change the base map to a different style.
 
@@ -996,8 +1072,12 @@ Whenever we need to use a longer legend title, or other text, it can be useful t
 
 Add this code to `chapter_09b.R`. Then read through the notes below it to understand how it differs from the map of murder counts.
 
+::: {#map-uttar-pradesh-murder-rates role="group" aria-label="Interactive choropleth map of murder rates in districts in Uttar Pradesh in 2014"}
+
 ```{r}
 #| label: script-09b-rate-map
+#| lst-label: lst-mapping-areas-script-09b-rate-map
+#| lst-cap: ""
 #| filename: "chapter_09b.R"
 #| fig-asp: 1
 #| fig-alt: "Interactive choropleth map of murder rates in districts in Uttar Pradesh in 2014"
@@ -1038,6 +1118,8 @@ leaflet(district_murders, elementId = "murder-rate-map") |>
   # Add inset map
   addMiniMap(toggleDisplay = TRUE)
 ```
+
+:::
 1. This map uses a different style of base map to the previous map.
 2. The base map style used in this map is quite colourful, so we will make it semi-transparent to reduce its visual prominence.
 3. We want the map colour scheme to be controlled by the `murder_rate` column in the `district_murders` dataset.
@@ -1046,7 +1128,7 @@ leaflet(district_murders, elementId = "murder-rate-map") |>
 We now have all the code we need to load the necessary data, calculate crime rates and make an interactive map of murders in districts in Uttar Pradesh.
 
 
-### Publishing crime maps ethically
+### Publishing crime maps ethically {#sec-mapping-areas-publishing-crime-maps-ethically}
 
 Crime maps can help people understand patterns and make decisions, but publishing them can also cause harm. Before sharing a map, consider:
 
@@ -1159,6 +1241,9 @@ We have practised how to:
 Your complete `chapter_09b.R` script should now look like this:
 
 ```{r}
+#| label: show-chapter-09b-script
+#| lst-label: lst-mapping-areas-show-chapter-09b-script
+#| lst-cap: ""
 #| eval: false
 #| file: "../R/chapter_09b.R"
 #| filename: "chapter_09b.R"

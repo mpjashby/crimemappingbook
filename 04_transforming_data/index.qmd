@@ -91,6 +91,9 @@ It is often useful to create new columns in our data, or change the values of ex
 For example, say we wanted to create a new column in our aggravated-assault dataset specifying the day of the week on which each crime occurred. We can do this using the `wday()` function from the [lubridate package](https://lubridate.tidyverse.org/) (using the `label = TRUE` argument to produce weekday names, rather than numbers):
 
 ```{r}
+#| label: derive-weekday
+#| lst-label: lst-transforming-data-derive-weekday
+#| lst-cap: ""
 #| filename: "R Console"
 
 mutate(agg_assault_data, weekday = wday(date, label = TRUE))
@@ -99,6 +102,9 @@ mutate(agg_assault_data, weekday = wday(date, label = TRUE))
 We can also change existing columns. However (as with objects) there is no way to undo this, so you should only replace columns if you are sure you will not need them. For example, if we wanted to remove the time portion of the `date` variable (which may sometimes be useful, as shown in the next section) using the `as_date()` function (also from the lubridate package) and at the same time create the weekday variable:
 
 ```{r}
+#| label: convert-date-and-derive-weekday
+#| lst-label: lst-transforming-data-convert-date-and-derive-weekday
+#| lst-cap: ""
 #| filename: "R Console"
 
 mutate(
@@ -111,6 +117,9 @@ mutate(
 You may sometimes want to change only some values in a column. With a categorical variable, we can change one value to another using the `replace_values()` function from the dplyr package. Look at this code and use the comments (lines starting with `# `) to understand how it works.
 
 ```{r}
+#| label: recode-location-categories
+#| lst-label: lst-transforming-data-recode-location-categories
+#| lst-cap: ""
 #| filename: "R Console"
 
 mutate(
@@ -162,6 +171,9 @@ By default, `summarise()` collapses data into a single row, with each column sum
 
 
 ```{r}
+#| label: summarise-mean-coordinates
+#| lst-label: lst-transforming-data-summarise-mean-coordinates
+#| lst-cap: ""
 #| filename: "R Console"
 
 summarise(
@@ -185,6 +197,9 @@ This logic applies in lots of cases. For example, if you create an R object call
 `summarise()` becomes more useful if we first divide our data into groups, since we then get a summary for each group separately. We can use the `.by` argument of the `summarise()` function to specify that we want separate summaries for each unique value of one or more columns in the data. For example, to produce a separate summary for each unique value of `location_category`, we can use this code:
 
 ```{r}
+#| label: summarise-coordinates-by-category
+#| lst-label: lst-transforming-data-summarise-coordinates-by-category
+#| lst-cap: ""
 #| filename: "R Console"
 
 summarise(
@@ -198,6 +213,9 @@ summarise(
 You can add multiple grouping variables using the `c()` (_combine_) function if you want to generate summary values for groups within groups:
 
 ```{r}
+#| label: summarise-coordinates-by-category-and-type
+#| lst-label: lst-transforming-data-summarise-coordinates-by-category-and-type
+#| lst-cap: ""
 #| filename: "R Console"
 
 summarise(
@@ -210,11 +228,14 @@ summarise(
 
 
 
-### Counting rows
+### Counting rows {#sec-transforming-data-counting-rows}
 
 One very common way of summarising data is to count the number of rows in a dataset that have each unique value of one or more columns. For example, if we have a dataset of crimes in which each row represents a single crime, we might want to count how many crimes happened on each day of the week, or how many crimes of each type are in the dataset. We can use `summarise()` to do that, together with the `n()` function (from the same dplyr package as `summarise()`). For example, if we wanted to count how many rows in the `agg_assault_data` dataset had each unique combination of `location_category` and `location_type`:
 
 ```{r}
+#| label: count-rows-with-summarise
+#| lst-label: lst-transforming-data-count-rows-with-summarise
+#| lst-cap: ""
 #| filename: "R Console"
 
 summarise(agg_assault_data, n = n(), .by = c(location_category, location_type))
@@ -225,6 +246,9 @@ In this code, the `n()` function simply returns the number of rows of data in ea
 Since counting the number of rows in each group in a dataset is a very common task, dplyr includes another function called `count()` that allows you to do the same thing as in the code above, but with slightly less typing. So if you wanted to know how many aggravated assaults had occurred in each location category and type, you could use this code instead of using `summarise()`:
 
 ```{r}
+#| label: count-rows-with-count
+#| lst-label: lst-transforming-data-count-rows-with-count
+#| lst-cap: ""
 #| filename: "R Console"
 
 count(agg_assault_data, location_category, location_type)
@@ -259,6 +283,9 @@ summarise_quiz1 <- c(
 It is sometimes useful to be able to place rows in a dataset into a particular order. We can do this using the `arrange()` function from the dplyr package. For example, we can sort the aggravated-assault data by date:
 
 ```{r}
+#| label: sort-dates-ascending
+#| lst-label: lst-transforming-data-sort-dates-ascending
+#| lst-cap: ""
 #| filename: "R Console"
 
 arrange(agg_assault_data, date)
@@ -267,6 +294,9 @@ arrange(agg_assault_data, date)
 By default, `arrange()` sorts rows in ascending order, i.e. it sorts numeric values from the smallest to the largest, dates from earliest to latest and character values alphabetically. We can instead sort values in descending order by wrapping the name of a column in the `desc()` function:
 
 ```{r}
+#| label: sort-dates-descending
+#| lst-label: lst-transforming-data-sort-dates-descending
+#| lst-cap: ""
 #| filename: "R Console"
 
 arrange(agg_assault_data, desc(date))
@@ -275,6 +305,9 @@ arrange(agg_assault_data, desc(date))
 We can also sort the data based on multiple columns – the data are sorted first on the first column that you specify, with tied rows then sorted on the subsequent columns in order.
 
 ```{r}
+#| label: sort-by-multiple-columns
+#| lst-label: lst-transforming-data-sort-by-multiple-columns
+#| lst-cap: ""
 #| filename: "R Console"
 
 arrange(agg_assault_data, date, desc(location_type), location_category)
@@ -321,6 +354,8 @@ In @sec-create-project we learned that it is important to keep our original down
 
 ```{r}
 #| label: save-processed-data-example
+#| lst-label: lst-transforming-data-save-processed-data-example
+#| lst-cap: ""
 #| eval: false
 #| filename: "Code to add later"
 
@@ -362,6 +397,9 @@ In this chapter we have learned how to use the dplyr functions `select()`, `filt
 Data wrangling often involves multiple steps. For example, we might want to load some data, select certain columns, filter some rows, mutate some of the variables, summarise the dataset and save the result. We can do each of these steps separately, assigning the result of each step to a new object.
 
 ```{r}
+#| label: wrangle-assaults-with-pipe
+#| lst-label: lst-transforming-data-wrangle-assaults-with-pipe
+#| lst-cap: ""
 #| eval: false
 #| filename: "Do not run this code"
 #| classes: "bad_code"
@@ -394,6 +432,8 @@ For example, instead of creating multiple objects called `robbery2`, `robbery3`,
 
 ```{r}
 #| label: weekday-counts-pipeline
+#| lst-label: lst-transforming-data-weekday-counts-pipeline
+#| lst-cap: ""
 #| eval: false
 #| filename: "Code to add later"
 
@@ -467,6 +507,8 @@ Once you have tried this yourself, click the 'Solution' button to compare your c
 
 ```{r}
 #| label: script-04a-solution
+#| lst-label: lst-transforming-data-script-04a-solution
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_04a.R"
 
@@ -513,6 +555,8 @@ Try to complete the script before clicking the 'Solution' button.
 
 ```{r}
 #| label: script-04b-solution
+#| lst-label: lst-transforming-data-script-04b-solution
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_04b.R"
 

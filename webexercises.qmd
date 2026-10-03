@@ -3,6 +3,7 @@ title: "Webexercises"
 ---
 
 ```{r, echo = FALSE, results='asis'}
+#| label: uncomment-to-change-widget-colours
 knitr::opts_chunk$set(echo = FALSE)
 
 # Uncomment to change widget colours:
@@ -17,7 +18,7 @@ The `{webexercises}` package provides a number of functions that you use in [inl
 
 ## Example Questions
 
-### Fill-In-The-Blanks (`fitb()`)
+### Fill-In-The-Blanks (`fitb()`) {#sec-webexercises-fill-in-the-blanks-fitb}
 
 Create fill-in-the-blank questions using `fitb()`, providing the answer as the first argument.
 
@@ -26,6 +27,7 @@ Create fill-in-the-blank questions using `fitb()`, providing the answer as the f
 You can also create these questions dynamically, using variables from your R session.
 
 ```{r}
+#| label: create-x
 x <- sample(2:8, 1)
 ```
 
@@ -47,22 +49,23 @@ You can use regular expressions to test answers against more complex rules.
 
 - Type any 3 letters: `r fitb("^[a-zA-Z]{3}$", width = 3, regex = TRUE)`
 
-### Multiple Choice (`mcq()`)
+### Multiple Choice (`mcq()`) {#sec-webexercises-multiple-choice-mcq}
 
 - "Never gonna give you up, never gonna: `r mcq(c("let you go", "turn you down", "run away", answer = "let you down"))`"
 - "I `r mcq(c(answer = "bless the rains", "guess it rains", "sense the rain"))` down in Africa" -Toto
 
-### True or False (`torf()`)
+### True or False (`torf()`) {#sec-webexercises-true-or-false-torf}
 
 - True or False? You can permute values in a vector using `sample()`. `r torf(TRUE)`
 
-### Longer MCQs (`longmcq()`)
+### Longer MCQs (`longmcq()`) {#sec-webexercises-longer-mcqs-longmcq}
 
 When your answers are very long, sometimes a drop-down select box gets formatted oddly. You can use `longmcq()` to deal with this. Since the answers are long, It's probably best to set up the options inside an R chunk with `echo=FALSE`. 
 
 **What is a p-value?**
 
 ```{r}
+#| label: create-opts-p
 opts_p <- c(
    "the probability that the null hypothesis is true",
    answer = "the probability of the observed, or more extreme, data, under the assumption that the null-hypothesis is true",
@@ -75,6 +78,7 @@ opts_p <- c(
 **What is true about a 95% confidence interval of the mean?**
 
 ```{r}
+#| label: use-sample-to-randomise-the-order
 # use sample() to randomise the order
 opts_ci <- sample(c(
   answer = "if you repeated the process many times, 95% of intervals calculated in this way contain the true mean",
@@ -94,6 +98,7 @@ Create sections with the class `webex-check` to add a button that hides feedback
 I am going to learn a lot: `r torf(TRUE)`
 
 ```{r, results='asis'}
+#| label: create-opts
 opts <- c(
    "the probability that the null hypothesis is true",
    answer = "the probability of the observed, or more extreme, data, under the assumption that the null-hypothesis is true",
@@ -116,6 +121,7 @@ If the solution is a code chunk, instead of using `hide()` and `unhide()`, simpl
 **Recreate the scatterplot below, using the built-in `cars` dataset.**
 
 ```{r}
+#| label: with-cars-plot-speed-dist
 with(cars, plot(speed, dist))
 ```
 
@@ -129,6 +135,7 @@ See the documentation for `plot()` (`?plot`)
 <!-- note: you could also just set webex.hide to TRUE -->
 
 ```{r, echo = TRUE, eval = FALSE}
+#| label: plot-cars-speed-cars-dist
 #| webex.hide: "Click here to see the solution"
 plot(cars$speed, cars$dist)
 ```

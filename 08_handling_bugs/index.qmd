@@ -79,6 +79,9 @@ In this chapter we will look at examples of errors using a dataset of frauds in 
 
 
 ```{r}
+#| label: load-fraud-examples
+#| lst-label: lst-handling-bugs-load-fraud-examples
+#| lst-cap: ""
 #| filename: "R Console"
 #| output: false
 
@@ -105,6 +108,7 @@ Normally when we load packages and data, we do it in an R script file. We do tha
 This is what the first few lines of the dataset look like:
 
 ```{r}
+#| label: preview-fraud-table
 #| echo: false
 
 frauds |>
@@ -122,12 +126,14 @@ In this chapter we will go through the process of debugging -- identifying, unde
 When something is not quite right, or just when there is an issue in your code that you should be aware of, R has three ways of communicating with you: messages, warnings and errors (these are collectively sometimes called _conditions_).
 
 
-### Messages
+### Messages {#sec-handling-bugs-messages}
 
 *Messages* are usually for information only and typically don't require you to take any action. For example, the `ggsave()` function issues a message to tell you the dimensions of the saved image.
 
 ```{r}
 #| label: crimedata-example
+#| lst-label: lst-handling-bugs-crimedata-example
+#| lst-cap: ""
 #| filename: "Do not run this code"
 #| classes: "bad_code"
 #| eval: false
@@ -136,6 +142,7 @@ ggsave("example_plot.png", plot = ggplot())
 ```
 
 ```{r}
+#| label: trigger-plot-message
 #| echo: false
 
 ggsave(filename = tempfile(fileext = ".png"), plot = ggplot())
@@ -145,6 +152,8 @@ Messages appear in the **Console** panel along with other output from R. When R 
 
 ```{r}
 #| label: messages-still-run
+#| lst-label: lst-handling-bugs-messages-still-run
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -154,6 +163,7 @@ message("This is a message. Make sure you understand it.")
 ```
 
 ```{r}
+#| label: show-console-message
 #| echo: false
 
 2 * 2
@@ -162,7 +172,7 @@ message("This is a message. Make sure you understand it.")
 ```
 
 
-### Warnings
+### Warnings {#sec-handling-bugs-warnings}
 
 *Warnings* are generated when there is a potential problem with your code, but the problem was not serious enough to stop your code running entirely. For example, applying `st_centroid()` to polygons with attribute columns consistently produces the warning `st_centroid assumes attributes are constant over geometries`. The function still creates the centroid points, but warns that it has copied each polygon's attribute values to the corresponding point.
 
@@ -180,7 +190,7 @@ One particularly dangerous scenario is where your code produces warnings but sti
 As with messages, warnings will not stop your code running. This means that if the warning signalled a genuine problem with your code, the results of the lines underneath the warning might not be reliable. That is why it is important to understand warnings when you see them.
 
 
-### Errors
+### Errors {#sec-handling-bugs-errors}
 
 *Errors* are generated when R cannot complete the current operation. An error might occur, for example, because `read_csv()` could not open a requested file. Errors are generally used for more-serious issues that prevent an operation from running successfully, so an error occurring stops the code being run at that point. When you run a complete script that has an error in it, R will stop running the script at the point where the error occurred. That means any code above the error will still have run, but code below the error will not have done.
 
@@ -189,11 +199,14 @@ As with messages, warnings will not stop your code running. This means that if t
 
 Much like their animal namesakes, bugs in code come in many different varieties. We can divide bugs into three categories to make them easier to think about: _syntax errors_, _runtime errors_ and _logic errors_.
 
-### Syntax errors
+### Syntax errors {#sec-handling-bugs-syntax-errors}
 
 Syntax errors happen when R cannot interpret your code because of a mistake in how it has been typed. For example, if you forget to put a comma between the arguments of a function, you will get this error:
 
 ```{r}
+#| label: show-syntax-error
+#| lst-label: lst-handling-bugs-show-syntax-error
+#| lst-cap: ""
 #| error: true
 #| filename: "R Console"
 
@@ -204,11 +217,14 @@ This error is caused by a missing comma between the two arguments `"A"` and `"B"
 
 When you run a complete script, R first checks whether the script can be interpreted as valid R code. A syntax error can therefore stop the script before any of it runs. When you run one expression at a time in Positron, code above a later syntax error may still run. Positron will often underline syntax errors in the **Editor**. Another indication there is a syntax error in your code is that a syntax error will usually mean the Air formatter is unable to format a script. Syntax errors are often caused by missing commas, quote marks or closing parentheses. Since syntax errors stop your script from running entirely, it's usually immediately apparent that a syntax error has occurred. Syntax errors are usually quite quick to fix, since they are usually caused by typos.
 
-### Runtime errors
+### Runtime errors {#sec-handling-bugs-runtime-errors}
 
 Runtime errors happen when R can read the code (i.e. there are no syntax errors) but cannot complete the steps that the code sets out. For example, R can read the code `3 * "A"` (`*` in R means 'multiply by'). But R cannot multiply the number `3` by the character value `"A"` -- trying to multiply a number by a letter makes no sense.
 
 ```{r}
+#| label: show-runtime-error
+#| lst-label: lst-handling-bugs-show-runtime-error
+#| lst-cap: ""
 #| error: true
 #| filename: "R Console"
 
@@ -224,7 +240,7 @@ Trying to load data from a missing file, trying to refer to a non-existent colum
 When R runs a complete script file, it checks the syntax before evaluating the expressions in that script. But since every step in your code depends on the steps before it, R cannot tell whether a particular expression may cause a runtime error until the expressions before it have run successfully. That's why these are called _runtime_ errors -- they only happen when your code is run. If your code contains multiple issues that will cause runtime errors, R will typically only tell you about the first one because it cannot reach any later errors until the first has been fixed. That makes runtime errors harder to manage than syntax errors.
 
 
-### Logic errors
+### Logic errors {#sec-handling-bugs-logic-errors}
 
 There is a saying in programming that a computer will do exactly what you tell it to do, but that that may not be the same as what you _wanted_ it to do. A logic error happens when the code runs but produces a result that is incorrect in some way. For example, we might inadvertently write code that accidentally filters out some rows in a dataset that we actually needed to keep. There is no way for R to know that you didn't intend to filter out those rows, so it will happily follow your instructions even though they will lead to the wrong result. For that reason, logic errors often don't cause an R error message. They are often only visible because they cause unexpected results later on in a script.
 
@@ -336,11 +352,14 @@ using a reproducible example
 Sometimes it won't be necessary to go through all the steps because the problem will be easy to fix, but it's still useful to follow the process from the start until we reach a solution.
 
 
-### Step 1: Understand the problem
+### Step 1: Understand the problem {#sec-handling-bugs-step-1-understand-the-problem}
 
 The first step in diagnosing a problem with our code is to reproduce it, then read _and understand_ any errors, warnings or messages produced. For simple bugs this will often be enough to solve the problem. For example, if you were to try to run this code with the `frauds` dataset we loaded earlier:
 
 ```{r}
+#| label: select-missing-column-error
+#| lst-label: lst-handling-bugs-select-missing-column-error
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -351,6 +370,7 @@ select(frauds, offense_category)
 You would see that R produced an error message saying something like:
 
 ```{r}
+#| label: select-missing-column-output
 #| echo: false
 #| error: true
 
@@ -360,6 +380,9 @@ select(frauds, offense_category)
 In this case it is fairly easy to identify that the error message is telling us that one of the columns we have tried to select does not exist. Maybe we misremembered the name of the column. To find out what the correct column name is, the easiest thing to do is to print the first few rows of the object in the R Console:
 
 ```{r}
+#| label: head-frauds
+#| lst-label: lst-handling-bugs-head-frauds
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(frauds)
@@ -370,6 +393,9 @@ From this, we can see that the column we want to select is called `offense_type`
 In other cases, error messages will be harder to interpret. Imagine we wanted to break a long string of text into multiple lines. To do that we might use the `str_wrap()` function, which we previously used to format text in @sec-map-context. But if we run this code, we get a runtime error:
 
 ```{r}
+#| label: wrap-text-invalid-argument
+#| lst-label: lst-handling-bugs-wrap-text-invalid-argument
+#| lst-cap: ""
 #| error: true
 #| filename: "R Console"
 
@@ -404,6 +430,9 @@ Examples
 Checking the manual page for a function can often help you understand why a particular piece of code is not working. In this case, we can see that `str_wrap()` doesn't have a `length` argument, which is why our code produced an error. The correct argument name is `width`, so we can fix the code by changing `length = 20` to `width = 20`.
 
 ```{r}
+#| label: wrap-text-correct-argument
+#| lst-label: lst-handling-bugs-wrap-text-correct-argument
+#| lst-cap: ""
 #| filename: "R Console"
 
 str_wrap("A line of text that we want to break into shorter lines", width = 20)
@@ -419,6 +448,9 @@ For example, dplyr contains a function called `select()` that selects columns fr
 Imagine that we loaded the tidyverse first and MASS second:
 
 ```{r}
+#| label: load-mass-after-tidyverse
+#| lst-label: lst-handling-bugs-load-mass-after-tidyverse
+#| lst-cap: ""
 #| eval: false
 #| filename: "Do not run this code"
 #| classes: "bad_code"
@@ -429,6 +461,9 @@ pacman::p_load(tidyverse, MASS)
 Since MASS was loaded last, a call to `select()` will now use the function of that name from MASS, not the function from the dplyr package loaded by tidyverse. Code intended to select the `offense_type` column would then produce an error like this:
 
 ```{r}
+#| label: select-function-conflict
+#| lst-label: lst-handling-bugs-select-function-conflict
+#| lst-cap: ""
 #| eval: false
 #| filename: "Do not run this code"
 #| classes: "bad_code"
@@ -437,6 +472,7 @@ select(frauds, offense_type)
 ```
 
 ```{r}
+#| label: select-function-conflict-output
 #| echo: false
 #| error: true
 
@@ -451,6 +487,9 @@ The tidyverse packages contain several functions that share names with functions
 The guiding principle in this book is to load packages in alphabetical order, **then load tidyverse last**:
 
 ```{r}
+#| label: load-tidyverse-after-mass
+#| lst-label: lst-handling-bugs-load-tidyverse-after-mass
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -473,6 +512,9 @@ The conflicted package provides another way to manage function-name conflicts. I
 Load conflicted before calling `pacman::p_load()`, then use `conflict_prefer()` after loading the other packages:
 
 ```{r}
+#| label: resolve-function-conflicts
+#| lst-label: lst-handling-bugs-resolve-function-conflicts
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -513,11 +555,14 @@ Some errors produced by tidyverse packages suggest running `rlang::last_trace()`
 :::
 
 
-### Step 2: Isolate the code that produces the problem
+### Step 2: Isolate the code that produces the problem {#sec-handling-bugs-step-2-isolate-the-code-that-produces-the-problem}
 
 If Step 1 isn't enough to resolve the issue, the second task is to work out exactly which function or other piece of code has caused the problem. For example, take this data-wrangling code that is designed to reduce the size of a dataset and sort it in date order:
 
 ```{r}
+#| label: filter-misspelt-offence-column
+#| lst-label: lst-handling-bugs-filter-misspelt-offence-column
+#| lst-cap: ""
 #| error: true
 #| filename: "R Console"
 
@@ -542,6 +587,9 @@ The error message in this case has been caused by a typo -- the code `offence_ty
 Sometimes a bug is introduced on one line but only becomes visible later. Consider this separate example, in which `select()` removes a column that is needed by `arrange()` later in the pipeline:
 
 ```{r}
+#| label: isolate-fraud-filter
+#| lst-label: lst-handling-bugs-isolate-fraud-filter
+#| lst-cap: ""
 #| error: true
 #| filename: "R Console"
 
@@ -560,6 +608,9 @@ A good way to identify which line of a code pipeline is causing the problem is t
 Re-run the code above, but comment out all the lines except the first one by putting `# ` at the start of each line. Remember to remove the `|>` from the end of the last _uncommented_ line of code, since otherwise you will find the code does not run as expected. Your code should now look like this:
 
 ```{r}
+#| label: inspect-fraud-selection
+#| lst-label: lst-handling-bugs-inspect-fraud-selection
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -572,6 +623,9 @@ frauds
 If you run this code, it will simply print the first few lines of the dataset. Remove the `# ` comment symbol from the second line of the code and run it again, remembering to replace the pipe operator (`|>`) at the end of line 1 and remove the `|>` at the end of line 2.
 
 ```{r}
+#| label: inspect-fraud-filter
+#| lst-label: lst-handling-bugs-inspect-fraud-filter
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -586,6 +640,9 @@ Again, the code does not produce an error -- but the result now has only three c
 Uncommenting one line at a time is useful for runtime errors, but it is equally important to look for unexpected output. The following code runs without an error:
 
 ```{r}
+#| label: filter-impersonation-frauds
+#| lst-label: lst-handling-bugs-filter-impersonation-frauds
+#| lst-cap: ""
 #| filename: "R Console"
 
 frauds |>
@@ -596,6 +653,9 @@ frauds |>
 There is no error message, but there are no rows left in the result. This is a logic error because we expected the result to contain frauds. There are no rows for which `offense_code` has the value `"26E"`. If we use `count()` to list the unique values of `offense_code`, we can see that the only values are `r knitr::combine_words(map_chr(sort(unique(pull(frauds, "offense_code"))), \(x) str_glue('"{x}"')))`:
 
 ```{r}
+#| label: count-fraud-offence-codes
+#| lst-label: lst-handling-bugs-count-fraud-offence-codes
+#| lst-cap: ""
 #| filename: "R Console"
 
 count(frauds, offense_code)
@@ -604,6 +664,9 @@ count(frauds, offense_code)
 Uncommenting one line at a time until you find an error or unexpected output is a useful way to isolate problems, but it will not always work. In particular, it will not identify code that is missing entirely. For example, the following pipeline omits the step that changes the tibble into an SF object before using `st_transform()`:
 
 ```{r}
+#| label: transform-nonspatial-data-error
+#| lst-label: lst-handling-bugs-transform-nonspatial-data-error
+#| lst-cap: ""
 #| error: true
 #| filename: "R Console"
 
@@ -616,7 +679,7 @@ frauds |>
 In these cases it is particularly useful to check every argument that you have used in a function, using its manual page as described in Step 1.
 
 
-### Step 3: Inspect the data used and produced by each step
+### Step 3: Inspect the data used and produced by each step {#sec-handling-bugs-step-3-inspect-the-data-used-and-produced-by-each-step}
 
 Not all runtime errors are caused by problems with the code itself. Some bugs are caused by a mismatch between the structure your data actually has and the structure you thought it had when you wrote the code. We have already seen this in the code that referred to a column called `offense_category` in a dataset without that column.
 
@@ -680,6 +743,9 @@ To make a reprex, we have to do three things:
 To practise making a reproducible example, we will create a new R script that we know will produce an error. Click **File**, then **New File ...** and choose **R File**. Save the file as `chapter_08.R` in the `R` folder of your crime mapping workspace, then paste the following code into it:
 
 ```{r}
+#| label: show-chapter-08-error-script
+#| lst-label: lst-handling-bugs-show-chapter-08-error-script
+#| lst-cap: ""
 #| eval: false
 #| file: "../R/chapter_08_error.R"
 ```
@@ -687,6 +753,7 @@ To practise making a reproducible example, we will create a new R script that we
 When you run this code, you should see some messages and then this error:
 
 ```{r}
+#| label: display-chapter-08-error-script
 #| echo: false
 #| error: true
 #| file: "../R/chapter_08_error.R"
@@ -705,6 +772,8 @@ Following this process line by line, it is actually possible to remove a lot of 
 
 ```{r}
 #| label: script-08-error-highlighted
+#| lst-label: lst-handling-bugs-script-08-error-highlighted
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_08.R"
 
@@ -761,6 +830,9 @@ We cannot remove the code that loads necessary packages (line 2), loads the data
 Removing the lines we don't need to reproduce the error leaves `chapter_08.R` looking like this. Note that we've also removed tailing `|>` and `+` operators that no longer connect to another line of code.
 
 ```{r}
+#| label: show-minimal-bronx-error
+#| lst-label: lst-handling-bugs-show-minimal-bronx-error
+#| lst-cap: ""
 #| error: true
 #| message: false
 #| filename: "R Console"
@@ -804,6 +876,9 @@ To use one of these datasets, refer to its name as you would any other R object.
 The data are on a different topic, but that does not matter because we're only interested in the diagnosing the error. We can inspect `memphis_robberies_jan` using `head()` as usual.
 
 ```{r}
+#| label: head-memphis-robberies-jan
+#| lst-label: lst-handling-bugs-head-memphis-robberies-jan
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(memphis_robberies_jan)
@@ -817,6 +892,8 @@ Let's try substituting the `memphis_robberies_jan` dataset for the `bronx_shooti
 
 ```{r}
 #| label: script-08-minimal
+#| lst-label: lst-handling-bugs-script-08-minimal
+#| lst-cap: ""
 #| error: true
 #| filename: "R Console"
 
@@ -843,6 +920,9 @@ Now that you have the minimum code needed to reproduce the error, it's almost ti
 Make sure the `chapter_08.R` file now only contains the three-line minimal working example above, then save the file. Now run this command in the R Console:
 
 ```{r}
+#| label: create-script-reprex
+#| lst-label: lst-handling-bugs-create-script-reprex
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -853,6 +933,9 @@ The reprex package runs the example in a separate R session (to avoid conflicts 
 
 
 ```{r}
+#| label: save-script-reprex
+#| lst-label: lst-handling-bugs-save-script-reprex
+#| lst-cap: ""
 #| eval: false
 
 # THIS CODE MUST BE RUN MANUALLY BEFORE THE CHAPTER IS RENDERED, OTHERWISE THE
@@ -939,7 +1022,7 @@ Verified students can apply for GitHub Copilot Student. The features and usage a
 
 The rest of this section focuses on using a web-based chat bot service to help with debugging, since this is likely to be the most familiar option. The same principles apply to other LLM services, but the details of how you use them will differ.
 
-### Protecting sensitive information
+### Protecting sensitive information {#sec-handling-bugs-protecting-sensitive-information}
 
 Never submit sensitive crime data, personal information, passwords, API keys or other credentials to a generative-AI service. The service might send information to an external provider or retain it according to terms that you have not checked. If you are not certain that sharing particular information is authorised, do not share it.
 
@@ -970,7 +1053,7 @@ For example, a useful prompt might be:
 Asking for an explanation and one change helps you remain in control of the debugging process. Read the explanation, check it against the relevant R manual page, make the change yourself and then inspect the result. Do not accept code merely because it looks convincing or runs without an error: it could still contain a logic error.
 
 
-### Why AI suggestions can be wrong
+### Why AI suggestions can be wrong {#sec-handling-bugs-why-ai-suggestions-can-be-wrong}
 
 LLMs generate responses from patterns learned from large collections of text and code. They can produce plausible explanations and code without verifying that these are correct for your data, package versions or analytical goal. Different services -- or the same service on different occasions -- can also return different responses to the same prompt.
 
@@ -1012,7 +1095,7 @@ ai_debugging_quiz2 <- c(
 
 <p class="full-width-image"><img src="../images/need_a_minute.png" alt="A frustrated little monster sits on the ground with a hat beside it, saying 'I just need a minute'. The R logo looks on empathetically while the word 'Error' appears repeatedly in the background."></p>
 
-### Why AI suggestions can be out of date
+### Why AI suggestions can be out of date {#sec-handling-bugs-why-ai-suggestions-can-be-out-of-date}
 
 AI tools are trained on large collections of text and code, for example blog posts and forum discussions about how to fix problems with R code. However, some of the information that these tools have learned is now out of date. R and its packages change over time, so advice that was correct when it was written may no longer be correct. This can cause problems with your code, either now or if you adapt the code in the future. @sec-functions-to-avoid explains some obsolete R functions that you should avoid using if you see them suggested by AI tools or elsewhere.
 
@@ -1080,6 +1163,9 @@ The error in our reproducible example was very simple, but quite difficult to sp
 If you replaced `+` with `|>` on line 3 of the code below, the code would now run normally. Since we have removed almost all of our original code to make a reproducible example, the resulting map looks nothing like what we wanted. This does not matter -- when we are producing a reprex we only care about reliably producing *the same* error. Now that we have fixed the error, we could go back and fix the original code to produce the map we wanted.
 
 ```{r}
+#| label: show-ai-code-error
+#| lst-label: lst-handling-bugs-show-ai-code-error
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -1156,6 +1242,8 @@ The corrected complete script from the reprex exercise is shown below. Replace t
 
 ```{r}
 #| label: complete-script
+#| lst-label: lst-handling-bugs-complete-script
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_08.R"
 

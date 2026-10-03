@@ -27,6 +27,8 @@ In @sec-first-map we produced a simple map of a particular type of crime in a ne
 
 In this chapter we will make a map of bicycle thefts in Vancouver in 2020. By the end of the chapter, you will have produced this map:
 
+::: {#map-vancouver-bicycle-thefts-introduction}
+
 ```{r}
 #| label: show-final-map
 #| echo: false
@@ -36,6 +38,8 @@ In this chapter we will make a map of bicycle thefts in Vancouver in 2020. By th
 #| file: "../R/chapter_05.R"
 #| out-width: 80%
 ```
+
+:::
 
 This isn't a finished map, because it's missing some of the vital elements that we'll learn about in @sec-mapping-patterns. But this map is a useful step on your journey towards being an experienced crime mapper.
 
@@ -123,7 +127,8 @@ The leading zero keeps the files in the correct order if the sequence grows beyo
 
 **Which file name best follows these conventions?**
 
-```{r file-names-quiz}
+```{r}
+#| label: file-names-quiz
 #| echo: false
 
 file_names_quiz <- c(
@@ -228,7 +233,7 @@ spatial_data_quiz5 <- c(
 Points, lines and polygons in spatial data are known as *geometric objects* or simply *geometries*. Spatial data is data that has a geometric object (e.g. a pair of coordinates representing a crime location) associated with each row.
 
 
-### Representing places on the earth
+### Representing places on the earth {#sec-your-second-crime-map-representing-places-on-the-earth}
 
 With any spatial data, we need a way of describing where on the earth a particular point (such as the location of a crime or the corner of a building) is located. Watch this video to find out about the different coordinate systems we can use to do this.
 
@@ -329,7 +334,7 @@ The names of almost all functions in the sf package start with the letters `st_`
 :::
 
 
-### Reading spatial data
+### Reading spatial data {#sec-your-second-crime-map-reading-spatial-data}
 
 To get started, create a new R script file to hold the permanent code for this analysis. Give the file the name `chapter_05.R` and save it in the same directory as the R script files we created in previous chapters. You can remind yourself how to do that by looking back to @sec-permanent-code.
 
@@ -337,6 +342,8 @@ Now add the code needed to load the packages we will use for this map, including
 
 ```{r}
 #| label: script-05-packages
+#| lst-label: lst-your-second-crime-map-script-05-packages
+#| lst-cap: ""
 #| filename: "chapter_05.R"
 
 # This script produces a map of bicycle thefts in Vancouver in 2020.
@@ -361,6 +368,8 @@ We can use `request()` and `req_perform()` from the httr2 package to download th
 
 ```{r}
 #| label: script-05-download
+#| lst-label: lst-your-second-crime-map-script-05-download
+#| lst-cap: ""
 #| filename: "chapter_05.R"
 #| output: false
 
@@ -392,6 +401,9 @@ Now that you have stored the data in the `thefts` object, what code is needed to
 `r webexercises::hide()`
 
 ```{r}
+#| label: head-thefts
+#| lst-label: lst-your-second-crime-map-head-thefts
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -403,7 +415,7 @@ head(thefts)
 :::
 
 
-### Reading data files from your computer
+### Reading data files from your computer {#sec-your-second-crime-map-reading-data-files-from-your-computer}
 
 The Vancouver thefts dataset consists of `r scales::comma(nrow(thefts))` rows, each representing one theft. Before we can map this data, we will need to do some minor data wrangling to get it into the format we want.
 
@@ -412,6 +424,9 @@ In the previous section, we downloaded the Vancouver theft data and then loaded 
 You might have encountered file paths before, but you may not. A typical file path looks like this on a Mac or Linux computer:
 
 ```{r}
+#| label: macos-absolute-path-example
+#| lst-label: lst-your-second-crime-map-macos-absolute-path-example
+#| lst-cap: ""
 #| eval: false
 #| filename: "Do not run this code"
 #| classes: "bad_code"
@@ -422,6 +437,9 @@ You might have encountered file paths before, but you may not. A typical file pa
 or like this on Windows:
 
 ```{r}
+#| label: windows-absolute-path-example
+#| lst-label: lst-your-second-crime-map-windows-absolute-path-example
+#| lst-cap: ""
 #| eval: false
 #| filename: "Do not run this code"
 #| classes: "bad_code"
@@ -450,6 +468,9 @@ When you open the `crime_mapping` workspace in Positron, R knows to interpret re
 We can construct a file path in two ways using the `here()` function. The first, which we've been using up to now, is to specify each nested folder or file as a separate argument to the `here()` function. For example, to open the file `vancouver_thefts.csv` in the `raw` folder that is itself inside the `data` folder, we would use:
 
 ```{r}
+#| label: construct-path-with-here
+#| lst-label: lst-your-second-crime-map-construct-path-with-here
+#| lst-cap: ""
 #| filename: "R Console"
 #| eval: false
 
@@ -459,6 +480,9 @@ here("data", "raw", "vancouver_thefts.csv")
 Alternatively, we can specify the file path as a single string, with each folder separated by a forward slash (`/`). For example:
 
 ```{r}
+#| label: construct-path-with-slashes
+#| lst-label: lst-your-second-crime-map-construct-path-with-slashes
+#| lst-cap: ""
 #| filename: "R Console"
 #| eval: false
 
@@ -469,7 +493,7 @@ You'll notice that when you run this code in the R Console, R prints the full fi
 
 Since both ways of using the `here()` function give the same result, you can choose to use either.
 
-### Cleaning column names
+### Cleaning column names {#sec-your-second-crime-map-cleaning-column-names}
 
 <p class="full-width-image"><img src="../images/janitor_clean_names.jpg" alt="Cartoon showing a beaver feeding variables with messy names into a machine marked 'clean_names()' that has consistent variable names coming out of the other side."></p>
 
@@ -482,6 +506,9 @@ At the moment, the column names in the `thefts` dataset are upper-case letters. 
 To use a function from a package, we usually first load the package using the `pacman::p_load()` function at the very start of a script. In this case, we probably won't want to use any other functions from the `janitor` package, so instead of loading the whole package we will use this one function directly. To do this, we write the function name with the package name added to the front, separated by two colons `::`.
 
 ```{r}
+#| label: clean-names-thefts
+#| lst-label: lst-your-second-crime-map-clean-names-thefts
+#| lst-cap: ""
 #| filename: "R Console"
 
 janitor::clean_names(thefts)
@@ -491,6 +518,8 @@ Since we always want the column names to be snake case, there's no need for us t
 
 ```{r}
 #| label: script-05-clean-names
+#| lst-label: lst-your-second-crime-map-script-05-clean-names
+#| lst-cap: ""
 #| filename: "chapter_05.R"
 #| output: false
 
@@ -509,7 +538,7 @@ If we wanted to use the `clean_names()` function again, we would have to include
 the `pacman::p_load()` function as we have done in previous chapters.
 
 
-### Converting our data to an SF object
+### Converting our data to an SF object {#sec-your-second-crime-map-converting-our-data-to-an-sf-object}
 
 At present, the data in the `thefts` object is just a regular tibble. We could not use it to make a map because R does not know which columns represent the geometry, or what coordinate system the locations are recorded in. We can deal with this by converting the data to an SF object using the `st_as_sf()` function from the `sf` package.
 
@@ -610,6 +639,8 @@ ggsave(
 )
 ```
 
+::: {#map-vancouver-utm-zone}
+
 ```{r}
 #| label: utm-map
 #| echo: false
@@ -619,6 +650,8 @@ ggsave(
 
 knitr::include_graphics(here::here("images/utm_vancouver.jpg"))
 ```
+
+:::
 
 We can convert the `thefts` tibble to an SF object using the `st_as_sf()` function (remember, all functions in the `sf` package start with `st_`, which can sometimes make the function names a little confusing). We specify which columns in the data represent the geometry (in this case, the `x` and `y` columns), and what coordinate system the data uses. 
 
@@ -632,6 +665,8 @@ Change the existing code in `chapter_05.R` so that it includes the `st_as_sf()` 
 
 ```{r}
 #| label: script-05-spatial
+#| lst-label: lst-your-second-crime-map-script-05-spatial
+#| lst-cap: ""
 #| filename: "chapter_05.R"
 
 # Load and wrangle bike theft data
@@ -657,7 +692,7 @@ The easy way to think about this is that if you have loaded a dataset with `read
 
 
 
-### Finding bike thefts in our data
+### Finding bike thefts in our data {#sec-your-second-crime-map-finding-bike-thefts-in-our-data}
 
 
 ::: {.callout-quiz .callout title="Choosing only some rows in a dataset"}
@@ -694,6 +729,8 @@ The correct code to store only bicycle thefts in a new object is:
 
 ```{r}
 #| label: script-05-filter
+#| lst-label: lst-your-second-crime-map-script-05-filter
+#| lst-cap: ""
 #| filename: "chapter_05.R"
 
 bike_thefts <- filter(thefts, type == "Theft of Bicycle")
@@ -792,7 +829,8 @@ Positron recognises these headings, allows the sections to be folded and treats 
 
 **Which is the best comment to place above code that loads a dataset?**
 
-```{r comments-quiz}
+```{r}
+#| label: comments-quiz
 #| echo: false
 
 comments_quiz <- c(
@@ -813,6 +851,9 @@ comments_quiz <- c(
 Now that we have our data, we can use it to create a map of bicycle theft in Vancouver. Before we start, let's take another look at our dataset so that we know which columns contain which data. 
 
 ```{r}
+#| label: head-bike-thefts
+#| lst-label: lst-your-second-crime-map-head-bike-thefts
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(bike_thefts)
@@ -829,13 +870,21 @@ Since we have converted the data to an SF object, it is easy to create a basic m
 
 The most-basic crime map that we can make simply plots the locations of crimes, with no context other than a base map (we'll learn more about base maps in @sec-base-maps). Run this code in the R Console to produce a basic map:
 
+::: {#map-vancouver-bicycle-thefts-default}
+
 ```{r}
+#| fig-alt: "A point map of recorded bicycle thefts in Vancouver in 2020. Large overlapping points make it difficult to distinguish concentrations of thefts."
+#| label: draw-vancouver-bicycle-thefts-default
+#| lst-label: lst-your-second-crime-map-draw-vancouver-bicycle-thefts-default
+#| lst-cap: ""
 #| filename: "R Console"
 hotspot_map(bike_thefts)
 ```
 
+:::
 
-The map above shows the bike-theft data, but it is obviously not a very useful map. Fortunately, we can use some features of the `hotspot_map()` function to improve it.
+
+@map-vancouver-bicycle-thefts-default shows the bike-theft data, but it is obviously not a very useful map. Fortunately, we can use some features of the `hotspot_map()` function to improve it.
 
 
 ::: {.callout-important title="Avoid dot maps"}
@@ -864,6 +913,7 @@ We can change the appearance of the points by specifying various arguments to th
 There are 25 built-in shapes for points in R (shape 16 is the default):
 
 ```{r}
+#| label: show-point-shapes
 #| echo: false
 #| fig-align: center
 #| fig-alt: "A grid displaying R point shapes numbered from 0 to 24. Shapes include squares, circles, triangles, diamonds and crosses."
@@ -891,13 +941,20 @@ ggplot(data.frame(shape = 0:24), aes(0, 0, shape = shape)) +
 
 We use aesthetics such as `colour`, `fill`, etc. to change the appearance of layers on a map by adding the aesthetic as an argument to the `hotspot_map()` function. For example, we could change the points on our map to be red squares rather than the default black circles using this code:
 
+::: {#map-vancouver-bicycle-thefts-red-squares}
+
 ```{r}
+#| label: draw-vancouver-bicycle-thefts-red-squares
+#| lst-label: lst-your-second-crime-map-draw-vancouver-bicycle-thefts-red-squares
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-alt: "A point map of bicycle thefts in Vancouver drawn using red square symbols. The points overlap heavily."
 
 # Create a basic crime map
 hotspot_map(bike_thefts, shape = 15, colour = "red")
 ```
+
+:::
 
 As we have said, this basic map is not very useful. We can see that there seems to be a cluster of bike thefts towards the top (north) of the map, but it is difficult to see how important this cluster is because so many of the points overlap. Overlapping points are a particular problem in maps, because if there are multiple crimes at the same location then the points representing those crimes will be exactly on top of one another and it will be impossible to see whether there is one crime at a particular location or 100.
 
@@ -906,14 +963,20 @@ aesthetics to make the points smaller (relative to the default for points of `si
 
 Add this code to your script file:
 
+::: {#map-vancouver-bicycle-thefts-transparent-points}
+
 ```{r}
 #| label: script-05-map
+#| lst-label: lst-your-second-crime-map-script-05-map
+#| lst-cap: ""
 #| filename: "chapter_05.R"
 #| fig-alt: "A point map of bicycle thefts in Vancouver. Smaller semi-transparent points reveal some concentration in the north-central part of the city, but extensive overlap still makes the pattern difficult to interpret."
 
 # Create a basic crime map
 hotspot_map(bike_thefts, basemap_type = "cartolight", size = 0.7, alpha = 0.1)
 ```
+
+:::
 
 Making the points semi-transparent goes _some_ way to making it easier to see where bike theft is most common in Vancouver, but the pattern is not clear and it is not possible to tell which darker points represent a handful of crimes at the same location and which represent hundreds of crimes at the same location. 
 
@@ -972,6 +1035,9 @@ We have practised how to:
 At the moment, your script file should look like this.
 
 ```{r}
+#| label: show-chapter-05-script
+#| lst-label: lst-your-second-crime-map-show-chapter-05-script
+#| lst-cap: ""
 #| eval: false
 #| file: "../R/chapter_05.R"
 #| filename: "chapter_05.R"

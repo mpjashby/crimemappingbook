@@ -93,13 +93,16 @@ To get started, create the first of two scripts used in this chapter:
 As we learned in @sec-first-map, permanent code needed to repeat the analysis belongs in this script. Temporary code that helps you inspect the data or develop the permanent code belongs in the R Console. Code chunks in this chapter are labelled to show where each piece of code belongs.
 
 
-### Functions
+### Functions {#sec-data-wrangling-functions}
 
 In this chapter we will learn how to wrangle data in R using *functions* – specialised pieces of code that *do* something to the data we give them. The code to use a function (sometimes called *calling* the function) has two parts: the function name followed by a pair of parentheses, inside which are zero or more *arguments* separated by commas. Arguments are a way of providing input that a function works on, or to fine-tune the way the function works (we will see many examples of this later). Remember that you can identify a function in R because the name will always have parentheses after it.
 
 One basic R function is `sqrt()`, which calculates the square root of a number. The `sqrt()` function has only one argument: the number that we want to find the square root of. If we typed the following code into the R Console, R would show us the square root of 2.
 
 ```{r}
+#| label: calculate-square-root
+#| lst-label: lst-data-wrangling-calculate-square-root
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -110,7 +113,7 @@ When you run code in R, by default R prints the output of your code – in this 
 
 
 
-### Packages
+### Packages {#sec-data-wrangling-packages}
 
 R contains thousands of different functions that do different things. A few functions are contained in the default installation of R that you have already installed (this is sometimes referred to as *base R*). But most functions are contained in *packages*, which are extensions to base R. Most packages focus on a particular type of data analysis, so that there are packages devoted to time-series analysis, testing whether events are clustered in particular places, network analysis and thousands of other tasks. Packages are often developed by experts in the field, and are typically updated to introduce new features.
 
@@ -120,6 +123,8 @@ In this chapter we will use functions from the here, httr2, readxl and tidyverse
 
 ```{r}
 #| label: script-03a-packages
+#| lst-label: lst-data-wrangling-script-03a-packages
+#| lst-cap: ""
 #| filename: "chapter_03a.R"
 
 # Load packages
@@ -181,7 +186,7 @@ Before we can do anything with any data, we have to load it into R. In this cour
 _Tabular data_ (sometimes known as _rectangular data_) describes data formats with multiple columns where every column has the same number of rows. For example, crime data might have columns for the type of crime, date and address at which the crime occurred.
 
 ```{r}
-#| label:  tabular-data
+#| label: tabular-data
 #| echo: false
 
 tibble::tribble(
@@ -198,7 +203,7 @@ Almost all the data we will use in this course will be in this rectangular forma
 
 
 
-### Loading CSV data
+### Loading CSV data {#sec-data-wrangling-loading-csv-data}
 
 <a href="https://readr.tidyverse.org/" aria-label="Visit the readr package website" class="no-external"><img src="../images/readr.png" class="right-side-image" alt=""></a>
 
@@ -210,6 +215,8 @@ Add this code to the `chapter_03a.R` file and run it.
 
 ```{r}
 #| label: script-03a-download
+#| lst-label: lst-data-wrangling-script-03a-download
+#| lst-cap: ""
 #| filename: "chapter_03a.R"
 
 # Download the data from a URL and store it in a local file
@@ -225,6 +232,8 @@ Now we've downloaded the data, we need to load it into R. Add this code to the s
 
 ```{r}
 #| label: script-03a-load
+#| lst-label: lst-data-wrangling-script-03a-load
+#| lst-cap: ""
 #| filename: "chapter_03a.R"
 
 # Load the local file into R
@@ -252,7 +261,8 @@ Object names should briefly describe what an object contains. For example, `san_
 
 Another way to make object names easier to work with is to only use names containing lowercase letters, numbers and underscores. Object names that follow these rules are said to be written in *snake_case*. Giving all your objects names in `snake_case` means you never have to remember whether you used upper or lower-case letters in an object name, and makes it easier to read object names containing multiple words. This is particularly important because R distinguishes between upper- and lower-case letters, so `crime_data`, `Crime_Data` and `CRIME_DATA` would be three different objects. Using lower-case snake case consistently means that you do not have to remember which variation you chose.
 
-```{r snake-case}
+```{r}
+#| label: snake-case
 #| echo: false
 #| fig-align: center
 #| fig-alt: "A cartoon comparing naming conventions: snake_case separates lowercase words with underscores, kebab-case uses dashes, and camelCase capitalises each word after the first. It also shows upper-case variants of snake case and camel case."
@@ -280,7 +290,8 @@ These conventions also apply to column names. Data obtained from elsewhere will 
 
 ::: {.callout-quiz .callout title="Naming objects"}
 
-```{r naming-objects-quiz}
+```{r}
+#| label: naming-objects-quiz
 #| echo: false
 
 naming_objects_quiz <- c(
@@ -303,6 +314,9 @@ naming_objects_quiz <- c(
 When choosing object names, it is important to remember that if you assign a value (such as the number `1` or the result of the function `read_csv()`) to an object name, R will overwrite any existing value of that object name. We can see this in a simple example:
 
 ```{r}
+#| label: replace-object-value
+#| lst-label: lst-data-wrangling-replace-object-value
+#| lst-cap: ""
 #| eval: false
 
 one_to_ten <- 1:10
@@ -322,13 +336,16 @@ To see the first few rows of data currently stored in an object, we can use the 
 
 
 ```{r}
+#| label: head-san-fran-rob
+#| lst-label: lst-data-wrangling-head-san-fran-rob
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(san_fran_rob)
 ```
 
 
-### Loading Excel data
+### Loading Excel data {#sec-data-wrangling-loading-excel-data}
 
 <a href="https://readxl.tidyverse.org/" aria-label="Visit the readxl package website" class="no-external"><img src="../images/readxl.png" class="right-side-image" alt=""></a>
 
@@ -338,6 +355,8 @@ Create a second R script by repeating the Positron steps you used earlier. Name 
 
 ```{r}
 #| label: script-03b-download
+#| lst-label: lst-data-wrangling-script-03b-download
+#| lst-cap: ""
 #| filename: "chapter_03b.R"
 
 # Load packages
@@ -353,6 +372,9 @@ request(
 Now we have downloaded our data, we can load it into R. Excel files can contain multiple _sheets_, so we need to specify which sheet we would like to load into a tibble. We can use the `excel_sheets()` function in the R Console to get a list of sheets in an Excel file:
 
 ```{r}
+#| label: list-excel-sheets
+#| lst-label: lst-data-wrangling-list-excel-sheets
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Get a list of sheets in an Excel file
@@ -364,6 +386,8 @@ of the resulting object:
 
 ```{r}
 #| label: script-03b-load
+#| lst-label: lst-data-wrangling-script-03b-load
+#| lst-cap: ""
 #| filename: "chapter_03b.R"
 
 # Load the Austin data from the Excel workbook
@@ -376,6 +400,9 @@ agg_assault_data <- read_excel(
 and, as usual, we can use the `head()` function to look at the data:
 
 ```{r}
+#| label: head-agg-assault-data
+#| lst-label: lst-data-wrangling-head-agg-assault-data
+#| lst-cap: ""
 #| filename: "R Console"
 head(agg_assault_data)
 ```
@@ -448,6 +475,9 @@ We can use the `select()` function from the [dplyr package](https://dplyr.tidyve
 If we wanted to select just the `date` and `location_type` columns from the `agg_assault_data` we loaded in the previous section, we can use this code:
 
 ```{r}
+#| label: select-assault-date-and-location
+#| lst-label: lst-data-wrangling-select-assault-date-and-location
+#| lst-cap: ""
 #| filename: "R Console"
 
 select(agg_assault_data, date, location_type)
@@ -462,6 +492,9 @@ We can select as many columns as we want, by just adding the names of the column
 We can also use `select()` to rename columns at the same time as selecting them. For example, to select the columns `date` and `location_type` while also renaming `location_type` to be called `type`, we can use:
 
 ```{r}
+#| label: select-and-rename-location-type
+#| lst-label: lst-data-wrangling-select-and-rename-location-type
+#| lst-cap: ""
 #| filename: "R Console"
 
 select(agg_assault_data, date, type = location_type)
@@ -470,6 +503,9 @@ select(agg_assault_data, date, type = location_type)
 `select()` removes any columns that we don't explicitly choose to keep. If we want to rename a column while keeping *all* the existing columns in the data, we can instead use the `rename()` function (also from the dplyr package):
 
 ```{r}
+#| label: rename-location-type
+#| lst-label: lst-data-wrangling-rename-location-type
+#| lst-cap: ""
 #| filename: "R Console"
 
 rename(agg_assault_data, type = location_type)
@@ -478,6 +514,9 @@ rename(agg_assault_data, type = location_type)
 Remember that functions in R generally do not change existing objects, but instead produce (or *return*) new ones. This means if we want to store the result of this function so we can use it later, we have to assign the value returned by the function to a new object (or overwrite the existing object, but this is a bad idea):
 
 ```{r}
+#| label: select-assault-coordinates
+#| lst-label: lst-data-wrangling-select-assault-coordinates
+#| lst-cap: ""
 #| filename: "R Console"
 
 agg_assault_locations <- select(
@@ -527,6 +566,9 @@ Often in crime mapping we will only be interested in part of a particular datase
 If we were only interested in offences in the `agg_assault_data` dataset that occurred in residences, we could use `filter()`:
 
 ```{r}
+#| label: filter-residential-assaults
+#| lst-label: lst-data-wrangling-filter-residential-assaults
+#| lst-cap: ""
 #| filename: "R Console"
 
 filter(agg_assault_data, location_type == "residence")
@@ -540,6 +582,9 @@ Note that:
 We can filter using the values of more than one column simultaneously. To filter offences in which the `location_category` is 'retail' and the `location_type` is 'convenience store':
 
 ```{r}
+#| label: filter-convenience-store-assaults
+#| lst-label: lst-data-wrangling-filter-convenience-store-assaults
+#| lst-cap: ""
 #| filename: "R Console"
 
 filter(
@@ -557,6 +602,9 @@ When you run the code above, the result will contain only those rows in the orig
 As well as filtering using the `==` (equals) operator, we can filter using the greater-than (`>`), less-than (`<`), greater-than-or-equal-to (`>=`) and less-than-or-equal-to (`<=`) operators. For example, we can choose offences that occurred in residences on or after 1 July 2019:
 
 ```{r}
+#| label: filter-residential-assaults-by-date
+#| lst-label: lst-data-wrangling-filter-residential-assaults-by-date
+#| lst-cap: ""
 #| filename: "R Console"
 
 filter(
@@ -574,6 +622,9 @@ The `ymd()` function from the lubridate package (which we will find out more abo
 Sometimes we will want to filter rows that are one thing *or* another. We can do this with the `|` (or) operator. For example, we can filter offences that occurred either in leisure facilities _or_ shopping malls on or after 1 July 2019:
 
 ```{r}
+#| label: filter-leisure-or-mall-assaults
+#| lst-label: lst-data-wrangling-filter-leisure-or-mall-assaults
+#| lst-cap: ""
 #| filename: "R Console"
 
 filter(
@@ -586,6 +637,9 @@ filter(
 If we want to filter offences that have any one of several different values _in the same column_, we can use the `%in%` (in) operator. To filter offences that occurred in either streets _or_ publicly accessible open spaces:
 
 ```{r}
+#| label: filter-outdoor-assaults
+#| lst-label: lst-data-wrangling-filter-outdoor-assaults
+#| lst-cap: ""
 #| filename: "R Console"
 
 filter(agg_assault_data, location_category %in% c("open space", "street"))
@@ -596,6 +650,9 @@ The code `c("open space", "street")` produces what is referred to in R as a *vec
 If we wanted to re-use a vector of values several times in our code, it might make sense to store the vector as an object. For example:
 
 ```{r}
+#| label: filter-selected-location-types
+#| lst-label: lst-data-wrangling-filter-selected-location-types
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Create vector of location types we are interested in
@@ -608,6 +665,9 @@ filter(agg_assault_data, location_category %in% location_types)
 Finally, you can filter based on the output of any R function that returns `TRUE` or `FALSE`. For example, missing values are represented in R as `NA`. We can test whether a value is missing using the `is.na()` function. If we wanted to remove rows from our data that had missing location types, we would filter for those rows that are *not* `NA`. We can do this by combining the `is.na()` function with the `!` (not) operator:
 
 ```{r}
+#| label: exclude-missing-location-types
+#| lst-label: lst-data-wrangling-exclude-missing-location-types
+#| lst-cap: ""
 #| filename: "R Console"
 
 filter(agg_assault_data, !is.na(location_type))
@@ -674,6 +734,9 @@ Before finishing the chapter, check that `chapter_03a.R` contains all the perman
 `r webexercises::hide("Solution")`
 
 ```{r}
+#| label: show-chapter-03a-script
+#| lst-label: lst-data-wrangling-show-chapter-03a-script
+#| lst-cap: ""
 #| eval: false
 #| file: "../R/chapter_03a.R"
 #| filename: "chapter_03a.R"
@@ -688,6 +751,9 @@ Now check that `chapter_03b.R` contains all the permanent code needed to downloa
 `r webexercises::hide("Solution")`
 
 ```{r}
+#| label: show-chapter-03b-script
+#| lst-label: lst-data-wrangling-show-chapter-03b-script
+#| lst-cap: ""
 #| eval: false
 #| file: "../R/chapter_03b.R"
 #| filename: "chapter_03b.R"

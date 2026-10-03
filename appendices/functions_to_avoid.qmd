@@ -13,6 +13,7 @@ R is very useful, but there are some R functions that are no longer the best way
 
 
 ```{r}
+#| label: p-load-tidyverse
 pacman::p_load(tidyverse)
 ```
 
@@ -24,7 +25,7 @@ The R language is `r interval(ym("1993-08"), today()) %/% years(1)` years old an
 :::
 
 
-### Avoid `attach()`
+### Avoid `attach()` {#sec-functions-to-avoid-avoid-attach}
 
 What it does
 : Allows you to refer to each column in a dataset as if it were a separate object.
@@ -36,7 +37,7 @@ What to do instead
 : Explicitly refer to the dataset you want to use when you call each function (this is the way most code is written in any case). Modelling functions such as `lm()` and `glm()` have a `data = ` argument you can use for this purpose. If you need to extract a column from a dataset, use [`pull()`](https://dplyr.tidyverse.org/reference/pull.html) from the dplyr package.
 
 
-### Avoid `setwd()`
+### Avoid `setwd()` {#sec-functions-to-avoid-avoid-setwd}
 
 What it does
 : Sets the _working directory_ for your R session, which tells R where to look for any data files you try to load, and where to save any output files to.
@@ -48,7 +49,7 @@ What to do instead
 : Open a separate Positron workspace folder for each analytical project. Inside that workspace, use relative paths and the [here package](https://here.r-lib.org/) to specify where files should be stored. See @sec-create-project.
 
 
-### Avoid `rm(list = ls())`
+### Avoid `rm(list = ls())` {#sec-functions-to-avoid-avoid-rm-list-ls}
 
 What it does
 : Deletes all the R objects you have created during your R session (also called _clearing the environment_).
@@ -60,7 +61,7 @@ What to do instead
 : When you want to clear the R environment, restart R using the **Restart R** (**&#10227;**) button in Positron's **Console** panel.
 
 
-### Avoid `subset()`
+### Avoid `subset()` {#sec-functions-to-avoid-avoid-subset}
 
 What it does
 : Extracts some rows and/or columns from a dataset.
@@ -72,7 +73,7 @@ What to do instead
 : Use the [`filter()`](https://dplyr.tidyverse.org/reference/filter.html) and [`select()`](https://dplyr.tidyverse.org/reference/select.html) functions from the dplyr package (@sec-wrangling-data).
 
 
-### Avoid `%>%`
+### Avoid `%>%` {#sec-functions-to-avoid-avoid-pipe}
 
 What it does
 : Pipes the result of one function to another, e.g. `runif(100) %>% mean()`.
@@ -85,7 +86,7 @@ What to do instead
 
 
 
-### Avoid `as.numeric()` for converting character values to numbers
+### Avoid `as.numeric()` for converting character values to numbers {#sec-functions-to-avoid-avoid-as-numeric-for-converting-character-values-to-numbers}
 
 What it does
 : `as.numeric()`, `as.double()` and `as.integer()` convert non-numeric values to numbers.
@@ -97,7 +98,7 @@ What to do instead
 : To extract numbers from text and store them as a numeric value, use the [`parse_number()`](https://readr.tidyverse.org/reference/parse_number.html) function from the readr package. This is able to handle text that includes non-numeric characters, e.g. `parse_number("$1")` returns the value `` `r parse_number("$1")` `` rather than a missing value.
 
 
-### Avoid `ifelse()`
+### Avoid `ifelse()` {#sec-functions-to-avoid-avoid-ifelse}
 
 What it does
 : `ifelse()` returns one of two specified values depending on whether a particular criterion is true or false.

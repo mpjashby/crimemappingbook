@@ -28,6 +28,7 @@ In this chapter, we will learn how to:
 The process we will use for making charts in this chapter is:
 
 ```{mermaid}
+%%| label: chart-making-workflow
 %%| fig-alt: "Flow chart for making a chart. Start by identifying the question, audience and variables; use ggauto to create a first chart; decide whether that chart is appropriate; refine it with ggplot2 or rebuild it using ggplot; check labels, colours and accessibility; then save the code and test the complete script."
 flowchart TD
   A[Identify the question, audience and variables] --> B[Use ggauto to create a first chart]
@@ -245,11 +246,19 @@ ggsave(
 ```
 
 
+::: {#fig-northamptonshire-map-and-chart}
+
 <p class="full-width-image"><img src="../images/map_vs_bar_chart.png" alt="Choropleth map and bar chart both showing the frequency of violence in each district in Northamptonshire in 2020"></p>
+
+:::
 
 A map might be a useful addition to the bar chart in this case *if* you are trying to communicate information to people who are not familiar with the locations of the districts. In that case, we might want to add a small reference map to help people understand which area is which:
 
+::: {#fig-northamptonshire-chart-with-reference-map}
+
 <p class="full-width-image"><img src="../images/bar_chart_ref_map.png" alt="Bar chart showing the frequency of violence in each district in Northamptonshire in 2020, with a reference map showing the area covered by each district"></p>
+
+:::
 
 But in most circumstances in which you create crime maps, you will be creating them for an audience (such as local police officers) that already has sufficient knowledge of the area and so an inset map such as this would not be needed. In that case, a bar chart will probably be more effective at showing this information than a map would be.
 
@@ -313,6 +322,8 @@ Create a new R script file inside the `R` folder of your `crime_mapping` workspa
 
 ```{r}
 #| label: script-14a-prepare
+#| lst-label: lst-no-maps-script-14a-prepare
+#| lst-cap: ""
 #| filename: "chapter_14a.R"
 #| eval: false
 
@@ -334,6 +345,7 @@ violence <- here("data", "raw", "malaysia_violence_counts.rds") |>
 
 
 ```{r}
+#| label: load-malaysian-violence-data
 #| echo: false
 
 # Load packages
@@ -357,6 +369,9 @@ We can get a feel for the data by looking at a random sample of rows using the `
 
 
 ```{r}
+#| label: slice-sample-violence-n-10
+#| lst-label: lst-no-maps-slice-sample-violence-n-10
+#| lst-cap: ""
 #| filename: "R Console"
 
 slice_sample(violence, n = 10)
@@ -366,7 +381,7 @@ slice_sample(violence, n = 10)
 The output of `slice_sample()` looks acceptable as a table, especially if it is included in a Quarto document, but readers of our reports probably don't want to know the type of each variable (underneath the variable names) and won't want to page through the table if there are more rows or columns than can fit in the available space. We can make this table much more useful for readers by wrangling it into a different format.
 
 
-### Making data wider for presentation
+### Making data wider for presentation {#sec-no-maps-making-data-wider-for-presentation}
 
 One issue with printing the `violence` object as a table is that it has `r scales::comma(nrow(violence))` rows, so it will take up a lot of space on a page or screen. We can make the data more compact by converting it from long format to wide format. In @sec-messy-data we learned that data are often easier to analyse in long format. But it is often better to _present_ data in a table in wide format. When you are choosing between storing data in long versus wide format, remember: analyse in long format, present in wide format.
 
@@ -374,6 +389,9 @@ As we learned in @sec-messy-data, we can convert the table to a wider format usi
 
 
 ```{r}
+#| label: reshape-violence-table-wide
+#| lst-label: lst-no-maps-reshape-violence-table-wide
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Produce table of crime counts in each Malaysian state
@@ -397,6 +415,9 @@ Now the table has only `r nrow(pivot_wider(violence, names_from = crime_type, va
 
 
 ```{r}
+#| label: remove-constant-year-column
+#| lst-label: lst-no-maps-remove-constant-year-column
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Produce table of crime counts in each Malaysian state
@@ -418,7 +439,7 @@ violence |>
 ```
 
 
-### Using the gt package to make better tables
+### Using the gt package to make better tables {#sec-no-maps-using-the-gt-package-to-make-better-tables}
 
 <a href="https://gt.rstudio.com/" aria-label="Visit the gt package website" class="no-external"><img src="../images/gt.png" alt="" class="right-side-image"></a>
 
@@ -429,6 +450,9 @@ We can create a very basic gt table by just passing a data frame or tibble to th
 
 
 ```{r}
+#| label: create-gt-table
+#| lst-label: lst-no-maps-create-gt-table
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Produce table of crime counts in each Malaysian state
@@ -462,6 +486,9 @@ We don't want the numbers in the table to have any decimal places (since the cri
 
 
 ```{r}
+#| label: group-table-by-region
+#| lst-label: lst-no-maps-group-table-by-region
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Produce table of crime counts in each Malaysian state
@@ -495,6 +522,9 @@ The `region` column only has two values: `West Malaysia` for states and territor
 
 
 ```{r}
+#| label: format-table-numbers
+#| lst-label: lst-no-maps-format-table-numbers
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Produce table of crime counts in each Malaysian state
@@ -530,6 +560,9 @@ The easiest way to specify a colour palette is to use one of the built-in colour
 
 
 ```{r}
+#| label: style-table-header
+#| lst-label: lst-no-maps-style-table-header
+#| lst-cap: ""
 #| filename: "R Console"
 #| code-line-numbers: "12-13"
 
@@ -569,7 +602,7 @@ For the same reason the table does not include a column showing the total number
 :::
 
 
-### Changing column names
+### Changing column names {#sec-no-maps-changing-column-names}
 
 Now that we have formatted the data, we can move onto changing the column labels. At the moment these are taken from the column names in the data, which means we have column labels such as `aggravated_assault`. Underscore characters (`_`) aren't standard in English text, so we should change the labels to remove them. We can do this by adding the `cols_label()` function to the `gt()` stack. As well as removing the underscores, we can also use `cols_label()` to abbreviate labels or split them over multiple lines so that the column labels don't force the columns to be wider than necessary.
 
@@ -577,6 +610,9 @@ We can use the `md()` helper function to use Markdown formatting to control the 
 
 
 ```{r}
+#| label: rename-table-columns
+#| lst-label: lst-no-maps-rename-table-columns
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Produce table of crime counts in each Malaysian state
@@ -614,7 +650,7 @@ violence |>
 
 
 
-### Adding summary rows
+### Adding summary rows {#sec-no-maps-adding-summary-rows}
 
 The final structural feature we will add is a summary row containing the total number of each type of crime across all the states and territories. We do this using the `summary_rows()` function from gt. We specify the columns we want to summarise using the `columns` argument as we did for `fmt_number()`.
 
@@ -629,6 +665,8 @@ Paste this code into the `chapter_14a.R` file and run it.
 
 ```{r}
 #| label: script-14a-table
+#| lst-label: lst-no-maps-script-14a-table
+#| lst-cap: ""
 #| filename: "chapter_14a.R"
 
 # Produce table of crime counts in each Malaysian state
@@ -679,6 +717,9 @@ violence |>
 Save `chapter_14a.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your complete table script should now look like this:
 
 ```{r}
+#| label: show-chapter-14a-script
+#| lst-label: lst-no-maps-show-chapter-14a-script
+#| lst-cap: ""
 #| file: "../R/chapter_14a.R"
 #| eval: false
 #| filename: "chapter_14a.R"
@@ -695,6 +736,7 @@ Tables are good for showing detailed information, particularly when we want to p
 ::: {.callout-quiz .callout title="Tables"}
 
 ```{r}
+#| label: tables-quiz
 #| echo: false
 
 tables_quiz1 <- c(
@@ -752,6 +794,8 @@ To see how this works, let's start by creating a bar chart. Bar charts are usefu
 
 ```{r}
 #| label: script-14b-prepare
+#| lst-label: lst-no-maps-script-14b-prepare
+#| lst-cap: ""
 #| filename: "chapter_14b.R"
 #| eval: false
 
@@ -774,6 +818,7 @@ violence <- here("data", "raw", "malaysia_violence_counts.rds") |>
 ```
 
 ```{r}
+#| label: load-malaysian-chart-data
 #| filename: "chapter_14b.R"
 #| echo: false
 
@@ -799,7 +844,10 @@ violence <- here("data", "raw", "malaysia_violence_counts.rds") |>
 By default, `ggauto()` produces a useful starting point for a bar chart, so let's use it to show the number of murders in each Malaysian state in 2017. We will use the `violence` object we created earlier, which contains counts of different types of violence in each state.
 
 ```{r}
-#| label: ggauto-bar-basic
+#| label: fig-no-maps-ggauto-bar-basic
+#| fig-cap: ""
+#| lst-label: lst-no-maps-ggauto-bar-basic
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-alt: "A horizontal bar chart showing the number of murders recorded in each Malaysian state in 2017, ordered from the smallest value at the bottom to the largest at the top."
 
@@ -823,7 +871,10 @@ There are several features of the bar chart created by `ggauto()` that make the 
 The chart produced by `ggauto()` is a useful starting point, but we can make it more informative by adding a title and caption. We can do this using the `labs()` function from the ggplot2 package that we learned about in @sec-titles. Let's add a title showing what the chart shows and a caption giving the source of the data. In this case, the data comes from an [academic paper written by Hashom Hakim and colleagues](https://doi.org/10.1016/j.dib.2019.104449).
 
 ```{r}
-#| label: ggauto-bar-labelled
+#| label: fig-no-maps-ggauto-bar-labelled
+#| fig-cap: ""
+#| lst-label: lst-no-maps-ggauto-bar-labelled
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-alt: "A horizontal bar chart showing the number of murders recorded in each Malaysian state in 2017, with a title and source caption."
 
@@ -840,11 +891,12 @@ Note that because `ggauto()` produces a chart, we need to add subsequent functio
 
 `ggauto()` has produced a useful bar chart, but to go any further we need to learn to construct charts ourselves using the full range of functions from the ggplot2 package. For example, we might need to do this if we wanted to change the colour of the bars so that the bar for each state was coloured according to which region it was in.
 
-We can start to learn how to create charts from scratch using functions from ggplot2 by looking at the code that would be needed to reproduce the bar chart above without using `ggauto()`. Look through this code and the explanations below it.
+We can start to learn how to create charts from scratch using functions from ggplot2 by looking at the code that would be needed to reproduce the bar chart in @fig-no-maps-ggauto-bar-labelled without using `ggauto()`. Look through this code and the explanations below it.
 
 
 ```{r}
-#| label: bar-chart-ggplot
+#| label: fig-no-maps-bar-chart-ggplot
+#| fig-cap: ""
 #| lst-label: lst-bar-chart-ggplot
 #| lst-cap: ""
 #| filename: "R Console"
@@ -914,7 +966,9 @@ There are many different themes that you can add to a `ggplot()` stack. Some of 
 Different themes can give charts very different appearances, even when they use the same data. For example, these four charts show what happens when different themes are applied to the end of the same `ggplot()` stack:
 
 ```{r}
-#| label: compare-themes
+#| label: fig-no-maps-compare-themes
+#| fig-cap: ""
+#| fig-subcap: true
 #| echo: false
 #| fig-asp: 1
 #| fig-alt: "Four versions of the same Malaysian murder bar chart compare the grey, classic, light and dark ggplot2 themes. The data are identical but the backgrounds, grid lines and text treatments differ."
@@ -979,14 +1033,15 @@ There are many different elements of a chart that we can control using the `them
 * We set `plot.title.position = "plot"` to specify that we want the chart title to appear in the top-left corner of the whole chart rather than being aligned only with the edge of the plotting area. We almost always want the chart title to appear in this way, so we will use this code often.
 
 
-### Colour in bar charts
+### Colour in bar charts {#sec-no-maps-colour-in-bar-charts}
 
 Now that we have successfully used `ggplot()` to recreate the bar chart created by `ggauto()`, and understood all the code needed to do that, we can go on to further improve the chart by adding colour to the bars to indicate which region of Malaysia each state is in.
 
 To do that, we need to add another _mapping_ to the `aes()` function that is included in @lst-bar-chart-ggplot and which controls which columns in the `violence` dataset control which elements of the chart. `aes()` already specifies that the `count` column controls the horizontal position of the end of each bar and that the `state` column controls the vertical order of the bars. We can add another mapping to `aes()` to specify that the fill colour of the bars should be controlled by the `region` column in the data. This will colour each bar according to which region of Malaysia it is in. Run this code in the R console to see the result. Note that this time we are saving the result in an object called `malaysia_murder_bar_chart` so that we can use the result again shortly.
 
 ```{r}
-#| label: bar-chart-region-colours
+#| label: fig-no-maps-bar-chart-region-colours
+#| fig-cap: ""
 #| lst-label: lst-bar-chart-fill
 #| lst-cap: ""
 #| filename: "R Console"
@@ -1035,6 +1090,9 @@ The colorblindr package is not on CRAN, the repository we usually install R pack
 
 
 ```{r}
+#| label: install-colorblindr
+#| lst-label: lst-no-maps-install-colorblindr
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -1049,7 +1107,10 @@ Once you've installed the colorblindr package, you can use it to check how diffe
 
 
 ```{r}
-#| label: colour-vision-default
+#| label: fig-no-maps-colour-vision-default
+#| fig-cap: ""
+#| lst-label: lst-no-maps-colour-vision-default
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 1
 #| fig-alt: "Four versions of the Malaysian murder bar chart simulate several types of colour vision and a greyscale display. Some simulations make the two default bar colours difficult to distinguish."
@@ -1077,7 +1138,10 @@ There are many useful colour palettes in the [PrettyCols package](https://nrenni
 
 
 ```{r}
-#| label: bar-chart-accessible-colours
+#| label: fig-no-maps-bar-chart-accessible-colours
+#| fig-cap: ""
+#| lst-label: lst-no-maps-bar-chart-accessible-colours
+#| lst-cap: ""
 #| filename: "chapter_14b.R"
 #| fig-alt: "A horizontal bar chart of murder counts in Malaysian states. Accessible blue and orange fills distinguish East and West Malaysia."
 
@@ -1119,7 +1183,10 @@ To see if these colours are likely to work for different people, we can again ch
 
 
 ```{r}
-#| label: colour-vision-accessible
+#| label: fig-no-maps-colour-vision-accessible
+#| fig-cap: ""
+#| lst-label: lst-no-maps-colour-vision-accessible
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 1
 #| fig-alt: "Four versions of the Malaysian murder bar chart simulate several types of colour vision and a greyscale display. The blue and orange palette remains distinguishable across the simulations."
@@ -1141,6 +1208,9 @@ Bar charts are a very common way of presenting a numeric variable for each value
 Save `chapter_14b.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your complete bar-chart script should now look like this:
 
 ```{r}
+#| label: show-chapter-14b-script
+#| lst-label: lst-no-maps-show-chapter-14b-script
+#| lst-cap: ""
 #| file: "../R/chapter_14b.R"
 #| eval: false
 #| filename: "chapter_14b.R"
@@ -1208,6 +1278,8 @@ Let's start with the simple example of showing the distribution of burglary coun
 
 ```{r}
 #| label: script-14c-prepare
+#| lst-label: lst-no-maps-script-14c-prepare
+#| lst-cap: ""
 #| filename: "chapter_14c.R"
 #| eval: false
 
@@ -1227,6 +1299,7 @@ burglary <- here("data", "raw", "northants_burglary_counts.rds") |>
 
 
 ```{r}
+#| label: load-northamptonshire-burglary-data
 #| filename: "chapter_14c.R"
 #| echo: false
 
@@ -1249,17 +1322,23 @@ So that we can see what this dataset looks like, we first run `head()` in the R 
 
 
 ```{r}
+#| label: head-burglary
+#| lst-label: lst-no-maps-head-burglary
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(burglary)
 ```
 
 
-We can start the process of producing a chart by seeing what type of chart `ggauto()` produces when we give it a continuous (numeric) variable rather than (as in the bar chart example above) a categorical variable. Run this code in the R console to see the result.
+We can start the process of producing a chart by seeing what type of chart `ggauto()` produces when we give it a continuous (numeric) variable rather than (as in @fig-no-maps-ggauto-bar-basic) a categorical variable. Run this code in the R console to see the result.
 
 
 ```{r}
-#| label: ggauto-raincloud
+#| label: fig-no-maps-ggauto-raincloud
+#| fig-cap: ""
+#| lst-label: lst-no-maps-ggauto-raincloud
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-alt: "A raincloud plot of burglary counts in Northamptonshire neighbourhoods. Most neighbourhoods have low counts, while a small number have much higher counts."
 
@@ -1283,7 +1362,10 @@ We can create a ridge plot with the `geom_density_ridges()` function from the gg
 Add this code to the `chapter_14c.R` file and run it.
 
 ```{r}
-#| label: burglary-ridge-plot
+#| label: fig-no-maps-burglary-ridge-plot
+#| fig-cap: ""
+#| lst-label: lst-no-maps-burglary-ridge-plot
+#| lst-cap: ""
 #| filename: "chapter_14c.R"
 #| fig-alt: "Overlapping density curves compare burglary-count distributions across the seven districts of Northamptonshire. Every distribution is concentrated at low counts and has a tail towards higher counts."
 
@@ -1320,6 +1402,9 @@ The ridge plot shows the distribution of burglary counts in LSOAs within each di
 Save `chapter_14c.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your complete distribution-analysis script should now look like this:
 
 ```{r}
+#| label: show-chapter-14c-script
+#| lst-label: lst-no-maps-show-chapter-14c-script
+#| lst-cap: ""
 #| file: "../R/chapter_14c.R"
 #| eval: false
 #| filename: "chapter_14c.R"
@@ -1372,6 +1457,8 @@ Start a new R session by clicking the **Restart R** (**&#10227;**) button in Pos
 
 ```{r}
 #| label: script-14d-prepare
+#| lst-label: lst-no-maps-script-14d-prepare
+#| lst-cap: ""
 #| filename: "chapter_14d.R"
 #| eval: false
 
@@ -1390,6 +1477,7 @@ vehicle_theft <- here("data", "raw", "south_africa_vehicle_theft.rds") |>
 ```
 
 ```{r}
+#| label: load-vehicle-theft-data
 #| filename: "chapter_14d.R"
 #| echo: false
 
@@ -1411,6 +1499,9 @@ Let's look at the dataset in the R Console in the usual way:
 
 
 ```{r}
+#| label: head-vehicle-theft
+#| lst-label: lst-no-maps-head-vehicle-theft
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(vehicle_theft)
@@ -1426,6 +1517,8 @@ Replace the code in `chapter_14d.R` that loads the data with this code.
 
 ```{r}
 #| label: script-14d-wrangle
+#| lst-label: lst-no-maps-script-14d-wrangle
+#| lst-cap: ""
 #| filename: "chapter_14d.R"
 
 # Load the local copy of the vehicle-theft rates
@@ -1444,7 +1537,10 @@ We can now use `ggauto()` to make a basic scatter plot.
 
 
 ```{r}
-#| label: ggauto-scatter
+#| label: fig-no-maps-ggauto-scatter
+#| fig-cap: ""
+#| lst-label: lst-no-maps-ggauto-scatter
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 1
 #| fig-alt: "A scatter plot comparing rates of theft of and theft from motor vehicles across South African municipalities. Most points cluster at low rates, with a few municipalities having high rates of one type."
@@ -1466,7 +1562,10 @@ Run this code in the R Console.
 
 
 ```{r}
-#| label: scatter-plot-basic
+#| label: fig-no-maps-scatter-plot-basic
+#| fig-cap: ""
+#| lst-label: lst-no-maps-scatter-plot-basic
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 1
 #| fig-alt: "A scatter plot comparing rates of theft of and theft from motor vehicles across South African municipalities. Most points cluster at low rates, with a few municipalities having high rates of one type."
@@ -1503,6 +1602,8 @@ To add text annotations we use the `annotate()` function from ggplot2, which all
 
 ```{r}
 #| label: fig-scatter-label-areas
+#| lst-label: lst-no-maps-scatter-label-areas
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 1
 #| fig-alt: "A scatter plot of municipal vehicle-theft rates divided by dashed median lines. Annotations explain the upper-left and lower-right areas, and semi-transparent points reveal overlapping observations."
@@ -1566,7 +1667,10 @@ To use it, we will create a new column in the data called `label`. This column w
 
 
 ```{r}
-#| label: scatter-plot-repelled-labels
+#| label: fig-no-maps-scatter-plot-repelled-labels
+#| fig-cap: ""
+#| lst-label: lst-no-maps-scatter-plot-repelled-labels
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 1
 #| fig-alt: "A scatter plot of vehicle-theft rates with non-overlapping labels identifying municipalities that have unusually high rates of either theft of or theft from motor vehicles."
@@ -1614,7 +1718,10 @@ Add this code to the `chapter_14d.R` file and run it.
 
 
 ```{r}
-#| label: scatter-plot-final
+#| label: fig-no-maps-scatter-plot-final
+#| fig-cap: ""
+#| lst-label: lst-no-maps-scatter-plot-final
+#| lst-cap: ""
 #| filename: "chapter_14d.R"
 #| fig-asp: 1
 #| fig-alt: "A scatter plot comparing rates of theft of and theft from motor vehicles. Dashed median lines divide the plot, selected municipalities are labelled without overlaps and a straight trend line slopes slightly upward."
@@ -1677,7 +1784,8 @@ For example, `geom_smooth()` produces a line showing the direction of the relati
 
 
 ```{r}
-#| label: geom-smooth-relationships
+#| label: fig-no-maps-geom-smooth-relationships
+#| fig-cap: ""
 #| echo: false
 #| fig-asp: 0.33
 #| out-width: "100%"
@@ -1732,6 +1840,9 @@ Be very careful about trying to interpret the strength of a relationship from th
 Save `chapter_14d.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your complete scatter-plot script should now look like this:
 
 ```{r}
+#| label: show-chapter-14d-script
+#| lst-label: lst-no-maps-show-chapter-14d-script
+#| lst-cap: ""
 #| file: "../R/chapter_14d.R"
 #| eval: false
 #| filename: "chapter_14d.R"

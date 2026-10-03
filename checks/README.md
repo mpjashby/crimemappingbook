@@ -37,3 +37,49 @@ python3 -m unittest discover -s checks -p 'test_*.py'
 ```
 
 The tests mutate disposable copies to verify detection of code and comment drift, changed checkpoints, inherited changes and new unmapped instructions. They also check that intermediate examples remain separate and that a script cannot be verified against an include of itself.
+
+## Checking book labels
+
+```sh
+python3 checks/check_book_labels.py
+```
+
+This checks every tracked or new non-ignored Quarto source for missing or duplicate execution labels
+and missing level-3 heading identifiers. It also checks that visible executable R
+code in the textbook has a `lst-` identifier and a blank listing caption, hidden
+code stays out of listing numbering, and numbered chart chunks have captions and
+alternative text. Supporting reports retain their own numbering conventions.
+Fenced teaching examples and R comments are excluded from heading checks. Chunks
+in commented-out teaching sections retain execution labels but do not need visible
+listing metadata.
+
+Use descriptive lower-case identifiers with hyphens. Execution labels are unique
+within each document; `sec-`, `lst-`, `map-` and `fig-` anchors are unique across the
+book. Retain existing captions; use blank captions for newly numbered outputs.
+For generated Maps, wrap the output cell in a `::: {#map-description}` div. Do not
+add a final caption paragraph unless preserving an existing caption.
+
+`filters/numbered-outputs.lua` runs at `pre-ast`. It converts blank listing captions
+to equivalent listing divs, avoiding a Quarto 1.10.18 error on undecorated code
+blocks, and moves visible Code listings outside Map floats so Quarto does not
+number them as subfigures. It also reunites source blocks that knitr splits around console output, so a
+single chunk receives one listing number and anchor. Results follow the complete
+listing. The analytical code still executes only once. Verify
+these behaviours when upgrading Quarto, including filename headers, code copying,
+interactive widgets, animated maps and multi-panel outputs.
+
+After source checks, render the book and check for unresolved cross-references,
+chapter numbering, blank captions, retained alternative text, and generated image
+paths containing `unnamed-chunk-`. A full render must execute changed chapters;
+`--no-execute` or stale frozen results cannot verify their new labels.
+Use `--cache-refresh` when renaming labels in chapters with cached chunks, since
+knitr can otherwise retain the previous listing identifiers in cached output.
+
+For a compact rendering regression check, render
+`checks/fixtures/numbered-outputs.qmd`. Its local `_quarto.yml` makes this a
+standalone document rather than a book chapter. It exercises visible and hidden static Maps, a Leaflet widget, a saved
+animated GIF, a multi-panel Map, blank Figure captions and an existing caption.
+Expect Code 1–5, Map 1–5 and Figure 1–3, with no subfloat letters, `example.R` and
+`R Console` filename headers intact, and "An existing caption" retained on Figure 2. The final listing tests interleaved console output; it must
+have one Code label and anchor, with both results retained. The paired-chart example tests a stable parent Figure
+anchor for multiple output images, using blank subcaptions.

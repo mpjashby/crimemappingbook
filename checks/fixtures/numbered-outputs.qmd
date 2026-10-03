@@ -1,0 +1,133 @@
+---
+title: Numbered output regression fixture
+format:
+  html:
+    fig-cap-location: top
+filters:
+  - path: ../../filters/numbered-outputs.lua
+    at: pre-ast
+crossref:
+  lst-title: Code
+  lst-prefix: Code
+  custom:
+    - kind: float
+      key: map
+      reference-prefix: Map
+      caption-prefix: Map
+---
+
+```{r}
+#| label: hidden-setup
+#| include: false
+values <- 1:3
+```
+
+::: {#map-visible-points}
+
+```{r}
+#| label: draw-visible-points
+#| lst-label: lst-visible-points
+#| lst-cap: ""
+#| fig-alt: "Three points with increasing values."
+plot(values)
+```
+
+:::
+
+::: {#map-hidden-points}
+
+```{r}
+#| label: draw-hidden-points
+#| echo: false
+#| fig-alt: "Three points with decreasing values."
+plot(rev(values))
+```
+
+:::
+
+```{r}
+#| label: fig-bars
+#| lst-label: lst-bars
+#| lst-cap: ""
+#| fig-cap: ""
+#| fig-alt: "Three bars with increasing heights."
+barplot(values)
+```
+
+::: {#map-interactive-points role="group" aria-label="An interactive map with two circle markers near London."}
+
+```{r}
+#| label: display-interactive-points
+#| echo: false
+#| fig-alt: "An interactive map with two circle markers near London."
+leaflet::leaflet() |>
+  leaflet::addCircleMarkers(lng = c(0, 1), lat = c(51, 52))
+```
+
+:::
+
+::: {#map-animated-assaults}
+
+```{r}
+#| label: display-animated-assaults
+#| echo: false
+#| fig-alt: "An animated map of hourly aggravated-assault density in Chicago."
+knitr::include_graphics("../../images/chicago_downtown_agg_assaults.gif")
+```
+
+:::
+
+::: {#map-paired-points}
+
+```{r}
+#| label: draw-paired-points
+#| filename: "example.R"
+#| lst-label: lst-paired-points
+#| lst-cap: ""
+#| fig-alt: "Two panels compare increasing and decreasing point values."
+par(mfrow = c(1, 2))
+plot(values)
+plot(rev(values))
+```
+
+:::
+
+```{r}
+#| label: fig-existing-caption
+#| filename: "R Console"
+#| lst-label: lst-existing-caption
+#| lst-cap: ""
+#| fig-cap: "An existing caption"
+#| fig-alt: "Three bars with decreasing heights."
+barplot(rev(values))
+```
+
+@lst-visible-points produces @map-visible-points. Hidden code produces
+@map-hidden-points, @map-interactive-points and @map-animated-assaults.
+@lst-bars produces @fig-bars; @lst-paired-points produces @map-paired-points;
+@lst-existing-caption produces @fig-existing-caption.
+
+```{r}
+#| label: interleaved-console-output
+#| filename: "R Console"
+#| lst-label: lst-interleaved-console-output
+#| lst-cap: ""
+values
+sum(values)
+```
+
+@lst-interleaved-console-output should have one Code label and one anchor even
+though knitr splits the source around the two console outputs.
+
+```{r}
+#| label: fig-paired-charts
+#| echo: false
+#| fig-cap: ""
+#| fig-subcap: true
+#| layout-ncol: 2
+#| fig-alt: "Two plots compare increasing and decreasing values."
+plot(values)
+plot(rev(values))
+```
+
+@fig-paired-charts must resolve to one Figure number for the two-panel chart.

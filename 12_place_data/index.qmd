@@ -156,17 +156,29 @@ ggsave(
 )
 ```
 
+::: {#map-medellin-homicide-density}
+
 <p class="full-width-image"><img src="../images/medellin_homicides_map1.jpg" alt="A density map of homicides in Medellin from 2010 to 2019. The highest density is in the city centre, but the map does not show the metro network." style="max-height: 600px;"></p>
+
+:::
 
 This is an acceptable crime map: it shows the data in a reasonable way, places the data layer at the top of the visual hierarchy and provides suitable context in the title, legend etc. But it is a much less useful map than it could be because it doesn't show where the metro stations are and this information is not included in the base map at this scale. A much better map would add extra layers of data showing the metro stations and the lines connecting them.
 
+::: {#map-medellin-homicides-and-metro}
+
 <p class="full-width-image"><img src="../images/medellin_homicides_map2.jpg" alt="The Medellin homicide-density map with metro lines and stations added. Parque Berrío and Prado stations are closest to the area of highest homicide density." style="max-height: 600px;"></p>
+
+:::
 
 From this second map, it is much easier to see that Parque Berrío and Prado stations are closest to an area with relatively high numbers of homicides.
 
 In this chapter, you will produce a more-detailed map of the La Candelaria neighbourhood that compares homicide density with bus-stop locations and metro lines:
 
+::: {#map-la-candelaria-homicides-and-transport}
+
 <p class="full-width-image"><img src="../images/la_candelaria_place_data_map.jpg" alt="A map of La Candelaria showing homicide density, bus stops and metro lines. The areas of highest homicide density do not appear to cluster around bus stops." style="max-height: 600px;"></p>
+
+:::
 
 In this chapter, we will learn how to:
 
@@ -181,6 +193,8 @@ To get started, open a new R script file in Positron and save it as `chapter_12.
 
 ```{r}
 #| label: script-12-packages
+#| lst-label: lst-place-data-script-12-packages
+#| lst-cap: ""
 #| filename: "chapter_12.R"
 
 # This script produces a map of the density of homicides in the La Candelaria
@@ -198,6 +212,8 @@ As we learned in @sec-reports, the Medellin homicide CSV file uses semicolons to
 
 ```{r}
 #| label: script-12-homicides
+#| lst-label: lst-place-data-script-12-homicides
+#| lst-cap: ""
 #| filename: "chapter_12.R"
 
 # LOAD DATA --------------------------------------------------------------------
@@ -227,7 +243,7 @@ If you are producing crime maps on behalf of a particular organisation such as a
 Some organisations may also have agreements to share data with others. For example, both universities and public agencies such as police forces in the United Kingdom have agreements with the national mapping agency [Ordnance Survey](https://www.ordnancesurvey.co.uk/) to share a wide variety of spatial data. If you are producing maps on behalf of an organisation, it will often be useful to ask what data they hold that might be relevant, or ask for a specific dataset you think would help improve a map.
 
 
-### Open data
+### Open data {#sec-place-data-open-data}
 
 *Open data* is data that is released by organisations or individuals that can be freely used by others. Organisations such as local governments increasingly release data about their areas as open data -- almost all of the crime and other data we have seen so far in this book is open data released by different local and national governments.
 
@@ -251,7 +267,7 @@ Different local governments may use different terms for the same types of inform
 To try to make this process easier, some countries have established national open-data portals such as [Open Data in Canada](https://open.canada.ca/), [Open Government Data Platform India](https://data.gov.in/), [data.gov.uk in the United Kingdom](https://data.gov.uk/) and [data.gov in the United States](https://www.data.gov/). There are also international repositories such as the [African Development Bank Data Portal](https://dataportal.opendataforafrica.org/), [openAfrica](https://open.africa/) and [Data Portals](https://dataportals.org/), which seeks to list all the open data portals run by different governments and other organisations.
 
 
-### Citing data
+### Citing data {#sec-place-data-citing-data}
 
 Organisations that provide data often do so on condition that users of the data follow certain rules. For example, you can use data on the Open Data Bristol website as long as you follow the conditions of the [Open Government Licence](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/). The most-common requirement of an open-data licence is that anyone using the data acknowledges the data source in any maps, reports or other outputs they produce. In the case of the Open Government Licence, users of the data are required to add a declaration to any outputs declaring:
 
@@ -310,6 +326,8 @@ To load the data from this file, we can use the process outlined above. Add this
 
 ```{r}
 #| label: script-12-metro
+#| lst-label: lst-place-data-script-12-metro
+#| lst-cap: ""
 #| filename: "chapter_12.R"
 
 ## Load metro lines ----
@@ -350,6 +368,9 @@ One question you might have when reading the code above is how did we know that 
 We can find out the name of files within a zip file using the `unzip()` function together with the argument `list = TRUE`. This produces a list of files that are inside the zip file, rather than actually unzipping any files. For example, run this code in the R Console to see a list of files in the zip file we downloaded.
 
 ```{r}
+#| label: list-metro-archive-files
+#| lst-label: lst-place-data-list-metro-archive-files
+#| lst-cap: ""
 #| filename: "R Console"
 
 unzip(metro_lines_file, list = TRUE)
@@ -473,12 +494,18 @@ ggsave(
 )
 ```
 
+::: {#map-medellin-bounding-box}
+
 <p class="full-width-image"><img src="../images/medellin_bbox_map.jpg" alt="The irregular boundary of Medellin shown inside its bounding box, the smallest rectangle that completely contains the city."></p>
+
+:::
 
 You can calculate the bounding box of an SF object using the `st_bbox()` function from the sf package. In this case we want the bounding box of the La Candelaria neighbourhood, so we will need to load a dataset that includes the boundary of that neighbourhood. Add this code to the `chapter_12.R` script file and run it.
 
 ```{r}
 #| label: script-12-boundaries
+#| lst-label: lst-place-data-script-12-boundaries
+#| lst-cap: ""
 #| filename: "chapter_12.R"
 
 ## Load neighbourhood boundary ----
@@ -498,6 +525,8 @@ We can now calculate the bounding box of the neighbourhood we are interested in.
 
 ```{r}
 #| label: script-12-bbox
+#| lst-label: lst-place-data-script-12-bbox
+#| lst-cap: ""
 #| filename: "chapter_12.R"
 
 # GET OSM DATA -----------------------------------------------------------------
@@ -530,6 +559,8 @@ Now that we know the bounding box of the area we are interested in and the tag f
 
 ```{r}
 #| label: script-12-osm
+#| lst-label: lst-place-data-script-12-osm
+#| lst-cap: ""
 #| filename: "chapter_12.R"
 #| eval: false
 
@@ -542,6 +573,7 @@ bus_stops <- opq(la_candelaria_bbox) |>
 ```
 
 ```{r}
+#| label: load-cached-bus-stops
 #| echo: false
 #| include: false
 
@@ -558,6 +590,9 @@ The `bus_stops` object returned by `osmdata_sf()` is a _list_ of objects. If you
 
 
 ```{r}
+#| label: inspect-bus-stop-object
+#| lst-label: lst-place-data-inspect-bus-stop-object
+#| lst-cap: ""
 #| filename: "R Console"
 
 bus_stops
@@ -570,6 +605,9 @@ We can use the `pluck()` function from the `purrr` package (part of the tidyvers
 
 
 ```{r}
+#| label: inspect-bus-stop-points
+#| lst-label: lst-place-data-inspect-bus-stop-points
+#| lst-cap: ""
 #| filename: "R Console"
 
 bus_stops |> pluck("osm_points") |> glimpse()
@@ -586,6 +624,8 @@ Add this code to the `chapter_12.R` file and run it.
 
 ```{r}
 #| label: script-12-wrangle
+#| lst-label: lst-place-data-script-12-wrangle
+#| lst-cap: ""
 #| filename: "chapter_12.R"
 
 ## WRANGLE DATA ----------------------------------------------------------------
@@ -617,8 +657,12 @@ Note that since we have used `hotspot_clip()` twice, this code produces two mess
 
 We now have everything we need to map homicides in La Candelaria in relation to bus stops. Let's add to our script file the code needed to create a density map.
 
+::: {#map-la-candelaria-homicides-and-places}
+
 ```{r}
 #| label: script-12-map
+#| lst-label: lst-place-data-script-12-map
+#| lst-cap: ""
 #| filename: "chapter_12.R"
 #| fig-alt: "A map of La Candelaria showing homicide density, bus stops and metro lines. The areas of highest homicide density do not appear to cluster around bus stops."
 
@@ -663,6 +707,8 @@ place_data_map <- hotspot_map(
 
 place_data_map
 ```
+
+:::
 
 
 Most of this code should be familiar to you from previous chapters -- if you would like to refresh your memory on the code needed to produce a kernel density map, look back to @sec-mapping-patterns. Before adding the metro lines, we use `hotspot_clip()` to keep only the portions inside La Candelaria. This prevents the map from expanding to show the entire metro network when we are interested in only one neighbourhood.
@@ -744,6 +790,9 @@ Your complete `chapter_12.R` script should now look like this:
 
 
 ```{r}
+#| label: show-chapter-12-script
+#| lst-label: lst-place-data-show-chapter-12-script
+#| lst-cap: ""
 #| eval: false
 #| file: "../R/chapter_12.R"
 #| filename: "chapter_12.R"

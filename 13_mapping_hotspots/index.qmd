@@ -121,7 +121,11 @@ ggsave(
 )
 ```
 
+::: {#map-nottingham-robbery-introduction}
+
 <p class="full-width-image"><img src="../images/nottingham_robbery_map.jpg" alt="A map of Nottingham showing the highest robbery density in significant hotspot cells near the city centre"></p>
+
+:::
 
 In this chapter, we will learn how to:
 
@@ -179,7 +183,7 @@ A robbery is a theft in which the offender uses violence or the threat of violen
 Burglary is a good example of why the routine activities approach to thinking about crime that we introduced in @sec-getting-started emphasises thinking about _targets_ of crime rather than focusing only on crime _victims_. In the case of burglary, one person might be the owner of a large number of buildings (e.g. a farm with lots of out-buildings) or lots of people might own a single building (such as a house converted into flats). By thinking about the targets that are attacked by offenders, we can identify that burglary rates should be calculated based on buildings rather than, for example, residential population. Note that if our crime data only included _residential_ burglaries then we would want to use _residential_ buildings as our denominator, but in this case we have data for all burglaries, both residential and non-residential.
 
 
-### Data wrangling
+### Data wrangling {#sec-mapping-hotspots-data-wrangling}
 
 Before we can create our dual KDE layer, we have to complete some data wrangling. We will extract the boundaries for the wards of interest from a dataset of boundaries for all wards in Nottingham using `filter()` as we have done previously. To extract only the burglaries occurring in those three wards from a dataset of all burglaries in Nottingham, we will use `hotspot_clip()`. We will also transform both datasets to use the British National Grid (EPSG:27700), a projected CRS whose coordinates are measured in metres. Using a projected CRS makes it easy to specify a grid-cell size in metres. See @sec-choosing-projected-crs for how to choose an appropriate projected CRS.
 
@@ -188,6 +192,8 @@ Open `chapter_13a.R` in the `R` folder of your `crime_mapping` workspace. Add th
 
 ```{r}
 #| label: script-13a-prepare
+#| lst-label: lst-mapping-hotspots-script-13a-prepare
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_13a.R"
 
@@ -226,6 +232,7 @@ burglaries <- here("data", "raw", "nottingham_burglary.csv.gz") |>
 
 
 ```{r}
+#| label: load-nottingham-building-data
 #| include: false
 
 # Load packages
@@ -263,6 +270,8 @@ Add this code to your R script and run it. The first time you run the code, it d
 
 ```{r}
 #| label: script-13a-buildings
+#| lst-label: lst-mapping-hotspots-script-13a-buildings
+#| lst-cap: ""
 #| filename: "chapter_13a.R"
 
 # GET BUILDING DATA ------------------------------------------------------------
@@ -306,6 +315,9 @@ There are many other ways to use `if` statements in R, but we won't need to use 
 
 
 ```{r}
+#| label: inspect-building-geometries
+#| lst-label: lst-mapping-hotspots-inspect-building-geometries
+#| lst-cap: ""
 #| filename: "R Console"
 
 nottingham_buildings
@@ -324,7 +336,12 @@ OpenStreetMap stores features in several different ways. The most basic types ar
 Let's create a simple map of the results produced by `osmdata_sf()`, comparing them to the buildings shown on a base map to check that OSM has reasonable coverage of the buildings in these three wards. This code uses the `pluck()` function from the purrr package (part of the tidyverse) to extract the different elements from the `nottingham_buildings` object.
 
 
+::: {#map-nottingham-building-geometries}
+
 ```{r}
+#| label: draw-nottingham-building-geometries
+#| lst-label: lst-mapping-hotspots-draw-nottingham-building-geometries
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 1
 #| out-width: "100%"
@@ -354,6 +371,8 @@ hotspot_map(
   geom_sf(data = wards, colour = "red", fill = NA, linewidth = 1.25)
 ```
 
+:::
+
 
 ::: {.callout-important title="`osmdata_sf()` returns data for a bounding box"}
 
@@ -374,6 +393,8 @@ Add this code to the `chapter_13a.R` file and run it.
 
 ```{r}
 #| label: script-13a-centroids
+#| lst-label: lst-mapping-hotspots-script-13a-centroids
+#| lst-cap: ""
 #| filename: "chapter_13a.R"
 
 # WRANGLE DATA -----------------------------------------------------------------
@@ -398,7 +419,7 @@ You might have seen a warning saying `st_centroid assumes attributes are constan
 :::
 
 
-### Calculating dual kernel density
+### Calculating dual kernel density {#sec-mapping-hotspots-calculating-dual-kernel-density}
 
 We now have the object `burglaries` that contains the locations of each burglary in the three Nottingham wards that we are interested in, and the object `nottingham_building_centroids` that contains the centroids of each building in those three wards. We can use these layers to estimate the density of burglaries and buildings, then combine these to estimate the density of burglary risk.
 
@@ -407,6 +428,8 @@ We now have the object `burglaries` that contains the locations of each burglary
 
 ```{r}
 #| label: script-13a-density
+#| lst-label: lst-mapping-hotspots-script-13a-density
+#| lst-cap: ""
 #| filename: "chapter_13a.R"
 
 # Estimate density of burglary risk
@@ -425,6 +448,9 @@ The `burglary_risk` object looks like this:
 
 
 ```{r}
+#| label: head-burglary-risk
+#| lst-label: lst-mapping-hotspots-head-burglary-risk
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(burglary_risk)
@@ -447,8 +473,12 @@ We can plot the estimate of the density of burglary risk using `hotspot_map()`. 
 Add this code to your script file and run it to produce a map:
 
 
+::: {#map-nottingham-burglary-risk}
+
 ```{r}
 #| label: script-13a-map
+#| lst-label: lst-mapping-hotspots-script-13a-map
+#| lst-cap: ""
 #| filename: "chapter_13a.R"
 #| fig-asp: 1
 #| out-width: "100%"
@@ -482,6 +512,8 @@ hotspot_map(
   )
 ```
 
+:::
+
 
 Save `chapter_13a.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}.
 
@@ -492,6 +524,9 @@ Keep the script in the `R` folder, the original downloads in `data/raw` and the 
 Your complete `chapter_13a.R` dual-KDE script should now look like this:
 
 ```{r}
+#| label: show-chapter-13a-script
+#| lst-label: lst-mapping-hotspots-show-chapter-13a-script
+#| lst-cap: ""
 #| file: "../R/chapter_13a.R"
 #| eval: false
 #| filename: "chapter_13a.R"
@@ -539,8 +574,10 @@ dual_kde_quiz2 <- c(
 We have explored how to produce a better map of the density of crime in different areas. But how do we know which areas count as hotspots and which don't?
 
 
-Each of the 16 density maps below shows density estimates based on 1,000 points placed completely at random on 16 different maps. There are no real patterns in the data except for statistical noise. Nevertheless, the KDE process makes it appear that there are patterns in the data.
+Each of the 16 density maps in @map-random-points-kde-patterns shows density estimates based on 1,000 points placed completely at random on 16 different maps. There are no real patterns in the data except for statistical noise. Nevertheless, the KDE process makes it appear that there are patterns in the data.
 
+
+::: {#map-random-points-kde-patterns}
 
 ```{r}
 #| label: random-map
@@ -569,6 +606,8 @@ tibble(
   theme(strip.text = element_blank())
 ```
 
+:::
+
 
 This is a problem because we might end up responding to an apparent problem that is nothing but an artefact of the random variation that we expect to see in many processes, including crime.
 
@@ -590,6 +629,8 @@ Add this code to the new script file and run it.
 
 ```{r}
 #| label: script-13b-hotspots
+#| lst-label: lst-mapping-hotspots-script-13b-hotspots
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_13b.R"
 
@@ -632,6 +673,7 @@ robbery_gistar <- robbery |>
 ```
 
 ```{r}
+#| label: load-nottingham-robbery-data
 #| echo: false
 
 # Prepare ----------------------------------------------------------------------
@@ -674,6 +716,9 @@ Instead of using `head()` to view the first few rows of the object we have just 
 
 
 ```{r}
+#| label: slice-sample-robbery-gistar-n-10
+#| lst-label: lst-mapping-hotspots-slice-sample-robbery-gistar-n-10
+#| lst-cap: ""
 #| filename: "R Console"
 
 slice_sample(robbery_gistar, n = 10)
@@ -701,8 +746,12 @@ By default, if we apply the function `hotspot_map()` to a result produced by `ho
 
 Add this complete map code to `chapter_13b.R` and run it to see what the significant robbery hotspots look like:
 
+::: {#map-nottingham-significant-robbery-hotspots}
+
 ```{r}
 #| label: script-13b-map
+#| lst-label: lst-mapping-hotspots-script-13b-map
+#| lst-cap: ""
 #| filename: "chapter_13b.R"
 #| fig-asp: 1.4
 #| out-width: "100%"
@@ -724,11 +773,16 @@ hotspot_map(
   labs(title = "Nottingham robbery hotspots")
 ```
 
+:::
+
 This map could be useful for police officers deciding where to conduct anti-robbery patrols, because it not only shows the areas with the highest density of robberies but only shows those areas if there are more robberies than we would expect by chance. This makes it more likely that officers won't waste time chasing apparent patterns that are actually the result of random variation.
 
 Save `chapter_13b.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your complete `chapter_13b.R` Gi\* script should now look like this:
 
 ```{r}
+#| label: show-chapter-13b-script
+#| lst-label: lst-mapping-hotspots-show-chapter-13b-script
+#| lst-cap: ""
 #| file: "../R/chapter_13b.R"
 #| eval: false
 #| filename: "chapter_13b.R"
@@ -736,7 +790,10 @@ Save `chapter_13b.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your 
 
 Running the complete script produces this map:
 
+::: {#map-nottingham-significant-robbery-hotspots-complete}
+
 ```{r}
+#| label: draw-nottingham-significant-robbery-hotspots-complete
 #| echo: false
 #| fig-asp: 1
 #| out-width: "100%"
@@ -745,6 +802,8 @@ Running the complete script produces this map:
 
 source(here("R", "chapter_13b.R"))
 ```
+
+:::
 
 ::: {.callout-quiz .callout title="Gi*"}
 
@@ -788,12 +847,17 @@ Gi* maps are a useful way to show where there is more of a particular type of cr
 DBSCAN identifies clusters of crimes based on their spatial proximity to each other, finding places where crimes are more closely clustered together in space than a cut-off value that we specify. For example, this map shows the top clusters of robbery in Nottingham in 2020:
 
 
+::: {#map-nottingham-robbery-dbscan-introduction}
+
 ```{r}
+#| fig-alt: "Robbery clusters in Nottingham in 2020, outlined in red and labelled with the proportion of robberies in each cluster."
 #| label: dbscan-robbery-map
 #| file: "../R/chapter_13c.R"
 #| echo: false
 #| out-width: "100%"
 ```
+
+:::
 
 
 We can use the `hotspot_dbscan()` function from the sfhotspot package to identify clusters using DBSCAN in R. In a similar way to how the results produced by `hotspot_kde()` are influenced by the choice of bandwidth and cell size (see @sec-kde), the results produced by `hotspot_dbscan()` are influenced by two values (known as _parameters_) that we specify.
@@ -806,7 +870,10 @@ Whether the automatically chosen value is reasonable depends on the type of crim
 
 These maps show the results produced by applying `hotspot_dbscan()` to the same Nottingham robbery data we used above. All that changes is each time is the value of `min_pts`. You can see that the number and size of the clusters produced varies quite substantially.
 
+::: {#map-nottingham-dbscan-minimum-points}
+
 ```{r}
+#| fig-alt: "Three maps compare robbery clusters in Nottingham using different minimum point counts. Cluster outlines and rank labels show how the clusters change as the threshold increases."
 #| label: dbscan-minpts
 #| echo: false
 #| out-width: "100%"
@@ -843,6 +910,8 @@ c(5, 10, 20) |>
   theme_void()
 ```
 
+:::
+
 
 You can see from this map that the clusters produced by DBSCAN don't necessarily include all the points in the input data. The points that are outside the identified clusters are those that are not sufficiently close together to be part of a cluster. You can also see that the clusters produced by DBSCAN can sometimes overlap.
 
@@ -851,7 +920,10 @@ The second parameter that affects the results produced by `hotspot_dbscan()` is 
 You can see the effect of varying the `density_adjust` argument on the results shown in these maps:
 
 
+::: {#map-nottingham-dbscan-density-thresholds}
+
 ```{r}
+#| fig-alt: "Three maps compare robbery clusters in Nottingham using different density-adjustment thresholds. Higher thresholds identify smaller areas with more concentrated robberies."
 #| label: dbscan-densityadjust
 #| echo: false
 #| out-width: "100%"
@@ -891,6 +963,8 @@ c(1, 2, 4) |>
   theme_void()
 ```
 
+:::
+
 
 Higher values of `density_adjust` produce physically smaller hotspots that have higher densities of crime but collectively contain a smaller proportion of all crimes. It's important to note that the objective in clustering crime is rarely to produce clusters that jointly cover all the crimes in a dataset. In most applications of crime analysis, what matters more is producing clusters that show where interventions against crime are likely to achieve the most benefit while keeping the required effort manageable within the available resources. 
 
@@ -900,6 +974,8 @@ Now that we have explored how to control the DBSCAN algorithm, let's create a DB
 
 ```{r}
 #| label: script-13c-prepare
+#| lst-label: lst-mapping-hotspots-script-13c-prepare
+#| lst-cap: ""
 #| filename: "chapter_13c.R"
 #| eval: false
 
@@ -933,6 +1009,8 @@ robbery <- here("data", "raw", "nottingham_robbery.csv.gz") |>
 
 ```{r}
 #| label: script-13c-initial-clusters
+#| lst-label: lst-mapping-hotspots-script-13c-initial-clusters
+#| lst-cap: ""
 #| filename: "chapter_13c.R"
 
 # FIND CLUSTERS ----------------------------------------------------------------
@@ -943,28 +1021,41 @@ robbery_dbscan <- hotspot_dbscan(robbery)
 
 You can see that `hotspot_dbscan()` tells us the values of `min_pts` and `eps` that it has chosen automatically. Let's use `hotspot_map()` to produce a quick map of the clusters that have been identified.
 
+::: {#map-nottingham-robbery-clusters-default}
+
 ```{r}
+#| fig-alt: "A map of Nottingham showing robbery clusters identified with the default DBSCAN settings. Shading represents the number of robberies in each cluster."
+#| label: draw-nottingham-robbery-clusters-default
+#| lst-label: lst-mapping-hotspots-draw-nottingham-robbery-clusters-default
+#| lst-cap: ""
 #| filename: "R Console"
 
 hotspot_map(robbery_dbscan, basemap_type = "cartolight")
 ```
 
+:::
+
 You can see from this map that by default, `hotspot_dbscan()` has identified `r nrow(robbery_dbscan)` clusters. Let's inspect the `robbery_dbscan` object in the R Console:
 
 
 ```{r}
+#| label: inspect-robbery-clusters
+#| lst-label: lst-mapping-hotspots-inspect-robbery-clusters
+#| lst-cap: ""
 #| filename: "R Console"
 robbery_dbscan
 ```
 
 The `rank` column in the `robbery_dbscan` object shows the rank of each cluster, with the cluster containing the most robberies ranked 1, the cluster containing the second most robberies ranked 2, and so on. The `n` column shows the number of robberies in each cluster, while the `prop` column shows the proportion of all robberies in Nottingham in 2020 that are contained in each cluster. 
 
-You can see from the `prop` column that `r scales::percent(pluck(robbery_dbscan, "prop", 1), accuracy = 0.1)` of all robberies in Nottingham in 2020 have been included in the cluster with rank 1. You can also see from the map above that that cluster covers quite a large section of the city. That's probably not very useful for police officers trying to decide where to patrol, or local officials deciding whether to focus crime-prevention initiatives. It will probably be more useful to identify smaller clusters that contain the the very highest densities of robbery, even if those clusters cover a smaller proportion of all robberies. To do that, we can increase the value of `density_adjust` to 5, which will identify clusters that are at least five times as dense as the typical local density of robberies in Nottingham in 2020.
+You can see from the `prop` column that `r scales::percent(pluck(robbery_dbscan, "prop", 1), accuracy = 0.1)` of all robberies in Nottingham in 2020 have been included in the cluster with rank 1. You can also see from @map-nottingham-robbery-clusters-default that that cluster covers quite a large section of the city. That's probably not very useful for police officers trying to decide where to patrol, or local officials deciding whether to focus crime-prevention initiatives. It will probably be more useful to identify smaller clusters that contain the the very highest densities of robbery, even if those clusters cover a smaller proportion of all robberies. To do that, we can increase the value of `density_adjust` to 5, which will identify clusters that are at least five times as dense as the typical local density of robberies in Nottingham in 2020.
 
 Change the existing code that creates the `robbery_dbscan` object in `chapter_13c.R` to the following and run it:
 
 ```{r}
 #| label: script-13c-final-clusters
+#| lst-label: lst-mapping-hotspots-script-13c-final-clusters
+#| lst-cap: ""
 #| filename: "chapter_13c.R"
 
 # Find clusters using DBSCAN
@@ -974,15 +1065,23 @@ robbery_dbscan <- hotspot_dbscan(robbery, density_adjust = 5)
 
 If we now inspect this object in the R Console, we'll see it contains `r nrow(robbery_dbscan)` clusters and the highest-ranked cluster contains `r scales::percent(pluck(robbery_dbscan, "prop", 1), accuracy = 0.1)` of all the robberies. Let's plot that quickly using `hotspot_map()`:
 
+::: {#map-nottingham-robbery-clusters-higher-density}
+
 ```{r}
+#| fig-alt: "A map of Nottingham showing smaller robbery clusters identified using a density-adjustment threshold of five times the typical local density."
+#| label: draw-nottingham-robbery-clusters-higher-density
+#| lst-label: lst-mapping-hotspots-draw-nottingham-robbery-clusters-higher-density
+#| lst-cap: ""
 #| filename: "R Console"
 
 hotspot_map(robbery_dbscan, basemap_type = "cartolight")
 ```
 
+:::
+
 This time, we can see that the clusters cover a smaller area of the city, and tell us that any efforts to prevent robbery should be concentrated in the city centre.
 
-There are several different ways we can represent DBSCAN clusters on a map. One option (which is what `hotspot_map()` does on the map above) is to shade each cluster according to how many crimes it contains. Another option (shown earlier in the maps that illustrate the effect of varying `min_pts` and `density_adjust`) is to show the outline of each cluster and label it, for example with the cluster rank (where the cluster with containing the most crimes is ranked 1, the cluster with the second most crimes is ranked 2, and so on).
+There are several different ways we can represent DBSCAN clusters on a map. One option (which is what `hotspot_map()` does in @map-nottingham-robbery-clusters-higher-density) is to shade each cluster according to how many crimes it contains. Another option (shown earlier in the maps that illustrate the effect of varying `min_pts` and `density_adjust`) is to show the outline of each cluster and label it, for example with the cluster rank (where the cluster with containing the most crimes is ranked 1, the cluster with the second most crimes is ranked 2, and so on).
 
 This code produces a map that shows the outline of each cluster and the proportion of all robberies in Nottingham in 2020 that are contained within it. In particular, we use: 
 
@@ -992,8 +1091,13 @@ This code produces a map that shows the outline of each cluster and the proporti
 Add this code to `chapter_13c.R` and run it:
 
 
+::: {#map-nottingham-robbery-cluster-proportions}
+
 ```{r}
+#| fig-alt: "A map of Nottingham robbery clusters outlined in red and labelled with the proportion of recorded robberies in each cluster."
 #| label: script-13c-map
+#| lst-label: lst-mapping-hotspots-script-13c-map
+#| lst-cap: ""
 #| filename: "chapter_13c.R"
 
 # PLOT MAP ---------------------------------------------------------------------
@@ -1015,12 +1119,17 @@ hotspot_map(
   )
 ```
 
+:::
+
 
 It's also possible to vary how the outline of each cluster is represented. The underlying DBSCAN algorithm assigns points to clusters, but it doesn't produce the polygons returned by `hotspot_dbscan()`. Instead, by default `hotspot_dbscan()` returns polygons that indicate the _concave hull_ of all the points in each cluster. You might remember we learned about _convex_ hulls in @sec-clipping-map-layers. A concave hull is similar to a convex hull, but it can be more irregular in shape and can follow the outline of the points in a cluster more closely. How closely the outline follows the points depends on another argument to `hotspot_dbscan()` called `hull_ratio`. The default value is `hull_ratio = 0.75`, which means the concave hull will follow the outline of the points in a cluster moderately closely. If you set `hull_ratio = 1`, the concave hull will be the same as the convex hull, which (depending on the arrangement of the points) is sometimes a much larger (but simpler) shape that doesn't follow the outline of the points in a cluster as closely. Most of the time you will probably not vary `hull_ratio`, but it's important to remember that the outline of the polygons returned by `hotspot_dbscan()` is not necessarily a precise representation of the outline of the points in a cluster. This is often a good thing, since crimes in future probably won't occur at exactly the same locations as crimes in the past, so a more generalised outline of a cluster is often more useful than a precise outline. But it also means that you shouldn't read too much into whether (for example) a particular location falls just inside or just outside the outline of a cluster.
 
 Save `chapter_13c.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your complete `chapter_13c.R` DBSCAN script should now look like this:
 
 ```{r}
+#| label: show-chapter-13c-script
+#| lst-label: lst-mapping-hotspots-show-chapter-13c-script
+#| lst-cap: ""
 #| file: "../R/chapter_13c.R"
 #| eval: false
 #| filename: "chapter_13c.R"
@@ -1028,14 +1137,21 @@ Save `chapter_13c.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your 
 
 Running the complete script produces this map:
 
+::: {#map-nottingham-robbery-concave-hulls}
+
 ```{r}
+#| label: display-robbery-concave-hulls
 #| filename: "chapter_13c.R"
 #| echo: false
 #| fig-asp: 1
 #| out-width: "100%"
 #| message: false
 #| fig-alt: "A map of central Nottingham clusters of areas with high densities of robbery are identified. The clusters are outlined in red and labelled with the proportion of all robberies in Nottingham in 2020 that are contained within each cluster"
+ggplot2::last_plot()
+
 ```
+
+:::
 
 {{< include /include/_check-reproducibility.qmd >}}
 
@@ -1098,6 +1214,8 @@ Next, we should add the code needed to identify clusters of robbery using DBSCAN
 
 ```{r}
 #| label: script-13d-clusters
+#| lst-label: lst-mapping-hotspots-script-13d-clusters
+#| lst-cap: ""
 #| filename: "chapter_13d.R"
 
 # Find clusters using DBSCAN
@@ -1110,8 +1228,13 @@ We now need to create a map that has two hotspot layers, one on top of the other
 Add this code to your new file and run it:
 
 
+::: {#map-nottingham-significant-robbery-clusters}
+
 ```{r}
+#| fig-alt: "A map of significant robbery clusters in Nottingham. Red outlines and percentage labels identify clusters, with ward boundaries drawn in grey."
 #| label: script-13d-map
+#| lst-label: lst-mapping-hotspots-script-13d-map
+#| lst-cap: ""
 #| filename: "chapter_13d.R"
 #| fig-asp: 1.4
 #| out-width: "100%"
@@ -1140,11 +1263,16 @@ hotspot_map(
   labs(title = "Nottingham robbery hotspots")
 ```
 
+:::
+
 You can see that this map combines different techniques -- KDE, Gi* and DBSCAN -- to help people understand patterns of robbery in this city. 
 
 Save `chapter_13d.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your complete `chapter_13d.R` script should now look like this:
 
 ```{r}
+#| label: show-chapter-13d-script
+#| lst-label: lst-mapping-hotspots-show-chapter-13d-script
+#| lst-cap: ""
 #| file: "../R/chapter_13d.R"
 #| eval: false
 #| filename: "chapter_13d.R"

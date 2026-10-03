@@ -226,17 +226,29 @@ ggsave(
 ```
 
 
+::: {#fig-chicago-seasonal-variation}
+
 <p class="full-width-image"><img src="../images/chicago_seasonal_variation.png" alt="Chart showing that assaults, personal robberies and residential burglaries in Chicago varied seasonally between 2010 and 2019."></p>
+
+:::
 
 It is also important to understand short-term variation in crime. For example, between 2010 and 2019, both property damage and sexual violence in Chicago peaked at weekends, while there were fewer shoplifting offences on Sundays when some shops were closed or had shorter opening hours.
 
+::: {#fig-chicago-weekly-variation}
+
 <p class="full-width-image"><img src="../images/chicago_weekly_variation.png" alt="Chart showing that property damage, sexual violence and shoplifting in Chicago varied by day of the week between 2010 and 2019."></p>
+
+:::
 
 Understanding variation in crime over time is important because we can use the temporal concentration of crime to focus efforts to respond to crime most effectively. For example, imagine we wanted to deploy police patrols to a hotspot to respond to a particular crime problem. Such patrols could be very effective if they were targeted at the times when crimes were most likely to happen or completely useless if the officers were deployed at the wrong day or the wrong time.
 
 In this chapter we will learn how to incorporate variation over time into our analysis of where crime happens, including making animated maps like this one:
 
+::: {#map-chicago-hourly-assault-animation}
+
 <p class="centered-image"><img src="../images/chicago_downtown_agg_assaults.gif" alt="Animated map showing how the density of aggravated assaults in Chicago varied throughout the hours of the day between 2010 and 2019."></p>
+
+:::
 
 
 ::: {.callout-quiz .callout title="Analysing temporal variation in crime"}
@@ -334,6 +346,8 @@ We could use the three columns `year`, `month_of_year` and `day_of_month` to cre
 
 ```{r}
 #| label: make-date-example
+#| lst-label: lst-mapping-time-make-date-example
+#| lst-cap: ""
 #| filename: "Hypothetical code"
 
 thefts |>
@@ -348,6 +362,8 @@ Once we have converted dates stored as text to dates stored as dates, R understa
 
 ```{r}
 #| label: compare-identical-date-text
+#| lst-label: lst-mapping-time-compare-identical-date-text
+#| lst-cap: ""
 #| filename: "R Console"
 
 # This code returns TRUE only because the two pieces of text are identical
@@ -356,6 +372,8 @@ Once we have converted dates stored as text to dates stored as dates, R understa
 
 ```{r}
 #| label: compare-different-date-text
+#| lst-label: lst-mapping-time-compare-different-date-text
+#| lst-cap: ""
 #| filename: "R Console"
 
 # This code returns FALSE because the two pieces of text are different, even
@@ -365,6 +383,8 @@ Once we have converted dates stored as text to dates stored as dates, R understa
 
 ```{r}
 #| label: compare-parsed-dates
+#| lst-label: lst-mapping-time-compare-parsed-dates
+#| lst-cap: ""
 #| filename: "R Console"
 
 # This code returns TRUE because R knows they are dates and so compares them as
@@ -373,13 +393,15 @@ dmy("Sat 17 January 1981") == mdy("01/17/81")
 ```
 
 
-### Working with dates
+### Working with dates {#sec-mapping-time-working-with-dates}
 
 When analysing dates and times, it is often useful to be able to extract date or time portions. We can do this with the lubridate functions `year()`, `month()`, `wday()` (for day of the week), `mday()` (for day of the month), `yday()` (for day of the year, counting from 1 January), `hour()`, `minute()` and `second()`, each of which extracts the relevant portion of a date or time as a number. The `month()` and `wday()` functions are slightly different, because they can also return the day or month name as text by specifying the argument `label = TRUE`. We can see this by extracting the different portions of the current date and time, which we can retrieve with the `now()` function from lubridate.
 
 
 ```{r}
 #| label: extract-date-components-code
+#| lst-label: lst-mapping-time-extract-date-components-code
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -428,6 +450,8 @@ To subtract 28 days from today's date (which we can retrieve with the `today()` 
 
 ```{r}
 #| label: subtract-days-example
+#| lst-label: lst-mapping-time-subtract-days-example
+#| lst-cap: ""
 #| filename: "R Console"
 
 message(str_glue("Today is {today()} and 28 days ago was {today() - days(28)}"))
@@ -437,6 +461,8 @@ Adding or subtracting periods from dates can be very useful when combined with t
 
 ```{r}
 #| label: filter-recent-dates-example
+#| lst-label: lst-mapping-time-filter-recent-dates-example
+#| lst-cap: ""
 #| eval: false
 #| filename: "Hypothetical code"
 
@@ -468,6 +494,8 @@ When filtering based on dates or times, it is important to understand that R can
 
 ```{r}
 #| label: between-dates-risky-example
+#| lst-label: lst-mapping-time-between-dates-risky-example
+#| lst-cap: ""
 #| eval: false
 #| filename: "Hypothetical code"
 
@@ -480,6 +508,8 @@ to extract all the crimes that occurred in January 2021, that would work as we e
 
 ```{r}
 #| label: between-datetimes-expanded-example
+#| lst-label: lst-mapping-time-between-datetimes-expanded-example
+#| lst-cap: ""
 #| eval: false
 #| filename: "Hypothetical code"
 
@@ -491,6 +521,8 @@ which would exclude any crimes that occurred on 31 January (except those occurri
 
 ```{r}
 #| label: between-datetimes-complete-day-example
+#| lst-label: lst-mapping-time-between-datetimes-complete-day-example
+#| lst-cap: ""
 #| eval: false
 #| filename: "Hypothetical code"
 
@@ -503,6 +535,8 @@ or
 
 ```{r}
 #| label: between-converted-dates-example
+#| lst-label: lst-mapping-time-between-converted-dates-example
+#| lst-cap: ""
 #| eval: false
 #| filename: "Hypothetical code"
 
@@ -557,7 +591,11 @@ dates_quiz2 <- c(
 One common task in crime analysis is to show how crime changes over time. The simplest way to do this is to produce a *time-series chart*. For example, we can see how the frequency of aggravated assaults recorded by police in Chicago has changed over time:
 
 
+::: {#fig-chicago-assault-trend}
+
 <p class="full-width-image"><img src="../images/chicago_assault_trend.png" alt="Chart showing weekly aggravated assaults in Chicago from 2010 to 2019, including seasonal increases each summer and fewer assaults from 2013 to 2015."></p>
+
+:::
 
 
 In this section we will learn how to construct a time-series chart like this. To get started, create a new file called `chapter_15a.R` in the `R` folder of your `crime_mapping` workspace. This file will contain code to download and prepare the datasets we will use in this chapter. Now add this code, which downloads the original datasets into `data/raw`, loads the local copies and prepares them for analysis by transforming the data to use an appropriate local coordinate reference system (as we learned in @sec-choosing-projected-crs) and by filtering the data to contain only the police districts we are interested in.
@@ -566,6 +604,8 @@ In this section we will learn how to construct a time-series chart like this. To
 
 ```{r}
 #| label: prepare-chicago-data-code
+#| lst-label: lst-mapping-time-prepare-chicago-data-code
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_15a.R"
 
@@ -644,7 +684,7 @@ cpd_central <- filter(cpd_districts, name %in% c("1", "12", "18"))
 ```
 
 
-The first task in charting the frequency of crime is to choose a temporal *unit of analysis*. For example, the chart above counts the number of crimes each *week*. Weeks are often a good choice as units for counting crimes, since all weeks are the same length and because many human activities have a weekly cycle (e.g. people do different things at weekends than on weekdays, even though which days count as weekdays differs across cultures).
+The first task in charting the frequency of crime is to choose a temporal *unit of analysis*. For example, @fig-chicago-assault-trend counts the number of crimes each *week*. Weeks are often a good choice as units for counting crimes, since all weeks are the same length and because many human activities have a weekly cycle (e.g. people do different things at weekends than on weekdays, even though which days count as weekdays differs across cultures).
 
 
 ::: {.callout-important title="Months are usually a bad choice of temporal unit of analysis"}
@@ -663,6 +703,8 @@ One complication of counting incidents by week is that our data might not fit ne
 
 ```{r}
 #| label: count-weekly-assaults
+#| lst-label: lst-mapping-time-count-weekly-assaults
+#| lst-cap: ""
 #| filename: "chapter_15a.R"
 
 # SHOW CHANGE OVER TIME --------------------------------------------------------
@@ -682,6 +724,8 @@ assault_weekly_counts <- assaults |>
 
 ```{r}
 #| label: preview-weekly-assault-counts
+#| lst-label: lst-mapping-time-preview-weekly-assault-counts
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(assault_weekly_counts)
@@ -693,6 +737,8 @@ Now we have weekly counts of aggravated assaults, we can plot them on a chart. A
 
 ```{r}
 #| label: fig-weekly-assaults-chart-ggauto
+#| lst-label: lst-mapping-time-weekly-assaults-chart-ggauto
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-cap: ""
 #| fig-alt: "Time-series chart of weekly aggravated-assault counts in Chicago between 2010 and 2019, showing a downward trend until 2014, seasonal peaks and substantial week-to-week variation."
@@ -703,7 +749,7 @@ assault_weekly_counts |> ggauto::ggauto(week_date, count)
 This chart already tells us quite a lot about how the frequency of assaults in Chicago has changed over time. For example, we can see a downward trend in assaults from 2010 to 2014, after which the frequency seems to have gone up somewhat. More obviously, we can see that there is strong seasonality in the frequency of assaults, with assaults peaking in the summer months and falling in the winter months. Finally, we can see there is a lot of short-term variation in the frequency of assaults, with the number of assaults varying substantially from one week to the next.
 
 
-### Signal versus noise in temporal data
+### Signal versus noise in temporal data {#sec-mapping-time-signal-versus-noise-in-temporal-data}
 
 One issue created by the short-term variation in assaults visible in @fig-weekly-assaults-chart-ggauto is that it can be hard to see the longer-term trends in the data. While this week-to-week short-term variation is real, we often refer to this type of short-term variation as *noise* because it can obscure the *signal* of longer-term trends. This terminology originally came to statistics -- and therefore crime analysis -- from radio engineering, but has become common over time.
 
@@ -711,7 +757,8 @@ The key decision in making a time-series chart is usually choosing the balance b
 
 
 ```{r}
-#| label: hourly-assault-noise-chart
+#| label: fig-mapping-time-hourly-assault-noise-chart
+#| fig-cap: ""
 #| echo: false
 #| fig-asp: 0.6
 #| fig-alt: "Scatter plot of hourly aggravated-assault counts in Chicago between 2010 and 2019, with dense variation making the long-term trend difficult to see."
@@ -747,7 +794,8 @@ On the other hand, if we removed too much noise, for example by only plotting an
 
 
 ```{r}
-#| label: annual-assault-count-chart
+#| label: fig-mapping-time-annual-assault-count-chart
+#| fig-cap: ""
 #| echo: false
 #| fig-asp: 0.6
 #| fig-alt: "Bar chart of annual aggravated-assault counts in Chicago between 2010 and 2019, showing the broad long-term trend but hiding seasonal and weekly variation."
@@ -775,7 +823,7 @@ Striking the balance between removing noise while retaining information is one o
 
 
 
-### Adding a moving average
+### Adding a moving average {#sec-mapping-time-adding-a-moving-average}
 
 One way to reduce the visual impact of noisy short-term variation on our chart is by adding a line showing a *moving average* (also called a *rolling average* or *rolling mean*) of the count of crime over time. A moving average is the average (or mean) of the count of crimes in the current week and a given number of adjacent (in this case, previous) weeks.
 
@@ -784,7 +832,10 @@ To add a moving average to our time-series chart, we need to move from using `gg
 Run this code in the R Console. Make sure you understand (using the notes below the chart) why we are using `aes()` here in two different ways.
 
 ```{r}
-#| label: weekly-assault-points-chart
+#| label: fig-mapping-time-weekly-assault-points-chart
+#| fig-cap: ""
+#| lst-label: lst-mapping-time-weekly-assault-points-chart
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-alt: "Time-series chart showing weekly aggravated-assault counts in Chicago between 2010 and 2019 as grey points."
 
@@ -906,7 +957,11 @@ ggsave(
 ```
 
 
+::: {#fig-moving-average-windows}
+
 <p class="full-width-image"><img src="../images/moving_averages.png" alt="Chart showing that moving averages are calculated by averaging the current week's count with the counts from a given number of previous weeks."></p>
+
+:::
 
 
 Since moving averages show the average count of crime over several weeks, they are less influenced by week-to-week variation. To calculate a moving average we have to choose how many weeks to include (known as the *window* of the moving average). The more weeks we include in the window, the smoother the values will appear from week to week and the more short-term variation will be obscured. There is a balance to be struck between making longer-term trends clear and obscuring genuine short-term variation, so you should experiment with different window lengths to ensure you are not over-smoothing.
@@ -920,7 +975,10 @@ Add this code to the `chapter_15a.R` file and run it. You can see we are also ad
 
 
 ```{r}
-#| label: plot-assault-moving-average
+#| label: fig-mapping-time-plot-assault-moving-average
+#| fig-cap: ""
+#| lst-label: lst-mapping-time-plot-assault-moving-average
+#| lst-cap: ""
 #| filename: "chapter_15a.R"
 #| fig-alt: "Chart of weekly aggravated-assault counts in Chicago between 2010 and 2019, with points showing weekly counts and a line showing a four-week moving average."
 
@@ -958,7 +1016,7 @@ assault_weekly_counts |>
 2. `scale_y_continuous()` controls the appearance of the vertical (y) axis on the chart. The `limits = c(0, NA)` argument specifies that we want the y axis to start at zero, and (by specifying `NA`) to finish at the maximum value in the data. The `expand = c(0, 0)` argument specifies that we want to remove the default extra space that ggplot2 adds at the ends of the axis. The `position = "right"` argument specifies that we want the y axis to be shown on the right-hand side of the chart rather than on the left-hand side, which is ggplot2's default. We put the y-axis on the right-hand side because the most-recent values in a time-series chart (which are on the right-hand end of the time series) are normally of most interest.
 
 You can experiment with the effect of setting a longer or shorter window for the moving average by specifying larger or smaller values of the `.before` argument to `slide_dbl()`. For example, create an eight-week moving average by specifying
-`.before = 7`. What would happen to the apparent seasonal variation in the number of assaults (visible in the chart above) if you create a *52-week moving average* by specifying `.before = 51`?
+`.before = 7`. What would happen to the apparent seasonal variation in the number of assaults (visible in @fig-mapping-time-plot-assault-moving-average) if you create a *52-week moving average* by specifying `.before = 51`?
 
 
 ::: {.callout-tip collapse="true" title="Why does this `ggplot()` stack have three calls to `aes()`?"}
@@ -979,7 +1037,10 @@ Run this code in the R Console. Note that since there is quite a lot of noise in
 
 
 ```{r}
-#| label: initial-seasonal-assault-chart
+#| label: fig-mapping-time-initial-seasonal-assault-chart
+#| fig-cap: ""
+#| lst-label: lst-mapping-time-initial-seasonal-assault-chart
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-alt: "Line chart showing eight-week moving averages of weekly aggravated-assault counts between 2010 and 2019, with a separate colour for each year."
 
@@ -1023,7 +1084,10 @@ Add this code to the end of your R script file and run it.
 
 
 ```{r}
-#| label: plot-seasonal-assault-chart
+#| label: fig-mapping-time-plot-seasonal-assault-chart
+#| fig-cap: ""
+#| lst-label: lst-mapping-time-plot-seasonal-assault-chart
+#| lst-cap: ""
 #| filename: "chapter_15a.R"
 #| fig-alt: "Seasonal chart superimposing eight-week moving averages of weekly aggravated-assault counts for each year from 2010 to 2019, showing a recurring summer peak and winter trough."
 
@@ -1078,6 +1142,8 @@ We can do this in a single piece of code. Add this R code to the end of the R sc
 
 ```{r}
 #| label: count-hourly-assaults
+#| lst-label: lst-mapping-time-count-hourly-assaults
+#| lst-cap: ""
 #| filename: "chapter_15a.R"
 
 # Create counts of assaults by hours of the day and week
@@ -1098,6 +1164,8 @@ We can now create a chart with appropriate labels on the horizontal axis and a s
 
 ```{r}
 #| label: fig-hourly-assault-chart
+#| lst-label: lst-mapping-time-hourly-assault-chart
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-cap: ""
 #| fig-alt: "Line chart comparing hourly aggravated-assault totals for each day of the week in Chicago between 2010 and 2019."
@@ -1136,7 +1204,10 @@ We can convert @fig-hourly-assault-chart into a small-multiple chart by splittin
 Add this code to the `chapter_15a.R` file and run it.
 
 ```{r}
-#| label: plot-faceted-hourly-assault-chart
+#| label: fig-mapping-time-plot-faceted-hourly-assault-chart
+#| fig-cap: ""
+#| lst-label: lst-mapping-time-plot-faceted-hourly-assault-chart
+#| lst-cap: ""
 #| filename: "chapter_15a.R"
 #| fig-asp: 1
 #| fig-alt: "Two-panel line chart comparing hourly aggravated-assault totals by day of the week, with weekdays in one panel and Saturday and Sunday in the other."
@@ -1239,6 +1310,8 @@ Add this code to the end of your R script file, starting a new section for mappi
 
 ```{r}
 #| label: prepare-assaults-by-shift
+#| lst-label: lst-mapping-time-prepare-assaults-by-shift
+#| lst-cap: ""
 #| filename: "chapter_15a.R"
 
 # MAP CHANGE OVER TIME ---------------------------------------------------------
@@ -1277,6 +1350,8 @@ There's lots more to learn about the `case_when()` function: you can find out mo
 
 ```{r}
 #| label: preview-assaults-by-shift
+#| lst-label: lst-mapping-time-preview-assaults-by-shift
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(assaults_by_shift)
@@ -1296,6 +1371,8 @@ So this code:
 
 ```{r}
 #| label: group-modify-example
+#| lst-label: lst-mapping-time-group-modify-example
+#| lst-cap: ""
 #| eval: false
 #| filename: "Hypothetical code"
 
@@ -1312,6 +1389,8 @@ To compare the KDE layers accurately, they must all use the same grid. We will c
 
 ```{r}
 #| label: estimate-kde-by-shift
+#| lst-label: lst-mapping-time-estimate-kde-by-shift
+#| lst-cap: ""
 #| cache: true
 #| filename: "chapter_15a.R"
 
@@ -1342,6 +1421,8 @@ We can create our own functions in R by using the `function()` function. For exa
 
 ```{r}
 #| label: named-function-example
+#| lst-label: lst-mapping-time-named-function-example
+#| lst-cap: ""
 #| eval: false
 #| filename: "Hypothetical code"
 
@@ -1358,6 +1439,8 @@ We could include lots of lines of code inside our new function, but in this case
 
 ```{r}
 #| label: one-line-function-example
+#| lst-label: lst-mapping-time-one-line-function-example
+#| lst-cap: ""
 #| eval: false
 #| filename: "Hypothetical code"
 
@@ -1370,6 +1453,8 @@ For a single-line function, modern versions of R allow us to replace `function` 
 
 ```{r}
 #| label: lambda-function-example
+#| lst-label: lst-mapping-time-lambda-function-example
+#| lst-cap: ""
 #| eval: false
 #| filename: "Hypothetical code"
 
@@ -1390,6 +1475,8 @@ If we look at the result produced by this code, we can see that it looks like th
 
 ```{r}
 #| label: preview-kde-by-shift
+#| lst-label: lst-mapping-time-preview-kde-by-shift
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(kde_by_shift)
@@ -1401,8 +1488,12 @@ Now we have a KDE layer for each shift, we can create three maps for the three s
 Normally when we use `hotspot_map()` to create a KDE map, in the background `hotspot_map()` identifies that the object we're trying to map is a KDE layer and automatically sets up the map with that in mind. Unfortunately, that won't work if we pass `kde_by_shift` to `hotspot_map()` because `kde_by_shift` isn't the direct output from `hotspot_kde()`, it's the output from `hotspot_kde()` that's then been passed through `group_modify()`, `ungroup()` and `st_as_sf()`. The information `hotspot_map()` needs to identify a KDE layer is lost along the way, so we will need to specify more arguments in `hotspot_map()` to give it the correct appearance, and add some extra functions to the stack as well. The extra code is explained in the notes immediately below the next chunk of code.
 
 
+::: {#map-chicago-assault-density-by-shift}
+
 ```{r}
 #| label: map-kde-by-shift
+#| lst-label: lst-mapping-time-map-kde-by-shift
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 0.5
 #| fig-alt: "Three maps comparing the density of aggravated assaults in downtown Chicago between 2010 and 2019 during daytime, evening and overnight police shifts."
@@ -1435,6 +1526,8 @@ hotspot_map(
     legend.title = element_text(hjust = 1)
   )
 ```
+
+:::
 1. As we learned in @sec-other-layers, the `aes()` function is used to specify which column in the data should control each of the aesthetics on a map or chart. For KDE objects, normally `hotspot_map()` handles this for us, but in this case we provide the same information manually by specifying `aes()` as the second argument to `hotspot_map()` and setting `fill = kde` to tell R that the `kde` column in the data should control the fill colour of the KDE cells.
 2. The `colour = NA` argument is used to remove the outline around each KDE cell, so that only the fill colour is visible. Again, this is something that `hotspot_map()` does automatically for KDE objects but which we need to specify manually here.
 3. As we learned in @sec-map-colour, the `scale_fill_distiller()` function is used to control the colour scale that represents the KDE values. The `direction = 1` argument means that the colours will be ordered from light to dark, `range(pull(kde_by_shift, kde))` specifies that the legend should have labels corresponding to the minimum and maximum KDE values in the data, and `labels = c("low", "high")` sets the label text.
@@ -1445,8 +1538,12 @@ On this map we can see that some places have a relatively high density of assaul
 Add the following complete code to the end of `chapter_15a.R` and run it.
 
 
+::: {#map-chicago-highest-assault-density-by-shift}
+
 ```{r}
 #| label: map-highest-kde-by-shift
+#| lst-label: lst-mapping-time-map-highest-kde-by-shift
+#| lst-cap: ""
 #| filename: "chapter_15a.R"
 #| fig-asp: 0.5
 #| fig-alt: "Three maps comparing aggravated-assault density in downtown Chicago between 2010 and 2019, with red outlines around the highest-density cells in each police shift."
@@ -1493,6 +1590,8 @@ hotspot_map(
     legend.title = element_text(hjust = 1)
   )
 ```
+
+:::
 
 This map makes it very clear that, between 2010 and 2019, the grid cells with the highest densities of aggravated assaults were very similar in the daytime and evening shifts, in both cases being concentrated in the downtown area known as The Loop. For the overnight shift, however, the cells with the highest densities were on the other side of the Chicago River in the River North neighbourhood. A map like this might be particularly useful if the resources available to respond to a crime problem were very limited and so could only be deployed in the places where the problem was worst -- this is often the case because crime-prevention resources *are* often very limited.
 
@@ -1550,6 +1649,8 @@ Save `chapter_15a.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your 
 
 ```{r}
 #| label: complete-chapter-15a-script
+#| lst-label: lst-mapping-time-complete-chapter-15a-script
+#| lst-cap: ""
 #| file: "../R/chapter_15a.R"
 #| eval: false
 #| filename: "chapter_15a.R"
@@ -1580,6 +1681,8 @@ This code estimates the density of crime in each grid cell 24 times (once for ea
 
 ```{r}
 #| label: prepare-hourly-kde-code
+#| lst-label: lst-mapping-time-prepare-hourly-kde-code
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_15b.R"
 
@@ -1746,6 +1849,8 @@ Add this code to your script file and run it.
 
 ```{r}
 #| label: build-animated-assault-map
+#| lst-label: lst-mapping-time-build-animated-assault-map
+#| lst-cap: ""
 #| cache: true
 #| filename: "chapter_15b.R"
 #| fig-asp: 1
@@ -1783,6 +1888,8 @@ We can save an animated map to a file by using `animate()` together with the `an
 
 ```{r}
 #| label: save-animated-assault-map
+#| lst-label: lst-mapping-time-save-animated-assault-map
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_15b.R"
 
@@ -1850,6 +1957,8 @@ Save `chapter_15b.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your 
 
 ```{r}
 #| label: complete-chapter-15b-script
+#| lst-label: lst-mapping-time-complete-chapter-15b-script
+#| lst-cap: ""
 #| file: "../R/chapter_15b.R"
 #| eval: false
 #| filename: "chapter_15b.R"

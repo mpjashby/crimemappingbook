@@ -45,6 +45,8 @@ ggsave(
 )
 ```
 
+::: {#map-bronx-shootings-introduction}
+
 ```{r}
 #| label: final-map
 #| echo: false
@@ -54,6 +56,8 @@ ggsave(
 
 knitr::include_graphics(here("images", "nyc_shootings_map.jpg"))
 ```
+
+:::
 
 You can see that this map includes contextual elements such as a title, a legend and a scale bar. In this chapter we will learn how to add each of these elements to a map, and (just as importantly) when you shouldn't use them.
 
@@ -387,6 +391,8 @@ The script first downloads the original files into `data/raw`, then loads and pr
 
 ```{r}
 #| label: initial-script
+#| lst-label: lst-map-context-initial-script
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_07.R"
 
@@ -476,8 +482,12 @@ There's quite a lot of code here, so if you want to refresh your memory about so
 
 To view the map in Positron, type the name of the map object into the R Console and press {{< kbd win="Enter" mac="Return" >}} as usual.
 
+::: {#map-bronx-shooting-density-basic}
+
 ```{r}
 #| label: show-basic-map
+#| lst-label: lst-map-context-show-basic-map
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-alt: "A basic density map of shootings recorded in the Bronx in 2019. Darker blue cells show higher estimated density, police-precinct boundaries are outlined and precinct numbers are labelled. Longitude and latitude axes surround the map."
 #| fig-format: jpeg
@@ -485,10 +495,12 @@ To view the map in Positron, type the name of the map object into the R Console 
 shootings_map
 ```
 
+:::
+
 The code used to create this map is very similar to the code we used in one of the previous chapters to make a map of bike theft in Vancouver, although there are a few differences.
 
 
-### Formatting numbers using the scales package
+### Formatting numbers using the scales package {#sec-map-context-formatting-numbers-using-the-scales-package}
 
 <a href="https://scales.r-lib.org" aria-label="Visit the scales package website" class="no-external"><img src="../images/scales.png" class="right-side-image" alt=""></a>
 
@@ -516,6 +528,8 @@ Themes in ggplot2 affect how the supporting elements of a map appear. By support
 There are many different themes that you can add to a `ggplot()` stack. Some of these are built into the ggplot2 package, and some are part of other packages that extend what ggplot2 can do. Some organisations (such as the BBC) have [their own ggplot2 themes](https://github.com/bbc/bbplot) for creating maps and charts that follow their corporate style guide.
 
 Different themes can give maps (and charts) very different appearances, even when they use the same data. For example, these four maps show what happens when different themes are applied to the end of the same `ggplot()` stack:
+
+::: {#map-bronx-shootings-theme-comparison}
 
 ```{r}
 #| label: compare-themes
@@ -567,6 +581,8 @@ patchwork::wrap_plots(
   ncol = 2
 )
 ```
+
+:::
 
 You can see that the differences between `theme_grey()` (the default theme) and `theme_classic()` are quite subtle, but in other cases (such as `theme_wsj()` -- a theme following the house style of the _Wall Street Journal_ newspaper) the differences are quite substantial.
 
@@ -664,6 +680,8 @@ If you want to represent a categorical variable, you should use a categorical co
 
 By default, `scale_fill_distiller()` sets the _lowest_ values to have the darkest colour. This does not work well for density maps, since most people tend to interpret sequential colour schemes as if the palest or least-saturated colours represent the lowest values and the darkest or most-saturated colours represent the highest values. If we design maps that meet that expectation, people will generally find them easier to interpret. Fortunately we can do that by setting the argument `direction = 1`.
 
+::: {#map-bronx-shootings-colour-direction}
+
 ```{r}
 #| label: direction-map
 #| echo: false
@@ -696,10 +714,16 @@ direction_map_pos <- ggplot() +
 direction_map_neg + direction_map_pos
 ```
 
+:::
+
 You can think of all the functions that we can add to `hotspot_map()` as being like a stack of pancakes, with each new function being placed on the top of the stack. To change the colour of our map, we just add `scale_fill_distiller()` to the existing stack. Run this code in the R Console:
+
+::: {#map-bronx-shooting-density-orange}
 
 ```{r}
 #| label: map-exercise8
+#| lst-label: lst-map-context-map-exercise8
+#| lst-cap: ""
 #| exercise: true
 #| fig-alt: "A density map of recorded bicycle thefts in Vancouver using a sequential orange colour scale. Darker cells have higher estimated density."
 #| filename: "R Console"
@@ -709,16 +733,24 @@ shootings_map +
   scale_fill_distiller(palette = "Oranges", direction = 1)
 ```
 
+:::
+
 You'll note that when we add `scale_fill_distiller()` to an existing map created by `hotspot_map()`, R prints a message saying `Scale for fill is already present` because we are replacing the scale automatically chosen by `hotspot_map()` with the scale we have specified. As long as you have deliberately chosen to replace the default scale, it's safe to ignore this message.
 
-You might also notice that the legend on the map above is different, in that the legend now includes raw KDE values. Most of the people viewing crime maps will not be able to interpret raw KDE values, so it's usually better to replace these. We can do this using the `breaks` and `labels` arguments to `scale_fill_distiller()`. The `breaks` argument specifies the values at which we want to place labels on the colour bar, while the `labels` argument specifies what those labels should say. It's important to make sure the number of values we supply to the `breaks` argument is the same as the number of labels we've given to the `labels` argument (otherwise R will produce an error).
+You might also notice that the legend on @map-bronx-shooting-density-orange is different, in that the legend now includes raw KDE values. Most of the people viewing crime maps will not be able to interpret raw KDE values, so it's usually better to replace these. We can do this using the `breaks` and `labels` arguments to `scale_fill_distiller()`. The `breaks` argument specifies the values at which we want to place labels on the colour bar, while the `labels` argument specifies what those labels should say. It's important to make sure the number of values we supply to the `breaks` argument is the same as the number of labels we've given to the `labels` argument (otherwise R will produce an error).
 
 In this case, we want to add two labels ("higher" and "lower"), one at either end of the colour bar. We could look at the `kde` column of the `shootings_kde` object to find the minimum and maximum values, but that would introduce the risk of accidentally entering the wrong values. Instead, we can use `pull()` to extract the `kde` column from the `shootings_kde` object and then use `range()` to find its minimum and maximum values. Putting this together gives `breaks = range(pull(shootings_kde, "kde"))`. Read the code from the inside out: take the `shootings_kde` object, pull out the `kde` column, then calculate the range of values in that column.
 
 Run this code to see how the legend labels change.
 
 
+::: {#map-bronx-shooting-density-legend}
+
 ```{r}
+#| fig-alt: "A density map of recorded shootings in the Bronx in 2019. An orange sequential scale has a legend labelled low and high."
+#| label: draw-bronx-shooting-density-legend
+#| lst-label: lst-map-context-draw-bronx-shooting-density-legend
+#| lst-cap: ""
 # Plot density map
 shootings_map +
   scale_fill_distiller(
@@ -730,6 +762,8 @@ shootings_map +
   )
 ```
 
+:::
+
 Changing the colour scheme of a density map is optional -- if you are happy with the default blue colour scheme, you do not need to change it. However, if you do want to change the colour scheme, it is important that you use one of the colour-blind-friendly sequential palettes, such as those available in `scale_fill_distiller()`.
 
 
@@ -737,7 +771,7 @@ Changing the colour scheme of a density map is optional -- if you are happy with
 
 The most-important layer on a map is always the data layer: the layer that shows the information about crime that we want to communicate. But a data layer on its own is often not that useful unless people using the map can show where in the world the data is located. To help with this, it is often useful to add a _base map_ underneath the data layer, so that we can see where the data layer is located in the real world. For example, if we are mapping crime in a city, it is often useful to have a street map of the city underneath the crime data, so that we can see which streets and neighbourhoods are affected by crime.
 
-`hotspot_map()` automatically adds a base map underneath the data layer we give to it, for example the density layer in the maps above. It also automatically sets the data layer to be semi-transparent, so that users can see the base map underneath the data layer. However, we can customise this base map in various ways.
+`hotspot_map()` automatically adds a base map underneath the data layer we give to it, for example the density layer in @map-bronx-shooting-density-legend. It also automatically sets the data layer to be semi-transparent, so that users can see the base map underneath the data layer. However, we can customise this base map in various ways.
 
 Base maps are composed of tiles, each showing information about a small square on the surface of the Earth. Tiles are available at many different [zoom levels](https://wiki.openstreetmap.org/wiki/Zoom_levels), from level 1 that is useful for mapping the whole world in one map, to level 20 that can be used to map a single building. We can see some of the different zoom levels available by looking at these maps, which show the same area around the UCL Jill Dando Institute with base maps at different zoom levels.
 
@@ -775,6 +809,8 @@ ggsave(
 )
 ```
 
+::: {#map-base-map-zoom-comparison}
+
 ```{r}
 #| label: zoom-map
 #| echo: false
@@ -785,11 +821,13 @@ ggsave(
 knitr::include_graphics(here::here("images/zoom.jpg"))
 ```
 
-Choosing the right zoom level is a matter of balancing the level of detail in the map and the clarity of the image. In the maps above, zoom levels less than 12 tend to have pixelated images because they do not contain enough detail, while zoom levels greater than 13 contain too much detail and so the information is hard to read. But if this map covered a smaller or larger area, a different zoom level might be better. 
+:::
+
+Choosing the right zoom level is a matter of balancing the level of detail in the map and the clarity of the image. In @map-base-map-zoom-comparison, zoom levels less than 12 tend to have pixelated images because they do not contain enough detail, while zoom levels greater than 13 contain too much detail and so the information is hard to read. But if this map covered a smaller or larger area, a different zoom level might be better.
 
 We won't normally need to worry about the zoom level of the base map, since `hotspot_map()` automatically chooses a zoom level that is appropriate for the area covered by the data layer. However, if we wanted to add more detail to the base map we could control the zoom level manually with the `basemap_zoom` argument.
 
-`hotspot_map()` also gives us access to several different _styles_ of base map. The default style (seen in the zoom-level maps above) is called 'osm' because it is the default style used by OpenStreetMap, the organisation that provides the map data. We can specify which style of base map we want using the `basemap_type` argument to `hotspot_map()`.
+`hotspot_map()` also gives us access to several different _styles_ of base map. The default style (seen in @map-base-map-zoom-comparison) is called 'osm' because it is the default style used by OpenStreetMap, the organisation that provides the map data. We can specify which style of base map we want using the `basemap_type` argument to `hotspot_map()`.
 
 ```{r}
 #| label: make-basemaps-map
@@ -831,6 +869,8 @@ ggsave(
 )
 ```
 
+::: {#map-base-map-style-comparison}
+
 ```{r}
 #| label: basemaps-map
 #| echo: false
@@ -840,6 +880,8 @@ ggsave(
 
 knitr::include_graphics(here::here("images/basemaps.jpg"))
 ```
+
+:::
 
 
 One final note about base maps. You might have noticed that when we produce a map with a base map using `hotspot_map()`, some text is added to the bottom of the map saying something like:
@@ -852,7 +894,7 @@ This is called an attribution statement, and it's usually a legal requirement wh
 ::: {.callout-quiz .callout title="Base maps"}
 
 ```{r}
-#| label: base_map_quiz
+#| label: base-map-quiz
 #| echo: false
 
 base_map_quiz1 <- c(
@@ -888,7 +930,7 @@ base_map_quiz3 <- c(
 ## Supporting maps with words {#sec-titles}
 
 
-### Titles
+### Titles {#sec-map-context-titles}
 
 A map title is one of the most important ways to add context to a map. Titles can either be _descriptive_ or _declarative_. Descriptive titles simply state what data are shown on the map. For example, we might give our map the title "Shootings in the Bronx, 2019". Declarative titles, on the other hand, state what you think the main conclusion should be that readers remember about the map. For example, we might use the title "Shootings are focused in the South Bronx".
 
@@ -898,8 +940,12 @@ We can add a title to our map using the `labs()` (short for 'labels') function f
 
 To see how this works, run the following code in the R Console. Since we have stored the rest of the `hotspot_map()` stack in the `shootings_map` object, this code is equivalent to adding `labs()` to the end of the original stack.
 
+::: {#map-bronx-shootings-title}
+
 ```{r}
 #| label: add-title
+#| lst-label: lst-map-context-add-title
+#| lst-cap: ""
 #| filename: "RConsole"
 #| fig-alt: "A density map of shootings recorded in the Bronx with the title Shootings are focused in the South Bronx."
 #| fig-format: jpeg
@@ -909,12 +955,18 @@ shootings_map +
   labs(title = "Shootings are focused in the South Bronx")
 ```
 
+:::
+
 Sometimes our preferred title might be too long to fit on a map. In this case, we can break the title across two or more lines. We can do this manually by adding the characters `\n` (the character code for a new line) at the point where we want the text to start a new line. Alternatively, we can use the `str_wrap()` function from the stringr package to wrap the text automatically into lines of a given maximum length, specified using the `width` argument.
 
 When you use a declarative title for your map, it is often useful to provide a _subtitle_ containing descriptive information. Adding a subtitle is very easy using the `subtitle` argument to the `labs()` function. 
 
+::: {#map-bronx-shootings-subtitle}
+
 ```{r}
 #| label: add-subtitle
+#| lst-label: lst-map-context-add-subtitle
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-alt: "A density map of shootings recorded in the Bronx with a declarative title and a subtitle describing the police-recorded data and year."
 #| fig-format: jpeg
@@ -926,6 +978,8 @@ shootings_map +
     subtitle = "Fatal and non-fatal shootings recorded by NYC Police, 2019"
   )
 ```
+
+:::
 
 
 
@@ -941,6 +995,8 @@ Run this code in the R Console. Note that we're going to store the result in a n
 
 ```{r}
 #| label: add-caption
+#| lst-label: lst-map-context-add-caption
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-alt: "A density map of shootings recorded in the Bronx with a title, subtitle and caption. The caption gives the author, production date, data source and base-map attribution."
 #| fig-format: jpeg
@@ -985,7 +1041,7 @@ The code for the caption also uses the `str_glue()` function from the `stringr` 
 `str_glue()` can also include the values of R objects and the results of R functions that are placed inside braces (`{}`). So the code `{lubridate::today()}` runs the `today()` function from the lubridate package and glues the result (the current date) into the text.
 
 
-### Changing the legend title
+### Changing the legend title {#sec-map-context-changing-the-legend-title}
 
 Legends are important for all but the simplest crime maps because they help readers to interpret the points, lines and polygons used to represent data on a particular map. Except for point maps containing only a small number of crimes (such as the map of homicide in downtown Atlanta that we produced in @sec-first-map), crime maps will almost always need a legend to help users interpret them.
 
@@ -994,7 +1050,7 @@ Producing a legend manually could be quite complicated, but fortunately `hotspot
 We can change the default legend title by once again using the `labs()` function. Since we want to change the title of the legend, you might reasonably think that we would do this using something like `labs(legend = "density")` but unfortunately that code would do nothing at all. Instead, we have to set the legend title using the aesthetic (colour, size, shape, etc.) that the legend represents. This makes it possible to specify multiple titles if there are separate legends for different layers that use different aesthetics. For example if a map used lines of different colours to show streets of different types and filled polygons to show the density of crime, it would be possible to have separate legends explaining each aesthetic. In this case, we've specified that the `kde` column in the data should control the _fill_ aesthetic, so we can set the title for that legend using `fill = "title we want"`. We'll do that in the next map below.
 
 
-### Changing the appearance of titles and captions
+### Changing the appearance of titles and captions {#sec-map-context-changing-the-appearance-of-titles-and-captions}
 
 We have added a title, subtitle and caption to our map, but you might not be happy with their appearance. You might want, for example, to move the caption further down the visual hierarchy by making the text smaller and/or a lighter colour, or add some space between the subtitle and the map itself.
 
@@ -1021,8 +1077,12 @@ To reduce the visual prominence of the map caption, we can change the value of t
 Let's have a look at the effect of changing the caption's appearance using `theme()`:
 
 
+::: {#map-bronx-shootings-source-formatting}
+
 ```{r}
 #| label: format-caption
+#| lst-label: lst-map-context-format-caption
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-alt: "A density map of shootings recorded in the Bronx with its source caption formatted in smaller grey text."
 #| fig-format: jpeg
@@ -1031,6 +1091,8 @@ Let's have a look at the effect of changing the caption's appearance using `them
 shootings_map_captioned +
   theme(plot.caption = element_text(colour = "grey45", size = rel(0.8)))
 ```
+
+:::
 
 
 The helper function `element_text()` has arguments to control the appearance of text in different ways. As well as `colour` (or `color`, either is fine) and `size`:
@@ -1048,6 +1110,8 @@ Now that we have finished setting the text elements for our map, we can save it 
 
 ```{r}
 #| label: store-titled-map
+#| lst-label: lst-map-context-store-titled-map
+#| lst-cap: ""
 #| filename: "R Console"
 
 shootings_map_titled <- shootings_map_captioned +
@@ -1144,12 +1208,16 @@ legends_quiz2 <- c(
 The final elements we can add to our map are a scale bar and a north arrow, which can both be added using functions from the `ggspatial` package. If you check the `chapter_07.R` code file, you will see that you have already loaded this package.
 
 
-### Scale bars
+### Scale bars {#sec-map-context-scale-bars}
 
 To add a scale bar, we can add a call to the `annotation_scale()` function to our existing map object.
 
+::: {#map-bronx-shootings-default-scale-bar}
+
 ```{r}
 #| label: add-default-scale-bar
+#| lst-label: lst-map-context-add-default-scale-bar
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-alt: "A density map of shootings recorded in the Bronx with the default scale bar in the bottom-left corner, where it overlaps the highest-density area."
 #| fig-format: jpeg
@@ -1160,14 +1228,20 @@ shootings_map_titled +
   annotation_scale()
 ```
 
+:::
+
 The default scale bar is a little too visually dominant for the low place it should have in the visual hierarchy of our map, and the default placement in the bottom-left corner happens to overlap with the highest density of shootings. We can change the scale bar using arguments to the `annotation_scale()` function:
 
 - `width_hint = 1 / 5` changes the approximate proportion of the map width across which the scale bar stretches;
 - `style = "ticks"` changes the scale bar to the less visually prominent line-and-tick-marks style; and
 - `location = "br"` moves the scale bar to the bottom-right corner of the map.
 
+::: {#map-bronx-shootings-tick-scale-bar}
+
 ```{r}
 #| label: format-scale-bar
+#| lst-label: lst-map-context-format-scale-bar
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-alt: "A density map of shootings recorded in the Bronx with a compact tick-style scale bar in the bottom-right corner."
 #| fig-format: jpeg
@@ -1178,6 +1252,8 @@ shootings_map_titled +
   annotation_scale(width_hint = 1 / 5, style = "ticks", location = "br")
 ```
 
+:::
+
 
 ### North arrows {#sec-north-arrows}
 
@@ -1187,8 +1263,12 @@ We can add a north arrow using the `annotation_north_arrow()` function. The defa
 - `height = unit(1.5, "lines")` to make the arrow smaller; and
 - `style = north_arrow_minimal(text_size = 8)` to use a simpler arrow and reduce the font size (measured in points) of the N symbol.
 
+::: {#map-bronx-shootings-north-arrow}
+
 ```{r}
 #| label: add-north-arrow
+#| lst-label: lst-map-context-add-north-arrow
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-alt: "A density map of shootings recorded in the Bronx with a compact scale bar in the bottom-right corner and a small north arrow in the top-right corner."
 #| fig-format: jpeg
@@ -1204,6 +1284,8 @@ shootings_map_titled +
     style = north_arrow_minimal(text_size = 8)
   )
 ```
+
+:::
 
 
 ::: {.callout-important title="Not all maps need north arrows"}
@@ -1270,6 +1352,8 @@ We now have the complete code needed to make the full map. Copy this code into t
 
 ```{r}
 #| label: build-complete-map
+#| lst-label: lst-map-context-build-complete-map
+#| lst-cap: ""
 #| filename: "chapter_07.R"
 
 # Create the map
@@ -1324,6 +1408,8 @@ To share our map with others, let's save it as a square PDF. Add this code to th
 
 ```{r}
 #| label: save-map
+#| lst-label: lst-map-context-save-map
+#| lst-cap: ""
 #| eval: false
 #| exercise: true
 #| filename: "chapter_07.R"
@@ -1392,6 +1478,8 @@ Your complete script should now look like this:
 
 ```{r}
 #| label: complete-script
+#| lst-label: lst-map-context-complete-script
+#| lst-cap: ""
 #| eval: false
 #| file: "../R/chapter_07.R"
 #| filename: "chapter_07.R"

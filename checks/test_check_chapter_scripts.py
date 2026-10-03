@@ -56,9 +56,10 @@ class ConsistencyCheckTests(unittest.TestCase):
         self.assertFalse(any("R/chapter_13a.R: code differs" in error for error in errors))
 
     def test_chapter_edit_propagates_to_copied_scripts(self):
-        self.change("03_data_wrangling/index.qmd",
-                    '#| label: script-03a-packages\n#| filename: "chapter_03a.R"\n\n# Load packages',
-                    '#| label: script-03a-packages\n#| filename: "chapter_03a.R"\n\n# Load the packages')
+        path = self.root / "03_data_wrangling/index.qmd"
+        before, after = path.read_text().split('#| label: script-03a-packages', 1)
+        path.write_text(before + '#| label: script-03a-packages' +
+                        after.replace('# Load packages', '# Load the packages', 1))
         errors = self.check()
         for script in ("03a", "04a"):
             self.assertTrue(any(f"R/chapter_{script}.R: comments differs" in error for error in errors))

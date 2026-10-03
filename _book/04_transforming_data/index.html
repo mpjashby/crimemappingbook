@@ -424,7 +424,7 @@ quarto book
   <li><a href="#sec-mutate" id="toc-sec-mutate" class="nav-link" data-scroll-target="#sec-mutate"><span class="header-section-number">4.2</span> Transforming values</a></li>
   <li><a href="#sec-summarise" id="toc-sec-summarise" class="nav-link" data-scroll-target="#sec-summarise"><span class="header-section-number">4.3</span> Summarising rows</a>
   <ul class="collapse">
-  <li><a href="#counting-rows" id="toc-counting-rows" class="nav-link" data-scroll-target="#counting-rows"><span class="header-section-number">4.3.1</span> Counting rows</a></li>
+  <li><a href="#sec-transforming-data-counting-rows" id="toc-sec-transforming-data-counting-rows" class="nav-link" data-scroll-target="#sec-transforming-data-counting-rows"><span class="header-section-number">4.3.1</span> Counting rows</a></li>
   </ul></li>
   <li><a href="#arranging-rows" id="toc-arranging-rows" class="nav-link" data-scroll-target="#arranging-rows"><span class="header-section-number">4.4</span> Arranging rows</a></li>
   <li><a href="#sec-saving-data" id="toc-sec-saving-data" class="nav-link" data-scroll-target="#sec-saving-data"><span class="header-section-number">4.5</span> Saving data</a></li>
@@ -525,12 +525,21 @@ quarto book
 </p>
 <p><a href="https://lubridate.tidyverse.org/" aria-label="Visit the lubridate package website" class="no-external"><img src="../images/lubridate.png" class="right-side-image" alt=""></a></p>
 <p>For example, say we wanted to create a new column in our aggravated-assault dataset specifying the day of the week on which each crime occurred. We can do this using the <code>wday()</code> function from the <a href="https://lubridate.tidyverse.org/">lubridate package</a> (using the <code>label = TRUE</code> argument to produce weekday names, rather than numbers):</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-transforming-data-derive-weekday" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-derive-weekday-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.1
+</figcaption>
+<div aria-describedby="lst-transforming-data-derive-weekday-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="fu">mutate</span>(agg_assault_data, <span class="at">weekday =</span> <span class="fu">wday</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="fu">mutate</span>(agg_assault_data, <span class="at">weekday =</span> <span class="fu">wday</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 8,696 × 6
@@ -551,16 +560,25 @@ quarto book
 </div>
 </div>
 <p>We can also change existing columns. However (as with objects) there is no way to undo this, so you should only replace columns if you are sure you will not need them. For example, if we wanted to remove the time portion of the <code>date</code> variable (which may sometimes be useful, as shown in the next section) using the <code>as_date()</code> function (also from the lubridate package) and at the same time create the weekday variable:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-transforming-data-convert-date-and-derive-weekday" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-convert-date-and-derive-weekday-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.2
+</figcaption>
+<div aria-describedby="lst-transforming-data-convert-date-and-derive-weekday-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="fu">mutate</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="fu">mutate</span>(</span>
 <span id="cb3-2"><a href="#cb3-2" aria-label="2"></a>  agg_assault_data,</span>
 <span id="cb3-3"><a href="#cb3-3" aria-label="3"></a>  <span class="at">date =</span> <span class="fu">as_date</span>(date),</span>
 <span id="cb3-4"><a href="#cb3-4" aria-label="4"></a>  <span class="at">weekday =</span> <span class="fu">wday</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-label="5"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 8,696 × 6
@@ -580,12 +598,18 @@ quarto book
 </div>
 </div>
 <p>You may sometimes want to change only some values in a column. With a categorical variable, we can change one value to another using the <code>replace_values()</code> function from the dplyr package. Look at this code and use the comments (lines starting with <code>#</code>) to understand how it works.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-transforming-data-recode-location-categories" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-recode-location-categories-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.3
+</figcaption>
+<div aria-describedby="lst-transforming-data-recode-location-categories-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a><span class="fu">mutate</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a><span class="fu">mutate</span>(</span>
 <span id="cb5-2"><a href="#cb5-2" aria-label="2"></a>  agg_assault_data,</span>
 <span id="cb5-3"><a href="#cb5-3" aria-label="3"></a>  <span class="at">location_category =</span> <span class="fu">replace_values</span>(</span>
 <span id="cb5-4"><a href="#cb5-4" aria-label="4"></a>    location_category,</span>
@@ -596,6 +620,9 @@ quarto book
 <span id="cb5-9"><a href="#cb5-9" aria-label="9"></a>    <span class="st">"street"</span> <span class="sc">~</span> <span class="st">"street or road"</span></span>
 <span id="cb5-10"><a href="#cb5-10" aria-label="10"></a>  )</span>
 <span id="cb5-11"><a href="#cb5-11" aria-label="11"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 8,696 × 5
@@ -628,8 +655,8 @@ quarto book
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What does <code>mutate(agg_assault_data, weekday = wday(date, label = TRUE))</code> return?</strong></p>
-<div id="radio_UTDTNGZQHC" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_UTDTNGZQHC" value=""> <span>It permanently changes the original data, even if the result is not assigned.</span></label><label><input type="radio" autocomplete="off" name="radio_UTDTNGZQHC" value="answer"> <span>It returns a tibble containing a new or changed column.</span></label><label><input type="radio" autocomplete="off" name="radio_UTDTNGZQHC" value=""> <span>It keeps only rows that contain the new value.</span></label><label><input type="radio" autocomplete="off" name="radio_UTDTNGZQHC" value=""> <span>It changes only the name of an existing column.</span></label>
+<div id="radio_SFLIUBOLMN" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_SFLIUBOLMN" value=""> <span>It permanently changes the original data, even if the result is not assigned.</span></label><label><input type="radio" autocomplete="off" name="radio_SFLIUBOLMN" value="answer"> <span>It returns a tibble containing a new or changed column.</span></label><label><input type="radio" autocomplete="off" name="radio_SFLIUBOLMN" value=""> <span>It keeps only rows that contain the new value.</span></label><label><input type="radio" autocomplete="off" name="radio_SFLIUBOLMN" value=""> <span>It changes only the name of an existing column.</span></label>
 </div>
 </div>
 </div>
@@ -638,16 +665,25 @@ quarto book
 <h2 data-number="4.3" class="anchored" data-anchor-id="sec-summarise"><span class="header-section-number">4.3</span> Summarising rows</h2>
 <p>Summarising data is often useful in crime analysis. We can use the <code>summarise()</code> function from the dplyr package to produce summaries of different columns in our data. There is an identical function called <code>summarize()</code> so that you do not have to remember whether to use the US or British spelling.</p>
 <p>By default, <code>summarise()</code> collapses data into a single row, with each column summarised using a function that you specify. For example, we can calculate the mean longitude and latitude of the aggravated-assault locations.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-transforming-data-summarise-mean-coordinates" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-summarise-mean-coordinates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.4
+</figcaption>
+<div aria-describedby="lst-transforming-data-summarise-mean-coordinates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-label="1"></a><span class="fu">summarise</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-label="1"></a><span class="fu">summarise</span>(</span>
 <span id="cb7-2"><a href="#cb7-2" aria-label="2"></a>  agg_assault_data,</span>
 <span id="cb7-3"><a href="#cb7-3" aria-label="3"></a>  <span class="at">mean_lng =</span> <span class="fu">mean</span>(longitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
 <span id="cb7-4"><a href="#cb7-4" aria-label="4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb7-5"><a href="#cb7-5" aria-label="5"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 1 × 2
@@ -675,17 +711,26 @@ quarto book
 </div>
 </div>
 <p><code>summarise()</code> becomes more useful if we first divide our data into groups, since we then get a summary for each group separately. We can use the <code>.by</code> argument of the <code>summarise()</code> function to specify that we want separate summaries for each unique value of one or more columns in the data. For example, to produce a separate summary for each unique value of <code>location_category</code>, we can use this code:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-transforming-data-summarise-coordinates-by-category" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-summarise-coordinates-by-category-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.5
+</figcaption>
+<div aria-describedby="lst-transforming-data-summarise-coordinates-by-category-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="fu">summarise</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="fu">summarise</span>(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-label="2"></a>  agg_assault_data,</span>
 <span id="cb9-3"><a href="#cb9-3" aria-label="3"></a>  <span class="at">mean_lng =</span> <span class="fu">mean</span>(longitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
 <span id="cb9-4"><a href="#cb9-4" aria-label="4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
 <span id="cb9-5"><a href="#cb9-5" aria-label="5"></a>  <span class="at">.by =</span> location_category</span>
 <span id="cb9-6"><a href="#cb9-6" aria-label="6"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 12 × 3
@@ -706,17 +751,26 @@ quarto book
 </div>
 </div>
 <p>You can add multiple grouping variables using the <code>c()</code> (<em>combine</em>) function if you want to generate summary values for groups within groups:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-transforming-data-summarise-coordinates-by-category-and-type" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-summarise-coordinates-by-category-and-type-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.6
+</figcaption>
+<div aria-describedby="lst-transforming-data-summarise-coordinates-by-category-and-type-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="fu">summarise</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="fu">summarise</span>(</span>
 <span id="cb11-2"><a href="#cb11-2" aria-label="2"></a>  agg_assault_data,</span>
 <span id="cb11-3"><a href="#cb11-3" aria-label="3"></a>  <span class="at">mean_lng =</span> <span class="fu">mean</span>(longitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
 <span id="cb11-4"><a href="#cb11-4" aria-label="4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
 <span id="cb11-5"><a href="#cb11-5" aria-label="5"></a>  <span class="at">.by =</span> <span class="fu">c</span>(location_category, location_type)</span>
 <span id="cb11-6"><a href="#cb11-6" aria-label="6"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 24 × 4
@@ -735,15 +789,24 @@ quarto book
 # ℹ 14 more rows</code></pre>
 </div>
 </div>
-<section id="counting-rows" class="level3" data-number="4.3.1">
-<h3 data-number="4.3.1" class="anchored" data-anchor-id="counting-rows"><span class="header-section-number">4.3.1</span> Counting rows</h3>
+<section id="sec-transforming-data-counting-rows" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="sec-transforming-data-counting-rows"><span class="header-section-number">4.3.1</span> Counting rows</h3>
 <p>One very common way of summarising data is to count the number of rows in a dataset that have each unique value of one or more columns. For example, if we have a dataset of crimes in which each row represents a single crime, we might want to count how many crimes happened on each day of the week, or how many crimes of each type are in the dataset. We can use <code>summarise()</code> to do that, together with the <code>n()</code> function (from the same dplyr package as <code>summarise()</code>). For example, if we wanted to count how many rows in the <code>agg_assault_data</code> dataset had each unique combination of <code>location_category</code> and <code>location_type</code>:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-transforming-data-count-rows-with-summarise" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-count-rows-with-summarise-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.7
+</figcaption>
+<div aria-describedby="lst-transforming-data-count-rows-with-summarise-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-label="1"></a><span class="fu">summarise</span>(agg_assault_data, <span class="at">n =</span> <span class="fu">n</span>(), <span class="at">.by =</span> <span class="fu">c</span>(location_category, location_type))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-label="1"></a><span class="fu">summarise</span>(agg_assault_data, <span class="at">n =</span> <span class="fu">n</span>(), <span class="at">.by =</span> <span class="fu">c</span>(location_category, location_type))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 24 × 3
@@ -764,12 +827,21 @@ quarto book
 </div>
 <p>In this code, the <code>n()</code> function simply returns the number of rows of data in each group, i.e.&nbsp;the number of rows with each unique combination of values of <code>location_category</code> and <code>location_type</code>.</p>
 <p>Since counting the number of rows in each group in a dataset is a very common task, dplyr includes another function called <code>count()</code> that allows you to do the same thing as in the code above, but with slightly less typing. So if you wanted to know how many aggravated assaults had occurred in each location category and type, you could use this code instead of using <code>summarise()</code>:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-transforming-data-count-rows-with-count" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-count-rows-with-count-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.8
+</figcaption>
+<div aria-describedby="lst-transforming-data-count-rows-with-count-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a><span class="fu">count</span>(agg_assault_data, location_category, location_type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a><span class="fu">count</span>(agg_assault_data, location_category, location_type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 24 × 3
@@ -800,8 +872,8 @@ quarto book
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What does <code>count(agg_assault_data, location_category, location_type)</code> return?</strong></p>
-<div id="radio_ZTCOEYSIWK" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_ZTCOEYSIWK" value=""> <span>One row for every offence in the original data</span></label><label><input type="radio" autocomplete="off" name="radio_ZTCOEYSIWK" value="answer"> <span>One row for each unique combination of location category and location type</span></label><label><input type="radio" autocomplete="off" name="radio_ZTCOEYSIWK" value=""> <span>One column for each unique location category</span></label><label><input type="radio" autocomplete="off" name="radio_ZTCOEYSIWK" value=""> <span>Only rows that contain no missing values</span></label>
+<div id="radio_HFTJQLGQWG" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_HFTJQLGQWG" value=""> <span>One row for every offence in the original data</span></label><label><input type="radio" autocomplete="off" name="radio_HFTJQLGQWG" value="answer"> <span>One row for each unique combination of location category and location type</span></label><label><input type="radio" autocomplete="off" name="radio_HFTJQLGQWG" value=""> <span>One column for each unique location category</span></label><label><input type="radio" autocomplete="off" name="radio_HFTJQLGQWG" value=""> <span>Only rows that contain no missing values</span></label>
 </div>
 </div>
 </div>
@@ -810,12 +882,21 @@ quarto book
 <section id="arranging-rows" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="arranging-rows"><span class="header-section-number">4.4</span> Arranging rows</h2>
 <p>It is sometimes useful to be able to place rows in a dataset into a particular order. We can do this using the <code>arrange()</code> function from the dplyr package. For example, we can sort the aggravated-assault data by date:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-transforming-data-sort-dates-ascending" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-sort-dates-ascending-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.9
+</figcaption>
+<div aria-describedby="lst-transforming-data-sort-dates-ascending-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-label="1"></a><span class="fu">arrange</span>(agg_assault_data, date)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-label="1"></a><span class="fu">arrange</span>(agg_assault_data, date)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 8,696 × 5
@@ -835,12 +916,21 @@ quarto book
 </div>
 </div>
 <p>By default, <code>arrange()</code> sorts rows in ascending order, i.e.&nbsp;it sorts numeric values from the smallest to the largest, dates from earliest to latest and character values alphabetically. We can instead sort values in descending order by wrapping the name of a column in the <code>desc()</code> function:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-transforming-data-sort-dates-descending" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-sort-dates-descending-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.10
+</figcaption>
+<div aria-describedby="lst-transforming-data-sort-dates-descending-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-label="1"></a><span class="fu">arrange</span>(agg_assault_data, <span class="fu">desc</span>(date))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-label="1"></a><span class="fu">arrange</span>(agg_assault_data, <span class="fu">desc</span>(date))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 8,696 × 5
@@ -860,12 +950,21 @@ quarto book
 </div>
 </div>
 <p>We can also sort the data based on multiple columns – the data are sorted first on the first column that you specify, with tied rows then sorted on the subsequent columns in order.</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-transforming-data-sort-by-multiple-columns" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-sort-by-multiple-columns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.11
+</figcaption>
+<div aria-describedby="lst-transforming-data-sort-by-multiple-columns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-label="1"></a><span class="fu">arrange</span>(agg_assault_data, date, <span class="fu">desc</span>(location_type), location_category)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-label="1"></a><span class="fu">arrange</span>(agg_assault_data, date, <span class="fu">desc</span>(location_type), location_category)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 8,696 × 5
@@ -895,8 +994,8 @@ quarto book
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Which code arranges <code>agg_assault_data</code> from the latest date to the earliest?</strong></p>
-<div id="radio_QJNVJIODUT" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_QJNVJIODUT" value="answer"> <span><code>arrange(agg_assault_data, desc(date))</code></span></label><label><input type="radio" autocomplete="off" name="radio_QJNVJIODUT" value=""> <span><code>arrange(agg_assault_data, date)</code></span></label><label><input type="radio" autocomplete="off" name="radio_QJNVJIODUT" value=""> <span><code>filter(agg_assault_data, desc(date))</code></span></label><label><input type="radio" autocomplete="off" name="radio_QJNVJIODUT" value=""> <span><code>arrange(desc(date), agg_assault_data)</code></span></label>
+<div id="radio_TNKIQEWZHA" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_TNKIQEWZHA" value="answer"> <span><code>arrange(agg_assault_data, desc(date))</code></span></label><label><input type="radio" autocomplete="off" name="radio_TNKIQEWZHA" value=""> <span><code>arrange(agg_assault_data, date)</code></span></label><label><input type="radio" autocomplete="off" name="radio_TNKIQEWZHA" value=""> <span><code>filter(agg_assault_data, desc(date))</code></span></label><label><input type="radio" autocomplete="off" name="radio_TNKIQEWZHA" value=""> <span><code>arrange(desc(date), agg_assault_data)</code></span></label>
 </div>
 <p>In the R Console, type the code necessary to arrange <code>agg_assault_data</code> in order of latitude, in descending order (from largest to smallest). Once you’ve tried writing the code, if you need help you can click the ‘Solution’ button below.</p>
 <div class="webex-solution">
@@ -913,16 +1012,25 @@ Solution
 <p>Once we have finished wrangling a particular dataset, it is often useful to save it to a file so that we can use it again in future without going through all the steps of data wrangling again.</p>
 <p>Most R functions that begin with <code>read_</code> (like <code>read_csv()</code> and <code>read_excel()</code>) have equivalent functions that begin <code>write_</code> and which save data into a particular file format. In this example, we will use the <code>write_csv()</code> function from the readr package, which is loaded when we load the tidyverse package.</p>
 <p>In <a href="../01_getting_started/index.html#sec-create-project" class="quarto-xref"><span>Section 1.5</span></a> we learned that it is important to keep our original downloaded data files <em>sterile</em>, i.e.&nbsp;not to change them after we have downloaded them. That means we can always go back to the original data if we need to. To help with that, we will keep any files we save after wrangling in a separate sub-folder inside the <code>data</code> folder called <code>processed</code>. This is a common practice in data analysis, and it is good to get into the habit of doing it from the start.</p>
-<div class="cell">
+<div class="cell" data-filename="Code to add later">
+<div id="lst-transforming-data-save-processed-data-example" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-save-processed-data-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.12
+</figcaption>
+<div aria-describedby="lst-transforming-data-save-processed-data-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>Code to add later</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-label="1"></a><span class="co"># Save the processed data without changing the original file</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" data-filename="Code to add later" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-label="1"></a><span class="co"># Save the processed data without changing the original file</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-label="2"></a><span class="fu">write_csv</span>(</span>
 <span id="cb23-3"><a href="#cb23-3" aria-label="3"></a>  agg_assault_counts,</span>
 <span id="cb23-4"><a href="#cb23-4" aria-label="4"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"processed"</span>, <span class="st">"aggravated_assault_counts.csv"</span>)</span>
 <span id="cb23-5"><a href="#cb23-5" aria-label="5"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>There are corresponding write functions for other types of data (which we will come back to when we learn how to handle spatial data), but in this course we will store most non-spatial data in CSV format because it can be read by many different programs.</p>
@@ -937,8 +1045,8 @@ Solution
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Why should wrangled data be saved in <code>data/processed</code> rather than <code>data/raw</code>?</strong></p>
-<div id="radio_XOXCWBDHPD" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_XOXCWBDHPD" value=""> <span>It replaces the original downloaded file with the processed data.</span></label><label><input type="radio" autocomplete="off" name="radio_XOXCWBDHPD" value=""> <span>It saves the R script in the processed-data folder.</span></label><label><input type="radio" autocomplete="off" name="radio_XOXCWBDHPD" value="answer"> <span>It keeps derived data separate while preserving the original download.</span></label><label><input type="radio" autocomplete="off" name="radio_XOXCWBDHPD" value=""> <span>It allows <code>write_csv()</code> to save an Excel workbook.</span></label>
+<div id="radio_XGNZDCTUNL" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_XGNZDCTUNL" value=""> <span>It replaces the original downloaded file with the processed data.</span></label><label><input type="radio" autocomplete="off" name="radio_XGNZDCTUNL" value=""> <span>It saves the R script in the processed-data folder.</span></label><label><input type="radio" autocomplete="off" name="radio_XGNZDCTUNL" value="answer"> <span>It keeps derived data separate while preserving the original download.</span></label><label><input type="radio" autocomplete="off" name="radio_XGNZDCTUNL" value=""> <span>It allows <code>write_csv()</code> to save an Excel workbook.</span></label>
 </div>
 </div>
 </div>
@@ -947,12 +1055,18 @@ Solution
 <h2 data-number="4.6" class="anchored" data-anchor-id="sec-pipe-operator"><span class="header-section-number">4.6</span> Stringing functions together</h2>
 <p>In this chapter we have learned how to use the dplyr functions <code>select()</code>, <code>filter()</code>, <code>mutate()</code>, <code>summarise()</code> and <code>arrange()</code> to wrangle data from one format to another. Data wrangling is part of almost all data analysis, so these are skills we will use frequently.</p>
 <p>Data wrangling often involves multiple steps. For example, we might want to load some data, select certain columns, filter some rows, mutate some of the variables, summarise the dataset and save the result. We can do each of these steps separately, assigning the result of each step to a new object.</p>
-<div class="cell bad_code">
+<div class="cell bad_code" data-filename="Do not run this code">
+<div id="lst-transforming-data-wrangle-assaults-with-pipe" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-wrangle-assaults-with-pipe-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.13
+</figcaption>
+<div aria-describedby="lst-transforming-data-wrangle-assaults-with-pipe-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>Do not run this code</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-label="1"></a><span class="co"># Select only the columns we need</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24" data-filename="Do not run this code" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-label="1"></a><span class="co"># Select only the columns we need</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-label="2"></a>robbery2 <span class="ot">&lt;-</span> <span class="fu">select</span>(san_fran_rob, date_time)</span>
 <span id="cb24-3"><a href="#cb24-3" aria-label="3"></a></span>
 <span id="cb24-4"><a href="#cb24-4" aria-label="4"></a><span class="co"># Filter only those offences that occurred in the first quarter of 2019</span></span>
@@ -965,6 +1079,9 @@ Solution
 <span id="cb24-11"><a href="#cb24-11" aria-label="11"></a>q1_weekday_counts <span class="ot">&lt;-</span> <span class="fu">count</span>(robbery4, weekday)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>This code works, but creates three intermediate objects as well as the final <code>q1_weekday_counts</code> object. Intermediate objects can be useful when debugging a complicated analysis. However, they also create the substantial risk that you will accidentally use the wrong intermediate object in a later step, which can often cause errors in your code that are hard to fix. For example, when you write the code that creates the <code>robbery4</code> object, if you accidentally use <code>robbery2</code> as the input instead of <code>robbery3</code>, the filtering step in the data-wrangling process will have no effect. For that reason, it is generally better to avoid creating intermediate objects unless you actually need them.</p>
 <p>Notice that:</p>
 <ol type="1">
@@ -974,12 +1091,18 @@ Solution
 <p>For example, <code>filter()</code> uses the <code>robbery2</code> object created by <code>select()</code>, but after that <code>robbery2</code> is never used again. Whenever you write code that consists of several sequential steps in which (a) each step uses the data produced by the previous step and (b) the data produced by each step is only used once, there is a better way to do it. This method uses the <code>|&gt;</code> (or <em>pipe</em>) operator. The pipe operator works by using the result of the code on the left-hand side of the pipe as the first argument to a function on the right-hand side. So the code <code>x  |&gt; fun1() |&gt; fun2()</code> starts with an object called <code>x</code>, uses that as the input to the function <code>fun1()</code>, then passes the result produced by <code>fun1()</code> and uses that as the input to <code>fun2()</code>.</p>
 <p>It may be useful to read the pipe operator as ‘and then’, since piped code does the first thing <em>and then</em> the second thing with the result <em>and then</em> the third thing with the result of that, and so on. Piped code (sometimes called a <em>pipeline</em>) is a lot like the series of steps in a recipe.</p>
 <p>For example, instead of creating multiple objects called <code>robbery2</code>, <code>robbery3</code>, <code>robbery4</code> and <code>q1_weekday_counts</code> and so on, we can use a single code pipeline. We will add this pipeline to a script in <a href="#sec-complete-wrangling-scripts" class="quarto-xref"><span>Section 4.7</span></a>. For now, look at the code and the list below that explains what each line does – note that each pipe operator (<code>|&gt;</code>) corresponds to ‘<em>and then</em>’ in the explanation below the code.</p>
-<div class="cell">
+<div class="cell" data-filename="Code to add later">
+<div id="lst-transforming-data-weekday-counts-pipeline" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-weekday-counts-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.14
+</figcaption>
+<div aria-describedby="lst-transforming-data-weekday-counts-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>Code to add later</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="annotated-cell-14" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-14-1"><a href="#annotated-cell-14-1" aria-label="1"></a><span class="co"># Produce counts of robberies each weekday</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="annotated-cell-14" data-filename="Code to add later" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-14-1"><a href="#annotated-cell-14-1" aria-label="1"></a><span class="co"># Produce counts of robberies each weekday</span></span>
 <a class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-14-2" class="code-annotation-target"><a href="#annotated-cell-14-2" aria-label="2"></a>q1_weekday_counts <span class="ot">&lt;-</span> san_fran_rob <span class="sc">|&gt;</span></span>
 <span id="annotated-cell-14-3"><a href="#annotated-cell-14-3" aria-label="3"></a>  <span class="fu">filter</span>(</span>
 <a class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-14-4" class="code-annotation-target"><a href="#annotated-cell-14-4" aria-label="4"></a></span>
@@ -988,6 +1111,9 @@ Solution
 <span id="annotated-cell-14-7"><a href="#annotated-cell-14-7" aria-label="7"></a>  ) <span class="sc">|&gt;</span></span>
 <a class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-14-8" class="code-annotation-target"><a href="#annotated-cell-14-8" aria-label="8"></a>  <span class="fu">mutate</span>(<span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
 <a class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-14-9" class="code-annotation-target"><a href="#annotated-cell-14-9" aria-label="9"></a>  <span class="fu">count</span>(weekday)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-annotation">
 <dl class="code-annotation-container-grid">
@@ -1039,8 +1165,8 @@ Solution
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What does the pipe operator <code>|&gt;</code> do?</strong></p>
-<div id="radio_UXUIANIKVK" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_UXUIANIKVK" value=""> <span>It saves each intermediate result as a separate file.</span></label><label><input type="radio" autocomplete="off" name="radio_UXUIANIKVK" value="answer"> <span>It passes the result of one step to the next function.</span></label><label><input type="radio" autocomplete="off" name="radio_UXUIANIKVK" value=""> <span>It automatically corrects errors in each function.</span></label><label><input type="radio" autocomplete="off" name="radio_UXUIANIKVK" value=""> <span>It changes temporary Console code into permanent code.</span></label>
+<div id="radio_PTNUROTAIQ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_PTNUROTAIQ" value=""> <span>It saves each intermediate result as a separate file.</span></label><label><input type="radio" autocomplete="off" name="radio_PTNUROTAIQ" value="answer"> <span>It passes the result of one step to the next function.</span></label><label><input type="radio" autocomplete="off" name="radio_PTNUROTAIQ" value=""> <span>It automatically corrects errors in each function.</span></label><label><input type="radio" autocomplete="off" name="radio_PTNUROTAIQ" value=""> <span>It changes temporary Console code into permanent code.</span></label>
 </div>
 </div>
 </div>
@@ -1073,35 +1199,46 @@ Solution
 <button>
 Solution
 </button>
-<div class="cell">
+<div class="cell" data-filename="chapter_04a.R">
+<div id="lst-transforming-data-script-04a-solution" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-script-04a-solution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.15
+</figcaption>
+<div aria-describedby="lst-transforming-data-script-04a-solution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_04a.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-label="1"></a><span class="co"># Load packages</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25" data-filename="chapter_04a.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-label="1"></a><span class="co"># Load packages</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, readxl, tidyverse)</span>
 <span id="cb25-3"><a href="#cb25-3" aria-label="3"></a></span>
-<span id="cb25-4"><a href="#cb25-4" aria-label="4"></a><span class="co"># Download the raw data</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-label="5"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-label="6"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"san_francisco_robbery.csv"</span>))</span>
-<span id="cb25-7"><a href="#cb25-7" aria-label="7"></a></span>
-<span id="cb25-8"><a href="#cb25-8" aria-label="8"></a><span class="co"># Load the raw data</span></span>
-<span id="cb25-9"><a href="#cb25-9" aria-label="9"></a>san_fran_rob <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"san_francisco_robbery.csv"</span>))</span>
-<span id="cb25-10"><a href="#cb25-10" aria-label="10"></a></span>
-<span id="cb25-11"><a href="#cb25-11" aria-label="11"></a><span class="co"># Produce counts of robberies each weekday</span></span>
-<span id="cb25-12"><a href="#cb25-12" aria-label="12"></a>q1_weekday_counts <span class="ot">&lt;-</span> san_fran_rob <span class="sc">|&gt;</span></span>
-<span id="cb25-13"><a href="#cb25-13" aria-label="13"></a>  <span class="fu">filter</span>(</span>
-<span id="cb25-14"><a href="#cb25-14" aria-label="14"></a>    <span class="fu">as_date</span>(date_time) <span class="sc">&gt;=</span> <span class="fu">ymd</span>(<span class="st">"2019-01-01"</span>),</span>
-<span id="cb25-15"><a href="#cb25-15" aria-label="15"></a>    <span class="fu">as_date</span>(date_time) <span class="sc">&lt;=</span> <span class="fu">ymd</span>(<span class="st">"2019-03-31"</span>)</span>
-<span id="cb25-16"><a href="#cb25-16" aria-label="16"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb25-17"><a href="#cb25-17" aria-label="17"></a>  <span class="fu">mutate</span>(<span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb25-18"><a href="#cb25-18" aria-label="18"></a>  <span class="fu">count</span>(weekday)</span>
-<span id="cb25-19"><a href="#cb25-19" aria-label="19"></a></span>
-<span id="cb25-20"><a href="#cb25-20" aria-label="20"></a><span class="co"># Save the processed data</span></span>
-<span id="cb25-21"><a href="#cb25-21" aria-label="21"></a><span class="fu">write_csv</span>(</span>
-<span id="cb25-22"><a href="#cb25-22" aria-label="22"></a>  q1_weekday_counts,</span>
-<span id="cb25-23"><a href="#cb25-23" aria-label="23"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"processed"</span>, <span class="st">"q1_weekday_counts.csv"</span>)</span>
-<span id="cb25-24"><a href="#cb25-24" aria-label="24"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb25-4"><a href="#cb25-4" aria-label="4"></a><span class="co"># Download the data from a URL and store it in a local file</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-label="5"></a><span class="fu">request</span>(</span>
+<span id="cb25-6"><a href="#cb25-6" aria-label="6"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-label="7"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-label="8"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"san_francisco_robbery.csv"</span>))</span>
+<span id="cb25-9"><a href="#cb25-9" aria-label="9"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-label="10"></a><span class="co"># Load the local file into R</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-label="11"></a>san_fran_rob <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"san_francisco_robbery.csv"</span>))</span>
+<span id="cb25-12"><a href="#cb25-12" aria-label="12"></a></span>
+<span id="cb25-13"><a href="#cb25-13" aria-label="13"></a><span class="co"># Produce counts of robberies each weekday</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-label="14"></a>q1_weekday_counts <span class="ot">&lt;-</span> san_fran_rob <span class="sc">|&gt;</span></span>
+<span id="cb25-15"><a href="#cb25-15" aria-label="15"></a>  <span class="fu">filter</span>(</span>
+<span id="cb25-16"><a href="#cb25-16" aria-label="16"></a>    <span class="fu">as_date</span>(date_time) <span class="sc">&gt;=</span> <span class="fu">ymd</span>(<span class="st">"2019-01-01"</span>),</span>
+<span id="cb25-17"><a href="#cb25-17" aria-label="17"></a>    <span class="fu">as_date</span>(date_time) <span class="sc">&lt;=</span> <span class="fu">ymd</span>(<span class="st">"2019-03-31"</span>)</span>
+<span id="cb25-18"><a href="#cb25-18" aria-label="18"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb25-19"><a href="#cb25-19" aria-label="19"></a>  <span class="fu">mutate</span>(<span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb25-20"><a href="#cb25-20" aria-label="20"></a>  <span class="fu">count</span>(weekday)</span>
+<span id="cb25-21"><a href="#cb25-21" aria-label="21"></a></span>
+<span id="cb25-22"><a href="#cb25-22" aria-label="22"></a><span class="co"># Save the processed data without changing the original file</span></span>
+<span id="cb25-23"><a href="#cb25-23" aria-label="23"></a><span class="fu">write_csv</span>(</span>
+<span id="cb25-24"><a href="#cb25-24" aria-label="24"></a>  q1_weekday_counts,</span>
+<span id="cb25-25"><a href="#cb25-25" aria-label="25"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"processed"</span>, <span class="st">"q1_weekday_counts.csv"</span>)</span>
+<span id="cb25-26"><a href="#cb25-26" aria-label="26"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 </div>
 </div>
@@ -1116,39 +1253,50 @@ Solution
 <button>
 Solution
 </button>
-<div class="cell">
+<div class="cell" data-filename="chapter_04b.R">
+<div id="lst-transforming-data-script-04b-solution" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-transforming-data-script-04b-solution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;4.16
+</figcaption>
+<div aria-describedby="lst-transforming-data-script-04b-solution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_04b.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-label="1"></a><span class="co"># Load packages</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26" data-filename="chapter_04b.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-label="1"></a><span class="co"># Load packages</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, readxl, tidyverse)</span>
 <span id="cb26-3"><a href="#cb26-3" aria-label="3"></a></span>
-<span id="cb26-4"><a href="#cb26-4" aria-label="4"></a><span class="co"># Download the raw data</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-label="5"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/aggravated_assaults.xlsx"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb26-6"><a href="#cb26-6" aria-label="6"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"aggravated_assaults.xlsx"</span>))</span>
-<span id="cb26-7"><a href="#cb26-7" aria-label="7"></a></span>
-<span id="cb26-8"><a href="#cb26-8" aria-label="8"></a><span class="co"># Load the Austin data from the Excel workbook</span></span>
-<span id="cb26-9"><a href="#cb26-9" aria-label="9"></a>agg_assault_data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(</span>
-<span id="cb26-10"><a href="#cb26-10" aria-label="10"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"aggravated_assaults.xlsx"</span>),</span>
-<span id="cb26-11"><a href="#cb26-11" aria-label="11"></a>  <span class="at">sheet =</span> <span class="st">"Austin"</span></span>
-<span id="cb26-12"><a href="#cb26-12" aria-label="12"></a>)</span>
-<span id="cb26-13"><a href="#cb26-13" aria-label="13"></a></span>
-<span id="cb26-14"><a href="#cb26-14" aria-label="14"></a><span class="co"># Count aggravated assaults by location category and weekday</span></span>
-<span id="cb26-15"><a href="#cb26-15" aria-label="15"></a>agg_assault_counts <span class="ot">&lt;-</span> agg_assault_data <span class="sc">|&gt;</span></span>
-<span id="cb26-16"><a href="#cb26-16" aria-label="16"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(location_category), <span class="sc">!</span><span class="fu">is.na</span>(date)) <span class="sc">|&gt;</span></span>
-<span id="cb26-17"><a href="#cb26-17" aria-label="17"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb26-18"><a href="#cb26-18" aria-label="18"></a>    <span class="at">date =</span> <span class="fu">as_date</span>(date),</span>
-<span id="cb26-19"><a href="#cb26-19" aria-label="19"></a>    <span class="at">weekday =</span> <span class="fu">wday</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb26-20"><a href="#cb26-20" aria-label="20"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb26-21"><a href="#cb26-21" aria-label="21"></a>  <span class="fu">count</span>(location_category, weekday) <span class="sc">|&gt;</span></span>
-<span id="cb26-22"><a href="#cb26-22" aria-label="22"></a>  <span class="fu">arrange</span>(location_category, weekday)</span>
-<span id="cb26-23"><a href="#cb26-23" aria-label="23"></a></span>
-<span id="cb26-24"><a href="#cb26-24" aria-label="24"></a><span class="co"># Save the processed data</span></span>
-<span id="cb26-25"><a href="#cb26-25" aria-label="25"></a><span class="fu">write_csv</span>(</span>
-<span id="cb26-26"><a href="#cb26-26" aria-label="26"></a>  agg_assault_counts,</span>
-<span id="cb26-27"><a href="#cb26-27" aria-label="27"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"processed"</span>, <span class="st">"aggravated_assault_counts.csv"</span>)</span>
-<span id="cb26-28"><a href="#cb26-28" aria-label="28"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb26-4"><a href="#cb26-4" aria-label="4"></a><span class="co"># Download the data from a URL and store it in a local file</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-label="5"></a><span class="fu">request</span>(</span>
+<span id="cb26-6"><a href="#cb26-6" aria-label="6"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/aggravated_assaults.xlsx"</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-label="7"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-label="8"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"aggravated_assaults.xlsx"</span>))</span>
+<span id="cb26-9"><a href="#cb26-9" aria-label="9"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-label="10"></a><span class="co"># Load the Austin data from the Excel workbook</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-label="11"></a>agg_assault_data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(</span>
+<span id="cb26-12"><a href="#cb26-12" aria-label="12"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"aggravated_assaults.xlsx"</span>),</span>
+<span id="cb26-13"><a href="#cb26-13" aria-label="13"></a>  <span class="at">sheet =</span> <span class="st">"Austin"</span></span>
+<span id="cb26-14"><a href="#cb26-14" aria-label="14"></a>)</span>
+<span id="cb26-15"><a href="#cb26-15" aria-label="15"></a></span>
+<span id="cb26-16"><a href="#cb26-16" aria-label="16"></a><span class="co"># Count aggravated assaults by location category and weekday</span></span>
+<span id="cb26-17"><a href="#cb26-17" aria-label="17"></a>agg_assault_counts <span class="ot">&lt;-</span> agg_assault_data <span class="sc">|&gt;</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-label="18"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(location_category), <span class="sc">!</span><span class="fu">is.na</span>(date)) <span class="sc">|&gt;</span></span>
+<span id="cb26-19"><a href="#cb26-19" aria-label="19"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb26-20"><a href="#cb26-20" aria-label="20"></a>    <span class="at">date =</span> <span class="fu">as_date</span>(date),</span>
+<span id="cb26-21"><a href="#cb26-21" aria-label="21"></a>    <span class="at">weekday =</span> <span class="fu">wday</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb26-22"><a href="#cb26-22" aria-label="22"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb26-23"><a href="#cb26-23" aria-label="23"></a>  <span class="fu">count</span>(location_category, weekday) <span class="sc">|&gt;</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-label="24"></a>  <span class="fu">arrange</span>(location_category, weekday)</span>
+<span id="cb26-25"><a href="#cb26-25" aria-label="25"></a></span>
+<span id="cb26-26"><a href="#cb26-26" aria-label="26"></a><span class="co"># Save the processed data without changing the original file</span></span>
+<span id="cb26-27"><a href="#cb26-27" aria-label="27"></a><span class="fu">write_csv</span>(</span>
+<span id="cb26-28"><a href="#cb26-28" aria-label="28"></a>  agg_assault_counts,</span>
+<span id="cb26-29"><a href="#cb26-29" aria-label="29"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"processed"</span>, <span class="st">"aggravated_assault_counts.csv"</span>)</span>
+<span id="cb26-30"><a href="#cb26-30" aria-label="30"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 </div>
 </div>

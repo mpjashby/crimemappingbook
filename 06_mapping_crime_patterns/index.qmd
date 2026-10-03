@@ -44,6 +44,8 @@ ggsave(
 )
 ```
 
+::: {#map-vancouver-bicycle-theft-density-introduction}
+
 ```{r}
 #| label: show-final-map
 #| echo: false
@@ -53,6 +55,8 @@ ggsave(
 
 knitr::include_graphics(here("images", "vancouver_bike_thefts.jpg"))
 ```
+
+:::
 
 In this chapter, we will learn how to:
 
@@ -131,7 +135,7 @@ To estimate the density of points in different areas of the map, R uses a techni
 
 
 ```{r}
-#| label:  kde-explanation
+#| label: kde-explanation
 #| eval: false
 #| echo: false
 
@@ -372,6 +376,8 @@ Add this code to the script file for this chapter and then run that line of code
 
 ```{r}
 #| label: script-06-initial-density
+#| lst-label: lst-mapping-crime-patterns-script-06-initial-density
+#| lst-cap: ""
 #| filename: "chapter_06.R"
 
 # Estimate density of bike thefts
@@ -390,6 +396,9 @@ The `quiet = TRUE` argument to the `hotspot_*()` family of functions (including 
 As usual, we can use the `head()` function to check what the resulting object looks like:
 
 ```{r}
+#| label: head-bike-theft-density
+#| lst-label: lst-mapping-crime-patterns-head-bike-theft-density
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(bike_theft_density)
@@ -399,12 +408,19 @@ The `bike_theft_density` object created by `hotspot_kde()` contains three column
 
 `hotspot_kde()` produces an object that `hotspot_map()` recognises and can use to automatically produce a density map. We will need to customise this map somewhat to make it useful, but for now we can use `hotspot_map()` to produce a basic density map of bike thefts in Vancouver:
 
+::: {#map-vancouver-bicycle-theft-density-basic}
+
 ```{r}
+#| label: draw-vancouver-bicycle-theft-density-basic
+#| lst-label: lst-mapping-crime-patterns-draw-vancouver-bicycle-theft-density-basic
+#| lst-cap: ""
 #| filename: "R Console"
 #| fig-alt: "A basic density map of recorded bicycle thefts in Vancouver. Grid cells with higher KDE values are pale blue and cells with lower values are dark blue."
 
 hotspot_map(bike_theft_density)
 ```
+
+:::
 
 
 In this map, instead of seeing each crime as a separate point, we see the density of crime as the filled colour of cells in a grid. By comparing this density map to the point map we produced before, we can see that the density map makes the areas with the highest frequency of thefts slightly easier to identify (although we will improve it much further below).
@@ -455,6 +471,9 @@ The `hotspot_kde()` function automatically transforms data to a suitable project
 The `suggest_crs()` function from the crsuggest package can identify projected CRSs designed for the area covered by a spatial dataset. Run this code in the R Console to see suitable CRSs for the Vancouver bike-theft data:
 
 ```{r}
+#| label: suggest-crs-bike-thefts
+#| lst-label: lst-mapping-crime-patterns-suggest-crs-bike-thefts
+#| lst-cap: ""
 #| filename: "R Console"
 
 crsuggest::suggest_crs(bike_thefts)
@@ -465,11 +484,11 @@ crsuggest::suggest_crs(bike_thefts)
 The Vancouver data already use UTM zone 10N (`EPSG:32610`), an appropriate projected CRS whose coordinates are measured in metres, so we do not need to transform them. When a transformation is needed, we can pass the chosen code to `st_transform()`. For example, `bike_thefts |> st_transform("EPSG:3153")` would transform the Vancouver data to the first CRS suggested in the table.
 
 
-### Fine-tuning cell size and bandwidth
+### Fine-tuning cell size and bandwidth {#sec-mapping-crime-patterns-fine-tuning-cell-size-and-bandwidth}
 
 We can control the appearance of KDE maps in several ways. For example, we can vary the number of cells in the grid and the definition of what cells the kernel density estimation process should consider to be 'nearby' for the purposes of calculating weighted counts. Cells are considered to be 'nearby' to a particular cell if they are closer to that cell than a distance known as the KDE *bandwidth*.
 
-By default, `hotspot_kde()` chooses the cell size and the bandwidth automatically. The maps below show how changing these defaults changes the appearance of our map (with the legend and axes removed to make the small maps clearer).
+By default, `hotspot_kde()` chooses the cell size and the bandwidth automatically. The panels in @map-vancouver-kde-cell-size-and-bandwidth show how changing these defaults changes the appearance of our map (with the legend and axes removed to make the small maps clearer).
 
 ```{r}
 #| label: make-kde-bandwidth-map
@@ -518,6 +537,8 @@ ggsave(
 )
 ```
 
+::: {#map-vancouver-kde-cell-size-and-bandwidth}
+
 ```{r}
 #| label: kde-bandwidth-map
 #| echo: false
@@ -528,7 +549,9 @@ ggsave(
 knitr::include_graphics(here::here("images/bandwidth.jpg"))
 ```
 
-By looking at the maps on the right-hand side, you can see that reducing the number of grid cells leads to a map that looks blocky and lacks information. Looking at the maps towards the top of the figure above, you can see that increasing the bandwidth relative to the default makes the density surface smoother. The smoother the surface, the less detail we can see about where crime is most concentrated, until on the top row we can see almost no information at all. On the other hand, if we reduce the bandwidth too much (the bottom row of maps), each estimate is influenced by only the closest events, so the surface becomes fragmented and it is more difficult to identify broader patterns.
+:::
+
+By looking at the maps on the right-hand side, you can see that reducing the number of grid cells leads to a map that looks blocky and lacks information. Looking at the maps towards the top of @map-vancouver-kde-cell-size-and-bandwidth, you can see that increasing the bandwidth relative to the default makes the density surface smoother. The smoother the surface, the less detail we can see about where crime is most concentrated, until on the top row we can see almost no information at all. On the other hand, if we reduce the bandwidth too much (the bottom row of maps), each estimate is influenced by only the closest events, so the surface becomes fragmented and it is more difficult to identify broader patterns.
 
 In many cases, you will not need to change the cell size used in calculating the density of points on a map, but if you do then you can do this using the `cell_size` argument to `hotspot_kde()`. A cell size of about 200 metres is often a good choice for maps showing a whole city, such as our map of Vancouver. However, for larger cities you might want to use a larger cell size and for maps of neighbourhoods you will usually want to use a smaller cell size.
 
@@ -770,7 +793,11 @@ A. We only have data on bike thefts from the City of Vancouver, so all the bike
 thefts in the data necessarily occurred within the city. We do not know what the
 density of recorded bike theft outside the city is.
 
+::::: {#map-vancouver-clipping-stage-points}
+
 ![](../images/hull_clipping_1.jpg){fig-alt="A sample of recorded bike-theft locations inside the green City of Vancouver boundary." width=100%}
+
+:::::
 
 ::::
 
@@ -781,7 +808,11 @@ B. The KDE function only knows the theft locations, not the area in which thefts
 could have occurred. So the convex hull created by the KDE layer will not 
 necessarily match the area of the data.
 
+::::: {#map-vancouver-clipping-stage-convex-hull}
+
 ![](../images/hull_clipping_2.jpg){fig-alt="The dashed convex hull around the sampled theft locations extends beyond parts of the city boundary." width=100%}
+
+:::::
 
 ::::
 
@@ -792,7 +823,11 @@ C. In this case, that means some areas (shaded) will be included in the KDE
 layer even though they are outside the area covered by the data, which
 could be misleading.
 
+::::: {#map-vancouver-clipping-stage-outside-boundary}
+
 ![](../images/hull_clipping_3.jpg){fig-alt="Green shading identifies parts of the convex hull outside the City of Vancouver boundary." width=100%}
+
+:::::
 
 ::::
 
@@ -803,7 +838,11 @@ D. To avoid suggesting we know the density of crimes in areas for which we do
 not have data, we should clip the KDE layer to the boundary of the area for 
 which we have data.
 
+::::: {#map-vancouver-clipping-stage-clipped-density}
+
 ![](../images/hull_clipping_4.jpg){fig-alt="A green KDE layer clipped to the City of Vancouver boundary, with the dashed convex hull shown for comparison." width=100%}
+
+:::::
 ::::
 
 
@@ -816,6 +855,8 @@ As we did for the theft data in Chapter 5, we will first download the boundary d
 
 ```{r}
 #| label: script-06-download-boundaries
+#| lst-label: lst-mapping-crime-patterns-script-06-download-boundaries
+#| lst-cap: ""
 #| output: false
 #| filename: "chapter_06.R"
 
@@ -832,6 +873,8 @@ Add the following code after the pipeline that loads and wrangles the bike-theft
 
 ```{r}
 #| label: script-06-load-boundaries
+#| lst-label: lst-mapping-crime-patterns-script-06-load-boundaries
+#| lst-cap: ""
 #| filename: "chapter_06.R"
 
 # Load Vancouver neighbourhood boundaries
@@ -846,6 +889,8 @@ Before we clip the density layer to the city boundary, check that your file `cha
 
 ```{r}
 #| label: script-06-checkpoint
+#| lst-label: lst-mapping-crime-patterns-script-06-checkpoint
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_06.R"
 
@@ -896,6 +941,8 @@ We will now add the code needed to clip the KDE layer to the city boundary to `c
 
 ```{r}
 #| label: script-06-initial-clip
+#| lst-label: lst-mapping-crime-patterns-script-06-initial-clip
+#| lst-cap: ""
 #| filename: "chapter_06.R"
 
 # Estimate density of bike thefts and clip the result
@@ -925,7 +972,7 @@ st_transform(bike_theft_density, crs = st_crs(vancouver_nbhds))
 ::: {.callout-quiz .callout title="Clipping map layers"}
 
 ```{r}
-#| label: clipping_quiz
+#| label: clipping-quiz
 #| echo: false
 
 clipping_quiz1 <- c(
@@ -959,7 +1006,7 @@ clipping_quiz2 <- c(
 
 ## Specifying a grid for kernel density estimation
 
-By default, `hotspot_kde()` calculates density estimates (KDE values) for every grid cell within the area (the convex hull) covered by the crime data. This is fine when at least a few crimes have occurred in all the parts of the area for which we have data. But if crime is heavily concentrated in a few places and there are large areas with no crimes, the density layer will not cover the whole area for which we have data. You can see this in the maps above (note Map D, in particular) -- some areas on the outskirts of the city are not covered by the convex hull of the `bike_thefts` data. When this is the case, it is important to extend the density layer manually to make it clear that the apparent low density of crime in some places is due to a genuine lack of recorded crime there, rather than because we do not have data for those places. 
+By default, `hotspot_kde()` calculates density estimates (KDE values) for every grid cell within the area (the convex hull) covered by the crime data. This is fine when at least a few crimes have occurred in all the parts of the area for which we have data. But if crime is heavily concentrated in a few places and there are large areas with no crimes, the density layer will not cover the whole area for which we have data. You can see this in @map-vancouver-clipping-stage-clipped-density -- some areas on the outskirts of the city are not covered by the convex hull of the `bike_thefts` data. When this is the case, it is important to extend the density layer manually to make it clear that the apparent low density of crime in some places is due to a genuine lack of recorded crime there, rather than because we do not have data for those places.
 
 We can do this by providing `hotspot_kde()` with a grid of cells for which KDE values should be calculated, rather than letting `hotspot_kde()` create the grid automatically. The easiest way to do this is to use the `hotspot_grid()` function to create a grid that covers all the areas within a set boundary, such as a city boundary. 
 
@@ -967,6 +1014,8 @@ In the `chapter_06.R` file, replace the code that creates `bike_theft_density_cl
 
 ```{r}
 #| label: script-06-final-density
+#| lst-label: lst-mapping-crime-patterns-script-06-final-density
+#| lst-cap: ""
 #| filename: "chapter_06.R"
 
 # Estimate density of bike thefts and clip the result
@@ -990,8 +1039,13 @@ KDE maps are extremely useful because they allow us to visualise overall _patter
 
 We can convert the output produced by `hotspot_kde()` to isobands using the `hotspot_isoband()` function from sfhotspot. This function takes a KDE layer and converts it to a set of polygons that represent areas of equal density. We can then plot these polygons on a map instead of the KDE layer. For example, we can just add `hotspot_isoband()` to the end of the code pipeline we used to create the clipped KDE layer, and then plot the result.
 
+::: {#map-vancouver-bicycle-theft-density-isobands}
+
 ```{r}
+#| fig-alt: "A density map of bicycle thefts in Vancouver. Shaded bands join areas of similar estimated density and are clipped to the neighbourhood boundaries."
 #| label: map-isoband
+#| lst-label: lst-mapping-crime-patterns-map-isoband
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Estimate density of bike thefts, clip result, and convert to isobands
@@ -1003,6 +1057,8 @@ bike_theft_density_isoband <- bike_thefts |>
 # Plot density map
 hotspot_map(bike_theft_density_isoband)
 ```
+
+:::
 1. It is important to add `hotspot_isoband()` to the pipeline _before_ `hotspot_clip()`, since otherwise `hotspot_isoband()` is likely to produce an error.
 
 One potential drawback of using isobands is that they create the risk of the environmental fallacy: all the locations on the map within a particular isoband look on the map like they have exactly the same density of crime, when fact there will be some variation within each band because each band represents a _range_ of values. How big this problem is depends on how wide the range of values is in each isoband. We can control this by specifying how many different bands the range of KDE values should be split into. By default, `hotspot_isoband()` splits the range of values into 5 bands, but we can change this using the `breaks` argument. For example, if we wanted to split the range of values into 10 bands, we could use `hotspot_isoband(breaks = 10)`.
@@ -1030,6 +1086,9 @@ Since there are elements that are common to almost all maps, behind the scenes t
 In the background, `hotspot_map()` sets up the basic combination of ggplot2 functions that are needed to produce a particular type of map. The combination of functions that is required depends on the type of map that we are making. For example, a density map requires a different combination of functions than a dot map. The `hotspot_map()` function takes care of this for us, so that we can focus on the parts of the map that we want to change. For example, when we run the code:
 
 ```{r}
+#| label: show-hotspot-map-stack
+#| lst-label: lst-mapping-crime-patterns-show-hotspot-map-stack
+#| lst-cap: ""
 #| eval: false
 
 hotspot_map(bike_theft_density)
@@ -1038,6 +1097,9 @@ hotspot_map(bike_theft_density)
 in the background `hotspot_map()` combines these functions from ggplot2:
 
 ```{r}
+#| label: show-equivalent-ggplot-stack
+#| lst-label: lst-mapping-crime-patterns-show-equivalent-ggplot-stack
+#| lst-cap: ""
 #| eval: false
 
 ggplot() +
@@ -1070,8 +1132,13 @@ The first family of functions we will learn about is the `geom_*()` family. The 
 Add this map-plotting code to the end of `chapter_06.R`:
 
 
+::: {#map-vancouver-bicycle-theft-density-boundaries}
+
 ```{r}
+#| fig-alt: "A bicycle-theft density map clipped to Vancouver, with neighbourhood boundaries outlined in green over a street base map."
 #| label: script-06-boundary-map
+#| lst-label: lst-mapping-crime-patterns-script-06-boundary-map
+#| lst-cap: ""
 #| filename: "chapter_06.R"
 
 # Plot density map
@@ -1080,6 +1147,8 @@ hotspot_map(bike_theft_density_clip, basemap_type = "cartolight") +
   geom_sf(data = vancouver_nbhds, colour = "seagreen3", fill = NA)
 ```
 
+:::
+
 
 It would also be useful to add labels showing the names of the different neighbourhoods. The challenge with adding labels to maps is to make sure those labels are legible while not obscuring the data layer, so we'll have to do this carefully.
 
@@ -1087,6 +1156,9 @@ We can add labels to a map using the `geom_sf_label()` function from ggplot2. Bu
 
 
 ```{r}
+#| label: head-vancouver-nbhds
+#| lst-label: lst-mapping-crime-patterns-head-vancouver-nbhds
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(vancouver_nbhds)
@@ -1116,8 +1188,12 @@ Since we want the text of the labels to be the names of the neighbourhoods, we c
 
 Replace the existing `hotspot_map()` stack in the `chapter_06.R` file with this stack and then run that code. You will see that as well as specifying the label aesthetic using `aes()`, we have also specified several other aesthetics outside of `aes()` to make sure the labels are less visually prominent than the density layer (because the most-important element on a map is always the data layer).
 
+::: {#map-vancouver-bicycle-theft-density-labelled}
+
 ```{r}
 #| label: script-06-final-map
+#| lst-label: lst-mapping-crime-patterns-script-06-final-map
+#| lst-cap: ""
 #| filename: "chapter_06.R"
 #| fig-alt: "A density map of recorded bicycle thefts in Vancouver in 2020. The highest estimated densities are in and around the Downtown and West End neighbourhoods. Neighbourhood boundaries and labels appear over a pale base map."
 
@@ -1137,6 +1213,8 @@ hotspot_map(bike_theft_density_clip, basemap_type = "cartolight") +
     linewidth = NA # <6>
   )
 ```
+
+:::
 1. `alpha = 0.5` makes the label background semi-transparent so that we can see the density layer underneath it,
 2. `colour = "seagreen"` slightly reduces the prominence of the label text to avoid distracting attention from the density layer,
 3. `fill = "white"` makes the label background white so that it is legible against the base map and density layer, remembering that since we have set `alpha = 0.5` the background will be semi-transparent,
@@ -1205,6 +1283,9 @@ We have practised how to:
 Your complete script should now look like this:
 
 ```{r}
+#| label: show-chapter-06-script
+#| lst-label: lst-mapping-crime-patterns-show-chapter-06-script
+#| lst-cap: ""
 #| eval: false
 #| file: "../R/chapter_06.R"
 #| filename: "chapter_06.R"

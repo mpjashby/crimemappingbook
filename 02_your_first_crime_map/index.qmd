@@ -45,6 +45,8 @@ ggsave(
 )
 ```
 
+::: {#map-atlanta-downtown-homicides-introduction}
+
 ```{r}
 #| label: show-final-map
 #| echo: false
@@ -54,6 +56,8 @@ ggsave(
 
 knitr::include_graphics(here("images", "atlanta_downtown_homicides.jpg"))
 ```
+
+:::
 
 In this chapter, we will practise how to:
 
@@ -128,7 +132,8 @@ To help keep track of which code in this book is permanent code and which is tem
 
 ::: {.callout-quiz .callout title="Permanent and temporary code"}
 
-```{r permanent-code-quiz}
+```{r}
+#| label: permanent-code-quiz
 #| echo: false
 
 permanent_code_quiz1 <- c(
@@ -173,6 +178,8 @@ Copy the code below and paste it into the blank file `chapter_02a.R` that you cr
 
 ```{r}
 #| label: script-02a-packages
+#| lst-label: lst-your-first-crime-map-script-02a-packages
+#| lst-cap: ""
 #| filename: "chapter_02a.R"
 
 # Load the R packages we need to analyse this data
@@ -196,7 +203,8 @@ Highlight both lines of code and press the triangular **Execute Code** button or
 
 ::: {.callout-quiz .callout title="Loading packages"}
 
-```{r loading_packages_quiz}
+```{r}
+#| label: loading-packages-quiz
 #| echo: false
 
 loading_packages_quiz1 <- c(
@@ -234,6 +242,8 @@ Copy these lines of code into your R script file. Now click anywhere on either l
 
 ```{r}
 #| label: script-02a-download
+#| lst-label: lst-your-first-crime-map-script-02a-download
+#| lst-cap: ""
 #| filename: "chapter_02a.R"
 
 # Download the data from a URL and store it in a local file
@@ -253,6 +263,8 @@ Now we have downloaded the data, we need to load it into our current R session s
 
 ```{r}
 #| label: script-02a-load
+#| lst-label: lst-your-first-crime-map-script-02a-load
+#| lst-cap: ""
 #| filename: "chapter_02a.R"
 
 # Load the data into R
@@ -273,12 +285,15 @@ Sometimes R has several functions that have similar names but do different thing
 We have stored the results of the `read_csv()` function in an R *object* called `homicides`. An object in R is anything that stores any type of data. There are many types of objects, but for this chapter we don't need to explore these in any more detail. All you need to remember for now is that objects store data (which is why their names are often nouns) and functions do things.
 
 
-### Viewing the data
+### Viewing the data {#sec-your-first-crime-map-viewing-the-data}
 
 To check the data has been loaded correctly, we can view the loaded data using the `head()` function. By default, `head()` prints the first six rows of the data stored in an object, but in this case the data only has four rows so all of them are printed. Copy this code into the R Console and press {{< kbd win="Enter" mac="Return" >}} on your keyboard.
 
 
 ```{r}
+#| label: head-homicides
+#| lst-label: lst-your-first-crime-map-head-homicides
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(homicides)
@@ -309,7 +324,8 @@ On the other hand, if you type the code `head("homicides")` or `head('homicides'
 
 ::: {.callout-quiz .callout title="Loading data"}
 
-```{r loading-data-quiz}
+```{r}
+#| label: loading-data-quiz
 #| echo: false
 
 loading_data_quiz1 <- c(
@@ -375,7 +391,7 @@ based on the wrangled data
 :::::
 
 
-### Converting the data into a spatial format
+### Converting the data into a spatial format {#sec-your-first-crime-map-converting-the-data-into-a-spatial-format}
 
 We need to complete two steps to get our data ready for making a map. First we need to convert the data into a *simple features* or SF object, which is a special type of R object that can be used by functions that process spatial data. We will cover the details of the `st_as_sf()` function that converts our data into an SF object later on. 
 
@@ -384,6 +400,8 @@ Copy this code into the `chapter_02a.R` file, then click anywhere on the new lin
 
 ```{r}
 #| label: script-02a-spatial
+#| lst-label: lst-your-first-crime-map-script-02a-spatial
+#| lst-cap: ""
 #| filename: "chapter_02a.R"
 
 # Convert the data to a simple features object, which we can use in functions
@@ -398,6 +416,9 @@ homicides_sf <- st_as_sf(
 When you run this code, it looks like nothing happened. This is because the results of the code are stored in the `homicides_sf` object. We can check the contents of `homicides_sf` in the R Console as before:
 
 ```{r}
+#| label: head-homicides-sf
+#| lst-label: lst-your-first-crime-map-head-homicides-sf
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(homicides_sf)
@@ -406,7 +427,7 @@ head(homicides_sf)
 The data looks identical to before running the function `st_as_sf()`, except that the two columns called `longitude` and `latitude` have disappeared and there is now an extra column called `geometry`. The `geometry` column is important because lots of functions in R can recognise that the `geometry` column represents a location on the surface of the Earth that can be used to analyse and map data in space.
 
 
-### Transforming the coordinate reference system
+### Transforming the coordinate reference system {#sec-your-first-crime-map-transforming-the-coordinate-reference-system}
 
 The `geometry` column in the `homicides_sf` object represents locations on the surface of the Earth using _coordinates_ (pairs of numbers). In this case, the coordinates are expressed as longitudes and latitudes, but there are lots of other types of coordinates (known as _coordinate reference systems_). 
 
@@ -417,6 +438,8 @@ To do this, we will use the `st_transform()` function, together with a code repr
 
 ```{r}
 #| label: script-02a-transform
+#| lst-label: lst-your-first-crime-map-script-02a-transform
+#| lst-cap: ""
 #| filename: "chapter_02a.R"
 
 # Transform the data coordinate reference system
@@ -426,6 +449,9 @@ homicides_sf_trans <- st_transform(homicides_sf, "EPSG:26967")
 Once again, we can check what the result looks like in the R Console.
 
 ```{r}
+#| label: head-homicides-sf-trans
+#| lst-label: lst-your-first-crime-map-head-homicides-sf-trans
+#| lst-cap: ""
 #| filename: "R Console"
 
 head(homicides_sf_trans)
@@ -450,6 +476,8 @@ At the moment, the file `chapter_02a.R` that you have created should look like t
 
 ```{r}
 #| label: script-02a-checkpoint
+#| lst-label: lst-your-first-crime-map-script-02a-checkpoint
+#| lst-cap: ""
 #| eval: false
 #| filename: chapter_02a.R
 
@@ -504,7 +532,8 @@ You are now ready to complete the final stage: drawing the map.
 
 ::: {.callout-quiz .callout title="Processing the data"}
 
-```{r processing-data-quiz}
+```{r}
+#| label: processing-data-quiz
 #| echo: false
 
 processing_data_quiz1 <- c(
@@ -575,8 +604,12 @@ To do that we will use a function called `hotspot_map()` from the sfhotspot R pa
 Copy the code into the `chapter_02a.R` file, put the cursor somewhere on the line that includes the function `hotspot_map()`, then press {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard.
 
 
+::: {#map-atlanta-downtown-homicides}
+
 ```{r}
 #| label: script-02a-map
+#| lst-label: lst-your-first-crime-map-script-02a-map
+#| lst-cap: ""
 #| filename: chapter_02a.R
 #| fig-alt: "A map of homicides in downtown Atlanta, Georgia, in 2019. The map shows a street map of the area with four points marking the locations of homicides."
 
@@ -589,7 +622,9 @@ hotspot_map(
 )
 ```
 
-When you run this code in Positron, you should see a map like the one above appear in the Plots panel in the bottom-right of the Positron window. Depending on the size of the screen you are using, the map might be quite small. If so, you might want to split the Plots panel out into a separate window so that you can see the map more clearly. To do this, look for two icons in the top-right corner of the Plots panel. The icon on the right is a rubbish bin, but the icon to the left of it looks like a square with an arrow pointing out of it. Click the small downward-facing triangle between the two icons and then click **Open Plots Gallery in New Window**. You will now see a larger version of the map in a separate window -- you can resize this window to make the map as large as you want on your screen.
+:::
+
+When you run this code in Positron, you should see a map like @map-atlanta-downtown-homicides appear in the Plots panel in the bottom-right of the Positron window. Depending on the size of the screen you are using, the map might be quite small. If so, you might want to split the Plots panel out into a separate window so that you can see the map more clearly. To do this, look for two icons in the top-right corner of the Plots panel. The icon on the right is a rubbish bin, but the icon to the left of it looks like a square with an arrow pointing out of it. Click the small downward-facing triangle between the two icons and then click **Open Plots Gallery in New Window**. You will now see a larger version of the map in a separate window -- you can resize this window to make the map as large as you want on your screen.
 
 The map we have created with this code is very basic. Later in the course we will learn to make much better maps. For now, you can experiment with changing the appearance of the map by changing various parts of the code above. For example, you could change the colour of the points that mark the homicides by changing the code `colour = "orangered1"` to `colour = "mediumblue"`, or change the base map to a different style by changing the code `basemap_type = "cartolight"` to `basemap_type = "cartodark"`. Try some of these out -- after you make each change, press {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard to run the code again to see how the map changes.
 
@@ -598,7 +633,8 @@ When you have finished experimenting with this code, save the `chapter_02a.R` fi
 
 ::: {.callout-quiz .callout title="Drawing the map"}
 
-```{r drawing-map-quiz}
+```{r}
+#| label: drawing-map-quiz
 #| echo: false
 
 drawing_map_quiz1 <- c(
@@ -639,6 +675,8 @@ Create a new script file in Positron by clicking the **File** menu then **New Fi
 
 ```{r}
 #| label: script-02b-complete
+#| lst-label: lst-your-first-crime-map-script-02b-complete
+#| lst-cap: ""
 #| eval: false
 #| filename: chapter_02b.R
 
@@ -674,11 +712,16 @@ hotspot_map(
 )
 ```
 
+::: {#map-glenrose-heights-homicides}
+
 ```{r}
+#| label: draw-glenrose-heights-homicides
 #| echo: false
 #| file: "../R/chapter_02b.R"
 #| fig-alt: "A map of homicides in Glenrose Heights, Atlanta, Georgia, in 2019. The map shows a street map of the area with four points marking the locations of homicides."
 ```
+
+:::
 
 When we want to run all the code in a file, it would be tedious to run each chunk of code separately. Instead, we can run all the code in a file in one go by clicking anywhere in the file, pressing {{< kbd win="Ctrl-A" mac="Command-A" >}} to select all the code, then pressing {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} to run all the code at once. You should see some messages appear in the R Console, and the final map appear in the Plots panel.
 

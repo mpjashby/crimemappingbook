@@ -17,7 +17,8 @@ This is an example report used to help students understand how different types o
 :::
 
 
-```{r setup}
+```{r}
+#| label: setup
 #| include: false
 
 # Load packages ----
@@ -106,7 +107,8 @@ waste_counts_type <- waste |>
 This report identifies the parts of the City of Yarra that had the highest volume of illegal waste dumping in 2018. Incidents are recorded by the city authorities if the incidents are reported to them by other agencies or directly by members of the public. It is likely that the number of recorded incidents underestimates the actual number of incidents that occur, since not all land owners will report to the City authorities and some dumping may occur on land without a clear owner or manager who might report it.
 
 
-```{r median-volume}
+```{r}
+#| label: median-volume
 # We will save this to an object because we need the result twice: once to 
 # report the value itself and once to work out whether 'metres' should be
 # singular or plural
@@ -122,7 +124,8 @@ In 2018 there were `r comma(nrow(waste))` incidents of illegal dumping of waste 
 The typical incident involved only a small quantity of waste, with half of reported incidents involving `r median_volume` cubic `r if_else(median_volume == 1, "metre", "metres")` of waste or less and no incidents involving more than `r max(pull(waste, "volume_m3"))` cubic metres of waste.
 
 
-```{r top-suburbs}
+```{r}
+#| label: top-suburbs
 top_suburbs <- waste_counts |> 
   mutate(
     # Calculate the proportion of waste dumped in each suburb
@@ -149,7 +152,7 @@ top_suburbs <- waste_counts |>
 @fig-suburb-map shows the overall volume of illegal waste dumped in each suburb of Yarra in 2018. The `r nrow(top_suburbs)` suburbs with the highest volume of illegal waste dumping (out of the `r nrow(waste_counts)` suburbs in the city) accounted for `r percent(sum(pull(top_suburbs, "prop")), accuracy = 1)` of all reported illegal dumping in Yarra. Those suburbs were `r knitr::combine_words(pull(top_suburbs, "label_long"), oxford_comma = FALSE)`.
 
 
-```{r suburb-map}
+```{r}
 #| label: fig-suburb-map
 #| fig-asp: 1
 #| fig-cap: "Volume of illegal waste dumped in Yarra suburbs, 2018"
@@ -202,7 +205,7 @@ ggplot(waste_counts) +
 It is not possible with the available data to identify where within each suburb dumping incidents were most concentrated. Further analysis would be necessary to identify the streets or open spaces with most incidents, but @fig-nbhd-maps shows the boundaries of the three suburbs that had the highest volume of dumped waste. 
 
 
-```{r top-suburbs-map}
+```{r}
 #| label: fig-nbhd-maps
 #| fig-asp: 1
 #| fig-cap: "Boundaries of the neighbourhoods with the highest volume of illegally dumped waste, 2018"
@@ -280,7 +283,8 @@ wrap_plots(
 ```
 
 
-```{r waste-type-counts}
+```{r}
+#| label: waste-type-counts
 #| include: false
 
 waste_type_counts <- waste_counts_type |> 
@@ -302,7 +306,7 @@ waste_type_counts <- waste_counts_type |>
 Dumped waste was categorised into several types: `r knitr::combine_words(pull(waste_type_counts, "label"), oxford_comma = FALSE)`. There was some variation in where different types of waste were dumped. @fig-type-maps shows the volume of waste of each main type that were reported as being dumped in each suburb. For example, while the suburb of `r pluck(slice_max(filter(waste_counts_type, waste_type == "General waste"), order_by = volume, n = 1), "suburb")` had the highest volume of dumping of general waste, `r pluck(slice_max(filter(waste_counts_type, waste_type == "Multiple waste types"), order_by = volume, n = 1), "suburb")` had the highest volume of dumping that involved multiple waste types.
 
 
-```{r types-map}
+```{r}
 #| label: fig-type-maps
 #| fig-asp: 1.4
 #| fig-cap: "Volume of illegal waste of different types dumped in Yarra suburbs, 2018"

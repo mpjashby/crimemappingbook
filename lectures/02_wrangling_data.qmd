@@ -34,6 +34,7 @@ execute:
 ## Minimal working answer
 
 ```{r}
+#| label: draw-london-attacks-introduction
 #| eval: false
 
 # Load packages
@@ -64,6 +65,7 @@ ggplot(attacks) +
 ## Minimal working answer
 
 ```{r}
+#| label: draw-london-attacks-script
 #| echo: false
 
 # Load packages
@@ -156,6 +158,7 @@ e.g. `head(attacks)` to find names of columns in a dataset
 Permanent code to go in a script:
 
 ```{r}
+#| label: load-london-attacks
 #| eval: false
 #| filename: "chapter_02.R"
 
@@ -167,6 +170,7 @@ attacks <- read_csv("https://mpjashby.github.io/crimemappingdata/london_attacks.
 Temporary code to go in the R Console:
 
 ```{r}
+#| label: preview-london-attacks
 #| eval: false
 #| filename: "R Console"
 
@@ -181,6 +185,7 @@ head(attacks)
 ## :no_entry_sign: Don't load packages part-way through scripts
 
 ```{r}
+#| label: convert-attacks-with-separate-packages
 #| eval: false
 #| code-line-numbers: "5"
 
@@ -204,6 +209,7 @@ attacks_sf <- st_as_sf(
 ## :sunglasses: Load all the packages at the start of the script
 
 ```{r}
+#| label: convert-attacks-with-combined-packages
 #| eval: false
 
 pacman::p_load(sf, tidyverse)
@@ -224,12 +230,14 @@ attacks_sf <- st_as_sf(
 ## :no_entry_sign: No local file paths
 
 ```{r}
+#| label: read-absolute-path
 #| error: true
 
 readr::read_csv("/Users/John Smith/Crime Mapping/downtown_homicides.csv")
 ```
 
 ```{r}
+#| label: read-relative-path
 #| error: true
 
 readr::read_csv("Crime Mapping/Week 1/downtown_homicides.csv")
@@ -242,6 +250,7 @@ readr::read_csv("Crime Mapping/Week 1/downtown_homicides.csv")
 ## :sunglasses: Download data inside your script
 
 ```{r}
+#| label: read-data-url
 readr::read_csv("https://mpjashby.github.io/crimemappingdata/london_attacks.csv")
 ```
 
@@ -252,6 +261,7 @@ readr::read_csv("https://mpjashby.github.io/crimemappingdata/london_attacks.csv"
 ## :warning: Copy/paste with care: objects may not exist
 
 ```{r}
+#| label: show-incomplete-map-script
 #| error: true
 #| code-line-numbers: "5,9"
 
@@ -274,6 +284,7 @@ ggplot(homicides_sf_trans)
 ## :warning: Copy/paste with care: different maps need different choices
 
 ```{r}
+#| label: transform-attacks-georgia-example
 #| eval: false
 
 # Transform the data to a co-ordinate reference system for the state of Georgia
@@ -282,6 +293,7 @@ fatal_terrorist_sf_trans <- st_transform(fatal_terrorist_sf, "EPSG:26967")
 
 ::: {.fragment}
 ```{r}
+#| label: draw-attacks-before-crs-correction
 #| echo: false
 
 readr::read_csv("https://mpjashby.github.io/crimemappingdata/london_attacks.csv") |> 
@@ -308,6 +320,7 @@ readr::read_csv("https://mpjashby.github.io/crimemappingdata/london_attacks.csv"
 ## :warning: Copy/paste with care: different maps need different choices
 
 ```{r}
+#| label: transform-attacks-london-example
 #| eval: false
 #| code-line-numbers: "1"
 
@@ -318,6 +331,7 @@ fatal_terrorist_sf_trans <- st_transform(fatal_terrorist_sf, "EPSG:26967")
 
 ::: {.fragment}
 ```{r}
+#| label: draw-attacks-with-georgia-crs
 #| echo: false
 
 readr::read_csv("https://mpjashby.github.io/crimemappingdata/london_attacks.csv") |> 
@@ -344,6 +358,7 @@ readr::read_csv("https://mpjashby.github.io/crimemappingdata/london_attacks.csv"
 ## :sunglasses: Copy/paste with care: different maps need different choices
 
 ```{r}
+#| label: transform-attacks-british-national-grid
 #| eval: false
 
 # Transform the data to a co-ordinate reference system for the UK
@@ -351,6 +366,7 @@ fatal_terrorist_sf_trans <- st_transform(fatal_terrorist_sf, "EPSG:27700")
 ```
 
 ```{r}
+#| label: draw-attacks-with-british-national-grid
 #| echo: false
 
 readr::read_csv("https://mpjashby.github.io/crimemappingdata/london_attacks.csv") |> 
@@ -376,6 +392,7 @@ readr::read_csv("https://mpjashby.github.io/crimemappingdata/london_attacks.csv"
 ## :no_entry_sign: Don't use `zoom` in `annotation_map_tile()`
 
 ```{r}
+#| label: show-invalid-tile-argument
 #| code-line-numbers: "10"
 
 # Load the R packages we need to analyse this data
@@ -398,6 +415,7 @@ ggplot(attacks) +
 ## :sunglasses: Use `zoomin` in `annotation_map_tile()`
 
 ```{r}
+#| label: correct-tile-argument
 #| code-line-numbers: "10"
 
 # Load the R packages we need to analyse this data
@@ -421,6 +439,7 @@ ggplot(attacks) +
 
 
 ```{r}
+#| label: draw-attacks-with-labels
 #| eval: false
 
 pacman::p_load(ggspatial, sf, tidyverse)
@@ -448,6 +467,7 @@ ggplot(attacks) +
 
 
 ```{r}
+#| label: draw-labelled-attacks-script
 #| eval: false
 
 # Load the R packages we need to analyse this data
@@ -479,6 +499,7 @@ ggplot(attacks) +
 :no_entry_sign: Incorrect:
 
 ```{r}
+#| label: show-comment-example
 #| eval: false
 
 #This is a comment
@@ -489,6 +510,7 @@ ggplot(attacks) +
 :sunglasses: Correct:
 
 ```{r}
+#| label: show-comment-in-script
 #| eval: false
 
 # This is a comment
@@ -507,6 +529,7 @@ This is going to matter a lot later in the module
 ## :no_entry_sign: Don't compress your code
 
 ```{r}
+#| label: show-annotated-map-script
 #| eval: false
 
 # Load the R packages we need to analyse this data
@@ -534,6 +557,7 @@ ggplot(attacks) +
 ## :wind_face: Let your code breathe
 
 ```{r}
+#| label: show-spaced-map-script
 #| eval: false
 
 # Load the R packages we need to analyse this data
@@ -574,6 +598,7 @@ ggplot(attacks) +
 ## Lots of R code looks like this:
 
 ```{r}
+#| label: count-robbery-weekdays-intermediate
 #| eval: false
 
 # This script counts the number of robberies on each day of the week in the
@@ -602,6 +627,7 @@ count(robbery4, weekday)
 ## Lots of R code looks like this:
 
 ```{r}
+#| label: count-robbery-weekdays-complete
 #| eval: false
 #| code-line-numbers: "5,8"
 
@@ -636,6 +662,7 @@ count(robbery4, weekday)
 ## Lots of R code looks like this:
 
 ```{r}
+#| label: count-robbery-weekdays-error-example
 #| eval: false
 #| code-line-numbers: "5,8,11,14,17"
 
@@ -679,6 +706,7 @@ make code longer :arrow_forward: harder to read :arrow_forward: harder to unders
 increase risk of typo errors, e.g.
 
 ```{r}
+#| label: show-misspelt-object-error
 #| eval: false
 #| code-line-numbers: "3"
 
@@ -692,6 +720,7 @@ robbery4 <- mutate(robbary3, weekday = wday(date_time, label = TRUE))
 make it easier to mix up objects, e.g.
 
 ```{r}
+#| label: show-wrong-intermediate-object
 #| eval: false
 #| code-line-numbers: "5"
 
@@ -712,6 +741,7 @@ robbery4 <- mutate(robbery2, weekday = wday(date_time, label = TRUE))
 Instead of:
 
 ```{r}
+#| label: load-and-select-robbery-dates
 #| eval: false
 
 robbery1 <- read_csv("https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv")
@@ -723,6 +753,7 @@ robbery2 <- select(robbery1, date_time)
 Use this:
 
 ```{r}
+#| label: load-robbery-dates-with-pipe
 #| eval: false
 
 robbery_dates <- read_csv("https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv") |> 
@@ -744,6 +775,7 @@ robbery_dates <- read_csv("https://mpjashby.github.io/crimemappingdata/san_franc
 ## Keep extending the _pipeline_ until you have produced an object you need to keep
 
 ```{r}
+#| label: display-robbery-weekday-table
 #| code-line-numbers: "5"
 
 robbery_wday_count <- read_csv("https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv") |> 
@@ -762,6 +794,7 @@ gt::gt(robbery_wday_count)
 ## Read `|>` as "and then"
 
 ```{r}
+#| label: count-robbery-weekdays-pipeline
 #| eval: false
 #| code-line-numbers: "1"
 
@@ -783,6 +816,7 @@ robbery_wday_count <- read_csv("https://mpjashby.github.io/crimemappingdata/san_
 ## Read `|>` as "and then"
 
 ```{r}
+#| label: repeat-robbery-weekday-pipeline
 #| eval: false
 #| code-line-numbers: "1-2"
 
@@ -805,6 +839,7 @@ robbery_wday_count <- read_csv("https://mpjashby.github.io/crimemappingdata/san_
 ## Read `|>` as "and then"
 
 ```{r}
+#| label: show-robbery-pipeline-stages
 #| eval: false
 #| code-line-numbers: "1-3"
 
@@ -828,6 +863,7 @@ robbery_wday_count <- read_csv("https://mpjashby.github.io/crimemappingdata/san_
 ## Read `|>` as "and then"
 
 ```{r}
+#| label: show-robbery-pipe-flow
 #| eval: false
 #| code-line-numbers: "1-4"
 
@@ -852,6 +888,7 @@ robbery_wday_count <- read_csv("https://mpjashby.github.io/crimemappingdata/san_
 ## Read `|>` as "and then"
 
 ```{r}
+#| label: show-complete-robbery-pipeline
 #| eval: false
 
 robbery_wday_count <- read_csv("https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv") |> 
@@ -875,6 +912,7 @@ robbery_wday_count <- read_csv("https://mpjashby.github.io/crimemappingdata/san_
 ## :warning: Don't add a pipe `|>` to the final line
 
 ```{r}
+#| label: count-robbery-weekdays-directly
 #| error: true
 #| code-line-numbers: "5"
 
@@ -887,6 +925,7 @@ robbery_wday_count <- read_csv("https://mpjashby.github.io/crimemappingdata/san_
 
 
 ```{r}
+#| label: show-robbery-pipeline-row-count-error
 #| error: true
 #| code-line-numbers: "5"
 

@@ -452,8 +452,8 @@ window.Quarto = {
   <li><a href="#what-is-a-hotspot" id="toc-what-is-a-hotspot" class="nav-link active" data-scroll-target="#what-is-a-hotspot"><span class="header-section-number">13.1</span> What is a hotspot?</a></li>
   <li><a href="#showing-the-density-of-risk" id="toc-showing-the-density-of-risk" class="nav-link" data-scroll-target="#showing-the-density-of-risk"><span class="header-section-number">13.2</span> Showing the density of risk</a>
   <ul class="collapse">
-  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling"><span class="header-section-number">13.2.1</span> Data wrangling</a></li>
-  <li><a href="#calculating-dual-kernel-density" id="toc-calculating-dual-kernel-density" class="nav-link" data-scroll-target="#calculating-dual-kernel-density"><span class="header-section-number">13.2.2</span> Calculating dual kernel density</a></li>
+  <li><a href="#sec-mapping-hotspots-data-wrangling" id="toc-sec-mapping-hotspots-data-wrangling" class="nav-link" data-scroll-target="#sec-mapping-hotspots-data-wrangling"><span class="header-section-number">13.2.1</span> Data wrangling</a></li>
+  <li><a href="#sec-mapping-hotspots-calculating-dual-kernel-density" id="toc-sec-mapping-hotspots-calculating-dual-kernel-density" class="nav-link" data-scroll-target="#sec-mapping-hotspots-calculating-dual-kernel-density"><span class="header-section-number">13.2.2</span> Calculating dual kernel density</a></li>
   </ul></li>
   <li><a href="#finding-hotspots-using-gi" id="toc-finding-hotspots-using-gi" class="nav-link" data-scroll-target="#finding-hotspots-using-gi"><span class="header-section-number">13.3</span> Finding hotspots using Gi*</a></li>
   <li><a href="#finding-clusters-using-dbscan" id="toc-finding-clusters-using-dbscan" class="nav-link" data-scroll-target="#finding-clusters-using-dbscan"><span class="header-section-number">13.4</span> Finding clusters using DBSCAN</a></li>
@@ -589,9 +589,18 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </div>
 </div>
 <p>In this chapter we will learn how to make maps that could be useful in identifying and responding to hotspots of crime. Among other maps, we will create this map showing hotspots of robbery in Nottingham, England.</p>
+<div id="map-nottingham-robbery-introduction" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-nottingham-robbery-introduction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <p class="full-width-image">
-<img src="../images/nottingham_robbery_map.jpg" alt="A map of Nottingham showing the highest robbery density in significant hotspot cells near the city centre">
+<img src="../images/nottingham_robbery_map.jpg" alt="A map of Nottingham showing the highest robbery density in significant hotspot cells near the city centre" class="figure-img">
 </p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-nottingham-robbery-introduction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;13.1
+</figcaption>
+</figure>
+</div>
 <p>In this chapter, we will learn how to:</p>
 <ul>
 <li>understand what crime hotspots are and why analysts usually study them at small geographic scales;</li>
@@ -613,8 +622,8 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Which one of these statements is true?</strong></p>
-<div id="radio_GEUSFXUEYQ" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_GEUSFXUEYQ" value=""> <span>Crime is extremely geographically concentrated – we can expect half of crime to be concentrated in about 1% of micro places</span></label><label><input type="radio" autocomplete="off" name="radio_GEUSFXUEYQ" value="answer"> <span>Crime is very geographically concentrated – we can expect half of crime to be concentrated in about 5% of micro places</span></label><label><input type="radio" autocomplete="off" name="radio_GEUSFXUEYQ" value=""> <span>Crime is slightly geographically concentrated – we can expect half of crime to be concentrated in about one quarter of micro places</span></label><label><input type="radio" autocomplete="off" name="radio_GEUSFXUEYQ" value=""> <span>Crime is usually not geographically concentrated at micro places</span></label>
+<div id="radio_PXWLUSKPID" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_PXWLUSKPID" value=""> <span>Crime is extremely geographically concentrated – we can expect half of crime to be concentrated in about 1% of micro places</span></label><label><input type="radio" autocomplete="off" name="radio_PXWLUSKPID" value="answer"> <span>Crime is very geographically concentrated – we can expect half of crime to be concentrated in about 5% of micro places</span></label><label><input type="radio" autocomplete="off" name="radio_PXWLUSKPID" value=""> <span>Crime is slightly geographically concentrated – we can expect half of crime to be concentrated in about one quarter of micro places</span></label><label><input type="radio" autocomplete="off" name="radio_PXWLUSKPID" value=""> <span>Crime is usually not geographically concentrated at micro places</span></label>
 </div>
 </div>
 </div>
@@ -643,16 +652,22 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </div>
 </div>
 <p>Burglary is a good example of why the routine activities approach to thinking about crime that we introduced in <a href="../01_getting_started/index.html" class="quarto-xref"><span>Chapter 1</span></a> emphasises thinking about <em>targets</em> of crime rather than focusing only on crime <em>victims</em>. In the case of burglary, one person might be the owner of a large number of buildings (e.g.&nbsp;a farm with lots of out-buildings) or lots of people might own a single building (such as a house converted into flats). By thinking about the targets that are attacked by offenders, we can identify that burglary rates should be calculated based on buildings rather than, for example, residential population. Note that if our crime data only included <em>residential</em> burglaries then we would want to use <em>residential</em> buildings as our denominator, but in this case we have data for all burglaries, both residential and non-residential.</p>
-<section id="data-wrangling" class="level3" data-number="13.2.1">
-<h3 data-number="13.2.1" class="anchored" data-anchor-id="data-wrangling"><span class="header-section-number">13.2.1</span> Data wrangling</h3>
+<section id="sec-mapping-hotspots-data-wrangling" class="level3" data-number="13.2.1">
+<h3 data-number="13.2.1" class="anchored" data-anchor-id="sec-mapping-hotspots-data-wrangling"><span class="header-section-number">13.2.1</span> Data wrangling</h3>
 <p>Before we can create our dual KDE layer, we have to complete some data wrangling. We will extract the boundaries for the wards of interest from a dataset of boundaries for all wards in Nottingham using <code>filter()</code> as we have done previously. To extract only the burglaries occurring in those three wards from a dataset of all burglaries in Nottingham, we will use <code>hotspot_clip()</code>. We will also transform both datasets to use the British National Grid (EPSG:27700), a projected CRS whose coordinates are measured in metres. Using a projected CRS makes it easy to specify a grid-cell size in metres. See <a href="../06_mapping_crime_patterns/index.html#sec-choosing-projected-crs" class="quarto-xref"><span>Section 6.2.1</span></a> for how to choose an appropriate projected CRS.</p>
 <p>Open <code>chapter_13a.R</code> in the <code>R</code> folder of your <code>crime_mapping</code> workspace. Add this code to download the original datasets into <code>data/raw</code>, load the local copies and prepare them for analysis.</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_13a.R">
+<div id="lst-mapping-hotspots-script-13a-prepare" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-script-13a-prepare-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.1
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-script-13a-prepare-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13a.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="co"># This script produces a dual kernel-density map of burglary risk in three</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" data-filename="chapter_13a.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="co"># This script produces a dual kernel-density map of burglary risk in three</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-label="2"></a><span class="co"># wards in Nottingham, England</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-label="3"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-label="4"></a><span class="co"># Load packages</span></span>
@@ -685,14 +700,23 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 <span id="cb1-31"><a href="#cb1-31" aria-label="31"></a>  <span class="fu">hotspot_clip</span>(wards)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>We do not have a source of open data for all the buildings in Nottingham, so we will use the osmdata package to get the locations of buildings from OpenStreetMap (OSM). You may remember from <a href="../12_place_data/index.html" class="quarto-xref"><span>Chapter 12</span></a> that to do this we need to know which key (and possibly value) the OSM database uses for storing the locations of buildings. The OSM feature key for a building is ‘building’ and it is not necessary to specify a value (since we want to capture all types of building). The osmdata package expects data to use the WGS84 coordinate reference system, so we must also make sure any data sources we use are projected using that system (EPSG:4326).</p>
 <p>Add this code to your R script and run it. The first time you run the code, it downloads building data from OpenStreetMap and saves a copy in <code>data/processed</code>. On later runs, it loads that saved copy so the analysis is faster and does not change if OpenStreetMap is updated.</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_13a.R">
+<div id="lst-mapping-hotspots-script-13a-buildings" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-script-13a-buildings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.2
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-script-13a-buildings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13a.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a><span class="co"># GET BUILDING DATA ------------------------------------------------------------</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" data-filename="chapter_13a.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a><span class="co"># GET BUILDING DATA ------------------------------------------------------------</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-label="2"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-label="3"></a>buildings_file <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"processed"</span>, <span class="st">"nottingham_buildings.rds"</span>)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-label="4"></a></span>
@@ -716,6 +740,9 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 <span id="cb2-22"><a href="#cb2-22" aria-label="22"></a></span>
 <span id="cb2-23"><a href="#cb2-23" aria-label="23"></a>  <span class="fu">write_rds</span>(nottingham_buildings, buildings_file)</span>
 <span id="cb2-24"><a href="#cb2-24" aria-label="24"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Overpass API errors">
@@ -749,12 +776,21 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </div>
 </div>
 </div>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-mapping-hotspots-inspect-building-geometries" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-inspect-building-geometries-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.3
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-inspect-building-geometries-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a>nottingham_buildings</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a>nottingham_buildings</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre data-code-line-numbers=""><code>Object of class 'osmdata' with:
@@ -786,12 +822,17 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </div>
 </div>
 <p>Let’s create a simple map of the results produced by <code>osmdata_sf()</code>, comparing them to the buildings shown on a base map to check that OSM has reasonable coverage of the buildings in these three wards. This code uses the <code>pluck()</code> function from the purrr package (part of the tidyverse) to extract the different elements from the <code>nottingham_buildings</code> object.</p>
-<div class="cell">
+<div id="lst-mapping-hotspots-draw-nottingham-building-geometries" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-draw-nottingham-building-geometries-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.4
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-draw-nottingham-building-geometries-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a><span class="co"># Initiate map and add building features stored as points</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" data-filename="R Console" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a><span class="co"># Initiate map and add building features stored as points</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-label="2"></a><span class="fu">hotspot_map</span>(</span>
 <span id="cb5-3"><a href="#cb5-3" aria-label="3"></a>  <span class="fu">pluck</span>(nottingham_buildings, <span class="st">"osm_points"</span>),</span>
 <span id="cb5-4"><a href="#cb5-4" aria-label="4"></a>  <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>,</span>
@@ -814,13 +855,26 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 <span id="cb5-21"><a href="#cb5-21" aria-label="21"></a>  <span class="co"># wards</span></span>
 <span id="cb5-22"><a href="#cb5-22" aria-label="22"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> wards, <span class="at">colour =</span> <span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">linewidth =</span> <span class="fl">1.25</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</div>
+</figure>
+</div>
+<div id="map-nottingham-building-geometries" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-nottingham-building-geometries-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-filename="R Console">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" style="width:100.0%" alt="A map comparing OpenStreetMap building points, polygons and multipolygons with the boundaries of three Nottingham wards"></p>
+<p><img src="index_files/figure-html/draw-nottingham-building-geometries-1.png" class="img-fluid figure-img" style="width:100.0%" alt="A map comparing OpenStreetMap building points, polygons and multipolygons with the boundaries of three Nottingham wards"></p>
 </figure>
 </div>
 </div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-nottingham-building-geometries-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;13.2
+</figcaption>
+</figure>
 </div>
 <div class="callout callout-style-default callout-important callout-titled" title="`osmdata_sf()` returns data for a bounding box">
 <div class="callout-header d-flex align-content-center">
@@ -840,12 +894,18 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 <p>Since the <code>hotspot_dual_kde()</code> function works on points, we need to merge the polygon and multipolygon layers, then convert the combined layer to points by calculating the centroid of each building. We will transform the building data to use the British National Grid before calculating centroids. Calculating centroids in an appropriate projected coordinate system is more reliable than calculating them from longitude and latitude coordinates.</p>
 <p>Since we are only interested in buildings in three particular wards, we can also remove any buildings outside those wards using <code>hotspot_clip()</code>. Both the building centroids and the <code>wards</code> object will use the British National Grid.</p>
 <p>Add this code to the <code>chapter_13a.R</code> file and run it.</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_13a.R">
+<div id="lst-mapping-hotspots-script-13a-centroids" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-script-13a-centroids-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.5
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-script-13a-centroids-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13a.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-label="1"></a><span class="co"># WRANGLE DATA -----------------------------------------------------------------</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" data-filename="chapter_13a.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-label="1"></a><span class="co"># WRANGLE DATA -----------------------------------------------------------------</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-label="2"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-label="3"></a><span class="co"># Extract polygon/multipolygon layers and combine them into a single object</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-label="4"></a>nottingham_building_centroids <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
@@ -858,6 +918,9 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 <span id="cb6-11"><a href="#cb6-11" aria-label="11"></a>  <span class="fu">st_centroid</span>() <span class="sc">|&gt;</span></span>
 <span id="cb6-12"><a href="#cb6-12" aria-label="12"></a>  <span class="co"># Remove any points outside the wards of interest</span></span>
 <span id="cb6-13"><a href="#cb6-13" aria-label="13"></a>  <span class="fu">hotspot_clip</span>(wards)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre data-code-line-numbers=""><code>Warning: st_centroid assumes attributes are constant over geometries</code></pre>
@@ -883,16 +946,22 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 </div>
 </div>
 </section>
-<section id="calculating-dual-kernel-density" class="level3" data-number="13.2.2">
-<h3 data-number="13.2.2" class="anchored" data-anchor-id="calculating-dual-kernel-density"><span class="header-section-number">13.2.2</span> Calculating dual kernel density</h3>
+<section id="sec-mapping-hotspots-calculating-dual-kernel-density" class="level3" data-number="13.2.2">
+<h3 data-number="13.2.2" class="anchored" data-anchor-id="sec-mapping-hotspots-calculating-dual-kernel-density"><span class="header-section-number">13.2.2</span> Calculating dual kernel density</h3>
 <p>We now have the object <code>burglaries</code> that contains the locations of each burglary in the three Nottingham wards that we are interested in, and the object <code>nottingham_building_centroids</code> that contains the centroids of each building in those three wards. We can use these layers to estimate the density of burglaries and buildings, then combine these to estimate the density of burglary risk.</p>
 <p><code>hotspot_dual_kde()</code> works in the same way as <code>hotspot_kde()</code>, except that it requires two datasets. In this case, that means one dataset of crime locations and one dataset of building locations. <code>hotspot_dual_kde()</code> will set the cell size and bandwidth automatically, but we can set them manually using the <code>cell_size</code>, <code>bandwidth_adjust</code> and <code>grid</code> arguments in the same way we have done for <code>hotspot_kde()</code>. In this case, we will use the <code>hotspot_grid()</code> helper function to create a grid based on the boundaries of the wards we are interested in. All the spatial objects we are going to use here have coordinates specified using the British National Grid because we have already transformed them, so we do not need to do any transformation here.</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_13a.R">
+<div id="lst-mapping-hotspots-script-13a-density" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-script-13a-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.6
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-script-13a-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13a.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="co"># Estimate density of burglary risk</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-filename="chapter_13a.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="co"># Estimate density of burglary risk</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-label="2"></a>burglary_risk <span class="ot">&lt;-</span> <span class="fu">hotspot_dual_kde</span>(</span>
 <span id="cb9-3"><a href="#cb9-3" aria-label="3"></a>  burglaries,</span>
 <span id="cb9-4"><a href="#cb9-4" aria-label="4"></a>  nottingham_building_centroids,</span>
@@ -902,17 +971,29 @@ reviewed for visual descriptions. Preserve the original SRT for review.
 <span id="cb9-8"><a href="#cb9-8" aria-label="8"></a>) <span class="sc">|&gt;</span></span>
 <span id="cb9-9"><a href="#cb9-9" aria-label="9"></a>  <span class="fu">hotspot_clip</span>(wards)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</div>
+</figure>
+</div>
 <div class="cell-output cell-output-stderr">
 <pre data-code-line-numbers=""><code>Removed 100 rows (6.2% of original rows) from `data`</code></pre>
 </div>
 </div>
 <p>The <code>burglary_risk</code> object looks like this:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-mapping-hotspots-head-burglary-risk" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-head-burglary-risk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.7
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-head-burglary-risk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="fu">head</span>(burglary_risk)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="fu">head</span>(burglary_risk)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>Simple feature collection with 6 features and 2 fields
@@ -954,12 +1035,17 @@ Projected CRS: OSGB36 / British National Grid
 </div>
 <p>We can plot the estimate of the density of burglary risk using <code>hotspot_map()</code>. By controlling for the density of buildings, this map shows us where building owners <em>on average</em> face the highest risk of being burgled. This might be useful in working out, for example, which building owners should be offered visits from a crime-prevention advisor or funding to install crime-prevention measures.</p>
 <p>Add this code to your script file and run it to produce a map:</p>
-<div class="cell">
+<div id="lst-mapping-hotspots-script-13a-map" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-script-13a-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.8
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-script-13a-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13a.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-label="1"></a><span class="co"># PLOT MAP ---------------------------------------------------------------------</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" data-filename="chapter_13a.R" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-label="1"></a><span class="co"># PLOT MAP ---------------------------------------------------------------------</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-label="2"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-label="3"></a><span class="fu">hotspot_map</span>(</span>
 <span id="cb13-4"><a href="#cb13-4" aria-label="4"></a>  burglary_risk,</span>
@@ -986,6 +1072,13 @@ Projected CRS: OSGB36 / British National Grid
 <span id="cb13-25"><a href="#cb13-25" aria-label="25"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey50"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>)</span>
 <span id="cb13-26"><a href="#cb13-26" aria-label="26"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</div>
+</figure>
+</div>
+<div id="map-nottingham-burglary-risk" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-nottingham-burglary-risk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-filename="chapter_13a.R">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -994,16 +1087,28 @@ Projected CRS: OSGB36 / British National Grid
 </div>
 </div>
 </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-nottingham-burglary-risk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;13.3
+</figcaption>
+</figure>
+</div>
 <p>Save <code>chapter_13a.R</code> by pressing <kbd title="mac: Command-S, windows: Ctrl-S" aria-hidden="true" data-mac="Command-S" data-windows="Ctrl-S"></kbd><span class="visually-hidden"></span>.</p>
 <p>To check that the analysis is reproducible, restart R using the <strong>Restart R</strong> (<strong>⟳</strong>) button in Positron’s <strong>Console</strong> panel, then run the script from beginning to end.</p>
 <p>Keep the script in the <code>R</code> folder, the original downloads in <code>data/raw</code> and the saved OpenStreetMap data in <code>data/processed</code>.</p>
 <p>Your complete <code>chapter_13a.R</code> dual-KDE script should now look like this:</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_13a.R">
+<div id="lst-mapping-hotspots-show-chapter-13a-script" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-show-chapter-13a-script-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.9
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-show-chapter-13a-script-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13a.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-label="1"></a><span class="co"># This script produces a dual kernel-density map of burglary risk in three</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14" data-filename="chapter_13a.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-label="1"></a><span class="co"># This script produces a dual kernel-density map of burglary risk in three</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-label="2"></a><span class="co"># wards in Nottingham, England</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-label="3"></a></span>
 <span id="cb14-4"><a href="#cb14-4" aria-label="4"></a><span class="co"># Load packages</span></span>
@@ -1112,6 +1217,9 @@ Projected CRS: OSGB36 / British National Grid
 <span id="cb14-107"><a href="#cb14-107" aria-label="107"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <div class="callout callout-style-default callout-quiz callout-titled" title="Dual kernel density">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1123,12 +1231,12 @@ Projected CRS: OSGB36 / British National Grid
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Which <em>one</em> of these statements is true?</strong></p>
-<div id="radio_KPRZIFZWPA" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_KPRZIFZWPA" value="answer"> <span><code>hotspot_dual_kde()</code> can transform longitude and latitude coordinates automatically, but a suitable projected CRS makes it easier to specify distances in metres.</span></label><label><input type="radio" autocomplete="off" name="radio_KPRZIFZWPA" value=""> <span><code>hotspot_dual_kde()</code> can only work with longitude and latitude coordinates.</span></label><label><input type="radio" autocomplete="off" name="radio_KPRZIFZWPA" value=""> <span><code>hotspot_dual_kde()</code> requires projected coordinates even when cell sizes and bandwidths are chosen automatically.</span></label><label><input type="radio" autocomplete="off" name="radio_KPRZIFZWPA" value=""> <span>The coordinate reference system never matters when using <code>hotspot_dual_kde()</code>.</span></label>
+<div id="radio_FCICDMMVZU" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_FCICDMMVZU" value="answer"> <span><code>hotspot_dual_kde()</code> can transform longitude and latitude coordinates automatically, but a suitable projected CRS makes it easier to specify distances in metres.</span></label><label><input type="radio" autocomplete="off" name="radio_FCICDMMVZU" value=""> <span><code>hotspot_dual_kde()</code> can only work with longitude and latitude coordinates.</span></label><label><input type="radio" autocomplete="off" name="radio_FCICDMMVZU" value=""> <span><code>hotspot_dual_kde()</code> requires projected coordinates even when cell sizes and bandwidths are chosen automatically.</span></label><label><input type="radio" autocomplete="off" name="radio_FCICDMMVZU" value=""> <span>The coordinate reference system never matters when using <code>hotspot_dual_kde()</code>.</span></label>
 </div>
 <p><strong>Why do we usually clip the result of <code>hotspot_dual_kde()</code> using <code>hotspot_clip()</code>?</strong></p>
-<div id="radio_APRHQENNXK" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_APRHQENNXK" value=""> <span>To make our maps look nicer.</span></label><label><input type="radio" autocomplete="off" name="radio_APRHQENNXK" value=""> <span>To transform the coordinate system our data uses from the system <code>hotspot_dual_kde()</code> uses to the one we need to produce a map.</span></label><label><input type="radio" autocomplete="off" name="radio_APRHQENNXK" value="answer"> <span>To eliminate any areas that we do not have data for, since displaying KDE values for such areas on a map might be misleading.</span></label><label><input type="radio" autocomplete="off" name="radio_APRHQENNXK" value=""> <span>To make it easier to see the other layers on our map.</span></label>
+<div id="radio_HEXKZXPIMP" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_HEXKZXPIMP" value=""> <span>To make our maps look nicer.</span></label><label><input type="radio" autocomplete="off" name="radio_HEXKZXPIMP" value=""> <span>To transform the coordinate system our data uses from the system <code>hotspot_dual_kde()</code> uses to the one we need to produce a map.</span></label><label><input type="radio" autocomplete="off" name="radio_HEXKZXPIMP" value="answer"> <span>To eliminate any areas that we do not have data for, since displaying KDE values for such areas on a map might be misleading.</span></label><label><input type="radio" autocomplete="off" name="radio_HEXKZXPIMP" value=""> <span>To make it easier to see the other layers on our map.</span></label>
 </div>
 </div>
 </div>
@@ -1137,7 +1245,10 @@ Projected CRS: OSGB36 / British National Grid
 <section id="finding-hotspots-using-gi" class="level2" data-number="13.3">
 <h2 data-number="13.3" class="anchored" data-anchor-id="finding-hotspots-using-gi"><span class="header-section-number">13.3</span> Finding hotspots using Gi*</h2>
 <p>We have explored how to produce a better map of the density of crime in different areas. But how do we know which areas count as hotspots and which don’t?</p>
-<p>Each of the 16 density maps below shows density estimates based on 1,000 points placed completely at random on 16 different maps. There are no real patterns in the data except for statistical noise. Nevertheless, the KDE process makes it appear that there are patterns in the data.</p>
+<p>Each of the 16 density maps in <a href="#map-random-points-kde-patterns" class="quarto-xref">Map&nbsp;<span>13.4</span></a> shows density estimates based on 1,000 points placed completely at random on 16 different maps. There are no real patterns in the data except for statistical noise. Nevertheless, the KDE process makes it appear that there are patterns in the data.</p>
+<div id="map-random-points-kde-patterns" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-random-points-kde-patterns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -1146,6 +1257,12 @@ Projected CRS: OSGB36 / British National Grid
 </figure>
 </div>
 </div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-random-points-kde-patterns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;13.4
+</figcaption>
+</figure>
 </div>
 <p>This is a problem because we might end up responding to an apparent problem that is nothing but an artefact of the random variation that we expect to see in many processes, including crime.</p>
 <p>If the police and other agencies looked at these patterns and did nothing in response to them, it is likely that over time some of the areas with high density would become areas of low density, and <em>vice versa</em>. However, the harm caused by crime means it is very hard for agencies to justify sitting back and do nothing to respond to it – many people would consider it immoral to do so. So police and other agencies are very likely to try to respond to crime patterns, even if those patterns might have occurred by chance. This is very frustrating, because if we were to go back and look at the same data in a few months time it is very likely that the apparent hotspots would have shifted to somewhere different, making all the effort spent in responding to crime seem worthless (which, if the apparent patterns were actually artefacts of the KDE process, it may have been).</p>
@@ -1156,12 +1273,18 @@ Projected CRS: OSGB36 / British National Grid
 <p>Create a new file called <code>chapter_13b.R</code> in the <code>R</code> folder of your <code>crime_mapping</code> workspace as usual.</p>
 <p>In this example, we will find the hotspots of robbery in Nottingham in 2020, based on a grid of 100-metre cells. We will store this in an object called <code>robbery</code>, transform it to use the British National Grid coordinate system (so we can specify the cell size in metres) and then use the resulting object to calculate the Gi* values.</p>
 <p>Add this code to the new script file and run it.</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_13b.R">
+<div id="lst-mapping-hotspots-script-13b-hotspots" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-script-13b-hotspots-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.10
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-script-13b-hotspots-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13b.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a><span class="co"># This script produces a map of significant robbery hotspots in Nottingham,</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" data-filename="chapter_13b.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a><span class="co"># This script produces a map of significant robbery hotspots in Nottingham,</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-label="2"></a><span class="co"># England</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-label="3"></a></span>
 <span id="cb15-4"><a href="#cb15-4" aria-label="4"></a><span class="co"># Load packages</span></span>
@@ -1199,6 +1322,9 @@ Projected CRS: OSGB36 / British National Grid
 <span id="cb15-36"><a href="#cb15-36" aria-label="36"></a>  <span class="fu">hotspot_clip</span>(nottingham_wards)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>&lt;httr2_response&gt;
@@ -1227,32 +1353,41 @@ date (1): month
 </div>
 </div>
 <p>Instead of using <code>head()</code> to view the first few rows of the object we have just created, let’s use the <code>slice_sample()</code> function from the dplyr package to return a random sample of rows from that object:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-mapping-hotspots-slice-sample-robbery-gistar-n-10" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-slice-sample-robbery-gistar-n-10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.11
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-slice-sample-robbery-gistar-n-10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-label="1"></a><span class="fu">slice_sample</span>(robbery_gistar, <span class="at">n =</span> <span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-label="1"></a><span class="fu">slice_sample</span>(robbery_gistar, <span class="at">n =</span> <span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>Simple feature collection with 10 features and 4 fields
 Geometry type: POLYGON
 Dimension:     XY
-Bounding box:  xmin: 453767.5 ymin: 339074.1 xmax: 457567.5 ymax: 345174.1
+Bounding box:  xmin: 453867.5 ymin: 334274.1 xmax: 457467.5 ymax: 345374.1
 Projected CRS: OSGB36 / British National Grid
 # A tibble: 10 × 5
-       n   kde gistar   pvalue                                          geometry
-   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;                                     &lt;POLYGON [m]&gt;
- 1     2 10.0    3.65 2.66e- 3 ((456667.5 340374.1, 456767.5 340374.1, 456767.5…
- 2     0  3.45   2.82 4.84e- 2 ((455767.5 339174.1, 455867.5 339174.1, 455867.5…
- 3     0 13.4    2.82 4.84e- 2 ((457067.5 340574.1, 457167.5 340574.1, 457167.5…
- 4     0 30.7   13.6  4.49e-41 ((456967.5 340174.1, 457067.5 340174.1, 457067.5…
- 5     0  4.96   3.65 2.66e- 3 ((454167.5 343074.1, 454267.5 343074.1, 454267.5…
- 6     2  3.75   2.82 4.84e- 2 ((457467.5 341474.1, 457567.5 341474.1, 457567.5…
- 7     1 18.6    4.47 7.65e- 5 ((455967.5 340774.1, 456067.5 340774.1, 456067.5…
- 8     1  7.79   3.65 2.66e- 3 ((453767.5 344874.1, 453867.5 344874.1, 453867.5…
- 9     0  6.57   2.82 4.84e- 2 ((456267.5 341374.1, 456367.5 341374.1, 456367.5…
-10     0 13.3    6.96 3.37e-11 ((454067.5 345174.1, 454167.5 345174.1, 454167.5…</code></pre>
+       n   kde gistar    pvalue                                         geometry
+   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;                                    &lt;POLYGON [m]&gt;
+ 1     1  7.81   4.47 7.65e-  5 ((455367.5 340274.1, 455467.5 340274.1, 455467.…
+ 2     0 11.4    4.47 7.65e-  5 ((456867.5 342074.1, 456967.5 342074.1, 456967.…
+ 3     0  4.71   3.65 2.66e-  3 ((455167.5 334374.1, 455267.5 334374.1, 455267.…
+ 4     0  8.32   3.65 2.66e-  3 ((453867.5 345374.1, 453967.5 345374.1, 453967.…
+ 5     1 40.0   21.1  2.24e- 97 ((457367.5 340274.1, 457467.5 340274.1, 457467.…
+ 6     2 14.3    9.45 3.46e- 20 ((455967.5 340474.1, 456067.5 340474.1, 456067.…
+ 7     0  3.96   2.82 4.84e-  2 ((456367.5 336974.1, 456467.5 336974.1, 456467.…
+ 8     5 42.9   21.9  4.05e-105 ((457367.5 340174.1, 457467.5 340174.1, 457467.…
+ 9     0 12.7    8.62 6.76e- 17 ((456767.5 340374.1, 456867.5 340374.1, 456867.…
+10     2  3.88   2.82 4.84e-  2 ((455167.5 344574.1, 455267.5 344574.1, 455267.…</code></pre>
 </div>
 </div>
 <p>The <code>robbery_gistar</code> object contains one row for each cell in a grid of cells covering the area of the robbery data. Each row has four columns:</p>
@@ -1279,12 +1414,17 @@ Projected CRS: OSGB36 / British National Grid
 <p>By convention, <span class="math inline">\(p\)</span>-values are considered to be significant if they are <em>less than 0.05</em>. So if <span class="math inline">\(p&lt;0.05\)</span>, we can say that the local concentration of robberies in a given grid cell and its neighbours is unlikely to have occurred by chance. Values of Gi* greater than zero indicate cells with more robberies than expected and values of Gi* less than zero indicate cells with fewer robberies than expected. We can combine these two values to find cells with significantly <em>more</em> robberies than expected by chance, which are those cells for which <span class="math inline">\(Z&gt;0\)</span> and <span class="math inline">\(p&lt;0.05\)</span>.</p>
 <p>By default, if we apply the function <code>hotspot_map()</code> to a result produced by <code>hotspot_gistar()</code>, the map will show only those grid cells with a Gi* value that is significant (i.e.&nbsp;<span class="math inline">\(p&lt;0.05\)</span>). However, the default settings also mean that the map will show cells that are significant hotspots (i.e.&nbsp;<span class="math inline">\(Z&gt;0\)</span>) and cells that are significant coldspots (i.e.&nbsp;<span class="math inline">\(Z&lt;0\)</span>). In crime mapping we are generally only interested in the hotspots rather than the coldspots. To show only significant hotspots, we can use the <code>hotspot_map()</code> argument <code>sign = "hot"</code>.</p>
 <p>Add this complete map code to <code>chapter_13b.R</code> and run it to see what the significant robbery hotspots look like:</p>
-<div class="cell">
+<div id="lst-mapping-hotspots-script-13b-map" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-script-13b-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.12
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-script-13b-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13b.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-label="1"></a><span class="co"># PLOT MAP ---------------------------------------------------------------------</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" data-filename="chapter_13b.R" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-label="1"></a><span class="co"># PLOT MAP ---------------------------------------------------------------------</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-label="2"></a></span>
 <span id="cb21-3"><a href="#cb21-3" aria-label="3"></a><span class="fu">hotspot_map</span>(</span>
 <span id="cb21-4"><a href="#cb21-4" aria-label="4"></a>  robbery_gistar,</span>
@@ -1299,6 +1439,13 @@ Projected CRS: OSGB36 / British National Grid
 <span id="cb21-13"><a href="#cb21-13" aria-label="13"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> nottingham_wards, <span class="at">colour =</span> <span class="st">"grey70"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
 <span id="cb21-14"><a href="#cb21-14" aria-label="14"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Nottingham robbery hotspots"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</div>
+</figure>
+</div>
+<div id="map-nottingham-significant-robbery-hotspots" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-nottingham-significant-robbery-hotspots-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-filename="chapter_13b.R">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1307,14 +1454,26 @@ Projected CRS: OSGB36 / British National Grid
 </div>
 </div>
 </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-nottingham-significant-robbery-hotspots-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;13.5
+</figcaption>
+</figure>
+</div>
 <p>This map could be useful for police officers deciding where to conduct anti-robbery patrols, because it not only shows the areas with the highest density of robberies but only shows those areas if there are more robberies than we would expect by chance. This makes it more likely that officers won’t waste time chasing apparent patterns that are actually the result of random variation.</p>
 <p>Save <code>chapter_13b.R</code> by pressing <kbd title="mac: Command-S, windows: Ctrl-S" aria-hidden="true" data-mac="Command-S" data-windows="Ctrl-S"></kbd><span class="visually-hidden"></span>. Your complete <code>chapter_13b.R</code> Gi* script should now look like this:</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_13b.R">
+<div id="lst-mapping-hotspots-show-chapter-13b-script" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-show-chapter-13b-script-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.13
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-show-chapter-13b-script-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13b.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-label="1"></a><span class="co"># This script produces a map of significant robbery hotspots in Nottingham,</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22" data-filename="chapter_13b.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-label="1"></a><span class="co"># This script produces a map of significant robbery hotspots in Nottingham,</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-label="2"></a><span class="co"># England</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-label="3"></a></span>
 <span id="cb22-4"><a href="#cb22-4" aria-label="4"></a><span class="co"># Load packages</span></span>
@@ -1367,7 +1526,22 @@ Projected CRS: OSGB36 / British National Grid
 <span id="cb22-51"><a href="#cb22-51" aria-label="51"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Nottingham robbery hotspots"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>Running the complete script produces this map:</p>
+<div id="map-nottingham-significant-robbery-hotspots-complete" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-nottingham-significant-robbery-hotspots-complete-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-nottingham-significant-robbery-hotspots-complete-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;13.6
+</figcaption>
+</figure>
+</div>
 <div class="callout callout-style-default callout-quiz callout-titled" title="Gi*">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1379,12 +1553,12 @@ Projected CRS: OSGB36 / British National Grid
 </div>
 <div class="callout-body-container callout-body">
 <p><strong><code>robbery_gi</code> is an object storing a result produced by the <code>hotspot_gistar()</code> function. Which of these pieces of code could be used to extract <em>only</em> those rows in the data with significant p-values?</strong></p>
-<div id="radio_XOCAZEMYEU" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_XOCAZEMYEU" value="answer"> <span><code>filter(robbery_gi, pvalue &lt; 0.05)</code></span></label><label><input type="radio" autocomplete="off" name="radio_XOCAZEMYEU" value=""> <span><code>filter(robbery_gi, pvalue &gt; 0.05)</code></span></label><label><input type="radio" autocomplete="off" name="radio_XOCAZEMYEU" value=""> <span><code>filter(robbery_gi, pvalue &lt;= 0.05)</code></span></label><label><input type="radio" autocomplete="off" name="radio_XOCAZEMYEU" value=""> <span><code>filter(robbery_gi, pvalue == 0.05)</code></span></label>
+<div id="radio_KBGUHIEMXT" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_KBGUHIEMXT" value="answer"> <span><code>filter(robbery_gi, pvalue &lt; 0.05)</code></span></label><label><input type="radio" autocomplete="off" name="radio_KBGUHIEMXT" value=""> <span><code>filter(robbery_gi, pvalue &gt; 0.05)</code></span></label><label><input type="radio" autocomplete="off" name="radio_KBGUHIEMXT" value=""> <span><code>filter(robbery_gi, pvalue &lt;= 0.05)</code></span></label><label><input type="radio" autocomplete="off" name="radio_KBGUHIEMXT" value=""> <span><code>filter(robbery_gi, pvalue == 0.05)</code></span></label>
 </div>
 <p><strong>Which <em>one</em> of these statements is true about the output from <code>hotspot_gistar()</code>?</strong></p>
-<div id="radio_DPFPHSMQUI" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_DPFPHSMQUI" value=""> <span>Cells with <code>gistar &gt; 0</code> are always statistically significant hotspots.</span></label><label><input type="radio" autocomplete="off" name="radio_DPFPHSMQUI" value="answer"> <span>A significant hotspot has <code>gistar &gt; 0</code> and <code>pvalue &lt; 0.05</code>.</span></label><label><input type="radio" autocomplete="off" name="radio_DPFPHSMQUI" value=""> <span>A significant hotspot has <code>gistar &lt; 0</code> and <code>pvalue &gt; 0.05</code>.</span></label><label><input type="radio" autocomplete="off" name="radio_DPFPHSMQUI" value=""> <span>The <code>kde</code> value alone tells us whether a cell is a statistically significant hotspot.</span></label>
+<div id="radio_HWUYOAQVTG" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_HWUYOAQVTG" value=""> <span>Cells with <code>gistar &gt; 0</code> are always statistically significant hotspots.</span></label><label><input type="radio" autocomplete="off" name="radio_HWUYOAQVTG" value="answer"> <span>A significant hotspot has <code>gistar &gt; 0</code> and <code>pvalue &lt; 0.05</code>.</span></label><label><input type="radio" autocomplete="off" name="radio_HWUYOAQVTG" value=""> <span>A significant hotspot has <code>gistar &lt; 0</code> and <code>pvalue &gt; 0.05</code>.</span></label><label><input type="radio" autocomplete="off" name="radio_HWUYOAQVTG" value=""> <span>The <code>kde</code> value alone tells us whether a cell is a statistically significant hotspot.</span></label>
 </div>
 </div>
 </div>
@@ -1393,6 +1567,9 @@ Projected CRS: OSGB36 / British National Grid
 <h2 data-number="13.4" class="anchored" data-anchor-id="finding-clusters-using-dbscan"><span class="header-section-number">13.4</span> Finding clusters using DBSCAN</h2>
 <p>Gi* maps are a useful way to show where there is more of a particular type of crime than we’d expect by chance. But since resources to respond to crime are almost always limited, it is often also useful to be able to rank clusters of crime so that we can see which should be prioritised for a response. One way to do this is to use a clustering algorithm called DBSCAN, which stands for ‘Density-Based Spatial Clustering of Applications with Noise’ (you don’t need to remember that).</p>
 <p>DBSCAN identifies clusters of crimes based on their spatial proximity to each other, finding places where crimes are more closely clustered together in space than a cut-off value that we specify. For example, this map shows the top clusters of robbery in Nottingham in 2020:</p>
+<div id="map-nottingham-robbery-dbscan-introduction" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-nottingham-robbery-dbscan-introduction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell">
 <div class="cell-output cell-output-stderr">
 <pre data-code-line-numbers=""><code>Minimum points set automatically from the number of point coordinates.
@@ -1403,90 +1580,132 @@ Neighbourhood distance set automatically from nearest-neighbour distances.
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/dbscan-robbery-map-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="index_files/figure-html/dbscan-robbery-map-1.png" class="img-fluid figure-img" style="width:100.0%" alt="Robbery clusters in Nottingham in 2020, outlined in red and labelled with the proportion of robberies in each cluster."></p>
 </figure>
 </div>
 </div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-nottingham-robbery-dbscan-introduction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;13.7
+</figcaption>
+</figure>
 </div>
 <p>We can use the <code>hotspot_dbscan()</code> function from the sfhotspot package to identify clusters using DBSCAN in R. In a similar way to how the results produced by <code>hotspot_kde()</code> are influenced by the choice of bandwidth and cell size (see <a href="../06_mapping_crime_patterns/index.html#sec-kde" class="quarto-xref"><span>Section 6.2</span></a>), the results produced by <code>hotspot_dbscan()</code> are influenced by two values (known as <em>parameters</em>) that we specify.</p>
 <p>The first value that influences the results of <code>hotspot_dbscan()</code> is <code>min_pts</code>, the minimum number of nearby points required for a location to form the core of a cluster. Note that an area won’t be identified as a cluster just because it includes the specified minimum number of points – the points also have to be close enough together to be considered a cluster (more on that shortly). <code>min_pts</code> therefore provides a <em>minimum</em> cut-off value for the number of points in each cluster.</p>
 <p>By default, <code>hotspot_dbscan()</code> chooses <code>min_pts</code> automatically based on the total number of points in the dataset. For very small datasets, the default value of <code>min_pts</code> is 5. As the dataset becomes larger, the automatically selected value for <code>min_pts</code> gradually increases, up to a maximum of 50. Increasing <code>min_pts</code> for larger datasets helps to avoid producing a very large number of clusters that each contain only a very-small proportion of all the crimes being studied.</p>
 <p>Whether the automatically chosen value is reasonable depends on the type of crime you are mapping and the purpose of the analysis. If you were mapping relatively rare crimes, such as homicides in many cities, a cluster of 5 crimes might be important to identify. If you were mapping a frequent crime such as pickpocketing in central London or downtown New York City, you might only be interested in clusters containing many more crimes. Since the resources available to respond to crime are almost always limited, producing too many clusters is often unhelpful. You can override the automatically chosen value by supplying your own value for <code>min_pts</code>, so think carefully about the minimum number of crimes in a cluster that you or the audience for your analysis are likely to find useful.</p>
 <p>These maps show the results produced by applying <code>hotspot_dbscan()</code> to the same Nottingham robbery data we used above. All that changes is each time is the value of <code>min_pts</code>. You can see that the number and size of the clusters produced varies quite substantially.</p>
+<div id="map-nottingham-dbscan-minimum-points" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-nottingham-dbscan-minimum-points-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/dbscan-minpts-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="index_files/figure-html/dbscan-minpts-1.png" class="img-fluid figure-img" style="width:100.0%" alt="Three maps compare robbery clusters in Nottingham using different minimum point counts. Cluster outlines and rank labels show how the clusters change as the threshold increases."></p>
 </figure>
 </div>
 </div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-nottingham-dbscan-minimum-points-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;13.8
+</figcaption>
+</figure>
 </div>
 <p>You can see from this map that the clusters produced by DBSCAN don’t necessarily include all the points in the input data. The points that are outside the identified clusters are those that are not sufficiently close together to be part of a cluster. You can also see that the clusters produced by DBSCAN can sometimes overlap.</p>
 <p>The second parameter that affects the results produced by <code>hotspot_dbscan()</code> is called <code>eps</code>. This parameter controls how close together points must be to be treated as neighbours within a cluster. You can specify <code>eps</code> manually using the <code>eps</code> argument, but it’s often easier to control it relative to the default value chosen by <code>hotspot_dbscan()</code>. By default, <code>hotspot_dbscan()</code> chooses a suitable value automatically based on the typical local density of points in the dataset. The <code>density_adjust</code> argument controls how dense the number of crimes in an area must be (relative to that typical density) in order for the area to be considered a cluster. The default value is <code>density_adjust = 2</code>, which means <code>hotspot_dbscan()</code> searches for clusters with approximately at least twice the typical local density of points. Setting larger values of <code>density_adjust</code> identifies only denser concentrations of points, while smaller values allow clusters to be less dense.</p>
 <p>You can see the effect of varying the <code>density_adjust</code> argument on the results shown in these maps:</p>
+<div id="map-nottingham-dbscan-density-thresholds" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-nottingham-dbscan-density-thresholds-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/dbscan-densityadjust-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="index_files/figure-html/dbscan-densityadjust-1.png" class="img-fluid figure-img" style="width:100.0%" alt="Three maps compare robbery clusters in Nottingham using different density-adjustment thresholds. Higher thresholds identify smaller areas with more concentrated robberies."></p>
 </figure>
 </div>
 </div>
 </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-nottingham-dbscan-density-thresholds-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;13.9
+</figcaption>
+</figure>
+</div>
 <p>Higher values of <code>density_adjust</code> produce physically smaller hotspots that have higher densities of crime but collectively contain a smaller proportion of all crimes. It’s important to note that the objective in clustering crime is rarely to produce clusters that jointly cover all the crimes in a dataset. In most applications of crime analysis, what matters more is producing clusters that show where interventions against crime are likely to achieve the most benefit while keeping the required effort manageable within the available resources.</p>
 <p>While you should set <code>min_pts</code> based on your expert judgement of the minimum number of crimes that might be worthy of action, deciding on the best value of <code>density_adjust</code> is usually a matter of trial and error. As a starting point, it’s often useful to produce a DBSCAN map using the default <code>density_adjust = 2</code> and look at the results, then vary <code>density_adjust</code> up or down depending on how useful you think the results are likely to be in supporting the purpose of your analysis. This inevitably involves some skill, which you will develop with time and experience. In particular, it is important (as in all data analysis) to understand the purpose for which you are conducting analysis, and how people are going to use the results of the analysis you produce.</p>
 <p>Now that we have explored how to control the DBSCAN algorithm, let’s create a DBSCAN map in R. We’ll use the same robbery data as in the previous section. Create a new file called <code>chapter_13c.R</code> and save it in the <code>R</code> folder of your <code>crime_mapping</code> workspace as usual. Now add the code needed to load the packages and data we need, so that it’s possible to run this script independently of the other scripts in this chapter. Read the two notes below this code, which explain two minor differences between this code and most of the similar code we have used before.</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_13c.R">
+<div id="lst-mapping-hotspots-script-13c-prepare" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-script-13c-prepare-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.14
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-script-13c-prepare-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13c.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="annotated-cell-14" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-14-1"><a href="#annotated-cell-14-1" aria-label="1"></a><span class="co"># This script identifies clusters of robberies in Nottingham, England</span></span>
-<span id="annotated-cell-14-2"><a href="#annotated-cell-14-2" aria-label="2"></a></span>
-<span id="annotated-cell-14-3"><a href="#annotated-cell-14-3" aria-label="3"></a><span class="co"># Load packages</span></span>
-<span id="annotated-cell-14-4"><a href="#annotated-cell-14-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, here, httr2, sf, sfhotspot, tidyverse)</span>
-<span id="annotated-cell-14-5"><a href="#annotated-cell-14-5" aria-label="5"></a></span>
-<span id="annotated-cell-14-6"><a href="#annotated-cell-14-6" aria-label="6"></a></span>
-<span id="annotated-cell-14-7"><a href="#annotated-cell-14-7" aria-label="7"></a><span class="co"># LOAD DATA --------------------------------------------------------------------</span></span>
-<span id="annotated-cell-14-8"><a href="#annotated-cell-14-8" aria-label="8"></a></span>
-<span id="annotated-cell-14-9"><a href="#annotated-cell-14-9" aria-label="9"></a><span class="co"># Download the original data</span></span>
-<span id="annotated-cell-14-10"><a href="#annotated-cell-14-10" aria-label="10"></a><span class="fu">request</span>(</span>
-<span id="annotated-cell-14-11"><a href="#annotated-cell-14-11" aria-label="11"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/nottingham_robbery.csv.gz"</span></span>
-<span id="annotated-cell-14-12"><a href="#annotated-cell-14-12" aria-label="12"></a>) <span class="sc">|&gt;</span></span>
-<span id="annotated-cell-14-13"><a href="#annotated-cell-14-13" aria-label="13"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nottingham_robbery.csv.gz"</span>)) <span class="sc">|&gt;</span></span>
-<span id="annotated-cell-14-14"><a href="#annotated-cell-14-14" aria-label="14"></a>  <span class="co"># Stop this command from producing an output in the R Console</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-14-15" class="code-annotation-target"><a href="#annotated-cell-14-15" aria-label="15"></a>  <span class="fu">invisible</span>()</span>
-<span id="annotated-cell-14-16"><a href="#annotated-cell-14-16" aria-label="16"></a></span>
-<span id="annotated-cell-14-17"><a href="#annotated-cell-14-17" aria-label="17"></a><span class="co"># Load data and transform to British National Grid so distances are in metres</span></span>
-<span id="annotated-cell-14-18"><a href="#annotated-cell-14-18" aria-label="18"></a>robbery <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nottingham_robbery.csv.gz"</span>) <span class="sc">|&gt;</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-14-19" class="code-annotation-target"><a href="#annotated-cell-14-19" aria-label="19"></a>  <span class="fu">read_csv</span>(<span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
-<span id="annotated-cell-14-20"><a href="#annotated-cell-14-20" aria-label="20"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>) <span class="sc">|&gt;</span></span>
-<span id="annotated-cell-14-21"><a href="#annotated-cell-14-21" aria-label="21"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:27700"</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="annotated-cell-11" data-filename="chapter_13c.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-11-1"><a href="#annotated-cell-11-1" aria-label="1"></a><span class="co"># This script identifies clusters of robberies in Nottingham, England</span></span>
+<span id="annotated-cell-11-2"><a href="#annotated-cell-11-2" aria-label="2"></a></span>
+<span id="annotated-cell-11-3"><a href="#annotated-cell-11-3" aria-label="3"></a><span class="co"># Load packages</span></span>
+<span id="annotated-cell-11-4"><a href="#annotated-cell-11-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, here, httr2, sf, sfhotspot, tidyverse)</span>
+<span id="annotated-cell-11-5"><a href="#annotated-cell-11-5" aria-label="5"></a></span>
+<span id="annotated-cell-11-6"><a href="#annotated-cell-11-6" aria-label="6"></a></span>
+<span id="annotated-cell-11-7"><a href="#annotated-cell-11-7" aria-label="7"></a><span class="co"># LOAD DATA --------------------------------------------------------------------</span></span>
+<span id="annotated-cell-11-8"><a href="#annotated-cell-11-8" aria-label="8"></a></span>
+<span id="annotated-cell-11-9"><a href="#annotated-cell-11-9" aria-label="9"></a><span class="co"># Download the original data</span></span>
+<span id="annotated-cell-11-10"><a href="#annotated-cell-11-10" aria-label="10"></a><span class="fu">request</span>(</span>
+<span id="annotated-cell-11-11"><a href="#annotated-cell-11-11" aria-label="11"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/nottingham_robbery.csv.gz"</span></span>
+<span id="annotated-cell-11-12"><a href="#annotated-cell-11-12" aria-label="12"></a>) <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-11-13"><a href="#annotated-cell-11-13" aria-label="13"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nottingham_robbery.csv.gz"</span>)) <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-11-14"><a href="#annotated-cell-11-14" aria-label="14"></a>  <span class="co"># Stop this command from producing an output in the R Console</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-11-15" class="code-annotation-target"><a href="#annotated-cell-11-15" aria-label="15"></a>  <span class="fu">invisible</span>()</span>
+<span id="annotated-cell-11-16"><a href="#annotated-cell-11-16" aria-label="16"></a></span>
+<span id="annotated-cell-11-17"><a href="#annotated-cell-11-17" aria-label="17"></a><span class="co"># Load data and transform to British National Grid so distances are in metres</span></span>
+<span id="annotated-cell-11-18"><a href="#annotated-cell-11-18" aria-label="18"></a>robbery <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nottingham_robbery.csv.gz"</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-11-19" class="code-annotation-target"><a href="#annotated-cell-11-19" aria-label="19"></a>  <span class="fu">read_csv</span>(<span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-11-20"><a href="#annotated-cell-11-20" aria-label="20"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>) <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-11-21"><a href="#annotated-cell-11-21" aria-label="21"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:27700"</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-annotation">
 <dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-14" data-target-annotation="1">1</dt>
+<dt data-target-cell="annotated-cell-11" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-14" data-code-lines="15" data-code-annotation="1">The <code>invisible()</code> function is used to prevent the output of the <code>req_perform()</code> command from being printed in the R Console. This is because the output is not useful for our purposes, and we want to keep the R Console clean and focused on the results that are relevant to our analysis.</span>
+<span data-code-cell="annotated-cell-11" data-code-lines="15" data-code-annotation="1">The <code>invisible()</code> function is used to prevent the output of the <code>req_perform()</code> command from being printed in the R Console. This is because the output is not useful for our purposes, and we want to keep the R Console clean and focused on the results that are relevant to our analysis.</span>
 </dd>
-<dt data-target-cell="annotated-cell-14" data-target-annotation="2">2</dt>
+<dt data-target-cell="annotated-cell-11" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-14" data-code-lines="19" data-code-annotation="2">The <code>show_col_types = FALSE</code> argument is used in the <code>read_csv()</code> function to suppress the printing of column types in the R Console. This is because we already know the column types from the previous analysis, and we want to keep the R Console clean and focused on the results that are relevant to our analysis.</span>
+<span data-code-cell="annotated-cell-11" data-code-lines="19" data-code-annotation="2">The <code>show_col_types = FALSE</code> argument is used in the <code>read_csv()</code> function to suppress the printing of column types in the R Console. This is because we already know the column types from the previous analysis, and we want to keep the R Console clean and focused on the results that are relevant to our analysis.</span>
 </dd>
 </dl>
 </div>
 </div>
 <p><code>hotspot_dbscan()</code> operates in a similar way to the other hotspot functions we have already used. Let’s start by keeping all the arguments at their default values. We will store the result in an object called <code>robbery_dbscan</code>.</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_13c.R">
+<div id="lst-mapping-hotspots-script-13c-initial-clusters" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-script-13c-initial-clusters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.15
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-script-13c-initial-clusters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13c.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-label="1"></a><span class="co"># FIND CLUSTERS ----------------------------------------------------------------</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24" data-filename="chapter_13c.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-label="1"></a><span class="co"># FIND CLUSTERS ----------------------------------------------------------------</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-label="2"></a></span>
 <span id="cb24-3"><a href="#cb24-3" aria-label="3"></a><span class="co"># Find clusters using DBSCAN</span></span>
 <span id="cb24-4"><a href="#cb24-4" aria-label="4"></a>robbery_dbscan <span class="ot">&lt;-</span> <span class="fu">hotspot_dbscan</span>(robbery)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre data-code-line-numbers=""><code>Minimum points set automatically from the number of point coordinates.
@@ -1496,28 +1715,55 @@ Neighbourhood distance set automatically from nearest-neighbour distances.
 </div>
 </div>
 <p>You can see that <code>hotspot_dbscan()</code> tells us the values of <code>min_pts</code> and <code>eps</code> that it has chosen automatically. Let’s use <code>hotspot_map()</code> to produce a quick map of the clusters that have been identified.</p>
-<div class="cell">
+<div id="lst-mapping-hotspots-draw-nottingham-robbery-clusters-default" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-draw-nottingham-robbery-clusters-default-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.16
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-draw-nottingham-robbery-clusters-default-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-label="1"></a><span class="fu">hotspot_map</span>(robbery_dbscan, <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26" data-filename="R Console" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-label="1"></a><span class="fu">hotspot_map</span>(robbery_dbscan, <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</div>
+</figure>
+</div>
+<div id="map-nottingham-robbery-clusters-default" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-nottingham-robbery-clusters-default-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-filename="R Console">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/draw-nottingham-robbery-clusters-default-1.png" class="img-fluid figure-img" alt="A map of Nottingham showing robbery clusters identified with the default DBSCAN settings. Shading represents the number of robberies in each cluster." width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-nottingham-robbery-clusters-default-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;13.10
+</figcaption>
+</figure>
+</div>
 <p>You can see from this map that by default, <code>hotspot_dbscan()</code> has identified 2 clusters. Let’s inspect the <code>robbery_dbscan</code> object in the R Console:</p>
-<div class="cell">
+<div class="cell" data-filename="R Console">
+<div id="lst-mapping-hotspots-inspect-robbery-clusters" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-inspect-robbery-clusters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.17
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-inspect-robbery-clusters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-label="1"></a>robbery_dbscan</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27" data-filename="R Console" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-label="1"></a>robbery_dbscan</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>Simple feature collection with 2 features and 5 fields
@@ -1533,16 +1779,25 @@ Projected CRS: OSGB36 / British National Grid
 </div>
 </div>
 <p>The <code>rank</code> column in the <code>robbery_dbscan</code> object shows the rank of each cluster, with the cluster containing the most robberies ranked 1, the cluster containing the second most robberies ranked 2, and so on. The <code>n</code> column shows the number of robberies in each cluster, while the <code>prop</code> column shows the proportion of all robberies in Nottingham in 2020 that are contained in each cluster.</p>
-<p>You can see from the <code>prop</code> column that 50.3% of all robberies in Nottingham in 2020 have been included in the cluster with rank 1. You can also see from the map above that that cluster covers quite a large section of the city. That’s probably not very useful for police officers trying to decide where to patrol, or local officials deciding whether to focus crime-prevention initiatives. It will probably be more useful to identify smaller clusters that contain the the very highest densities of robbery, even if those clusters cover a smaller proportion of all robberies. To do that, we can increase the value of <code>density_adjust</code> to 5, which will identify clusters that are at least five times as dense as the typical local density of robberies in Nottingham in 2020.</p>
+<p>You can see from the <code>prop</code> column that 50.3% of all robberies in Nottingham in 2020 have been included in the cluster with rank 1. You can also see from <a href="#map-nottingham-robbery-clusters-default" class="quarto-xref">Map&nbsp;<span>13.10</span></a> that that cluster covers quite a large section of the city. That’s probably not very useful for police officers trying to decide where to patrol, or local officials deciding whether to focus crime-prevention initiatives. It will probably be more useful to identify smaller clusters that contain the the very highest densities of robbery, even if those clusters cover a smaller proportion of all robberies. To do that, we can increase the value of <code>density_adjust</code> to 5, which will identify clusters that are at least five times as dense as the typical local density of robberies in Nottingham in 2020.</p>
 <p>Change the existing code that creates the <code>robbery_dbscan</code> object in <code>chapter_13c.R</code> to the following and run it:</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_13c.R">
+<div id="lst-mapping-hotspots-script-13c-final-clusters" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-script-13c-final-clusters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.18
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-script-13c-final-clusters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13c.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-label="1"></a><span class="co"># Find clusters using DBSCAN</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29" data-filename="chapter_13c.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-label="1"></a><span class="co"># Find clusters using DBSCAN</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-label="2"></a></span>
 <span id="cb29-3"><a href="#cb29-3" aria-label="3"></a>robbery_dbscan <span class="ot">&lt;-</span> <span class="fu">hotspot_dbscan</span>(robbery, <span class="at">density_adjust =</span> <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre data-code-line-numbers=""><code>Minimum points set automatically from the number of point coordinates.
@@ -1552,35 +1807,58 @@ Neighbourhood distance set automatically from nearest-neighbour distances.
 </div>
 </div>
 <p>If we now inspect this object in the R Console, we’ll see it contains 3 clusters and the highest-ranked cluster contains 22.2% of all the robberies. Let’s plot that quickly using <code>hotspot_map()</code>:</p>
-<div class="cell">
+<div id="lst-mapping-hotspots-draw-nottingham-robbery-clusters-higher-density" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-draw-nottingham-robbery-clusters-higher-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.19
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-draw-nottingham-robbery-clusters-higher-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-label="1"></a><span class="fu">hotspot_map</span>(robbery_dbscan, <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31" data-filename="R Console" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-label="1"></a><span class="fu">hotspot_map</span>(robbery_dbscan, <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</div>
+</figure>
+</div>
+<div id="map-nottingham-robbery-clusters-higher-density" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-nottingham-robbery-clusters-higher-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-filename="R Console">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/draw-nottingham-robbery-clusters-higher-density-1.png" class="img-fluid figure-img" alt="A map of Nottingham showing smaller robbery clusters identified using a density-adjustment threshold of five times the typical local density." width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-nottingham-robbery-clusters-higher-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;13.11
+</figcaption>
+</figure>
+</div>
 <p>This time, we can see that the clusters cover a smaller area of the city, and tell us that any efforts to prevent robbery should be concentrated in the city centre.</p>
-<p>There are several different ways we can represent DBSCAN clusters on a map. One option (which is what <code>hotspot_map()</code> does on the map above) is to shade each cluster according to how many crimes it contains. Another option (shown earlier in the maps that illustrate the effect of varying <code>min_pts</code> and <code>density_adjust</code>) is to show the outline of each cluster and label it, for example with the cluster rank (where the cluster with containing the most crimes is ranked 1, the cluster with the second most crimes is ranked 2, and so on).</p>
+<p>There are several different ways we can represent DBSCAN clusters on a map. One option (which is what <code>hotspot_map()</code> does in <a href="#map-nottingham-robbery-clusters-higher-density" class="quarto-xref">Map&nbsp;<span>13.11</span></a>) is to shade each cluster according to how many crimes it contains. Another option (shown earlier in the maps that illustrate the effect of varying <code>min_pts</code> and <code>density_adjust</code>) is to show the outline of each cluster and label it, for example with the cluster rank (where the cluster with containing the most crimes is ranked 1, the cluster with the second most crimes is ranked 2, and so on).</p>
 <p>This code produces a map that shows the outline of each cluster and the proportion of all robberies in Nottingham in 2020 that are contained within it. In particular, we use:</p>
 <ul>
 <li>the <code>col_fill</code> argument of <code>hotspot_map()</code> to “none” to specify that we don’t want each polygon to have a fill colour, which means the clusters will be outlined, and</li>
 <li>the <code>col_label</code> argument of <code>hotspot_map()</code> to “prop” to specify that we want to label each cluster with the proportion of all robberies in Nottingham in 2020 that are contained within it.</li>
 </ul>
 <p>Add this code to <code>chapter_13c.R</code> and run it:</p>
-<div class="cell">
+<div id="lst-mapping-hotspots-script-13c-map" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-script-13c-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.20
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-script-13c-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13c.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-label="1"></a><span class="co"># PLOT MAP ---------------------------------------------------------------------</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32" data-filename="chapter_13c.R" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-label="1"></a><span class="co"># PLOT MAP ---------------------------------------------------------------------</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-label="2"></a></span>
 <span id="cb32-3"><a href="#cb32-3" aria-label="3"></a><span class="fu">hotspot_map</span>(</span>
 <span id="cb32-4"><a href="#cb32-4" aria-label="4"></a>  robbery_dbscan,</span>
@@ -1598,22 +1876,41 @@ Neighbourhood distance set automatically from nearest-neighbour distances.
 <span id="cb32-16"><a href="#cb32-16" aria-label="16"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey50"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>)</span>
 <span id="cb32-17"><a href="#cb32-17" aria-label="17"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</div>
+</figure>
+</div>
+<div id="map-nottingham-robbery-cluster-proportions" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-nottingham-robbery-cluster-proportions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-filename="chapter_13c.R">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/script-13c-map-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/script-13c-map-1.png" class="img-fluid figure-img" alt="A map of Nottingham robbery clusters outlined in red and labelled with the proportion of recorded robberies in each cluster." width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-nottingham-robbery-cluster-proportions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;13.12
+</figcaption>
+</figure>
+</div>
 <p>It’s also possible to vary how the outline of each cluster is represented. The underlying DBSCAN algorithm assigns points to clusters, but it doesn’t produce the polygons returned by <code>hotspot_dbscan()</code>. Instead, by default <code>hotspot_dbscan()</code> returns polygons that indicate the <em>concave hull</em> of all the points in each cluster. You might remember we learned about <em>convex</em> hulls in <a href="../06_mapping_crime_patterns/index.html#sec-clipping-map-layers" class="quarto-xref"><span>Section 6.3</span></a>. A concave hull is similar to a convex hull, but it can be more irregular in shape and can follow the outline of the points in a cluster more closely. How closely the outline follows the points depends on another argument to <code>hotspot_dbscan()</code> called <code>hull_ratio</code>. The default value is <code>hull_ratio = 0.75</code>, which means the concave hull will follow the outline of the points in a cluster moderately closely. If you set <code>hull_ratio = 1</code>, the concave hull will be the same as the convex hull, which (depending on the arrangement of the points) is sometimes a much larger (but simpler) shape that doesn’t follow the outline of the points in a cluster as closely. Most of the time you will probably not vary <code>hull_ratio</code>, but it’s important to remember that the outline of the polygons returned by <code>hotspot_dbscan()</code> is not necessarily a precise representation of the outline of the points in a cluster. This is often a good thing, since crimes in future probably won’t occur at exactly the same locations as crimes in the past, so a more generalised outline of a cluster is often more useful than a precise outline. But it also means that you shouldn’t read too much into whether (for example) a particular location falls just inside or just outside the outline of a cluster.</p>
 <p>Save <code>chapter_13c.R</code> by pressing <kbd title="mac: Command-S, windows: Ctrl-S" aria-hidden="true" data-mac="Command-S" data-windows="Ctrl-S"></kbd><span class="visually-hidden"></span>. Your complete <code>chapter_13c.R</code> DBSCAN script should now look like this:</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_13c.R">
+<div id="lst-mapping-hotspots-show-chapter-13c-script" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-show-chapter-13c-script-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.21
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-show-chapter-13c-script-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13c.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-label="1"></a><span class="co"># This script identifies clusters of robberies in Nottingham, England</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33" data-filename="chapter_13c.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-label="1"></a><span class="co"># This script identifies clusters of robberies in Nottingham, England</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-label="2"></a></span>
 <span id="cb33-3"><a href="#cb33-3" aria-label="3"></a><span class="co"># Load packages</span></span>
 <span id="cb33-4"><a href="#cb33-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, here, httr2, sf, sfhotspot, tidyverse)</span>
@@ -1659,7 +1956,28 @@ Neighbourhood distance set automatically from nearest-neighbour distances.
 <span id="cb33-44"><a href="#cb33-44" aria-label="44"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
+</figure>
+</div>
+</div>
 <p>Running the complete script produces this map:</p>
+<div id="map-nottingham-robbery-concave-hulls" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-nottingham-robbery-concave-hulls-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-filename="chapter_13c.R">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/display-robbery-concave-hulls-1.png" class="img-fluid figure-img" style="width:100.0%" alt="A map of central Nottingham clusters of areas with high densities of robbery are identified. The clusters are outlined in red and labelled with the proportion of all robberies in Nottingham in 2020 that are contained within each cluster"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-nottingham-robbery-concave-hulls-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;13.13
+</figcaption>
+</figure>
+</div>
 <p>To check that the analysis is reproducible, restart R using the <strong>Restart R</strong> (<strong>⟳</strong>) button in Positron’s <strong>Console</strong> panel, then run the script from beginning to end.</p>
 <p>Keep the script in the <code>R</code> folder and the original downloads in <code>data/raw</code>.</p>
 <div class="callout callout-style-default callout-quiz callout-titled" title="DBSCAN">
@@ -1673,16 +1991,16 @@ Neighbourhood distance set automatically from nearest-neighbour distances.
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What does the <code>min_pts</code> argument of <code>hotspot_dbscan()</code> specify?</strong></p>
-<div id="radio_CUZMGMEWDV" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_CUZMGMEWDV" value=""> <span>The maximum number of clusters that DBSCAN can identify</span></label><label><input type="radio" autocomplete="off" name="radio_CUZMGMEWDV" value="answer"> <span>The minimum number of nearby points required for a location to form the core of a cluster</span></label><label><input type="radio" autocomplete="off" name="radio_CUZMGMEWDV" value=""> <span>The minimum distance that must separate two clusters</span></label><label><input type="radio" autocomplete="off" name="radio_CUZMGMEWDV" value=""> <span>The proportion of all points that must be included in clusters</span></label>
+<div id="radio_RAXLUMYRQU" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_RAXLUMYRQU" value=""> <span>The maximum number of clusters that DBSCAN can identify</span></label><label><input type="radio" autocomplete="off" name="radio_RAXLUMYRQU" value="answer"> <span>The minimum number of nearby points required for a location to form the core of a cluster</span></label><label><input type="radio" autocomplete="off" name="radio_RAXLUMYRQU" value=""> <span>The minimum distance that must separate two clusters</span></label><label><input type="radio" autocomplete="off" name="radio_RAXLUMYRQU" value=""> <span>The proportion of all points that must be included in clusters</span></label>
 </div>
 <p><strong>Compared with a lower value, what will a higher value of <code>density_adjust</code> usually produce?</strong></p>
-<div id="radio_SLEFBFLOWE" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_SLEFBFLOWE" value=""> <span>Larger clusters that may collectively contain more of the input points</span></label><label><input type="radio" autocomplete="off" name="radio_SLEFBFLOWE" value=""> <span>More clusters, each containing exactly the value of <code>min_pts</code></span></label><label><input type="radio" autocomplete="off" name="radio_SLEFBFLOWE" value="answer"> <span>Smaller, denser clusters that may collectively contain fewer of the input points</span></label><label><input type="radio" autocomplete="off" name="radio_SLEFBFLOWE" value=""> <span>Clusters with more precise boundaries but otherwise identical contents</span></label>
+<div id="radio_CPTCIDCUDP" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_CPTCIDCUDP" value=""> <span>Larger clusters that may collectively contain more of the input points</span></label><label><input type="radio" autocomplete="off" name="radio_CPTCIDCUDP" value=""> <span>More clusters, each containing exactly the value of <code>min_pts</code></span></label><label><input type="radio" autocomplete="off" name="radio_CPTCIDCUDP" value="answer"> <span>Smaller, denser clusters that may collectively contain fewer of the input points</span></label><label><input type="radio" autocomplete="off" name="radio_CPTCIDCUDP" value=""> <span>Clusters with more precise boundaries but otherwise identical contents</span></label>
 </div>
 <p><strong>What does the <code>prop</code> column in the output from <code>hotspot_dbscan()</code> represent?</strong></p>
-<div id="radio_QAIRRJZGJU" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_QAIRRJZGJU" value=""> <span>The density of robberies inside the cluster</span></label><label><input type="radio" autocomplete="off" name="radio_QAIRRJZGJU" value=""> <span>The proportion of the study area covered by the cluster</span></label><label><input type="radio" autocomplete="off" name="radio_QAIRRJZGJU" value="answer"> <span>The proportion of all robberies in the input data contained in the cluster</span></label><label><input type="radio" autocomplete="off" name="radio_QAIRRJZGJU" value=""> <span>The probability that the cluster occurred by chance</span></label>
+<div id="radio_EGRBMGOFIF" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_EGRBMGOFIF" value=""> <span>The density of robberies inside the cluster</span></label><label><input type="radio" autocomplete="off" name="radio_EGRBMGOFIF" value=""> <span>The proportion of the study area covered by the cluster</span></label><label><input type="radio" autocomplete="off" name="radio_EGRBMGOFIF" value="answer"> <span>The proportion of all robberies in the input data contained in the cluster</span></label><label><input type="radio" autocomplete="off" name="radio_EGRBMGOFIF" value=""> <span>The probability that the cluster occurred by chance</span></label>
 </div>
 </div>
 </div>
@@ -1692,14 +2010,23 @@ Neighbourhood distance set automatically from nearest-neighbour distances.
 <p>In this chapter we’ve learned to use three techniques that we can use alongside KDE mapping (<a href="../06_mapping_crime_patterns/index.html" class="quarto-xref"><span>Chapter 6</span></a>) that we can use to understand patterns of crime. Each technique has its own strengths and weaknesses, and you can use them either on their own or in combination. For example, we can use Gi* to identify areas with more crime than expected by chance, then use DBSCAN to identify the most dense clusters of crime within those areas. We can even show these two techniques on the same map.</p>
 <p>Create a new file called <code>chapter_13d.R</code> in the <code>R</code> folder of your <code>crime_mapping</code> workspace as usual. Add all the code from the file <code>chapter_13b.R</code> to the new file except the code that creates the map itself. Now run the code in the new file to load all the data we will need and calculate the Gi* values.</p>
 <p>Next, we should add the code needed to identify clusters of robbery using DBSCAN. Add this code to the new file and run it:</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_13d.R">
+<div id="lst-mapping-hotspots-script-13d-clusters" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-script-13d-clusters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.22
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-script-13d-clusters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13d.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-label="1"></a><span class="co"># Find clusters using DBSCAN</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34" data-filename="chapter_13d.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-label="1"></a><span class="co"># Find clusters using DBSCAN</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-label="2"></a></span>
 <span id="cb34-3"><a href="#cb34-3" aria-label="3"></a>robbery_dbscan <span class="ot">&lt;-</span> <span class="fu">hotspot_dbscan</span>(robbery, <span class="at">density_adjust =</span> <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre data-code-line-numbers=""><code>Minimum points set automatically from the number of point coordinates.
@@ -1710,12 +2037,17 @@ Neighbourhood distance set automatically from nearest-neighbour distances.
 </div>
 <p>We now need to create a map that has two hotspot layers, one on top of the other. We can’t add together two separate calls to <code>hotspot_map()</code> because that would mean the second call would add a basemap that would cover the first layer. Instead, we can use the <code>hotspot_map()</code> function to create a map of the Gi* hotspots, then add a layer for the DBSCAN clusters using another function from the sfhotspot package: <code>hotspot_layer()</code>. This acts in a very similar way to <code>hotspot_map()</code>, except that it adds a layer to an existing map. Just like <code>hotspot_map()</code>, <code>hotspot_layer()</code> makes some choices about how to display a layer depending on what type of layer it is given. We can also control <code>hotspot_layer()</code> in a similar way to <code>hotspot_map()</code>. For example, we can use the <code>col_fill</code> and <code>col_label</code> arguments to control how the DBSCAN clusters are displayed on the map.</p>
 <p>Add this code to your new file and run it:</p>
-<div class="cell">
+<div id="lst-mapping-hotspots-script-13d-map" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-script-13d-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.23
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-script-13d-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13d.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-label="1"></a><span class="co"># PLOT MAP ---------------------------------------------------------------------</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36" data-filename="chapter_13d.R" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-label="1"></a><span class="co"># PLOT MAP ---------------------------------------------------------------------</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-label="2"></a></span>
 <span id="cb36-3"><a href="#cb36-3" aria-label="3"></a><span class="co"># Initiate map and add KDE layer for significant hotspots</span></span>
 <span id="cb36-4"><a href="#cb36-4" aria-label="4"></a><span class="fu">hotspot_map</span>(</span>
@@ -1738,22 +2070,41 @@ Neighbourhood distance set automatically from nearest-neighbour distances.
 <span id="cb36-21"><a href="#cb36-21" aria-label="21"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> nottingham_wards, <span class="at">colour =</span> <span class="st">"grey70"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
 <span id="cb36-22"><a href="#cb36-22" aria-label="22"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Nottingham robbery hotspots"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</div>
+</figure>
+</div>
+<div id="map-nottingham-significant-robbery-clusters" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-map figure">
+<div aria-describedby="map-nottingham-significant-robbery-clusters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-filename="chapter_13d.R">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/script-13d-map-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="index_files/figure-html/script-13d-map-1.png" class="img-fluid figure-img" style="width:100.0%" alt="A map of significant robbery clusters in Nottingham. Red outlines and percentage labels identify clusters, with ward boundaries drawn in grey."></p>
 </figure>
 </div>
 </div>
 </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-map quarto-uncaptioned" id="map-nottingham-significant-robbery-clusters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Map&nbsp;13.14
+</figcaption>
+</figure>
+</div>
 <p>You can see that this map combines different techniques – KDE, Gi* and DBSCAN – to help people understand patterns of robbery in this city.</p>
 <p>Save <code>chapter_13d.R</code> by pressing <kbd title="mac: Command-S, windows: Ctrl-S" aria-hidden="true" data-mac="Command-S" data-windows="Ctrl-S"></kbd><span class="visually-hidden"></span>. Your complete <code>chapter_13d.R</code> script should now look like this:</p>
-<div class="cell">
+<div class="cell" data-filename="chapter_13d.R">
+<div id="lst-mapping-hotspots-show-chapter-13d-script" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst quarto-uncaptioned" id="lst-mapping-hotspots-show-chapter-13d-script-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Code&nbsp;13.24
+</figcaption>
+<div aria-describedby="lst-mapping-hotspots-show-chapter-13d-script-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>chapter_13d.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-label="1"></a><span class="co"># This script produces a map of significant robbery hotspots in Nottingham,</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37" data-filename="chapter_13d.R" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-label="1"></a><span class="co"># This script produces a map of significant robbery hotspots in Nottingham,</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-label="2"></a><span class="co"># England</span></span>
 <span id="cb37-3"><a href="#cb37-3" aria-label="3"></a></span>
 <span id="cb37-4"><a href="#cb37-4" aria-label="4"></a><span class="co"># Load packages</span></span>
@@ -1816,6 +2167,9 @@ Neighbourhood distance set automatically from nearest-neighbour distances.
 <span id="cb37-61"><a href="#cb37-61" aria-label="61"></a>  <span class="co"># Add ward boundaries</span></span>
 <span id="cb37-62"><a href="#cb37-62" aria-label="62"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> nottingham_wards, <span class="at">colour =</span> <span class="st">"grey70"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
 <span id="cb37-63"><a href="#cb37-63" aria-label="63"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Nottingham robbery hotspots"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</figure>
 </div>
 </div>
 </section>

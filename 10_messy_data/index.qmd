@@ -116,6 +116,9 @@ the prepared data for mapping or analysis
 Let's get started by loading the packages we will need. We will mainly be working in the R Console in this chapter, so we will load the packages there rather than creating a script file at this stage:
 
 ```{r}
+#| label: load-messy-data-packages
+#| lst-label: lst-messy-data-load-messy-data-packages
+#| lst-cap: ""
 #| filename: "R Console"
 
 pacman::p_load(httr2, janitor, readxl, tidyverse)
@@ -173,7 +176,7 @@ tidy_data_quiz3 <- c(
 <p class="full-width-image"><img src="../images/tidydata_2.jpg" alt="Cartoon explaining that the standard structure of tidy data means that all tidy datasets are alike but every messy dataset is messy in its own way."></p>
 
 
-### Reshaping data between long and wide formats
+### Reshaping data between long and wide formats {#sec-messy-data-reshaping-data-between-long-and-wide-formats}
 
 Every messy dataset is messy in its own unique way, but often messiness comes from the _structure_ of data not being tidy. Tabular data can come in two general formats: *long* and *wide*. For example, imagine a dataset showing counts of several different types of crime in several different areas. We could store this data in _wide_ format, where there is a column for the name of the area and then a column for each type of crime.
 
@@ -199,6 +202,9 @@ One sign that your data has this problem of variables hiding in column names is 
 Fortunately, we can easily convert this data (which we can create and store in the object `crime_counts`) into long format using the `pivot_longer()` function from the tidyr package (another of the packages loaded automatically when we load the tidyverse package). To use `pivot_longer()`, we have to specify which columns we want to _gather_ together into one column to store the category names. We do this using the `cols` argument. We can specify the columns we want to gather as a vector, i.e. `c(assault, burglary, robbery)`.
 
 ```{r}
+#| label: reshape-crime-counts-long
+#| lst-label: lst-messy-data-reshape-crime-counts-long
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Create a dataset of crime counts in 'wide' format
@@ -224,6 +230,9 @@ Every argument provided to the `tribble()` function becomes either a column name
 By default, `pivot_longer()` calls the new column of category names `name` and the new column of values `value`. We can specify more-descriptive names using the `names_to` and `values_to` arguments.
 
 ```{r}
+#| label: reshape-with-custom-column-names
+#| lst-label: lst-messy-data-reshape-with-custom-column-names
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Convert dataset to 'long' format with custom column names
@@ -243,6 +252,9 @@ To use `pivot_wider()`, we must specify:
 2. which existing column contains the _values_ to put in those columns, using the `values_from` argument.
 
 ```{r}
+#| label: reshape-crime-counts-wide
+#| lst-label: lst-messy-data-reshape-crime-counts-wide
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Store the long-format data
@@ -262,6 +274,8 @@ pivot_wider(crime_counts_long, names_from = type, values_from = count)
 
 ```{r}
 #| label: pivot-wider-missing1
+#| lst-label: lst-messy-data-pivot-wider-missing1
+#| lst-cap: ""
 #| filename: "R Console"
 
 crime_counts_tiny <- tribble(
@@ -277,6 +291,8 @@ If we convert this data to wide format, we'll see that the `extortion` column fo
 
 ```{r}
 #| label: pivot-wider-missing2
+#| lst-label: lst-messy-data-pivot-wider-missing2
+#| lst-cap: ""
 #| filename: "R Console"
 
 pivot_wider(crime_counts_tiny, names_from = crime_type, values_from = count)
@@ -293,6 +309,8 @@ If, _and only if_, we have confirmed that the reason for the missing count is th
 
 ```{r}
 #| label: pivot-wider-missing3
+#| lst-label: lst-messy-data-pivot-wider-missing3
+#| lst-cap: ""
 #| filename: "R Console"
 
 pivot_wider(
@@ -329,6 +347,9 @@ When we want to gather a large number of columns together, it can get tedious to
 
 
 ```{r}
+#| label: reshape-monthly-crime-counts
+#| lst-label: lst-messy-data-reshape-monthly-crime-counts
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Create a dataset of monthly crime counts in wide format
@@ -352,7 +373,7 @@ pivot_longer(
 There is still a problem with this data, which is that the `month` variable contains not date values but instead the month and year stored as text. We will learn how to deal with that issue in @sec-mapping-time.
 
 
-### Skipping unwanted rows in imported data
+### Skipping unwanted rows in imported data {#sec-messy-data-skipping-unwanted-rows-in-imported-data}
 
 Data released by government organisations are often designed to be viewed by humans rather than processed by statistical software. We can see this in this screenshot of a [dataset produced by the UK Office for National Statistics on cybercrime in the UK](https://www.ons.gov.uk/peoplepopulationandcommunity/crimeandjustice/datasets/crimeinenglandandwalesexperimentaltables) based on responses to the Crime Survey for England and Wales.
 
@@ -363,6 +384,9 @@ Looking at the row numbers on the left-hand side, we can see that the first row 
 If we try to import this data using, for example, the `read_excel()` function from the `readxl` package, we will find various problems.
 
 ```{r}
+#| label: download-cybercrime-spreadsheet
+#| lst-label: lst-messy-data-download-cybercrime-spreadsheet
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -377,6 +401,7 @@ read_excel(here("data", "raw", "cybercrime.xlsx"), sheet = "Table E1")
 
 
 ```{r}
+#| label: read-untrimmed-cybercrime-sheet
 #| echo: false
 
 read_excel(here("data", "raw", "cybercrime.xlsx"), sheet = "Table E1")
@@ -387,6 +412,9 @@ It's clear that this dataset has not loaded in the way that we want, because the
 
 
 ```{r}
+#| label: skip-cybercrime-header-rows
+#| lst-label: lst-messy-data-skip-cybercrime-header-rows
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -399,6 +427,7 @@ read_excel(
 
 
 ```{r}
+#| label: preview-skipped-header-rows
 #| echo: false
 
 read_excel(here("data", "raw", "cybercrime.xlsx"), sheet = "Table E1", skip = 3)
@@ -417,6 +446,9 @@ We can remove these extra rows at the end of our data using the `slice()` functi
 so row 34 on the spreadsheet is actually row 30 in our loaded dataset. Knowing this, we can remove all the rows below row 30 using the `slice()` function from the dplyr package:
 
 ```{r}
+#| label: trim-cybercrime-footer-rows
+#| lst-label: lst-messy-data-trim-cybercrime-footer-rows
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -426,6 +458,7 @@ cybercrime <- here("data", "raw", "cybercrime.xlsx") |>
 ```
 
 ```{r}
+#| label: preview-trimmed-footer-rows
 #| echo: false
 
 cybercrime <- here("data", "raw", "cybercrime.xlsx") |>
@@ -436,6 +469,9 @@ cybercrime <- here("data", "raw", "cybercrime.xlsx") |>
 It's important to check that we've sliced the correct number of rows, since it's easy to miscalculate and get this wrong. We can check by using `view()` to open the whole dataset in a separate tab in Positron, or use the `tail()` function to print the last few rows of the data in the R Console:
 
 ```{r}
+#| label: tail-cybercrime
+#| lst-label: lst-messy-data-tail-cybercrime
+#| lst-cap: ""
 #| filename: "R Console"
 
 tail(cybercrime)
@@ -444,6 +480,9 @@ tail(cybercrime)
 The final problem with the structure of this dataset is the blank rows that are used to separate different crime categories in the original table. We can deal with this using the `remove_empty()` function from the janitor package, which removes all rows and/or columns that contain only `NA` values. We will also clean the column names at the same time and then rename the columns to be shorter, which will make it easier to refer to them in our code.
 
 ```{r}
+#| label: remove-empty-cybercrime-columns
+#| lst-label: lst-messy-data-remove-empty-cybercrime-columns
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -465,6 +504,7 @@ head(cybercrime)
 
 
 ```{r}
+#| label: preview-cleaned-cybercrime-sheet
 #| echo: false
 
 cybercrime <- here("data", "raw", "cybercrime.xlsx") |>
@@ -486,7 +526,7 @@ head(cybercrime)
 This dataset now has a tidy structure: each row represents an observation (in this case, data about a particular type of crime), each column represents a piece of information about the observation and each cell represents a single value. We still need to clean up the footnote numbers that appear in some of the values, but we will deal with that later in this chapter.
 
 
-### Separating multiple variables stored in a single column
+### Separating multiple variables stored in a single column {#sec-messy-data-separating-multiple-variables-stored-in-a-single-column}
 
 Sometimes datasets include multiple variables in a single column. For example, data about crime victims stored in an object called `victims` might include a single column representing both age and sex.
 
@@ -513,6 +553,9 @@ It would be easier to wrangle this data (e.g. to filter by age) if the data in t
 We can split the `age_sex` column into two using the `separate_wider_delim()` function from the tidyr package. We specify the existing column we want to split, the names of the new columns using the `names` argument and the character that separates the two pieces of data using the `delim` argument (in this case, `/`).
 
 ```{r}
+#| label: separate-victim-age-and-sex
+#| lst-label: lst-messy-data-separate-victim-age-and-sex
+#| lst-cap: ""
 #| error: true
 #| filename: "R Console"
 
@@ -540,6 +583,9 @@ This code produces an error because the second row of the data contains only one
 Because the original `age_sex` column stored text, both new columns initially contain text, too. Since age is numeric, we can convert it after separating the columns using `parse_number()`.
 
 ```{r}
+#| label: handle-incomplete-victim-values
+#| lst-label: lst-messy-data-handle-incomplete-victim-values
+#| lst-cap: ""
 #| filename: "R Console"
 
 victims |>
@@ -663,6 +709,9 @@ We don't need this constant value for analysis, and for large datasets it can un
 
 
 ```{r}
+#| label: remove-location-prefix
+#| lst-label: lst-messy-data-remove-location-prefix
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Create example dataset similar to UK police open data
@@ -692,6 +741,9 @@ So `\\s\\w{4}$` means match exactly one white-space character followed by exactl
 
 
 ```{r}
+#| label: extract-district-name
+#| lst-label: lst-messy-data-extract-district-name
+#| lst-cap: ""
 #| filename: "R Console"
 
 uk_data |>
@@ -704,12 +756,15 @@ uk_data |>
 Instead of using a regular expression to remove characters, we could instead use regular expressions together with `str_extract()` to keep only the characters matched by the pattern, `str_replace()` to replace the first group of characters matched by the pattern and `str_replace_all()` to replace all the groups of characters matched by the pattern. For more tips on using regular expressions together with functions from the stringr package, see the [stringr package cheat sheet](https://github.com/rstudio/cheatsheets/blob/main/strings.pdf) or visit [regexr.com](https://regexr.com/).
 
 
-### Converting between types of variable
+### Converting between types of variable {#sec-messy-data-converting-between-types-of-variable}
 
 Sometimes columns in your data will be stored as the wrong type of variable. `read_csv()` and other functions from the readr package try to guess what type of variable is contained in each column based on what is contained in the first few rows, but this does not always work. For example, a variable containing numbers might be stored as characters, meaning functions like `mean()` will not work.
 
 
 ```{r}
+#| label: show-character-number-error
+#| lst-label: lst-messy-data-show-character-number-error
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Some numbers stored as text (note the quote marks around each number)
@@ -725,6 +780,9 @@ In cases like this, we can use the `parse_number()` function from the readr pack
 
 
 ```{r}
+#| label: parse-character-numbers
+#| lst-label: lst-messy-data-parse-character-numbers
+#| lst-cap: ""
 #| filename: "R Console"
 
 # If we use `parse_number()` then `mean()` now works
@@ -745,7 +803,7 @@ Sometimes numbers will be stored alongside other values, such as when currency v
 If there are multiple columns in a dataset that store non-text data as character values, we can also use the `type_convert()` function from the readr package to automatically convert them all.
 
 
-### Recoding categorical variables
+### Recoding categorical variables {#sec-messy-data-recoding-categorical-variables}
 
 Crime data often includes categorical variables, such as crime types or location categories. It can be useful to change these categories, for example so that we can join two datasets or abbreviate category names for use in the axis labels of a chart.
 
@@ -753,6 +811,9 @@ We can use the `if_else()` function from the dplyr package to change particular 
 
 
 ```{r}
+#| label: recode-unknown-locations
+#| lst-label: lst-messy-data-recode-unknown-locations
+#| lst-cap: ""
 #| filename: "R Console"
 
 uk_data |>
@@ -773,6 +834,9 @@ The first argument to `replace_values()` is the name of the variable containing 
 We can use `replace_values()` to make more-complicated changes. For example, we can change multiple values at the same time, including merging different values into the same new value:
 
 ```{r}
+#| label: recode-locations-with-case-match
+#| lst-label: lst-messy-data-recode-locations-with-case-match
+#| lst-cap: ""
 #| filename: "R Console"
 
 uk_data |>
@@ -790,7 +854,7 @@ uk_data |>
 
 
 
-### Missing values
+### Missing values {#sec-messy-data-missing-values}
 
 We have already encountered the `NA` value, which R uses to represent a value that is missing from a dataset. While R uses `NA` to represent missing values, some data providers use other codes. For example, a data provider might use a dash (`-`) or two periods (`..`) to represent missing values. Fortunately, we can convert any value to `NA` so that we know that it represents a missing value.
 
@@ -798,6 +862,9 @@ Imagine that you have been provided with a dataset of burglaries that includes a
 
 
 ```{r}
+#| label: show-missing-value-sentinel
+#| lst-label: lst-messy-data-show-missing-value-sentinel
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Create a dataset of burglary dates/times with the value of goods stolen
@@ -820,6 +887,9 @@ If we instead convert the value `-1` to `NA` first, `mean()` will know to ignore
 
 
 ```{r}
+#| label: replace-sentinel-with-na
+#| lst-label: lst-messy-data-replace-sentinel-with-na
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Convert `-1` to `NA` first, now you get the correct mean value
@@ -836,6 +906,9 @@ Excluding the value `-1` makes a substantial difference to the mean, increasing 
 Sometimes a row cannot be used for a particular analysis because a value that the analysis needs is missing. The `drop_na()` function removes rows containing `NA` in the columns we specify. For example, this code removes only rows in which the `address` value is missing:
 
 ```{r}
+#| label: show-missing-addresses
+#| lst-label: lst-messy-data-show-missing-addresses
+#| lst-cap: ""
 #| filename: "R Console"
 
 example_addresses <- tribble(
@@ -966,7 +1039,11 @@ ggsave(
 
 So if you see any coordinates on your map located in the Gulf of Guinea, off the coast of West Africa, you know that there are almost certainly rows in your data that have coordinates located at Null Island.
 
+::: {#map-null-island-world}
+
 <p class="full-width-image"><img src="../images/null_island.jpg" alt="A globe centred on the Atlantic Ocean marks Null Island at zero degrees longitude and zero degrees latitude, off the coast of West Africa."></p>
+
+:::
 
 When we make crime maps we are generally dealing with small areas such as cities and counties. So if you plot a dataset on a map and instead of seeing a map of the area you are interested in, you see a large area of the world with the place you are interested in in one corner and Null Island in the opposite corner, that almost certainly means some coordinates are located at Null Island.
 
@@ -1038,11 +1115,19 @@ ggsave(
 
 If we plotted these locations on a map, we might expect to see something like this:
 
+::: {#map-cairo-locations}
+
 <p class="full-width-image"><img src="../images/null_island_cairo1.jpg" alt="A map showing several points in the city of Cairo, Egypt"></p>
+
+:::
 
 But look again at the final row of data in the table above -- the coordinates for the final row are both zero. There are several reasons why this might be. Perhaps the address was recorded incorrectly in a police database and that meant that when the addresses were run through geocoding software (which we will learn more about in the next section), no coordinates for that row could be found. What this means is that when we plot the data on a map, that map will actually look like this:
 
+::: {#map-cairo-and-null-island}
+
 <p class="full-width-image"><img src="../images/null_island_cairo2.jpg" alt="A map showing a large proportion of Africa, with several points clustered around the city of Cairo, Egypt in the top-right corner and a single point located in the Atlantic Ocean off the coast of Ghana."></p>
+
+:::
 
 What we can see here is that most of the points on this map are correctly located in and around Cairo, but a single point is incorrectly located at Null Island.
 
@@ -1053,6 +1138,8 @@ For example, we know that all the addresses of bank fraud suspects are supposed 
 
 ```{r}
 #| label: null-island-exercise1
+#| lst-label: lst-messy-data-null-island-exercise1
+#| lst-cap: ""
 #| filename: "R Console"
 
 # Create dataset of fictional fraud suspects in Cairo
@@ -1185,6 +1272,7 @@ To illustrate the geocoding process, we will find coordinates for the addresses 
 Create a new R script in Positron and save it as `chapter_10.R` in the `R` folder. Keep all the permanent code for the geocoding analysis in this file.
 
 ```{r}
+#| label: show-address-data
 #| echo: false
 #| message: false
 
@@ -1212,6 +1300,8 @@ We will also add the city, state and country to the end of each address, since a
 
 ```{r}
 #| label: script-10-prepare
+#| lst-label: lst-messy-data-script-10-prepare
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_10.R"
 
@@ -1255,6 +1345,7 @@ addresses_for_geocoding <- addresses |>
 
 
 ```{r}
+#| label: create-geocoding-example
 #| echo: false
 
 # Create example dataset of addresses to be geocoded
@@ -1295,6 +1386,8 @@ Run this code in the R Console to inspect the prepared addresses:
 
 ```{r}
 #| label: script-10-preview-addresses
+#| lst-label: lst-messy-data-script-10-preview-addresses
+#| lst-cap: ""
 #| eval: false
 #| filename: "R Console"
 
@@ -1307,6 +1400,8 @@ We can use this object as the input to the `geocode()` function from the tidygeo
 
 ```{r}
 #| label: script-10-geocode
+#| lst-label: lst-messy-data-script-10-geocode
+#| lst-cap: ""
 #| eval: false
 #| filename: "chapter_10.R"
 
@@ -1319,6 +1414,7 @@ addresses_geocoded <- tidygeocoder::geocode(
 ```
 
 ```{r}
+#| label: load-cached-geocoding-results
 #| echo: false
 
 # Store a fixed copy of the results so rendering the book does not repeatedly
@@ -1338,6 +1434,8 @@ addresses_geocoded <- tribble(
 
 ```{r}
 #| label: script-10-inspect-geocoded
+#| lst-label: lst-messy-data-script-10-inspect-geocoded
+#| lst-cap: ""
 #| filename: "R Console"
 
 addresses_geocoded
@@ -1347,6 +1445,8 @@ Now that we have the latitude and longitude for each address, we can join them b
 
 ```{r}
 #| label: script-10-join
+#| lst-label: lst-messy-data-script-10-join
+#| lst-cap: ""
 #| filename: "chapter_10.R"
 
 # Join the geocoded coordinates back to the original rows
@@ -1371,8 +1471,12 @@ Geocoding services return possible matches rather than guaranteed correct answer
 
 We can now use this data as we would any other spatial data. We will convert `addresses_final` to an SF object using `st_as_sf()`. Geocoding services return longitude and latitude using the WGS84 coordinate reference system, so we specify `crs = "EPSG:4326"`. We first remove the row with the missing address, since it could not be geocoded and therefore has no coordinates.
 
+::: {#map-chicago-geocoded-addresses}
+
 ```{r}
 #| label: script-10-map
+#| lst-label: lst-messy-data-script-10-map
+#| lst-cap: ""
 #| filename: "chapter_10.R"
 #| fig-alt: "OpenStreetMap of Chicago showing the locations returned by geocoding eight fictional incident addresses."
 
@@ -1383,6 +1487,8 @@ addresses_sf <- addresses_final |>
 
 hotspot_map(addresses_sf, colour = "#CC0000")
 ```
+
+:::
 
 All eight points should appear within Chicago. A missing point or a point far outside the city would tell us that we need to inspect the corresponding address and geocoding result before continuing with the analysis.
 
@@ -1449,6 +1555,9 @@ We have practised how to:
 Your complete `chapter_10.R` script should now look like this:
 
 ```{r}
+#| label: show-chapter-10-script
+#| lst-label: lst-messy-data-show-chapter-10-script
+#| lst-cap: ""
 #| eval: false
 #| file: "../R/chapter_10.R"
 #| filename: "chapter_10.R"
