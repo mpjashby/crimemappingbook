@@ -2,11 +2,12 @@
 (() => {
 const query = new URLSearchParams(window.location.search).get("q");
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".callout-transcript").forEach((callout) => {
+  document.querySelectorAll('.callout-transcript, .callout[title^="Image description:"], .callout[title^="Map description:"], .callout[title^="Chart data:"], .callout[title^="Map data:"]').forEach((callout) => {
     const header = callout.querySelector(".callout-header");
     const body = callout.querySelector(".callout-collapse");
     if (!header || !body) return;
 
+    // Transcripts and image alternatives must also open with a keyboard.
     // Quarto's collapsed callout headers support clicks but are not tab stops.
     header.setAttribute("role", "button");
     header.setAttribute("tabindex", "0");

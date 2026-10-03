@@ -229,7 +229,7 @@ ggsave(
 
 ::: {#fig-chicago-seasonal-variation}
 
-<p class="full-width-image"><img src="../images/chicago_seasonal_variation.png" alt="Chart showing that assaults, personal robberies and residential burglaries in Chicago varied seasonally between 2010 and 2019."></p>
+<p class="full-width-image"><img src="../images/chicago_seasonal_variation.png" alt="Three line-chart panels show average daily assaults, personal robberies and residential burglaries in Chicago by month, with separate lines for 2010 to 2019. All three generally rise towards summer and fall towards winter, although robberies also dip in spring. Burglary and robbery levels differ substantially between years, so the panels have different vertical scales."></p>
 
 :::
 
@@ -237,7 +237,7 @@ It is also important to understand short-term variation in crime. For example, b
 
 ::: {#fig-chicago-weekly-variation}
 
-<p class="full-width-image"><img src="../images/chicago_weekly_variation.png" alt="Chart showing that property damage, sexual violence and shoplifting in Chicago varied by day of the week between 2010 and 2019."></p>
+<p class="full-width-image"><img src="../images/chicago_weekly_variation.png" alt="Three bar-chart panels compare average daily recorded offences in Chicago by weekday, pooled across 2010 to 2019. Property damage is highest on Saturday and Sunday, and sexual violence rises towards the weekend. Shoplifting is comparatively steady from Monday to Saturday but falls on Sunday. Each panel uses its own vertical scale."></p>
 
 :::
 
@@ -247,9 +247,11 @@ In this chapter we will learn how to incorporate variation over time into our an
 
 ::: {#map-chicago-hourly-assault-animation}
 
-<p class="centered-image"><img src="../images/chicago_downtown_agg_assaults.gif" alt="Animated map showing how the density of aggravated assaults in Chicago varied throughout the hours of the day between 2010 and 2019."></p>
+<p class="centered-image"><img src="../images/chicago_downtown_agg_assaults.gif" alt="Animated density map of aggravated assaults in downtown Chicago. The animation cycles through 24 hours from midnight onwards. Every frame pools assaults recorded during that hour across 2010 to 2019; it does not show events from a single day. The street map and police-district outlines stay fixed, Lake Michigan remains to the east, and darker blue cells indicate higher estimated density on the same scale. From midnight into the early morning, a strong concentration appears near the eastern edge of the mapped area, north of the daytime concentration. Around six to nine in the morning the surface becomes much paler. During daytime and evening, the eastern concentration strengthens again further south, with additional smaller concentrations to the west and south. These changes show how a map pooling every hour would conceal time-specific patterns. Later static maps in this chapter compare three shifts side by side and outline their highest-density cells."></p>
 
 :::
+
+
 
 
 ::: {.callout-quiz .callout title="Analysing temporal variation in crime"}
@@ -288,7 +290,7 @@ time_quiz2 <- c(
 
 ## Handling dates in R
 
-<p class="full-width-image"><img src="../images/lubridate_cartoon.jpg" alt="Cartoon showing little monsters feeding lubridate functions into a Back-to-the-Future-style car with the licence plate LUBRDAT."></p>
+<p class="full-width-image"><img src="../images/lubridate_cartoon.jpg" alt="Cartoon labelled lubridate: wrangle times and dates. Monsters in hard hats sort a mixed pile of year, month and day letters into separate piles labelled years, months and days, illustrating how date components can be extracted and organised."></p>
 
 At a very basic level, computers can store data in two ways: they can store numbers and they can store text. This makes storing dates slightly complicated, because dates aren't completely like numbers and they aren't completely like text either. Dates aren't like numbers because you can't do normal maths with dates (e.g. what date is the 29th of January plus one month?) and aren't like text because you can do some maths with them (e.g. it is easy to calculate three days from today). Dates are especially complicated because they can be written as text in so many different ways. For example, 17 January can be represented in all of these ways, all of them equally valid (although some are specific to particular countries):
 
@@ -594,7 +596,7 @@ One common task in crime analysis is to show how crime changes over time. The si
 
 ::: {#fig-chicago-assault-trend}
 
-<p class="full-width-image"><img src="../images/chicago_assault_trend.png" alt="Chart showing weekly aggravated assaults in Chicago from 2010 to 2019, including seasonal increases each summer and fewer assaults from 2013 to 2015."></p>
+<p class="full-width-image"><img src="../images/chicago_assault_trend.png" alt="Time-series chart of aggravated assaults in Chicago from 2010 to 2019. Grey dots represent weekly counts and a black line represents a four-week moving average. Repeated summer peaks and winter troughs sit within a longer decline towards 2014, followed by a rise; the moving average smooths the week-to-week variation."></p>
 
 :::
 
@@ -742,7 +744,7 @@ Now we have weekly counts of aggravated assaults, we can plot them on a chart. A
 #| lst-cap: ""
 #| filename: "R Console"
 #| fig-cap: ""
-#| fig-alt: "Time-series chart of weekly aggravated-assault counts in Chicago between 2010 and 2019, showing a downward trend until 2014, seasonal peaks and substantial week-to-week variation."
+#| fig-alt: "Line chart of weekly aggravated-assault counts in Chicago from 2010 to 2019. Counts decline towards 2014 and then rise again, with repeated summer peaks and winter troughs. Large week-to-week fluctuations make the line jagged, so the long-term and seasonal patterns overlap."
 
 assault_weekly_counts |> ggauto::ggauto(week_date, count)
 ```
@@ -762,7 +764,7 @@ The key decision in making a time-series chart is usually choosing the balance b
 #| fig-cap: ""
 #| echo: false
 #| fig-asp: 0.6
-#| fig-alt: "Scatter plot of hourly aggravated-assault counts in Chicago between 2010 and 2019, with dense variation making the long-term trend difficult to see."
+#| fig-alt: "Scatter plot with date from 2010 to 2019 on the horizontal axis and hourly aggravated-assault counts in Chicago on the vertical axis. Most hours have low counts, forming dense horizontal bands; occasional hours have much higher counts. The overlapping dots make long-term trends difficult to distinguish."
 
 assaults |>
   mutate(
@@ -799,7 +801,7 @@ On the other hand, if we removed too much noise, for example by only plotting an
 #| fig-cap: ""
 #| echo: false
 #| fig-asp: 0.6
-#| fig-alt: "Bar chart of annual aggravated-assault counts in Chicago between 2010 and 2019, showing the broad long-term trend but hiding seasonal and weekly variation."
+#| fig-alt: "Bar chart of annual aggravated-assault counts in Chicago from 2010 to 2019. Counts fall from roughly seventeen thousand in 2010 to thirteen thousand in 2013–14, then return to around fifteen thousand from 2016 onwards. Aggregating to years reveals that broad pattern but removes within-year seasonal and weekly variation."
 
 assaults |>
   mutate(year = factor(year(date))) |>
@@ -838,7 +840,7 @@ Run this code in the R Console. Make sure you understand (using the notes below 
 #| lst-label: lst-mapping-time-weekly-assault-points-chart
 #| lst-cap: ""
 #| filename: "R Console"
-#| fig-alt: "Time-series chart showing weekly aggravated-assault counts in Chicago between 2010 and 2019 as grey points."
+#| fig-alt: "Scatter plot of weekly aggravated-assault counts in Chicago from 2010 to 2019. Grey points show recurring peaks and troughs, a low period around 2014 and higher counts before and after it. No connecting line or moving average has yet been added."
 
 # Create plot of weekly assault counts with moving average
 assault_weekly_counts |>
@@ -960,7 +962,7 @@ ggsave(
 
 ::: {#fig-moving-average-windows}
 
-<p class="full-width-image"><img src="../images/moving_averages.png" alt="Chart showing that moving averages are calculated by averaging the current week's count with the counts from a given number of previous weeks."></p>
+<p class="full-width-image"><img src="../images/moving_averages.png" alt="Diagram of a four-week trailing moving average. Each row marks a different target week with a large filled dot and joins it to the three preceding weeks with a horizontal line. As the target moves from week five to week eight, the four-week window shifts forwards one week at a time; future weeks are not included."></p>
 
 :::
 
@@ -981,7 +983,7 @@ Add this code to the `chapter_15a.R` file and run it. You can see we are also ad
 #| lst-label: lst-mapping-time-plot-assault-moving-average
 #| lst-cap: ""
 #| filename: "chapter_15a.R"
-#| fig-alt: "Chart of weekly aggravated-assault counts in Chicago between 2010 and 2019, with points showing weekly counts and a line showing a four-week moving average."
+#| fig-alt: "Time-series chart of aggravated assaults in Chicago from 2010 to 2019. Grey dots show weekly counts; a black four-week trailing moving-average line follows seasonal peaks and troughs while smoothing local variation. The low period around 2014 remains visible rather than being removed by smoothing."
 
 # Create plot of weekly assault counts with moving average
 assault_weekly_counts |>
@@ -1043,7 +1045,7 @@ Run this code in the R Console. Note that since there is quite a lot of noise in
 #| lst-label: lst-mapping-time-initial-seasonal-assault-chart
 #| lst-cap: ""
 #| filename: "R Console"
-#| fig-alt: "Line chart showing eight-week moving averages of weekly aggravated-assault counts between 2010 and 2019, with a separate colour for each year."
+#| fig-alt: "Line chart of eight-week moving averages of weekly aggravated-assault counts in Chicago from 2010 to 2019. Separate blue-shaded lines for each year appear consecutively along a calendar-date axis, with breaks at year boundaries. Repeated summer peaks are visible, but corresponding months in different years are not aligned for comparison."
 
 # Create a seasonal plot of aggravated assaults
 assault_weekly_counts |>
@@ -1090,7 +1092,7 @@ Add this code to the end of your R script file and run it.
 #| lst-label: lst-mapping-time-plot-seasonal-assault-chart
 #| lst-cap: ""
 #| filename: "chapter_15a.R"
-#| fig-alt: "Seasonal chart superimposing eight-week moving averages of weekly aggravated-assault counts for each year from 2010 to 2019, showing a recurring summer peak and winter trough."
+#| fig-alt: "Seasonal line chart of eight-week moving averages of weekly aggravated-assault counts in Chicago, with one blue-shaded line for each year from 2010 to 2019. January to December runs along a shared horizontal axis. The lines generally rise from winter troughs to July–August peaks before falling again; their differing heights show variation between years."
 
 # Create a seasonal plot of aggravated assaults
 assault_weekly_counts |>
@@ -1169,7 +1171,7 @@ We can now create a chart with appropriate labels on the horizontal axis and a s
 #| lst-cap: ""
 #| filename: "R Console"
 #| fig-cap: ""
-#| fig-alt: "Line chart comparing hourly aggravated-assault totals for each day of the week in Chicago between 2010 and 2019."
+#| fig-alt: "Line chart with hour of day on the horizontal axis and pooled aggravated-assault totals in Chicago for 2010 to 2019 on the vertical axis. Seven coloured lines represent weekdays. All have a low near five to six in the morning; Saturday and Sunday have pronounced peaks just after midnight. The crossing lines make comparisons difficult."
 
 # Create chart of assaults by hour of the day for each day of the week
 ggplot(assault_hourly_counts) +
@@ -1211,7 +1213,7 @@ Add this code to the `chapter_15a.R` file and run it.
 #| lst-cap: ""
 #| filename: "chapter_15a.R"
 #| fig-asp: 1
-#| fig-alt: "Two-panel line chart comparing hourly aggravated-assault totals by day of the week, with weekdays in one panel and Saturday and Sunday in the other."
+#| fig-alt: "Two vertically stacked line charts compare hourly aggravated-assault totals in Chicago, pooled across 2010 to 2019. The top panel contains Monday to Friday and the bottom Saturday and Sunday. Both panels dip around five to six in the morning, but weekend nights have much larger post-midnight totals. Separating the panels reduces line overlap."
 
 # Create chart of assaults by hour of the day for each day of the week
 assault_hourly_counts |>
@@ -1497,7 +1499,7 @@ Normally when we use `hotspot_map()` to create a KDE map, in the background `hot
 #| lst-cap: ""
 #| filename: "R Console"
 #| fig-asp: 0.5
-#| fig-alt: "Three maps comparing the density of aggravated assaults in downtown Chicago between 2010 and 2019 during daytime, evening and overnight police shifts."
+#| fig-alt: "Three side-by-side density maps of aggravated assaults in downtown Chicago, pooled across 2010 to 2019. Panels show six in the morning to two in the afternoon, two to ten in the evening, and ten at night to six in the morning. Darker blue means higher density. The strongest eastern concentration lies further north in the overnight panel; smaller concentrations occur west and south. A shared scale supports comparison."
 
 # Add density map of assaults by shift
 hotspot_map(
@@ -1547,7 +1549,7 @@ Add the following complete code to the end of `chapter_15a.R` and run it.
 #| lst-cap: ""
 #| filename: "chapter_15a.R"
 #| fig-asp: 0.5
-#| fig-alt: "Three maps comparing aggravated-assault density in downtown Chicago between 2010 and 2019, with red outlines around the highest-density cells in each police shift."
+#| fig-alt: "Three side-by-side Chicago aggravated-assault density maps use the same blue scale and daytime, evening and overnight periods. Red outlines identify the ten highest-density grid cells in each panel. The outlined eastern concentration lies further north overnight than during daytime or evening, making the change easier to locate against the fixed district boundaries."
 
 # Create new dataset containing just the cells in each shift with the highest
 # KDE values

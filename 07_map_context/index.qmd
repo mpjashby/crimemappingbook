@@ -51,7 +51,7 @@ ggsave(
 #| label: final-map
 #| echo: false
 #| fig-align: center
-#| fig-alt: "A density map of shootings recorded in the Bronx in 2019. Estimated shooting density is highest in the south-west of the borough. Police-precinct boundaries and labels appear over a pale street base map, with a legend and scale bar."
+#| fig-alt: "Density map of recorded shootings in the Bronx in 2019. Darker orange indicates higher estimated density, concentrated in the south-west; the eastern precincts are mostly pale. Precinct boundaries and numbers locate the shaded concentrations on a pale street map. A legend and scale bar support interpretation."
 #| out-width: 100%
 
 knitr::include_graphics(here("images", "nyc_shootings_map.jpg"))
@@ -72,7 +72,7 @@ In this chapter, we will learn how to:
 
 The process we will use has five main stages:
 
-::::::: {.process}
+::::::: {.process role="img" aria-label="Workflow diagram with five stages in order: download and load data; wrangle it; model crime density; visualise the density with supporting map elements; save the completed map."}
 
 ::::: {.item color="#3182bd"}
 Load
@@ -489,7 +489,7 @@ To view the map in Positron, type the name of the map object into the R Console 
 #| lst-label: lst-map-context-show-basic-map
 #| lst-cap: ""
 #| filename: "R Console"
-#| fig-alt: "A basic density map of shootings recorded in the Bronx in 2019. Darker blue cells show higher estimated density, police-precinct boundaries are outlined and precinct numbers are labelled. Longitude and latitude axes surround the map."
+#| fig-alt: "Basic density map of recorded shootings in the Bronx in 2019. Darker blue cells indicate higher estimated density, concentrated in the south-west, while eastern areas are much paler. Police-precinct boundaries and ordinal precinct numbers locate the concentrations over a pale street map; the legend still shows numeric density values."
 #| fig-format: jpeg
 
 shootings_map
@@ -646,7 +646,7 @@ In crime mapping we're usually interested in showing how crime varies from low t
 ```{r}
 #| label: kde-colours
 #| echo: false
-#| fig-alt: "Eighteen panels show colour-blind-friendly sequential palettes. Each palette runs from a pale colour for low values to a dark colour for high values."
+#| fig-alt: "Eighteen labelled sequential colour palettes arranged left to right in four rows, each progressing from pale shades on the left to dark shades on the right. Row one: Blues, BuGn, BuPu, GnBu, Greens. Row two: Greys, Oranges, OrRd, PuBu, PuBuGn. Row three: PuRd, Purples, RdPu, Reds, YlGn. Row four: YlGnBu, YlOrBr, YlOrRd. Some strips use a single hue and others change hue as they darken. In the names, Bu means blue, Gn green, Pu purple, Or orange, Rd red and Yl yellow. For example, YlGnBu progresses from pale yellow through green to dark blue, Blues stays within blue shades, and Greys progresses from pale grey to black. These strips show colour order; the map scale settings determine which end represents higher values."
 #| out-width: 100%
 
 RColorBrewer::brewer.pal.info |>
@@ -668,6 +668,8 @@ RColorBrewer::brewer.pal.info |>
 ```
 
 
+
+
 ::: {.callout-important title="Choosing the right type of colour scale"}
 
 It is important to **only use the right type of colour scale in the right circumstances**, since using the wrong type of scale could end up misleading people reading your map. For example, a diverging colour scale gives the strong impression that the central point in the scale is meaningful. 
@@ -686,7 +688,7 @@ By default, `scale_fill_distiller()` sets the _lowest_ values to have the darkes
 #| label: direction-map
 #| echo: false
 #| fig-align: center
-#| fig-alt: "Two density maps compare colour-scale direction. With direction minus one, lower densities are dark and higher densities are pale. With direction one, lower densities are pale and higher densities are dark."
+#| fig-alt: "Two side-by-side density maps of Bronx shootings compare the same data with opposite blue scale directions. On the left, minus one makes low-density areas dark and hotspots pale; on the right, one makes hotspots dark and low-density areas pale. The south-west concentration is easier to recognise with the conventional darker-means-higher direction."
 #| out-width: 80%
 
 direction_map_neg <- ggplot() +
@@ -725,7 +727,7 @@ You can think of all the functions that we can add to `hotspot_map()` as being l
 #| lst-label: lst-map-context-map-exercise8
 #| lst-cap: ""
 #| exercise: true
-#| fig-alt: "A density map of recorded bicycle thefts in Vancouver using a sequential orange colour scale. Darker cells have higher estimated density."
+#| fig-alt: "Density map of recorded shootings in the Bronx in 2019. Darker orange indicates higher estimated density, concentrated in the south-west; the eastern precincts are mostly pale. Precinct boundaries and numbers locate the shaded concentrations on a pale street map. The legend still uses numeric density values."
 #| filename: "R Console"
 
 # Plot density map
@@ -747,7 +749,7 @@ Run this code to see how the legend labels change.
 ::: {#map-bronx-shooting-density-legend}
 
 ```{r}
-#| fig-alt: "A density map of recorded shootings in the Bronx in 2019. An orange sequential scale has a legend labelled low and high."
+#| fig-alt: "Density map of recorded shootings in the Bronx in 2019. Darker orange indicates higher estimated density, concentrated in the south-west; the eastern precincts are mostly pale. Precinct boundaries and numbers locate the shaded concentrations on a pale street map. The legend endpoints are now labelled lower and higher instead of numeric values."
 #| label: draw-bronx-shooting-density-legend
 #| lst-label: lst-map-context-draw-bronx-shooting-density-legend
 #| lst-cap: ""
@@ -947,7 +949,7 @@ To see how this works, run the following code in the R Console. Since we have st
 #| lst-label: lst-map-context-add-title
 #| lst-cap: ""
 #| filename: "RConsole"
-#| fig-alt: "A density map of shootings recorded in the Bronx with the title Shootings are focused in the South Bronx."
+#| fig-alt: "Density map of recorded shootings in the Bronx in 2019. Darker orange indicates higher estimated density, concentrated in the south-west; the eastern precincts are mostly pale. Precinct boundaries and numbers locate the shaded concentrations on a pale street map. The added title states that shootings are focused in the South Bronx."
 #| fig-format: jpeg
 #| out-width: 100%
 
@@ -968,7 +970,7 @@ When you use a declarative title for your map, it is often useful to provide a _
 #| lst-label: lst-map-context-add-subtitle
 #| lst-cap: ""
 #| filename: "R Console"
-#| fig-alt: "A density map of shootings recorded in the Bronx with a declarative title and a subtitle describing the police-recorded data and year."
+#| fig-alt: "Density map of recorded shootings in the Bronx in 2019. Darker orange indicates higher estimated density, concentrated in the south-west; the eastern precincts are mostly pale. Precinct boundaries and numbers locate the shaded concentrations on a pale street map. A subtitle now specifies police-recorded shootings and the year, making the title claim more precise."
 #| fig-format: jpeg
 #| out-width: 100%
 
@@ -998,7 +1000,7 @@ Run this code in the R Console. Note that we're going to store the result in a n
 #| lst-label: lst-map-context-add-caption
 #| lst-cap: ""
 #| filename: "R Console"
-#| fig-alt: "A density map of shootings recorded in the Bronx with a title, subtitle and caption. The caption gives the author, production date, data source and base-map attribution."
+#| fig-alt: "Density map of recorded shootings in the Bronx in 2019. Darker orange indicates higher estimated density, concentrated in the south-west; the eastern precincts are mostly pale. Precinct boundaries and numbers locate the shaded concentrations on a pale street map. A caption below the map identifies its author, production date, crime-data source and base-map attribution."
 #| fig-format: jpeg
 #| out-width: 100%
 
@@ -1084,7 +1086,7 @@ Let's have a look at the effect of changing the caption's appearance using `them
 #| lst-label: lst-map-context-format-caption
 #| lst-cap: ""
 #| filename: "R Console"
-#| fig-alt: "A density map of shootings recorded in the Bronx with its source caption formatted in smaller grey text."
+#| fig-alt: "Density map of recorded shootings in the Bronx in 2019. Darker orange indicates higher estimated density, concentrated in the south-west; the eastern precincts are mostly pale. Precinct boundaries and numbers locate the shaded concentrations on a pale street map. The source caption is smaller, grey and left-aligned, reducing its prominence relative to the map title."
 #| fig-format: jpeg
 #| out-width: 100%
 
@@ -1219,7 +1221,7 @@ To add a scale bar, we can add a call to the `annotation_scale()` function to ou
 #| lst-label: lst-map-context-add-default-scale-bar
 #| lst-cap: ""
 #| filename: "R Console"
-#| fig-alt: "A density map of shootings recorded in the Bronx with the default scale bar in the bottom-left corner, where it overlaps the highest-density area."
+#| fig-alt: "Density map of recorded shootings in the Bronx in 2019. Darker orange indicates higher estimated density, concentrated in the south-west; the eastern precincts are mostly pale. Precinct boundaries and numbers locate the shaded concentrations on a pale street map. The default scale bar sits at the bottom-left over the southern concentration, partly obscuring the data."
 #| fig-format: jpeg
 #| out-width: 100%
 
@@ -1243,7 +1245,7 @@ The default scale bar is a little too visually dominant for the low place it sho
 #| lst-label: lst-map-context-format-scale-bar
 #| lst-cap: ""
 #| filename: "R Console"
-#| fig-alt: "A density map of shootings recorded in the Bronx with a compact tick-style scale bar in the bottom-right corner."
+#| fig-alt: "Density map of recorded shootings in the Bronx in 2019. Darker orange indicates higher estimated density, concentrated in the south-west; the eastern precincts are mostly pale. Precinct boundaries and numbers locate the shaded concentrations on a pale street map. A compact tick-style scale bar has moved to the bottom-right, away from the strongest concentration."
 #| fig-format: jpeg
 #| out-width: 100%
 
@@ -1270,7 +1272,7 @@ We can add a north arrow using the `annotation_north_arrow()` function. The defa
 #| lst-label: lst-map-context-add-north-arrow
 #| lst-cap: ""
 #| filename: "R Console"
-#| fig-alt: "A density map of shootings recorded in the Bronx with a compact scale bar in the bottom-right corner and a small north arrow in the top-right corner."
+#| fig-alt: "Density map of recorded shootings in the Bronx in 2019. Darker orange indicates higher estimated density, concentrated in the south-west; the eastern precincts are mostly pale. Precinct boundaries and numbers locate the shaded concentrations on a pale street map. A compact scale bar sits at the bottom-right and a small north arrow at the top-right."
 #| fig-format: jpeg
 #| out-width: 100%
 

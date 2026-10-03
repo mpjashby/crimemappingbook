@@ -34,7 +34,7 @@ In this chapter we will make a map of bicycle thefts in Vancouver in 2020. By th
 #| echo: false
 #| message: false
 #| fig-align: center
-#| fig-alt: "A point map of bicycle thefts in Vancouver in 2020. Many semi-transparent points overlap, especially in the north-central part of the city, making the overall pattern difficult to interpret."
+#| fig-alt: "Point map of recorded bicycle thefts in Vancouver in 2020, with small semi-transparent black dots over a pale street map. The densest concentration is on the northern Downtown peninsula, with further concentrations south of False Creek and fewer points towards the southern edge. Overlapping dots make individual thefts hard to count."
 #| file: "../R/chapter_05.R"
 #| out-width: 80%
 ```
@@ -55,7 +55,7 @@ In this chapter, we will learn how to:
 
 The process we will use to produce the map has four main stages:
 
-::::: {.process}
+::::: {.process role="img" aria-label="Workflow diagram with four stages in order: download data from the internet; load a file into an R object; wrangle the data into a suitable format; visualise the prepared data on a map."}
 
 :::: {.item color="#3182bd"}
 Download
@@ -319,7 +319,7 @@ places_quiz5 <- c(
 
 ## Spatial data in R {#sec-spatial-data}
 
-<p class="full-width-image"><img src="../images/sf.jpg" alt="Abstract images of furry monsters moving pieces of maps around"></p>
+<p class="full-width-image"><img src="../images/sf.jpg" alt="Cartoon labelled sf: spatial data simplified. Monsters attach map shapes to a table with attribute columns and a geometry column. The geometry stays associated with its row while the shapes can also be drawn on a map."></p>
 
 <a href="https://r-spatial.github.io/sf/" aria-label="Visit the sf package website" class="no-external"><img src="../images/sf-package.gif" class="right-side-image" alt=""></a>
 
@@ -495,7 +495,7 @@ Since both ways of using the `here()` function give the same result, you can cho
 
 ### Cleaning column names {#sec-your-second-crime-map-cleaning-column-names}
 
-<p class="full-width-image"><img src="../images/janitor_clean_names.jpg" alt="Cartoon showing a beaver feeding variables with messy names into a machine marked 'clean_names()' that has consistent variable names coming out of the other side."></p>
+<p class="full-width-image"><img src="../images/janitor_clean_names.jpg" alt="Cartoon of a beaver feeding awkward column names containing spaces and punctuation into a clean_names machine. Consistently formatted names emerge from the other side; the machine offers snake case and other naming styles."></p>
 
 Typos are one of the most frequent causes of errors in any coding language. As we learned in @sec-naming-objects, column names should use *snake case*: lower-case letters with words separated by underscores (`_`). This makes code easier to read and means you do not have to remember whether a column was called `crime_count`, `crimecount`, `CrimeCount` or `CRIMECOUNT`.
 
@@ -873,7 +873,7 @@ The most-basic crime map that we can make simply plots the locations of crimes, 
 ::: {#map-vancouver-bicycle-thefts-default}
 
 ```{r}
-#| fig-alt: "A point map of recorded bicycle thefts in Vancouver in 2020. Large overlapping points make it difficult to distinguish concentrations of thefts."
+#| fig-alt: "Point map of recorded bicycle thefts in Vancouver in 2020 over a coloured street map. Large black circles overlap into a nearly solid patch on the Downtown peninsula and obscure streets in other concentrations, making individual incidents difficult to distinguish."
 #| label: draw-vancouver-bicycle-thefts-default
 #| lst-label: lst-your-second-crime-map-draw-vancouver-bicycle-thefts-default
 #| lst-cap: ""
@@ -916,7 +916,7 @@ There are 25 built-in shapes for points in R (shape 16 is the default):
 #| label: show-point-shapes
 #| echo: false
 #| fig-align: center
-#| fig-alt: "A grid displaying R point shapes numbered from 0 to 24. Shapes include squares, circles, triangles, diamonds and crosses."
+#| fig-alt: "Grid of R point symbols numbered zero to twenty-four, arranged in rows of five. It includes outlined and filled squares, circles, triangles and diamonds, plus crosses and combined symbols. Symbols twenty-one to twenty-four have separately controllable outlines and fills. A symbol key follows."
 #| out-width: 80%
 
 ggplot(data.frame(shape = 0:24), aes(0, 0, shape = shape)) +
@@ -936,6 +936,43 @@ ggplot(data.frame(shape = 0:24), aes(0, 0, shape = shape)) +
   facet_wrap(vars(shape)) +
   theme_void()
 ```
+
+::: {.callout-note collapse="true" title="Image description: R point symbols"}
+
+The grid runs left to right in rows of five. The number supplied to `shape` selects the following symbol:
+
+| Number | Symbol |
+|---|---|
+| 0 | Outlined square |
+| 1 | Outlined circle |
+| 2 | Upward-pointing outlined triangle |
+| 3 | Plus |
+| 4 | Diagonal cross |
+| 5 | Outlined diamond |
+| 6 | Downward-pointing outlined triangle |
+| 7 | Square with diagonal cross |
+| 8 | Plus with diagonal cross |
+| 9 | Diamond with plus |
+| 10 | Circle with plus |
+| 11 | Overlapping upward- and downward-pointing triangles |
+| 12 | Square with plus |
+| 13 | Circle with diagonal cross |
+| 14 | Square with downward-pointing triangle |
+| 15 | Filled square |
+| 16 | Filled circle |
+| 17 | Filled upward-pointing triangle |
+| 18 | Filled diamond |
+| 19 | Filled circle |
+| 20 | Small filled circle |
+| 21 | Circle with separate outline and fill |
+| 22 | Square with separate outline and fill |
+| 23 | Diamond with separate outline and fill |
+| 24 | Upward-pointing triangle with separate outline and fill |
+
+Symbols 0 to 20 use `colour`; symbols 21 to 24 in this grid allow separate `colour` and `fill` settings.
+
+:::
+
   
 
 
@@ -948,7 +985,7 @@ We use aesthetics such as `colour`, `fill`, etc. to change the appearance of lay
 #| lst-label: lst-your-second-crime-map-draw-vancouver-bicycle-thefts-red-squares
 #| lst-cap: ""
 #| filename: "R Console"
-#| fig-alt: "A point map of bicycle thefts in Vancouver drawn using red square symbols. The points overlap heavily."
+#| fig-alt: "Point map of recorded bicycle thefts in Vancouver in 2020, with red squares replacing the default black circles over the same street map. Dense overlapping squares obscure individual incidents, particularly on the Downtown peninsula; changing shape and colour alone has not resolved the overlap."
 
 # Create a basic crime map
 hotspot_map(bike_thefts, shape = 15, colour = "red")
@@ -970,7 +1007,7 @@ Add this code to your script file:
 #| lst-label: lst-your-second-crime-map-script-05-map
 #| lst-cap: ""
 #| filename: "chapter_05.R"
-#| fig-alt: "A point map of bicycle thefts in Vancouver. Smaller semi-transparent points reveal some concentration in the north-central part of the city, but extensive overlap still makes the pattern difficult to interpret."
+#| fig-alt: "Point map of recorded bicycle thefts in Vancouver in 2020, with small semi-transparent black dots over a pale street map. Darker overlapping areas reveal concentrations on the Downtown peninsula and south of False Creek, while scattered dots extend across the rest of the city."
 
 # Create a basic crime map
 hotspot_map(bike_thefts, basemap_type = "cartolight", size = 0.7, alpha = 0.1)

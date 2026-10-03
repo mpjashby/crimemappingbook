@@ -74,6 +74,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <link href="../05_your_second_crime_map/index.html" rel="next">
 <link href="../03_data_wrangling/index.html" rel="prev">
+<link href="../images/favicon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -490,7 +491,7 @@ quarto book
 </ul>
 <p>Most of the examples in this chapter are labelled <strong>R Console</strong> because they are temporary code that helps us understand and practise each function. In <a href="#sec-complete-wrangling-scripts" class="quarto-xref"><span>Section 4.7</span></a>, we will use what we have learned to extend copies of the Chapter 3 scripts and create two complete, reproducible analyses.</p>
 <p>The complete data-wrangling process follows these stages:</p>
-<div class="process">
+<div class="process" role="img" aria-label="Workflow diagram with four stages in order: load data using the Chapter 3 code; transform it by filtering and creating columns; summarise it by counting and arranging rows; save the prepared data in data/processed.">
 <div class="item" color="#3182bd">
 <p>Load data</p>
 <div class="annotation">
@@ -521,7 +522,7 @@ quarto book
 <h2 data-number="4.2" class="anchored" data-anchor-id="sec-mutate"><span class="header-section-number">4.2</span> Transforming values</h2>
 <p>It is often useful to create new columns in our data, or change the values of existing columns. The <code>mutate()</code> function in the dplyr package gives us a way to transform existing columns in our dataset using almost any R function.</p>
 <p class="full-width-image">
-<img src="../images/mutate.jpg" alt="Cartoon illustrating mutate creating or changing columns in a table of data.">
+<img src="../images/mutate.jpg" alt="Cartoon labelled dplyr: mutate, add columns, keep existing. Monsters use a crane to place a new column C beside existing columns A and B, illustrating that creating a column does not remove the original columns.">
 </p>
 <p><a href="https://lubridate.tidyverse.org/" aria-label="Visit the lubridate package website" class="no-external"><img src="../images/lubridate.png" class="right-side-image" alt=""></a></p>
 <p>For example, say we wanted to create a new column in our aggravated-assault dataset specifying the day of the week on which each crime occurred. We can do this using the <code>wday()</code> function from the <a href="https://lubridate.tidyverse.org/">lubridate package</a> (using the <code>label = TRUE</code> argument to produce weekday names, rather than numbers):</p>
@@ -655,8 +656,8 @@ Code&nbsp;4.3
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What does <code>mutate(agg_assault_data, weekday = wday(date, label = TRUE))</code> return?</strong></p>
-<div id="radio_NVWGMGHKIO" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_NVWGMGHKIO" value=""> <span>It permanently changes the original data, even if the result is not assigned.</span></label><label><input type="radio" autocomplete="off" name="radio_NVWGMGHKIO" value="answer"> <span>It returns a tibble containing a new or changed column.</span></label><label><input type="radio" autocomplete="off" name="radio_NVWGMGHKIO" value=""> <span>It keeps only rows that contain the new value.</span></label><label><input type="radio" autocomplete="off" name="radio_NVWGMGHKIO" value=""> <span>It changes only the name of an existing column.</span></label>
+<div id="radio_NLLSVAOHMR" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_NLLSVAOHMR" value=""> <span>It permanently changes the original data, even if the result is not assigned.</span></label><label><input type="radio" autocomplete="off" name="radio_NLLSVAOHMR" value="answer"> <span>It returns a tibble containing a new or changed column.</span></label><label><input type="radio" autocomplete="off" name="radio_NLLSVAOHMR" value=""> <span>It keeps only rows that contain the new value.</span></label><label><input type="radio" autocomplete="off" name="radio_NLLSVAOHMR" value=""> <span>It changes only the name of an existing column.</span></label>
 </div>
 </div>
 </div>
@@ -872,8 +873,8 @@ Code&nbsp;4.8
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What does <code>count(agg_assault_data, location_category, location_type)</code> return?</strong></p>
-<div id="radio_ZDFOJEYEOW" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_ZDFOJEYEOW" value=""> <span>One row for every offence in the original data</span></label><label><input type="radio" autocomplete="off" name="radio_ZDFOJEYEOW" value="answer"> <span>One row for each unique combination of location category and location type</span></label><label><input type="radio" autocomplete="off" name="radio_ZDFOJEYEOW" value=""> <span>One column for each unique location category</span></label><label><input type="radio" autocomplete="off" name="radio_ZDFOJEYEOW" value=""> <span>Only rows that contain no missing values</span></label>
+<div id="radio_XXLLFTDZLG" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_XXLLFTDZLG" value=""> <span>One row for every offence in the original data</span></label><label><input type="radio" autocomplete="off" name="radio_XXLLFTDZLG" value="answer"> <span>One row for each unique combination of location category and location type</span></label><label><input type="radio" autocomplete="off" name="radio_XXLLFTDZLG" value=""> <span>One column for each unique location category</span></label><label><input type="radio" autocomplete="off" name="radio_XXLLFTDZLG" value=""> <span>Only rows that contain no missing values</span></label>
 </div>
 </div>
 </div>
@@ -994,8 +995,8 @@ Code&nbsp;4.11
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Which code arranges <code>agg_assault_data</code> from the latest date to the earliest?</strong></p>
-<div id="radio_YHGXYPLOFT" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_YHGXYPLOFT" value="answer"> <span><code>arrange(agg_assault_data, desc(date))</code></span></label><label><input type="radio" autocomplete="off" name="radio_YHGXYPLOFT" value=""> <span><code>arrange(agg_assault_data, date)</code></span></label><label><input type="radio" autocomplete="off" name="radio_YHGXYPLOFT" value=""> <span><code>filter(agg_assault_data, desc(date))</code></span></label><label><input type="radio" autocomplete="off" name="radio_YHGXYPLOFT" value=""> <span><code>arrange(desc(date), agg_assault_data)</code></span></label>
+<div id="radio_CWGUZTODDO" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_CWGUZTODDO" value="answer"> <span><code>arrange(agg_assault_data, desc(date))</code></span></label><label><input type="radio" autocomplete="off" name="radio_CWGUZTODDO" value=""> <span><code>arrange(agg_assault_data, date)</code></span></label><label><input type="radio" autocomplete="off" name="radio_CWGUZTODDO" value=""> <span><code>filter(agg_assault_data, desc(date))</code></span></label><label><input type="radio" autocomplete="off" name="radio_CWGUZTODDO" value=""> <span><code>arrange(desc(date), agg_assault_data)</code></span></label>
 </div>
 <p>In the R Console, type the code necessary to arrange <code>agg_assault_data</code> in order of latitude, in descending order (from largest to smallest). Once you’ve tried writing the code, if you need help you can click the ‘Solution’ button below.</p>
 <div class="webex-solution">
@@ -1045,8 +1046,8 @@ Code&nbsp;4.12
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Why should wrangled data be saved in <code>data/processed</code> rather than <code>data/raw</code>?</strong></p>
-<div id="radio_VJVYACCKCT" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_VJVYACCKCT" value=""> <span>It replaces the original downloaded file with the processed data.</span></label><label><input type="radio" autocomplete="off" name="radio_VJVYACCKCT" value=""> <span>It saves the R script in the processed-data folder.</span></label><label><input type="radio" autocomplete="off" name="radio_VJVYACCKCT" value="answer"> <span>It keeps derived data separate while preserving the original download.</span></label><label><input type="radio" autocomplete="off" name="radio_VJVYACCKCT" value=""> <span>It allows <code>write_csv()</code> to save an Excel workbook.</span></label>
+<div id="radio_QRSTFNXXNJ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_QRSTFNXXNJ" value=""> <span>It replaces the original downloaded file with the processed data.</span></label><label><input type="radio" autocomplete="off" name="radio_QRSTFNXXNJ" value=""> <span>It saves the R script in the processed-data folder.</span></label><label><input type="radio" autocomplete="off" name="radio_QRSTFNXXNJ" value="answer"> <span>It keeps derived data separate while preserving the original download.</span></label><label><input type="radio" autocomplete="off" name="radio_QRSTFNXXNJ" value=""> <span>It allows <code>write_csv()</code> to save an Excel workbook.</span></label>
 </div>
 </div>
 </div>
@@ -1165,8 +1166,8 @@ Code&nbsp;4.14
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What does the pipe operator <code>|&gt;</code> do?</strong></p>
-<div id="radio_NZJTABHTOS" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_NZJTABHTOS" value=""> <span>It saves each intermediate result as a separate file.</span></label><label><input type="radio" autocomplete="off" name="radio_NZJTABHTOS" value="answer"> <span>It passes the result of one step to the next function.</span></label><label><input type="radio" autocomplete="off" name="radio_NZJTABHTOS" value=""> <span>It automatically corrects errors in each function.</span></label><label><input type="radio" autocomplete="off" name="radio_NZJTABHTOS" value=""> <span>It changes temporary Console code into permanent code.</span></label>
+<div id="radio_ASUJFIJVDN" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_ASUJFIJVDN" value=""> <span>It saves each intermediate result as a separate file.</span></label><label><input type="radio" autocomplete="off" name="radio_ASUJFIJVDN" value="answer"> <span>It passes the result of one step to the next function.</span></label><label><input type="radio" autocomplete="off" name="radio_ASUJFIJVDN" value=""> <span>It automatically corrects errors in each function.</span></label><label><input type="radio" autocomplete="off" name="radio_ASUJFIJVDN" value=""> <span>It changes temporary Console code into permanent code.</span></label>
 </div>
 </div>
 </div>
@@ -1574,11 +1575,12 @@ window.onload = function() {
 (() => {
 const query = new URLSearchParams(window.location.search).get("q");
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".callout-transcript").forEach((callout) => {
+  document.querySelectorAll('.callout-transcript, .callout[title^="Image description:"], .callout[title^="Map description:"], .callout[title^="Chart data:"], .callout[title^="Map data:"]').forEach((callout) => {
     const header = callout.querySelector(".callout-header");
     const body = callout.querySelector(".callout-collapse");
     if (!header || !body) return;
 
+    // Transcripts and image alternatives must also open with a keyboard.
     // Quarto's collapsed callout headers support clicks but are not tab stops.
     header.setAttribute("role", "button");
     header.setAttribute("tabindex", "0");

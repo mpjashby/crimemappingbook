@@ -69,7 +69,7 @@ In this chapter, we will learn how to:
 
 Although every messy dataset presents different problems, it is useful to follow the same general workflow whenever we tidy data. The workflow has five main stages:
 
-::::::::::: {.process}
+::::::::::: {.process role="img" aria-label="Workflow diagram with five stages in order: inspect the data structure and content; reshape rows and columns into a tidy structure; clean values into consistent forms; check missing, invalid and unexpected values; use the prepared data for mapping or analysis."}
 
 ::::: {.item color="#3182bd"}
 Inspect
@@ -174,7 +174,7 @@ tidy_data_quiz3 <- c(
 
 ## Tidying the structure of data
 
-<p class="full-width-image"><img src="../images/tidydata_2.jpg" alt="Cartoon explaining that the standard structure of tidy data means that all tidy datasets are alike but every messy dataset is messy in its own way."></p>
+<p class="full-width-image"><img src="../images/tidydata_2.jpg" alt="Cartoon contrasts three tidy tables, with variables in columns and observations in rows, against four irregular messy tables. Speech bubbles describe variables mixed with observations, several variables in one column, variables stored across rows and unclear structure. Consistent tidy tables can be handled alike, whereas messy tables need different repairs."></p>
 
 
 ### Reshaping data between long and wide formats {#sec-messy-data-reshaping-data-between-long-and-wide-formats}
@@ -378,7 +378,7 @@ There is still a problem with this data, which is that the `month` variable cont
 
 Data released by government organisations are often designed to be viewed by humans rather than processed by statistical software. We can see this in this screenshot of a [dataset produced by the UK Office for National Statistics on cybercrime in the UK](https://www.ons.gov.uk/peoplepopulationandcommunity/crimeandjustice/datasets/crimeinenglandandwalesexperimentaltables) based on responses to the Crime Survey for England and Wales.
 
-<p class="full-width-image"><img src="../images/ons_data1.png" alt="Screen shot of an Excel sheet of data from the UK Office for National Statistics, showing that there are multiple header rows above the data and blank rows within the data."></p>
+<p class="full-width-image"><img src="../images/ons_data1.png" alt="Spreadsheet of Office for National Statistics fraud and computer-misuse estimates for England and Wales. Rows one to four contain a title, geographic heading and multi-line column headings; blank rows separate offence groups. The data do not begin at the top of the sheet or form an uninterrupted rectangular table."></p>
 
 Looking at the row numbers on the left-hand side, we can see that the first row is taken up not with the column names (as they would be in a tidy dataset) but with the title of the dataset. The next row is blank, and the third row then contains some metadata to say that the data relates to England and Wales and to adults aged 16 and over. Only on row four do we see the column names. There are also blank rows within the data that are used to separate out different categories of data.
 
@@ -437,7 +437,7 @@ read_excel(here("data", "raw", "cybercrime.xlsx"), sheet = "Table E1", skip = 3)
 
 This has dealt with the problem caused by the extra rows at the top of the data. But if we look at the bottom of the dataset, we will see that there are also several rows of footnotes. These footnotes are important for us to have read so that we understand the data, but they aren't part of the data itself.
 
-<p class="full-width-image"><img src="../images/ons_data2.png" alt="Screen shot of an Excel sheet of data from the UK Office for National Statistics, showing that there are multiple footer rows below the data."></p>
+<p class="full-width-image"><img src="../images/ons_data2.png" alt="Bottom of the same Office for National Statistics spreadsheet. Computer-misuse estimates are followed by an unweighted sample-base row, a source line and five numbered explanatory notes. These footer rows describe the table and should not be read as further offence records."></p>
 
 We can remove these extra rows at the end of our data using the `slice()` function from the `dplyr` package. `slice()` allows us to choose certain rows from our data by row number. Looking at the screenshot above, our data finishes on row 34 (row 36 looks like part of our data but the value there actually shows the number of people involved in the survey, not a number of incidents). But:
 
@@ -687,7 +687,7 @@ tribble(
 
 We can also remove unwanted text from within values. For example, if there is unwanted white-space (spaces, tabs, etc.) at the beginning or end of a string of characters, we can remove it with `str_trim()`. `str_squish()` does the same thing, but also reduces any repeated white-space characters in a string of text down to a single space. For example, `str_squish("  A string   of text")` produces the result ` `r str_squish("  A string   of text")` `.
 
-<p class="full-width-image"><img src="../images/str_squish.jpg" alt="Cartoon explaining that the str_squish() function removes leading, trailing and repeated interior white space from strings."></p>
+<p class="full-width-image"><img src="../images/str_squish.jpg" alt="Cartoon labelled stringr: str_squish. Monsters remove spaces before and after the words a and cat, and remove an extra space between them while keeping a single separating space. Leading, trailing and repeated interior whitespace are removed."></p>
 
 Data from the UK police open data website includes the words 'on or near' at the start of every value in the `location` column of the data. This is to remind users that the locations of crimes are deliberately obscured by being 'snapped' to the centre of the street on which they occur to protect victims' privacy.
 
@@ -791,7 +791,7 @@ mean(parse_number(numbers_as_text))
 ```
 
 
-<img src="../images/parse_number.jpg" alt="Cartoon showing that the parse_number() function extracts numeric values from text, stripping out all non-numeric characters." class="right-side-image" style="width: 400px; max-width: 50%;">
+<img src="../images/parse_number.jpg" alt="Cartoon labelled readr: parse_number, just give me the numbers. Monsters scrape text away from an amount column containing 12.75 USD and SEAT 18A. The numeric parts can be extracted even when letters appear before or after them." class="right-side-image" style="width: 400px; max-width: 50%;">
 
 We can use other functions in the `parse_*()` family to convert character values to other data types. For example, we can use `parse_logical()` to convert true/false values stored as text to `TRUE` and `FALSE` values. Be careful, though: if you try to convert a variable to a data type that makes no sense, you are likely to find all of your values replaced with `NA`.
 
@@ -1118,7 +1118,7 @@ If we plotted these locations on a map, we might expect to see something like th
 
 ::: {#map-cairo-locations}
 
-<p class="full-width-image"><img src="../images/null_island_cairo1.jpg" alt="A map showing several points in the city of Cairo, Egypt"></p>
+<p class="full-width-image"><img src="../images/null_island_cairo1.jpg" alt="Street map showing black points scattered across Cairo and its eastern suburbs. The displayed extent stays close to the city because all plotted locations are nearby."></p>
 
 :::
 
@@ -1126,7 +1126,7 @@ But look again at the final row of data in the table above -- the coordinates fo
 
 ::: {#map-cairo-and-null-island}
 
-<p class="full-width-image"><img src="../images/null_island_cairo2.jpg" alt="A map showing a large proportion of Africa, with several points clustered around the city of Cairo, Egypt in the top-right corner and a single point located in the Atlantic Ocean off the coast of Ghana."></p>
+<p class="full-width-image"><img src="../images/null_island_cairo2.jpg" alt="Map spanning north-east Africa and the Gulf of Guinea. Cairo locations overlap into a small cluster in the north-east, while one point lies far away at zero longitude and latitude off West Africa. The erroneous zero coordinates expand the map so far that the Cairo pattern can no longer be distinguished."></p>
 
 :::
 
@@ -1240,7 +1240,7 @@ tidy_content_quiz4 <- c(
 
 Throughout this course we have used geographic data that includes locations stored as pairs of coordinates, e.g. latitude and longitude or easting and northing. Sometimes geographic data will not contain coordinates but instead store the locations of places or events as free-text addresses.
 
-<img src="../images/kelleys.jpg" alt="The exterior of Kelley's Grill and Bar in Basehor, Kansas." class="right-side-image" style="border: 1px solid #333;">
+<img src="../images/kelleys.jpg" alt="Photograph of a sign for Kelley&#x27;s Grill and Bar mounted on a brick wall. The sign includes a beer mug and a plate, helping identify the business discussed in the geocoding example." class="right-side-image" style="border: 1px solid #333;">
 
 Address fields can be very messy indeed. This is because addresses can often be stored in different formats, include different abbreviations or use different spellings (including typos). For example, the official postal address 'Kelley's Grill & Bar, 15540 State Avenue, Basehor, Kansas 66007, United States' could be stored in a local police report as:
 
@@ -1479,7 +1479,7 @@ We can now use this data as we would any other spatial data. We will convert `ad
 #| lst-label: lst-messy-data-script-10-map
 #| lst-cap: ""
 #| filename: "chapter_10.R"
-#| fig-alt: "OpenStreetMap of Chicago showing the locations returned by geocoding eight fictional incident addresses."
+#| fig-alt: "Street map of Chicago showing red points returned by geocoding eight fictional incident addresses. The points are spread north to south beside Lake Michigan, and some returned locations overlap. The map displays the geocoding results rather than verified crime locations."
 
 # Convert the geocoded results to an SF object and plot them over a basemap
 addresses_sf <- addresses_final |>
@@ -1595,7 +1595,7 @@ resources:
 5. How does geocoding with tidygeocoder differ from retrieving mapped features from OpenStreetMap? What checks should you make after geocoding addresses?
 :::
 
-<p class="full-width-image"><img src="../images/tidydata_7.jpg" alt="Cartoon saying make friends with tidy data!"></p>
+<p class="full-width-image"><img src="../images/tidydata_7.jpg" alt="Cartoon of a smiling data table sitting on a bench between two monsters eating ice creams. The words make friends with tidy data encourage treating a consistent table structure as a helpful companion in analysis."></p>
 
 ::: {.credits}
 <a href="https://allisonhorst.com/">Artwork by Allison Horst</a>

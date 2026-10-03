@@ -124,7 +124,7 @@ ggsave(
 
 ::: {#map-nottingham-robbery-introduction}
 
-<p class="full-width-image"><img src="../images/nottingham_robbery_map.jpg" alt="A map of Nottingham showing the highest robbery density in significant hotspot cells near the city centre"></p>
+<p class="full-width-image"><img src="../images/nottingham_robbery_map.jpg" alt="Map of statistically significant robbery hotspots in Nottingham in 2022. Only cells with more robberies than expected by chance are coloured; darker blue-purple cells have higher estimated robbery density. The largest and darkest concentration is near the city centre, with smaller scattered groups to the north and south. Ward boundaries and a pale street map provide context."></p>
 
 :::
 
@@ -346,7 +346,7 @@ Let's create a simple map of the results produced by `osmdata_sf()`, comparing t
 #| filename: "R Console"
 #| fig-asp: 1
 #| out-width: "100%"
-#| fig-alt: "A map comparing OpenStreetMap building points, polygons and multipolygons with the boundaries of three Nottingham wards"
+#| fig-alt: "Map of buildings in three south-west Nottingham wards. Red outlines mark ward boundaries; small point symbols and blue and green building shapes compare OpenStreetMap points, polygons and multipolygons. Dense building coverage varies across the wards, illustrating why geometry types must be checked before calculating building density."
 
 # Initiate map and add building features stored as points
 hotspot_map(
@@ -483,7 +483,7 @@ Add this code to your script file and run it to produce a map:
 #| filename: "chapter_13a.R"
 #| fig-asp: 1
 #| out-width: "100%"
-#| fig-alt: "A map of three Nottingham wards in which estimated burglary risk is overwhelmingly concentrated in one grid cell on the University of Nottingham campus"
+#| fig-alt: "Map of estimated burglary risk in Castle, Lenton and Wollaton East, and Meadows wards, Nottingham, in 2020. Darker blue means a higher ratio of burglary density to building density. The darkest broad patch lies in the north-east of the mapped wards, with smaller darker patches further west. Black ward outlines locate the surface."
 
 # PLOT MAP ---------------------------------------------------------------------
 
@@ -585,7 +585,7 @@ Each of the 16 density maps in @map-random-points-kde-patterns shows density est
 #| echo: false
 #| fig-asp: 1
 #| fig-align: "center"
-#| fig-alt: "Sixteen kernel-density maps made from randomly generated points; every map appears to contain clusters even though the points were generated without a spatial pattern"
+#| fig-alt: "Sixteen density surfaces arranged in a four-by-four grid, each calculated from independently generated random points. Darker orange patches appear in every panel but in different positions and shapes. These apparent concentrations show why the presence of a dark patch alone does not establish a statistically significant hotspot."
 
 tibble(
   x = runif(n = 1000 * 16, min = 0, max = 100),
@@ -756,7 +756,7 @@ Add this complete map code to `chapter_13b.R` and run it to see what the signifi
 #| filename: "chapter_13b.R"
 #| fig-asp: 1.4
 #| out-width: "100%"
-#| fig-alt: "A map of Nottingham in which significant robbery-hotspot cells are shaded from light to dark blue according to robbery density"
+#| fig-alt: "Map of statistically significant robbery hotspots in Nottingham in 2020. Coloured grid cells identify locations with more robberies than expected by chance; darker blue means higher robbery density. Cells cluster around the city centre, with smaller groups further north and south. Uncoloured areas are not identified as significant hotspots."
 
 # PLOT MAP ---------------------------------------------------------------------
 
@@ -799,7 +799,7 @@ Running the complete script produces this map:
 #| fig-asp: 1
 #| out-width: "100%"
 #| message: false
-#| fig-alt: "A map of Nottingham in which significant robbery-hotspot cells are shaded from medium to dark blue according to robbery density"
+#| fig-alt: "Map of statistically significant robbery hotspots in Nottingham in 2020 over a pale street base map. The blue scale starts at a more visible shade, making lower-density significant cells easier to see. Darker central cells still represent the highest density; uncoloured areas are not identified as significant hotspots."
 
 source(here("R", "chapter_13b.R"))
 ```
@@ -851,7 +851,7 @@ DBSCAN identifies clusters of crimes based on their spatial proximity to each ot
 ::: {#map-nottingham-robbery-dbscan-introduction}
 
 ```{r}
-#| fig-alt: "Robbery clusters in Nottingham in 2020, outlined in red and labelled with the proportion of robberies in each cluster."
+#| fig-alt: "Map of recorded robbery clusters in central Nottingham in 2020. Three red outlines enclose concentrations containing twenty-two, nine point four and six point five percent of all recorded robberies respectively. The largest share is in the eastern cluster; the two smaller clusters lie to its north-west and partly overlap."
 #| label: dbscan-robbery-map
 #| file: "../R/chapter_13c.R"
 #| echo: false
@@ -874,7 +874,7 @@ These maps show the results produced by applying `hotspot_dbscan()` to the same 
 ::: {#map-nottingham-dbscan-minimum-points}
 
 ```{r}
-#| fig-alt: "Three maps compare robbery clusters in Nottingham using different minimum point counts. Cluster outlines and rank labels show how the clusters change as the threshold increases."
+#| fig-alt: "Three side-by-side Nottingham robbery maps compare minimum point counts of five, ten and twenty. They identify eighteen, five and two clusters respectively, containing thirty-two, thirty-three and thirty-five percent of points. Increasing the threshold removes many small clusters and changes the outlines of those retained. Numbered labels rank the clusters."
 #| label: dbscan-minpts
 #| echo: false
 #| out-width: "100%"
@@ -924,7 +924,7 @@ You can see the effect of varying the `density_adjust` argument on the results s
 ::: {#map-nottingham-dbscan-density-thresholds}
 
 ```{r}
-#| fig-alt: "Three maps compare robbery clusters in Nottingham using different density-adjustment thresholds. Higher thresholds identify smaller areas with more concentrated robberies."
+#| fig-alt: "Three side-by-side Nottingham robbery maps compare density adjustments of one, two and four. They identify five, five and four clusters, containing forty-three, thirty-two and twenty-four percent of points respectively. Higher thresholds shrink the outlined clusters, retaining fewer points in the densest areas."
 #| label: dbscan-densityadjust
 #| echo: false
 #| out-width: "100%"
@@ -1025,7 +1025,7 @@ You can see that `hotspot_dbscan()` tells us the values of `min_pts` and `eps` t
 ::: {#map-nottingham-robbery-clusters-default}
 
 ```{r}
-#| fig-alt: "A map of Nottingham showing robbery clusters identified with the default DBSCAN settings. Shading represents the number of robberies in each cluster."
+#| fig-alt: "Map of Nottingham robberies in 2020 clustered with default DBSCAN settings. One large blue region joins concentrations around the city centre into a single cluster; its dark shade represents the large number of included robberies. The broad outline hides differences between the local concentrations."
 #| label: draw-nottingham-robbery-clusters-default
 #| lst-label: lst-mapping-hotspots-draw-nottingham-robbery-clusters-default
 #| lst-cap: ""
@@ -1069,7 +1069,7 @@ If we now inspect this object in the R Console, we'll see it contains `r nrow(ro
 ::: {#map-nottingham-robbery-clusters-higher-density}
 
 ```{r}
-#| fig-alt: "A map of Nottingham showing smaller robbery clusters identified using a density-adjustment threshold of five times the typical local density."
+#| fig-alt: "Map of Nottingham robberies in 2020 with the density adjustment raised to five. Three smaller blue regions replace the single broad default cluster. The eastern cluster is darkest and contains the most robberies; two paler clusters lie to its north-west. Shading represents counts within clusters."
 #| label: draw-nottingham-robbery-clusters-higher-density
 #| lst-label: lst-mapping-hotspots-draw-nottingham-robbery-clusters-higher-density
 #| lst-cap: ""
@@ -1095,7 +1095,7 @@ Add this code to `chapter_13c.R` and run it:
 ::: {#map-nottingham-robbery-cluster-proportions}
 
 ```{r}
-#| fig-alt: "A map of Nottingham robbery clusters outlined in red and labelled with the proportion of recorded robberies in each cluster."
+#| fig-alt: "Map of recorded robbery clusters in central Nottingham in 2020. Three red outlines enclose concentrations containing twenty-two, nine point four and six point five percent of all recorded robberies respectively. The largest share is in the eastern cluster; the two smaller clusters lie to its north-west and partly overlap."
 #| label: script-13c-map
 #| lst-label: lst-mapping-hotspots-script-13c-map
 #| lst-cap: ""
@@ -1147,7 +1147,7 @@ Running the complete script produces this map:
 #| fig-asp: 1
 #| out-width: "100%"
 #| message: false
-#| fig-alt: "A map of central Nottingham clusters of areas with high densities of robbery are identified. The clusters are outlined in red and labelled with the proportion of all robberies in Nottingham in 2020 that are contained within each cluster"
+#| fig-alt: "Map of recorded robbery clusters in central Nottingham in 2020. Three red outlines enclose concentrations containing twenty-two, nine point four and six point five percent of all recorded robberies respectively. The largest share is in the eastern cluster; the two smaller clusters lie to its north-west and partly overlap. The outlines follow the point clusters more closely than rectangular bounding boxes would."
 ggplot2::last_plot()
 
 ```
@@ -1232,7 +1232,7 @@ Add this code to your new file and run it:
 ::: {#map-nottingham-significant-robbery-clusters}
 
 ```{r}
-#| fig-alt: "A map of significant robbery clusters in Nottingham. Red outlines and percentage labels identify clusters, with ward boundaries drawn in grey."
+#| fig-alt: "Map of recorded robbery clusters in central Nottingham in 2020. Three red outlines enclose concentrations containing twenty-two, nine point four and six point five percent of all recorded robberies respectively. The largest share is in the eastern cluster; the two smaller clusters lie to its north-west and partly overlap. Blue significant-hotspot cells show density within and beyond the cluster outlines, with ward boundaries in grey."
 #| label: script-13d-map
 #| lst-label: lst-mapping-hotspots-script-13d-map
 #| lst-cap: ""

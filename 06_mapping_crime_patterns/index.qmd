@@ -50,7 +50,7 @@ ggsave(
 #| label: show-final-map
 #| echo: false
 #| fig-align: center
-#| fig-alt: "A density map of recorded bicycle thefts in Vancouver in 2020. The highest estimated densities are in and around the Downtown and West End neighbourhoods. Neighbourhood boundaries and labels appear over a pale base map."
+#| fig-alt: "Density map of recorded bicycle thefts in Vancouver in 2020. Darker blue indicates higher estimated density, strongest on the Downtown peninsula and around the north-central neighbourhoods south of False Creek. Density is lower towards the southern edge. Green neighbourhood boundaries and labels provide location context on a pale street map."
 #| out-width: 100%
 
 knitr::include_graphics(here("images", "vancouver_bike_thefts.jpg"))
@@ -69,7 +69,7 @@ In this chapter, we will learn how to:
 
 The process we will use to produce the map has four main stages:
 
-:::::: {.process}
+:::::: {.process role="img" aria-label="Workflow diagram with four stages in order: download and load data; wrangle it into the required format; model crime density using kernel density estimation; visualise the estimated density on a map."}
 
 ::::: {.item color="#3182bd"}
 Load
@@ -415,7 +415,7 @@ The `bike_theft_density` object created by `hotspot_kde()` contains three column
 #| lst-label: lst-mapping-crime-patterns-draw-vancouver-bicycle-theft-density-basic
 #| lst-cap: ""
 #| filename: "R Console"
-#| fig-alt: "A basic density map of recorded bicycle thefts in Vancouver. Grid cells with higher KDE values are pale blue and cells with lower values are dark blue."
+#| fig-alt: "Grid-based density map of recorded bicycle thefts in Vancouver in 2020 over a coloured street map. Darker blue cells indicate higher estimated density, concentrated on the Downtown peninsula and just south of False Creek. Paler cells extend across the city, with lower density towards the south."
 
 hotspot_map(bike_theft_density)
 ```
@@ -543,13 +543,22 @@ ggsave(
 #| label: kde-bandwidth-map
 #| echo: false
 #| fig-align: center
-#| fig-alt: "Fifteen small density maps compare three grid-cell sizes and five bandwidths. Larger cells produce blockier maps; larger bandwidths produce smoother maps; and very small bandwidths produce fragmented patterns."
+#| fig-alt: "Fifteen Vancouver bicycle-theft density maps form five rows and three columns. Cell size increases left to right and bandwidth decreases top to bottom. Larger cells make the surface blockier; larger bandwidths merge concentrations into smooth broad patches; the smallest bandwidth fragments them. A description of the panel settings follows."
 #| out-width: 100%
 
 knitr::include_graphics(here::here("images/bandwidth.jpg"))
 ```
 
 :::
+
+::: {.callout-note collapse="true" title="Map description: cell size and bandwidth comparison"}
+
+All fifteen panels use the same Vancouver bicycle-theft locations. Columns use one, two and four times the default cell size, from left to right. Rows use four, two, one, one half and one quarter of the default bandwidth, from top to bottom.
+
+Across a row, larger grid cells turn smooth-looking shapes into visible blocks. Down a column, reducing bandwidth separates a broad northern concentration into several smaller patches; at the smallest bandwidth, many isolated pale spots appear. Changing these settings changes how the same events are represented, rather than changing where the thefts occurred.
+
+:::
+
 
 By looking at the maps on the right-hand side, you can see that reducing the number of grid cells leads to a map that looks blocky and lacks information. Looking at the maps towards the top of @map-vancouver-kde-cell-size-and-bandwidth, you can see that increasing the bandwidth relative to the default makes the density surface smoother. The smoother the surface, the less detail we can see about where crime is most concentrated, until on the top row we can see almost no information at all. On the other hand, if we reduce the bandwidth too much (the bottom row of maps), each estimate is influenced by only the closest events, so the surface becomes fragmented and it is more difficult to identify broader patterns.
 
@@ -795,7 +804,7 @@ density of recorded bike theft outside the city is.
 
 ::::: {#map-vancouver-clipping-stage-points}
 
-![](../images/hull_clipping_1.jpg){fig-alt="A sample of recorded bike-theft locations inside the green City of Vancouver boundary." width=100%}
+![](../images/hull_clipping_1.jpg){fig-alt="Map of a sample of Vancouver bicycle-theft locations as grey dots inside a solid green city boundary. The dots are most tightly grouped towards the north; scattered points extend further south and west. The irregular boundary marks the area for which crime data are available." width=100%}
 
 :::::
 
@@ -810,7 +819,7 @@ necessarily match the area of the data.
 
 ::::: {#map-vancouver-clipping-stage-convex-hull}
 
-![](../images/hull_clipping_2.jpg){fig-alt="The dashed convex hull around the sampled theft locations extends beyond parts of the city boundary." width=100%}
+![](../images/hull_clipping_2.jpg){fig-alt="Dashed green convex hull around a sample of Vancouver bicycle-theft locations. Straight edges form the smallest convex polygon enclosing every grey point; the polygon fills gaps between outlying points, including areas where no incidents are plotted. The city boundary is not shown in this panel." width=100%}
 
 :::::
 
@@ -825,7 +834,7 @@ could be misleading.
 
 ::::: {#map-vancouver-clipping-stage-outside-boundary}
 
-![](../images/hull_clipping_3.jpg){fig-alt="Green shading identifies parts of the convex hull outside the City of Vancouver boundary." width=100%}
+![](../images/hull_clipping_3.jpg){fig-alt="Map combining the solid green Vancouver city boundary and dashed convex hull around sampled bicycle-theft points. Green-filled areas, especially along the northern edge, lie inside the hull but outside the city. Estimating density there would suggest information about places not covered by the crime data." width=100%}
 
 :::::
 
@@ -840,7 +849,7 @@ which we have data.
 
 ::::: {#map-vancouver-clipping-stage-clipped-density}
 
-![](../images/hull_clipping_4.jpg){fig-alt="A green KDE layer clipped to the City of Vancouver boundary, with the dashed convex hull shown for comparison." width=100%}
+![](../images/hull_clipping_4.jpg){fig-alt="Density surface for sampled Vancouver bicycle thefts, clipped to the solid green city boundary. Darker green grid cells mark higher density in the north-central concentration. The dashed convex hull extends beyond the city in places, but the shaded density layer stops at the city boundary rather than covering those gaps." width=100%}
 
 :::::
 ::::
@@ -1035,14 +1044,14 @@ You'll see below that the `bike_theft_density_clip` object now contains a grid t
 
 KDE maps are extremely useful because they allow us to visualise overall _patterns_ of crime much more easily than if we simply plot crimes on a dot map. But the density layers produced by `hotspot_kde()` can sometimes be hard to interpret on a map. One alternative way to visualise density is to convert the density surface to _isobands_. Isobands are polygons that represent areas of equal crime density. You might have seen them on weather maps, where they are sometimes used to visualise areas that are expected to have the same temperature:
 
-![](../images/isotherm_map.gif){fig-alt="A weather map showing isotherms, which are lines that connect areas of equal temperature." width=80%}
+![](../images/isotherm_map.gif){fig-alt="Weather map of surface temperatures across the contiguous United States. Labelled contour lines connect equal temperatures in degrees Fahrenheit, with coloured bands between them. The north is mostly cooler blue and purple, while the south is warmer green, yellow and orange. The example shows how contour lines and shaded bands represent a continuous surface." width=80%}
 
 We can convert the output produced by `hotspot_kde()` to isobands using the `hotspot_isoband()` function from sfhotspot. This function takes a KDE layer and converts it to a set of polygons that represent areas of equal density. We can then plot these polygons on a map instead of the KDE layer. For example, we can just add `hotspot_isoband()` to the end of the code pipeline we used to create the clipped KDE layer, and then plot the result.
 
 ::: {#map-vancouver-bicycle-theft-density-isobands}
 
 ```{r}
-#| fig-alt: "A density map of bicycle thefts in Vancouver. Shaded bands join areas of similar estimated density and are clipped to the neighbourhood boundaries."
+#| fig-alt: "Density map of recorded bicycle thefts in Vancouver in 2020, using seven shaded bands instead of individual grid cells. Darker bands represent higher estimated density, concentrated around Downtown and the neighbourhoods south of False Creek. Curved band boundaries join places with similar density and are clipped to Vancouver."
 #| label: map-isoband
 #| lst-label: lst-mapping-crime-patterns-map-isoband
 #| lst-cap: ""
@@ -1135,7 +1144,7 @@ Add this map-plotting code to the end of `chapter_06.R`:
 ::: {#map-vancouver-bicycle-theft-density-boundaries}
 
 ```{r}
-#| fig-alt: "A bicycle-theft density map clipped to Vancouver, with neighbourhood boundaries outlined in green over a street base map."
+#| fig-alt: "Density map of recorded bicycle thefts in Vancouver in 2020 clipped to the city boundary. Darker blue indicates higher density around Downtown and south of False Creek; southern areas are paler. Green neighbourhood outlines have been added over the pale street map, but neighbourhood names are not yet labelled."
 #| label: script-06-boundary-map
 #| lst-label: lst-mapping-crime-patterns-script-06-boundary-map
 #| lst-cap: ""
@@ -1195,7 +1204,7 @@ Replace the existing `hotspot_map()` stack in the `chapter_06.R` file with this 
 #| lst-label: lst-mapping-crime-patterns-script-06-final-map
 #| lst-cap: ""
 #| filename: "chapter_06.R"
-#| fig-alt: "A density map of recorded bicycle thefts in Vancouver in 2020. The highest estimated densities are in and around the Downtown and West End neighbourhoods. Neighbourhood boundaries and labels appear over a pale base map."
+#| fig-alt: "Density map of recorded bicycle thefts in Vancouver in 2020. Darker blue indicates higher estimated density, strongest on the Downtown peninsula and around the north-central neighbourhoods south of False Creek. Density is lower towards the southern edge. Green neighbourhood boundaries and labels provide location context on a pale street map."
 
 # Plot density map
 hotspot_map(bike_theft_density_clip, basemap_type = "cartolight") +

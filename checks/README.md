@@ -83,3 +83,87 @@ Expect Code 1–5, Map 1–5 and Figure 1–3, with no subfloat letters, `exampl
 `R Console` filename headers intact, and "An existing caption" retained on Figure 2. The final listing tests interleaved console output; it must
 have one Code label and anchor, with both results retained. The paired-chart example tests a stable parent Figure
 anchor for multiple output images, using blank subcaptions.
+
+## Checking image alternatives
+
+```sh
+python3 checks/check_image_alternatives.py
+quarto render --execute --cache-refresh
+python3 checks/check_image_alternatives.py --rendered _book
+```
+
+The source check covers published chapters, setup pages, appendices, shared
+includes and distributed report/example sources. It excludes commented-out
+content and literal code examples. It checks HTML images, Markdown images,
+workflow diagrams, numbered figures and the generated output chunks inventoried in
+`checks/image-outputs.json`. Update that inventory when adding, removing or
+renaming an output chunk. The rendered check catches actual generated images
+that a source search cannot identify, including unnumbered plot outputs.
+It checks image alternatives and named SVGs/diagram containers; it does not prove WCAG conformance
+or assess whether a description is accurate or useful.
+
+Run standalone report renders before the book render so the copied downloads
+contain their new alternatives (see `resources/README.md`). The Yarra source
+normally produces PDF; render it with `--to html` when possible to inspect its
+alternatives with the HTML checker. A missing Yarra HTML output is excluded
+from the book HTML check because the distributed output is PDF. PDF tagging
+and screen-reader behaviour need separate manual verification.
+
+### Writing and reviewing descriptions
+
+Use the four resources linked in [issue #72](https://github.com/mpjashby/crimemappingbook/issues/72):
+[Harvard](https://accessibility.huit.harvard.edu/describe-content-images),
+[Routledge](https://www.routledge.com/our-customers/authors/publishing-guidelines/accessible-content/how-to-write-alt-text-and-long-descriptions),
+[Esri](https://www.esri.com/arcgis-blog/products/arcgis-storymaps/constituent-engagement/using-alternative-text-for-equitable-storytelling)
+and [4 Syllables](https://4syllables.com.au/articles/text-alternatives-maps/).
+
+Read the surrounding lesson and inspect the actual visual before describing it.
+Explain its purpose and essential information in plain, objective language.
+Usually a few sentences are enough; aim to stay below 100 words and move
+necessary extra detail to an adjacent, clearly titled expandable description.
+Do not impose a 125-character limit, repeat a caption or add findings that
+are not visible in the image. End descriptions with a full stop.
+
+For charts, identify the variables, units, relevant period and important patterns
+or exceptions. For maps, identify the subject, geographic extent, relevant period,
+meaning of shading/symbols and spatial relationships. Distinguish counts, rates,
+density and statistically significant hotspots. Describe the specific difference
+in each intermediate teaching example. For panels, give their order and say
+whether scales are shared. For animations, explain the time sequence and the
+changing pattern; provide a static description so readers need not watch the
+animation. For screenshots and cartoons, include relevant text and relationships.
+
+Use HTML `alt` for raw images and Quarto `fig-alt` for Markdown images and
+executable output chunks, including `knitr::include_graphics()`. Assign separate
+alternatives to distinct output images when a chunk emits more than one plot.
+Descriptions belong at the point an image is displayed, not merely where
+`ggsave()` writes its file. Keep alternatives near the plotting code and review
+them whenever its data or appearance changes. Do not edit generated `_book` or
+`_freeze` files as the source of an alternative.
+
+Empty alternatives are intentional for package logos inside links that already
+have meaningful `aria-label` values. For other genuinely decorative images,
+use explicit `alt="" role="presentation"` in HTML and document the decision.
+Do not classify a teaching map, chart or informative cartoon as decorative merely
+because the prose discusses it. Leaflet widgets also need a named enclosing
+group: chunk `fig-alt` alone does not give an interactive map an accessible name.
+Provide accessible tables when readers need values otherwise available only
+through pointer-operated map labels. Extra descriptions should remain ordinary
+readable text, with a useful title and keyboard-accessible disclosure control.
+
+After rendering, inspect descriptions against the final output, check keyboard
+access to expandable descriptions/tables, and review reading order with a screen
+reader. Automated accessibility checks detect omissions, but cannot detect a
+reversed colour scale or an invented spatial pattern.
+
+Workflow diagrams produced by the diagrams extension use a named `role="img"` container, so their alternative includes the order and relationships represented by arrows or branches. The shared `include/transcripts.html` script makes the image-description and map-data callouts keyboard accessible, as it does for transcripts. Keep the descriptive title prefixes above when adding such callouts.
+
+The sequential-palette grids, Chapter 9 murder maps and Chapter 15 animation
+keep their full descriptions in their alternatives rather than separate callouts.
+The palette and animation alternatives can exceed the usual length recommendation.
+The Chapter 9 maps illustrate how to create interactive maps, so their alternatives
+summarise statewide patterns and interactive features rather than listing every
+district value. Keep their `fig-alt` and enclosing group’s `aria-label` consistent.
+
+For Mermaid diagrams, also supply `accTitle` and `accDescr` inside the diagram.
+Quarto chunk `fig-alt` alone does not name the browser-rendered Mermaid SVG.

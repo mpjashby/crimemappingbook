@@ -57,7 +57,7 @@ In the first analysis in this chapter, you will produce this map of carjacking o
 ```{r}
 #| label: show-final-carjacking-map
 #| echo: false
-#| fig-alt: "A choropleth map of carjacking offences in Mexico City in 2019. Darker blue boroughs have more recorded offences, with Gustavo A. Madero having the highest count."
+#| fig-alt: "Choropleth map of recorded carjackings in Mexico City in 2019. Each borough has one blue shade representing its total offence count. Gustavo A. Madero in the north is darkest, followed by Iztapalapa in the east; several central and south-eastern boroughs are much paler. The map compares borough totals without showing variation within them."
 #| out-width: 90%
 
 car_jacking_map
@@ -76,7 +76,7 @@ In this chapter, we will learn how to:
 
 The process we will use has three main stages:
 
-::::::: {.process}
+::::::: {.process role="img" aria-label="Workflow diagram with three stages in order: load source data; wrangle it by counting points or joining datasets; visualise counts or rates with a static or interactive choropleth map."}
 
 ::::: {.item color="#3182bd"}
 Load
@@ -437,7 +437,7 @@ We have already loaded the data we need to create a map of carjackings in Mexico
 #| lst-cap: ""
 #| filename: "chapter_09a.R"
 #| fig-asp: 1
-#| fig-alt: "A choropleth map of carjacking offences in Mexico City in 2019. Darker blue boroughs have more recorded offences, with Gustavo A. Madero having the highest count."
+#| fig-alt: "Choropleth map of recorded carjackings in Mexico City in 2019. Each borough has one blue shade representing its total offence count. Gustavo A. Madero in the north is darkest, followed by Iztapalapa in the east; several central and south-eastern boroughs are much paler. The map compares borough totals without showing variation within them."
 #| out-width: "90%"
 
 # Create a choropleth map of carjacking counts
@@ -648,10 +648,10 @@ To make maps with leaflet, we create a stack of functions in a similar way to th
 We can create a very basic leaflet map using the `leaflet()` function to create the stack, the `addProviderTiles()` function to add a base map and the `addPolygons()` function to add the district outlines. We have already loaded the leaflet package in our script file, so we can run this code in the R Console to create our first interactive map.
 
 ::: {aria-label="Basic interactive map showing district boundaries in Uttar Pradesh"}
-::: {#map-uttar-pradesh-districts-interactive role="group" aria-label="An interactive map of district boundaries in Uttar Pradesh over a street base map. The districts have a uniform fill before murder counts are added."}
+::: {#map-uttar-pradesh-districts-interactive role="group" aria-label="Interactive map of Uttar Pradesh district boundaries over a street base map. All districts have the same fill, so only their shapes and locations can be compared; no differences in murder counts are represented at this stage."}
 
 ```{r}
-#| fig-alt: "An interactive map of district boundaries in Uttar Pradesh over a street base map. The districts have a uniform fill before murder counts are added."
+#| fig-alt: "Interactive map of Uttar Pradesh district boundaries over a street base map. All districts have the same fill, so only their shapes and locations can be compared; no differences in murder counts are represented at this stage."
 #| label: draw-uttar-pradesh-districts-interactive
 #| lst-label: lst-mapping-areas-draw-uttar-pradesh-districts-interactive
 #| lst-cap: ""
@@ -685,7 +685,7 @@ The `colorNumeric()` function (note the spelling of "color") allows us to specif
 ```{r}
 #| label: show-sequential-palettes
 #| echo: false
-#| fig-alt: "Nine horizontal sequential colour palettes suitable for colour-vision deficiencies. Each palette progresses from a very light shade to a dark shade of one or more colours."
+#| fig-alt: "Eighteen labelled sequential colour palettes arranged left to right in four rows, each progressing from pale shades on the left to dark shades on the right. Row one: Blues, BuGn, BuPu, GnBu, Greens. Row two: Greys, Oranges, OrRd, PuBu, PuBuGn. Row three: PuRd, Purples, RdPu, Reds, YlGn. Row four: YlGnBu, YlOrBr, YlOrRd. Some strips use a single hue and others change hue as they darken. In the names, Bu means blue, Gn green, Pu purple, Or orange, Rd red and Yl yellow. For example, YlGnBu progresses from pale yellow through green to dark blue, Blues stays within blue shades, and Greys progresses from pale grey to black. These strips show colour order; the map scale settings determine which end represents higher values."
 #| out-width: "100%"
 
 RColorBrewer::brewer.pal.info |>
@@ -707,6 +707,8 @@ RColorBrewer::brewer.pal.info |>
 ```
 
 
+
+
 To create the custom colour palette function, we use the `<-` operator to assign the result produced by `colorNumeric()` to a name, just as we would with an object. We can give this custom function any name we like, but in the code below we'll call it `murder_colours`.
 
 Once we have created a custom colour palette function using `colorNumeric()`, we can use that function to create the appropriate values for the `fillColor` argument of the `addPolygons()` function in our existing `leaflet` stack. Since we want the map colours to be controlled by the `murder` column in the `district_murders` object, we specify `murder` as the only argument to the `murder_colours()` palette function we have created.
@@ -714,10 +716,10 @@ Once we have created a custom colour palette function using `colorNumeric()`, we
 Let's see this in action: add this code to the `chapter_09b.R` script file:
 
 ::: {aria-label="Interactive map with districts in Uttar Pradesh shaded by murder count, without a legend or labels"}
-::: {#map-uttar-pradesh-murder-count-colours role="group" aria-label="An interactive choropleth map of recorded murders in Uttar Pradesh districts in 2014. Darker shading represents larger murder counts."}
+::: {#map-uttar-pradesh-murder-count-colours role="group" aria-label="Interactive choropleth map of recorded murders in Uttar Pradesh districts in 2014. Darker red represents larger district totals, with substantial variation between districts. This version has no legend or district-value labels, so exact values cannot be read from the shading."}
 
 ```{r}
-#| fig-alt: "An interactive choropleth map of recorded murders in Uttar Pradesh districts in 2014. Darker shading represents larger murder counts."
+#| fig-alt: "Interactive choropleth map of recorded murders in Uttar Pradesh districts in 2014. Darker red represents larger district totals, with substantial variation between districts. This version has no legend or district-value labels, so exact values cannot be read from the shading."
 #| label: script-09b-count-palette
 #| lst-label: lst-mapping-areas-script-09b-count-palette
 #| lst-cap: ""
@@ -833,10 +835,10 @@ Finally, we can add labels to the districts, which will appear when we move the 
 Change the existing call to `addPolygons()` to add the district labels:
 
 ::: {aria-label="Interactive choropleth map of murder counts in districts in Uttar Pradesh in 2014"}
-::: {#map-uttar-pradesh-murder-count-popups role="group" aria-label="An interactive choropleth map of murder counts in Uttar Pradesh districts in 2014, with a legend, an inset map and district popups."}
+::: {#map-uttar-pradesh-murder-count-popups role="group" aria-label="Interactive choropleth map of recorded murders in Uttar Pradesh districts in 2014. Darker red represents larger district totals. Higher counts are concentrated in the west, particularly around Meerut, Aligarh and Agra; much of the east is paler, although counts vary between neighbouring districts. A legend explains the count scale, an inset locates the view within the wider area, and interactive district labels give names and counts. The example demonstrates adding colour, a legend, an inset and labels to an interactive map."}
 
 ```{r}
-#| fig-alt: "An interactive choropleth map of murder counts in Uttar Pradesh districts in 2014, with a legend, an inset map and district popups."
+#| fig-alt: "Interactive choropleth map of recorded murders in Uttar Pradesh districts in 2014. Darker red represents larger district totals. Higher counts are concentrated in the west, particularly around Meerut, Aligarh and Agra; much of the east is paler, although counts vary between neighbouring districts. A legend explains the count scale, an inset locates the view within the wider area, and interactive district labels give names and counts. The example demonstrates adding colour, a legend, an inset and labels to an interactive map."
 #| label: script-09b-count-map
 #| lst-label: lst-mapping-areas-script-09b-count-map
 #| lst-cap: ""
@@ -867,6 +869,8 @@ leaflet(district_murders) |>
 ```
 
 :::
+
+
 :::
 
 
@@ -1073,7 +1077,7 @@ Whenever we need to use a longer legend title, or other text, it can be useful t
 
 Add this code to `chapter_09b.R`. Then read through the notes below it to understand how it differs from the map of murder counts.
 
-::: {#map-uttar-pradesh-murder-rates role="group" aria-label="Interactive choropleth map of murder rates in districts in Uttar Pradesh in 2014"}
+::: {#map-uttar-pradesh-murder-rates role="group" aria-label="Interactive choropleth map of recorded murder rates in Uttar Pradesh districts in 2014 over a faded satellite base map. Darker red represents more murders per hundred thousand residents. Rates are generally higher in western districts and lower in the east, with local variation; Meerut, Baghpat and Gautam Buddha Nagar are among the darkest districts. Accounting for population changes the relative shading of districts compared with the count map. A legend gives the rate units, an inset provides geographic context, and interactive labels give district names and rates."}
 
 ```{r}
 #| label: script-09b-rate-map
@@ -1081,7 +1085,7 @@ Add this code to `chapter_09b.R`. Then read through the notes below it to unders
 #| lst-cap: ""
 #| filename: "chapter_09b.R"
 #| fig-asp: 1
-#| fig-alt: "Interactive choropleth map of murder rates in districts in Uttar Pradesh in 2014"
+#| fig-alt: "Interactive choropleth map of recorded murder rates in Uttar Pradesh districts in 2014 over a faded satellite base map. Darker red represents more murders per hundred thousand residents. Rates are generally higher in western districts and lower in the east, with local variation; Meerut, Baghpat and Gautam Buddha Nagar are among the darkest districts. Accounting for population changes the relative shading of districts compared with the count map. A legend gives the rate units, an inset provides geographic context, and interactive labels give district names and rates."
 #| out-width: "100%"
 
 # Create a colour palette for murder rates
@@ -1121,6 +1125,8 @@ leaflet(district_murders, elementId = "murder-rate-map") |>
 ```
 
 :::
+
+
 1. This map uses a different style of base map to the previous map.
 2. The base map style used in this map is quite colourful, so we will make it semi-transparent to reduce its visual prominence.
 3. We want the map colour scheme to be controlled by the `murder_rate` column in the `district_murders` dataset.

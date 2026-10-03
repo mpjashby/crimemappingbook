@@ -39,6 +39,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./contents.html" rel="next">
+<link href="./images/favicon.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -678,11 +679,12 @@ window.onload = function() {
 (() => {
 const query = new URLSearchParams(window.location.search).get("q");
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".callout-transcript").forEach((callout) => {
+  document.querySelectorAll('.callout-transcript, .callout[title^="Image description:"], .callout[title^="Map description:"], .callout[title^="Chart data:"], .callout[title^="Map data:"]').forEach((callout) => {
     const header = callout.querySelector(".callout-header");
     const body = callout.querySelector(".callout-collapse");
     if (!header || !body) return;
 
+    // Transcripts and image alternatives must also open with a keyboard.
     // Quarto's collapsed callout headers support clicks but are not tab stops.
     header.setAttribute("role", "button");
     header.setAttribute("tabindex", "0");

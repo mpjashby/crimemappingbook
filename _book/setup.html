@@ -74,6 +74,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="./">
 <link href="./01_getting_started/index.html" rel="next">
 <link href="./contents.html" rel="prev">
+<link href="./images/favicon.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -530,7 +531,7 @@ Important
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><img src="images/r-gui-icon.png" alt="R GUI icon" class="right-side-image"></p>
+<p><img src="images/r-gui-icon.png" alt="R application icon: a blue letter R inside a grey oval, used to identify the application in the installation check." class="right-side-image"></p>
 <p>When you install R, the installation wizard will also install a small piece of software called the R GUI (graphical user interface), which uses the R icon shown here. However, the R GUI is quite limited and so we will not be using it (very few people do). Instead, we will use Positron, a more powerful and user-friendly interface for R. To avoid inadvertently using the wrong software, <strong>do not open the R GUI software</strong>.</p>
 </div>
 </div>
@@ -662,7 +663,7 @@ Code&nbsp;1
 <ol start="5" type="1">
 <li>Press <kbd title="Return" aria-hidden="true">Return</kbd><span class="visually-hidden">Return</span> on your keyboard.</li>
 </ol>
-<p><img src="images/positron_console_initialise.png" class="img-fluid" alt="Screenshot of the Positron Console after starting R. The console displays the standard R startup messages, including information about licensing, contributors, citations and help. At the `>` prompt, two commands have been entered to install the learncrimemapping package from GitHub. The first installs the remotes package if it is not already installed, and the second runs remotes::install_github(&quot;mpjashby/learncrimemapping&quot;). The Positron interface also shows the Console, Terminal, Problems, Output and Ports tabs across the top."></p>
+<p><img src="images/positron_console_initialise.png" class="img-fluid" alt="Positron Console showing R startup messages followed by commands to install remotes and then the learncrimemapping package from GitHub. A greater-than prompt precedes the first command and a plus prompt precedes the second, showing that R is continuing the same expression. The commands to enter are provided in the text above."></p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -907,11 +908,12 @@ window.onload = function() {
 (() => {
 const query = new URLSearchParams(window.location.search).get("q");
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".callout-transcript").forEach((callout) => {
+  document.querySelectorAll('.callout-transcript, .callout[title^="Image description:"], .callout[title^="Map description:"], .callout[title^="Chart data:"], .callout[title^="Map data:"]').forEach((callout) => {
     const header = callout.querySelector(".callout-header");
     const body = callout.querySelector(".callout-collapse");
     if (!header || !body) return;
 
+    // Transcripts and image alternatives must also open with a keyboard.
     // Quarto's collapsed callout headers support clicks but are not tab stops.
     header.setAttribute("role", "button");
     header.setAttribute("tabindex", "0");
