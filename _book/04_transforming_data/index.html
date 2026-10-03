@@ -80,13 +80,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-9b13294eb98a7ccc9837366643235be5.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-ad7a70ee837950f74c3137b2b7f1bb4b.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-9b13294eb98a7ccc9837366643235be5.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/quarto-axe/axe.min.js"></script>
 <script src="../site_libs/quarto-axe/axe-check.js" type="module"></script>
 <script id="quarto-axe-checker-options" type="text/plain">eyJzdGFuZGFyZCI6IndjYWcyMmFhIiwib3V0cHV0IjoiY29uc29sZSJ9</script>
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-28b3a635af6a38e0a0209d6ed3ccafbc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-7c33edc78565e3702955325aca8f2e2f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-839ceb8a8e9508eb9650cc769a9565e9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-7c33edc78565e3702955325aca8f2e2f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/diagrams-0.2.0/diagrams.css" rel="stylesheet">
 <script src="../site_libs/quarto-contrib/kbd/kbd.js"></script>
@@ -448,7 +452,7 @@ quarto book
 
 <p><img src="../images/chapter_04_transforming_summarising_data_illustration.png" class="img-fluid" alt=""></p>
 <div class="abstract">
-<p>In <a href="../03_data_wrangling/index.html" class="quarto-xref"><span>Chapter 3</span></a> you learned how to load tabular data and choose the rows and columns needed for an analysis. This chapter continues the data-wrangling process. You will learn how to create new columns, summarise and arrange rows, connect several operations in a pipeline and save the processed result without changing the original data.</p>
+<p>In <a href="../03_data_wrangling/index.html" class="quarto-xref"><span>Chapter 3</span></a> we learned how to load tabular data and choose the rows and columns needed for an analysis. This chapter continues the data-wrangling process. We will learn how to create new columns, summarise and arrange rows, connect several operations in a pipeline and save the processed result without changing the original data.</p>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Before you start">
 <div class="callout-header d-flex align-content-center">
@@ -469,7 +473,7 @@ quarto book
 <section id="introduction" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">4.1</span> Introduction</h2>
 <p>Selecting columns and filtering rows allow us to choose existing data. But often we also need to be more active in wrangling data, to create new columns, update existing columns and summarise groups of data. In this chapter we will continue working with the San Francisco robbery and Austin aggravated-assault datasets introduced in <a href="../03_data_wrangling/index.html" class="quarto-xref"><span>Chapter 3</span></a>.</p>
-<p>By the end of this chapter, you will have learned how to:</p>
+<p>In this chapter, we will learn how to:</p>
 <ul>
 <li>create or change columns with <code>mutate()</code>;</li>
 <li>summarise and count rows;</li>
@@ -478,7 +482,7 @@ quarto book
 <li>combine sequential operations with the pipe operator; and</li>
 <li>check that a complete script runs in a fresh R session.</li>
 </ul>
-<p>Most of the examples in this chapter are labelled <strong>R Console</strong> because they are temporary code that helps us understand and practise each function. In <a href="#sec-complete-wrangling-scripts" class="quarto-xref"><span>Section 4.7</span></a>, you will use what you have learned to extend copies of the Chapter 3 scripts and create two complete, reproducible analyses.</p>
+<p>Most of the examples in this chapter are labelled <strong>R Console</strong> because they are temporary code that helps us understand and practise each function. In <a href="#sec-complete-wrangling-scripts" class="quarto-xref"><span>Section 4.7</span></a>, we will use what we have learned to extend copies of the Chapter 3 scripts and create two complete, reproducible analyses.</p>
 <p>The complete data-wrangling process follows these stages:</p>
 <div class="process">
 <div class="item" color="#3182bd">
@@ -618,8 +622,8 @@ quarto book
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What does <code>mutate(agg_assault_data, weekday = wday(date, label = TRUE))</code> return?</strong></p>
-<div id="radio_ONZQPUOSLY" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_ONZQPUOSLY" value=""> <span>It permanently changes the original data, even if the result is not assigned.</span></label><label><input type="radio" autocomplete="off" name="radio_ONZQPUOSLY" value="answer"> <span>It returns a tibble containing a new or changed column.</span></label><label><input type="radio" autocomplete="off" name="radio_ONZQPUOSLY" value=""> <span>It keeps only rows that contain the new value.</span></label><label><input type="radio" autocomplete="off" name="radio_ONZQPUOSLY" value=""> <span>It changes only the name of an existing column.</span></label>
+<div id="radio_MYDUMHCNUT" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_MYDUMHCNUT" value=""> <span>It permanently changes the original data, even if the result is not assigned.</span></label><label><input type="radio" autocomplete="off" name="radio_MYDUMHCNUT" value="answer"> <span>It returns a tibble containing a new or changed column.</span></label><label><input type="radio" autocomplete="off" name="radio_MYDUMHCNUT" value=""> <span>It keeps only rows that contain the new value.</span></label><label><input type="radio" autocomplete="off" name="radio_MYDUMHCNUT" value=""> <span>It changes only the name of an existing column.</span></label>
 </div>
 </div>
 </div>
@@ -790,8 +794,8 @@ quarto book
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What does <code>count(agg_assault_data, location_category, location_type)</code> return?</strong></p>
-<div id="radio_XQFVTXOMZD" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_XQFVTXOMZD" value=""> <span>One row for every offence in the original data</span></label><label><input type="radio" autocomplete="off" name="radio_XQFVTXOMZD" value="answer"> <span>One row for each unique combination of location category and location type</span></label><label><input type="radio" autocomplete="off" name="radio_XQFVTXOMZD" value=""> <span>One column for each unique location category</span></label><label><input type="radio" autocomplete="off" name="radio_XQFVTXOMZD" value=""> <span>Only rows that contain no missing values</span></label>
+<div id="radio_TPHTTBNIPW" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_TPHTTBNIPW" value=""> <span>One row for every offence in the original data</span></label><label><input type="radio" autocomplete="off" name="radio_TPHTTBNIPW" value="answer"> <span>One row for each unique combination of location category and location type</span></label><label><input type="radio" autocomplete="off" name="radio_TPHTTBNIPW" value=""> <span>One column for each unique location category</span></label><label><input type="radio" autocomplete="off" name="radio_TPHTTBNIPW" value=""> <span>Only rows that contain no missing values</span></label>
 </div>
 </div>
 </div>
@@ -885,8 +889,8 @@ quarto book
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Which code arranges <code>agg_assault_data</code> from the latest date to the earliest?</strong></p>
-<div id="radio_TFDOGWFBUF" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_TFDOGWFBUF" value="answer"> <span><code>arrange(agg_assault_data, desc(date))</code></span></label><label><input type="radio" autocomplete="off" name="radio_TFDOGWFBUF" value=""> <span><code>arrange(agg_assault_data, date)</code></span></label><label><input type="radio" autocomplete="off" name="radio_TFDOGWFBUF" value=""> <span><code>filter(agg_assault_data, desc(date))</code></span></label><label><input type="radio" autocomplete="off" name="radio_TFDOGWFBUF" value=""> <span><code>arrange(desc(date), agg_assault_data)</code></span></label>
+<div id="radio_DLEVPBVFHT" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_DLEVPBVFHT" value="answer"> <span><code>arrange(agg_assault_data, desc(date))</code></span></label><label><input type="radio" autocomplete="off" name="radio_DLEVPBVFHT" value=""> <span><code>arrange(agg_assault_data, date)</code></span></label><label><input type="radio" autocomplete="off" name="radio_DLEVPBVFHT" value=""> <span><code>filter(agg_assault_data, desc(date))</code></span></label><label><input type="radio" autocomplete="off" name="radio_DLEVPBVFHT" value=""> <span><code>arrange(desc(date), agg_assault_data)</code></span></label>
 </div>
 <p>In the R Console, type the code necessary to arrange <code>agg_assault_data</code> in order of latitude, in descending order (from largest to smallest). Once you’ve tried writing the code, if you need help you can click the ‘Solution’ button below.</p>
 <div class="webex-solution">
@@ -927,8 +931,8 @@ Solution
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Why should wrangled data be saved in <code>data/processed</code> rather than <code>data/raw</code>?</strong></p>
-<div id="radio_XAVESPHWKR" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_XAVESPHWKR" value=""> <span>It replaces the original downloaded file with the processed data.</span></label><label><input type="radio" autocomplete="off" name="radio_XAVESPHWKR" value=""> <span>It saves the R script in the processed-data folder.</span></label><label><input type="radio" autocomplete="off" name="radio_XAVESPHWKR" value="answer"> <span>It keeps derived data separate while preserving the original download.</span></label><label><input type="radio" autocomplete="off" name="radio_XAVESPHWKR" value=""> <span>It allows <code>write_csv()</code> to save an Excel workbook.</span></label>
+<div id="radio_FHDHGXNXUP" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_FHDHGXNXUP" value=""> <span>It replaces the original downloaded file with the processed data.</span></label><label><input type="radio" autocomplete="off" name="radio_FHDHGXNXUP" value=""> <span>It saves the R script in the processed-data folder.</span></label><label><input type="radio" autocomplete="off" name="radio_FHDHGXNXUP" value="answer"> <span>It keeps derived data separate while preserving the original download.</span></label><label><input type="radio" autocomplete="off" name="radio_FHDHGXNXUP" value=""> <span>It allows <code>write_csv()</code> to save an Excel workbook.</span></label>
 </div>
 </div>
 </div>
@@ -1029,8 +1033,8 @@ Solution
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What does the pipe operator <code>|&gt;</code> do?</strong></p>
-<div id="radio_XNXIGPMQQJ" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_XNXIGPMQQJ" value=""> <span>It saves each intermediate result as a separate file.</span></label><label><input type="radio" autocomplete="off" name="radio_XNXIGPMQQJ" value="answer"> <span>It passes the result of one step to the next function.</span></label><label><input type="radio" autocomplete="off" name="radio_XNXIGPMQQJ" value=""> <span>It automatically corrects errors in each function.</span></label><label><input type="radio" autocomplete="off" name="radio_XNXIGPMQQJ" value=""> <span>It changes temporary Console code into permanent code.</span></label>
+<div id="radio_KCRTPPTAAC" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_KCRTPPTAAC" value=""> <span>It saves each intermediate result as a separate file.</span></label><label><input type="radio" autocomplete="off" name="radio_KCRTPPTAAC" value="answer"> <span>It passes the result of one step to the next function.</span></label><label><input type="radio" autocomplete="off" name="radio_KCRTPPTAAC" value=""> <span>It automatically corrects errors in each function.</span></label><label><input type="radio" autocomplete="off" name="radio_KCRTPPTAAC" value=""> <span>It changes temporary Console code into permanent code.</span></label>
 </div>
 </div>
 </div>
@@ -1161,7 +1165,7 @@ Solution
 </section>
 <section id="in-summary" class="level2" data-number="4.8">
 <h2 data-number="4.8" class="anchored" data-anchor-id="in-summary"><span class="header-section-number">4.8</span> In summary</h2>
-<p>In this chapter you learned how to:</p>
+<p>In this chapter we practised how to:</p>
 <ul>
 <li>create and transform columns;</li>
 <li>summarise, count and arrange rows;</li>
