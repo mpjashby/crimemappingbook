@@ -1,0 +1,1411 @@
+Source: https://books.lesscrime.info/learncrimemapping/10_messy_data/index.html
+
+<a id="quarto-document-content"></a>
+<a id="title-block-header"></a>
+<a id="handling-messy-data"></a>
+
+# `<a id="sec-messy-data"></a>`{=html}10  Handling messy data
+
+Figure: Students arrange loose shapes into a tidy table with an empty cell.
+
+Data is at the core of crime mapping, but data isn't always provided in the best format for analysis. This chapter introduces some ways we can tidy and prepare datasets for analysis in R. This includes restructuring data, dealing with missing values, separating variables and geocoding locations. We will practise preparing common forms of messy data for analysis.
+
+TipBefore you start
+
+1.  Open Positron or -- if you already have Positron open -- start a new R session by clicking the **Restart R** (**⟳**) button in the **Console** panel. This makes sure no code you ran previously will interfere with the work you do in this chapter.
+2.  Make sure you are working in the crime mapping project workspace you created in [Section 1.5](../01_getting_started/index.llms.md#sec-create-project). In the top-right corner of the Positron window, you should see a folder icon and the words `crime_mapping`. If not, click the **File** menu, then **Open Folder ...** and choose the `crime_mapping` folder.
+
+<a id="introduction"></a>
+
+## 10.1 Introduction
+
+Data is the foundation of everything we do in crime mapping. Making a crime map requires data on the locations and types of crimes; data on roads, buildings and natural features to make up a base map; and data on other features (such as particular types of facility) that might be relevant to why crime happens in a particular place.
+
+Figure: Cartoon explaining that tidy data is a standard way of mapping the meaning of a dataset to its structure. In tidy data each variable forms a column, each observation forms a row and each cell is a single measurement.
+
+Until now, all the data we have used has been *tidy data*. Data is tidy if it comes in a particular format where every *variable* (e.g. the date on which a crime occurred) is stored in a separate *column* and data for every *observation* (e.g. all the data about a particular crime, a particular offender etc.) is stored in a separate *row*. For typical crime data, that means each crime is represented by one row in the data and each thing that we know about that crime is stored in a separate column.
+
+Unfortunately, not all the data we might like to use in crime mapping is available in a tidy format. The people, organisations and systems that produce data store it in many formats, which are often not tidy and not easy to analyse. Messy data is more difficult to work with because every messy dataset has a unique structure, which we have to remember every time we want to work with it.
+
+Tidy data, on the other hand, is easier to work with because its format is familiar and consistent. Many R functions are also designed to work with tidy data, so tidying our datasets often makes analysis quicker, too.
+
+The first step to analysing messy data is therefore to wrangle it into a tidy format. We have already seen this principle at work when we use the `clean_names()` function from the janitor package to convert column names into a consistent format so that we don't have to keep remembering which unique format the column names are in.
+
+In this chapter we will learn how to tidy messy data to make it easier to work with. It's sometimes easier to learn the principles of tidying data using small datasets that we can easily inspect in the R Console, so in this chapter we will create and work with a series of small 'toy' datasets. We can create datasets using the `tribble()` function from the tibble package, which is one of the packages loaded automatically when we load the tidyverse package.
+
+In this chapter, we will learn how to:
+
+- reshape data between long and wide formats;
+- remove rows that are not part of a dataset;
+- separate columns containing multiple variables;
+- clean text, numeric and categorical values;
+- recognise and handle missing or invalid values without discarding useful data;
+- geocode addresses into spatial coordinates.
+
+Although every messy dataset presents different problems, it is useful to follow the same general workflow whenever we tidy data. The workflow has five main stages:
+
+Inspect
+
+the structure and content of the data
+
+Reshape
+
+rows and columns into a tidy structure
+
+Clean
+
+values into consistent forms
+
+Check
+
+missing, invalid or unexpected values
+
+Use
+
+the prepared data for mapping or analysis
+
+Let's get started by loading the packages we will need. We will mainly be working in the R Console in this chapter, so we will load the packages there rather than creating a script file at this stage:
+
+<a id="lst-messy-data-load-messy-data-packages"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(httr2, janitor, readxl, tidyverse)</span></code></pre></div>
+<figcaption>Code 10.1</figcaption>
+</figure>
+
+QuizTidy data
+
+**Why is tidy data preferred for analysis in R?**
+
+- It minimises the number of columns in a dataset
+- It ensures all data is stored as character strings
+- It follows a consistent structure that makes analysis easier (Correct answer)
+- It eliminates the need for data wrangling
+
+**What is a characteristic of tidy data?**
+
+- Each column contains multiple variables
+- Each row represents a single observation (Correct answer)
+- Column names are always numeric
+- The data must be stored in alphabetical order
+
+**Why might a dataset be messy when obtained from an external source?**
+
+- Data producers often structure it for human readability rather than analysis (Correct answer)
+- All government datasets are always tidy by default
+- R requires data to be stored in JSON format
+- Messy data is a requirement for proper statistical analysis
+
+<a id="tidying-the-structure-of-data"></a>
+
+## 10.2 Tidying the structure of data
+
+Figure: Cartoon contrasts three tidy tables, with variables in columns and observations in rows, against four irregular messy tables. Speech bubbles describe variables mixed with observations, several variables in one column, variables stored across rows and unclear structure. Consistent tidy tables can be handled alike, whereas messy tables need different repairs.
+
+<a id="sec-messy-data-reshaping-data-between-long-and-wide-formats"></a>
+<a id="reshaping-data-between-long-and-wide-formats"></a>
+
+### 10.2.1 Reshaping data between long and wide formats
+
+Every messy dataset is messy in its own unique way, but often messiness comes from the *structure* of data not being tidy. Tabular data can come in two general formats: *long* and *wide*. For example, imagine a dataset showing counts of several different types of crime in several different areas. We could store this data in *wide* format, where there is a column for the name of the area and then a column for each type of crime.
+
+  area           assault   robbery   burglary
+  ------------ --------- --------- ----------
+  Northville           4         2         10
+  Middletown           6         5         20
+  Southam             10         0         10
+
+Wide-format data are often useful for *presenting* data -- you might often see a table like this in a report or article. But wide data are less useful for analysis because one of the variables -- 'type of crime' -- is being stored not as a variable but in the various column names. The important question is not which structure (long or wide) is always best, but which structure is suitable for the task we want to complete.
+
+It is usually better to have the names of different categories stored as a single variable rather than as the names of several variables because they are easier to work with that way. For example, if the data are in long format you could sort the categories alphabetically using `arrange(crime_counts, type)`, or you could transform the names to title case using `mutate(crime_counts, type = str_to_title(type))`. Both these operations would be harder to do if the data were in wide format.
+
+One sign that your data has this problem of variables hiding in column names is if several of the columns form a group of columns, separate from the others. In the dataset above, there is a group of columns that show crime counts that is different from the other column that shows the area name. When your data includes a group of columns, consider whether a variable is 'hiding' in the column names.
+
+Fortunately, we can easily convert this data (which we can create and store in the object `crime_counts`) into long format using the `pivot_longer()` function from the tidyr package (another of the packages loaded automatically when we load the tidyverse package). To use `pivot_longer()`, we have to specify which columns we want to *gather* together into one column to store the category names. We do this using the `cols` argument. We can specify the columns we want to gather as a vector, i.e. `c(assault, burglary, robbery)`.
+
+<a id="lst-messy-data-reshape-crime-counts-long"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Create a dataset of crime counts in &#39;wide&#39; format</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>crime_counts <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="sc">~</span>area        , <span class="sc">~</span>assault , <span class="sc">~</span>robbery , <span class="sc">~</span>burglary ,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="st">&quot;Northville&quot;</span> ,        <span class="dv">4</span> ,        <span class="dv">2</span> ,        <span class="dv">10</span> ,</span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="st">&quot;Middletown&quot;</span> ,        <span class="dv">6</span> ,        <span class="dv">5</span> ,        <span class="dv">20</span> ,</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="st">&quot;Southam&quot;</span>    ,       <span class="dv">10</span> ,        <span class="dv">0</span> ,        <span class="dv">10</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8"></a></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="co"># Convert the dataset to &#39;long&#39; format</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="fu">pivot_longer</span>(crime_counts, <span class="at">cols =</span> <span class="fu">c</span>(assault, burglary, robbery))</span></code></pre></div>
+<figcaption>Code 10.2</figcaption>
+</figure>
+
+    # A tibble: 9 × 3
+      area       name     value
+      <chr>      <chr>    <dbl>
+    1 Northville assault      4
+    2 Northville burglary    10
+    3 Northville robbery      2
+    4 Middletown assault      6
+    5 Middletown burglary    20
+    6 Middletown robbery      5
+    7 Southam    assault     10
+    8 Southam    burglary    10
+    9 Southam    robbery      0
+
+TipHow does the `tribble()` function work?
+
+<a id="callout-3"></a>
+
+We can use the `tribble()` function to create new tibbles to contain data. This is generally only useful for small datasets, because for larger datasets it becomes more challenging to keep the function arguments organised.
+
+Every argument provided to the `tribble()` function becomes either a column name or a cell in the new dataset. There are 16 arguments in the call to `tribble()` above. The first four arguments are names preceded by the `~` operator, which is what tells `tribble()` to treat that argument as a column name. The remaining 12 arguments are values that are placed in those columns. `tribble()` fills up the columns in each row in the order they are provided. That means we must be careful that (a) the number of value arguments is a multiple of the number of columns we have provided, and (b) all the values that will be placed in each column are of the same type (character, numeric, etc.).
+
+By default, `pivot_longer()` calls the new column of category names `name` and the new column of values `value`. We can specify more-descriptive names using the `names_to` and `values_to` arguments.
+
+<a id="lst-messy-data-reshape-with-custom-column-names"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Convert dataset to &#39;long&#39; format with custom column names</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="fu">pivot_longer</span>(</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  crime_counts,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="at">cols =</span> <span class="fu">c</span>(assault, burglary, robbery),</span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="at">names_to =</span> <span class="st">&quot;type&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="at">values_to =</span> <span class="st">&quot;count&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>)</span></code></pre></div>
+<figcaption>Code 10.3</figcaption>
+</figure>
+
+    # A tibble: 9 × 3
+      area       type     count
+      <chr>      <chr>    <dbl>
+    1 Northville assault      4
+    2 Northville burglary    10
+    3 Northville robbery      2
+    4 Middletown assault      6
+    5 Middletown burglary    20
+    6 Middletown robbery      5
+    7 Southam    assault     10
+    8 Southam    burglary    10
+    9 Southam    robbery      0
+
+The opposite operation is sometimes useful, too. `pivot_wider()` converts data from long format to wide format. We will use this function in [Chapter 14](../14_no_maps/index.llms.md) to help us present crime counts in a table.
+
+To use `pivot_wider()`, we must specify:
+
+1.  which existing column contains the values that should become new column *names*, using the `names_from` argument, and
+2.  which existing column contains the *values* to put in those columns, using the `values_from` argument.
+
+<a id="lst-messy-data-reshape-crime-counts-wide"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Store the long-format data</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>crime_counts_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  crime_counts,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="at">cols =</span> <span class="fu">c</span>(assault, burglary, robbery),</span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="at">names_to =</span> <span class="st">&quot;type&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="at">values_to =</span> <span class="st">&quot;count&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8"></a></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="co"># Convert the data back to wide format</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="fu">pivot_wider</span>(crime_counts_long, <span class="at">names_from =</span> type, <span class="at">values_from =</span> count)</span></code></pre></div>
+<figcaption>Code 10.4</figcaption>
+</figure>
+
+    # A tibble: 3 × 4
+      area       assault burglary robbery
+      <chr>        <dbl>    <dbl>   <dbl>
+    1 Northville       4       10       2
+    2 Middletown       6       20       5
+    3 Southam         10       10       0
+
+`pivot_wider()` sometimes introduces missing (`NA`) values into a dataset. This happens when there are no rows in the long dataset that correspond to one of the new columns that are created by `pivot_wider()`. For example, if we create a tiny dataset in long format:
+
+<a id="lst-messy-data-pivot-wider-missing1"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>crime_counts_tiny <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="sc">~</span>area        , <span class="sc">~</span>crime_type , <span class="sc">~</span>count ,</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="st">&quot;Northville&quot;</span> , <span class="st">&quot;fraud&quot;</span>     ,     <span class="dv">35</span> ,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="st">&quot;Northville&quot;</span> , <span class="st">&quot;extortion&quot;</span> ,      <span class="dv">2</span> ,</span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="st">&quot;Southam&quot;</span>    , <span class="st">&quot;fraud&quot;</span>     ,     <span class="dv">42</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>)</span></code></pre></div>
+<figcaption>Code 10.5</figcaption>
+</figure>
+
+If we convert this data to wide format, we'll see that the `extortion` column for the row containing counts for Southam has a missing value:
+
+<a id="lst-messy-data-pivot-wider-missing2"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">pivot_wider</span>(crime_counts_tiny, <span class="at">names_from =</span> crime_type, <span class="at">values_from =</span> count)</span></code></pre></div>
+<figcaption>Code 10.6</figcaption>
+</figure>
+
+    # A tibble: 2 × 3
+      area       fraud extortion
+      <chr>      <dbl>     <dbl>
+    1 Northville    35         2
+    2 Southam       42        NA
+
+This occurs because the original long dataset doesn't contain a row specifying the count of extortion offences in Southam. There are at least two potential reasons for this. First, the original long-format data could be incomplete in some way. Maybe the police in Southam aren't very good at recording extortion offences. If that's the reason for the missing count, then the `NA` value represents a genuinely missing piece of information.
+
+The second reason is that it's possible that no extortion offences occurred in Southam in the period covered by the crime counts, and whatever system or process generated the data doesn't include a crime type in a dataset when zero crimes of that type have occurred. We can see this might be a possibility, particularly because the crime counts for Northville suggest extortion is much less common than fraud. If that's the reason for the missing count, then the `NA` value actually represents a count of zero for extortion offences in Southam.
+
+There is no way for us to know solely by looking at the data which of these two reasons is the explanation for the missing extortion count. To work out which is the reason, we would have to ask whomever provided us with the data. Going back to the data provider to clarify this sort of issue is a very common part of tidying and analysing data.
+
+If, *and only if*, we have confirmed that the reason for the missing count is that exactly zero extortion offences occurred in Southam in the time period covered by the data, we can deal with that using the `values_fill` argument to `pivot_wider()`.
+
+<a id="lst-messy-data-pivot-wider-missing3"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">pivot_wider</span>(</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  crime_counts_tiny,</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="at">names_from =</span> crime_type,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="at">values_from =</span> count,</span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="at">values_fill =</span> <span class="dv">0</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>)</span></code></pre></div>
+<figcaption>Code 10.7</figcaption>
+</figure>
+
+    # A tibble: 2 × 3
+      area       fraud extortion
+      <chr>      <dbl>     <dbl>
+    1 Northville    35         2
+    2 Southam       42         0
+
+ImportantOnly replace missing values if you know what they represent
+
+If the reason for the missing value is that no-one knows how many extortion offences occurred in Southam (e.g. because they weren't recorded correctly), we *must not* use `values_fill` to replace the missing value. In that case, the missing value represents a genuinely missing piece of information and it is important that we represent that genuine missingness in the data and any analysis we do with it.
+
+A common reason for data to be stored in wide format is where repeated observations are made of some value over time. For example, we might have monthly counts of crimes for different areas.
+
+  area           jan_2020   feb_2020   mar_2020   apr_2020   may_2020
+  ------------ ---------- ---------- ---------- ---------- ----------
+  Northville           13         10         12          9         10
+  Middletown           21         19         22         19         20
+  Southam              15         13         16         15         14
+
+Storing data in this way is particularly awkward because variable names can only contain text, so R does not know that the column names represent dates. This means, for example, that we could not filter the dataset to only include data from after a certain date.
+
+When we want to gather a large number of columns together, it can get tedious to type all the column names for the `cols` argument to `pivot_longer()`. Instead, since we want to gather all the columns except one, we can just specify that we should *not* gather the `area` column, which implicitly tells `pivot_longer()` to gather all the other columns. We tell `pivot_longer()` not to gather the area column by specifying `cols = -area` (note the minus sign in front of the column name).
+
+<a id="lst-messy-data-reshape-monthly-crime-counts"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Create a dataset of monthly crime counts in wide format</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>monthly_counts <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="sc">~</span>area        , <span class="sc">~</span>jan_2020 , <span class="sc">~</span>feb_2020 , <span class="sc">~</span>mar_2020 , <span class="sc">~</span>apr_2020 , <span class="sc">~</span>may_2020 ,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="st">&quot;Northville&quot;</span> ,        <span class="dv">13</span> ,        <span class="dv">10</span> ,        <span class="dv">12</span> ,         <span class="dv">9</span> ,        <span class="dv">10</span> ,</span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="st">&quot;Middletown&quot;</span> ,        <span class="dv">21</span> ,        <span class="dv">19</span> ,        <span class="dv">22</span> ,        <span class="dv">19</span> ,        <span class="dv">20</span> ,</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="st">&quot;Southam&quot;</span>    ,        <span class="dv">15</span> ,        <span class="dv">13</span> ,        <span class="dv">16</span> ,        <span class="dv">15</span> ,        <span class="dv">14</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8"></a></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="co"># Convert dataset to &#39;long&#39; format with custom column names</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="fu">pivot_longer</span>(</span>
+<span id="cb2-11"><a href="#cb2-11"></a>  monthly_counts,</span>
+<span id="cb2-12"><a href="#cb2-12"></a>  <span class="at">cols =</span> <span class="sc">-</span>area,</span>
+<span id="cb2-13"><a href="#cb2-13"></a>  <span class="at">names_to =</span> <span class="st">&quot;month&quot;</span>,</span>
+<span id="cb2-14"><a href="#cb2-14"></a>  <span class="at">values_to =</span> <span class="st">&quot;count&quot;</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a>)</span></code></pre></div>
+<figcaption>Code 10.8</figcaption>
+</figure>
+
+    # A tibble: 15 × 3
+       area       month    count
+       <chr>      <chr>    <dbl>
+     1 Northville jan_2020    13
+     2 Northville feb_2020    10
+     3 Northville mar_2020    12
+     4 Northville apr_2020     9
+     5 Northville may_2020    10
+     6 Middletown jan_2020    21
+     7 Middletown feb_2020    19
+     8 Middletown mar_2020    22
+     9 Middletown apr_2020    19
+    10 Middletown may_2020    20
+    11 Southam    jan_2020    15
+    12 Southam    feb_2020    13
+    13 Southam    mar_2020    16
+    14 Southam    apr_2020    15
+    15 Southam    may_2020    14
+
+There is still a problem with this data, which is that the `month` variable contains not date values but instead the month and year stored as text. We will learn how to deal with that issue in [Chapter 15](../15_mapping_time/index.llms.md).
+
+<a id="sec-messy-data-skipping-unwanted-rows-in-imported-data"></a>
+<a id="skipping-unwanted-rows-in-imported-data"></a>
+
+### 10.2.2 Skipping unwanted rows in imported data
+
+Data released by government organisations are often designed to be viewed by humans rather than processed by statistical software. We can see this in this screenshot of a [dataset produced by the UK Office for National Statistics on cybercrime in the UK](https://www.ons.gov.uk/peoplepopulationandcommunity/crimeandjustice/datasets/crimeinenglandandwalesexperimentaltables) based on responses to the Crime Survey for England and Wales.
+
+Figure: Spreadsheet of Office for National Statistics fraud and computer-misuse estimates for England and Wales. Rows one to four contain a title, geographic heading and multi-line column headings; blank rows separate offence groups. The data do not begin at the top of the sheet or form an uninterrupted rectangular table.
+
+Looking at the row numbers on the left-hand side, we can see that the first row is taken up not with the column names (as they would be in a tidy dataset) but with the title of the dataset. The next row is blank, and the third row then contains some metadata to say that the data relates to England and Wales and to adults aged 16 and over. Only on row four do we see the column names. There are also blank rows within the data that are used to separate out different categories of data.
+
+If we try to import this data using, for example, the `read_excel()` function from the `readxl` package, we will find various problems.
+
+<a id="lst-messy-data-download-cybercrime-spreadsheet"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Download the original spreadsheet into the `data/raw` folder</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="fu">request</span>(</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="st">&quot;https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/crimeandjustice/datasets/crimeinenglandandwalesexperimentaltables/yearendingdecember2018/additionalfraudandcybercrimetablesyearendingdecember2018correction.xlsx&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw&quot;</span>, <span class="st">&quot;cybercrime.xlsx&quot;</span>))</span>
+<span id="cb2-6"><a href="#cb2-6"></a></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="fu">read_excel</span>(<span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw&quot;</span>, <span class="st">&quot;cybercrime.xlsx&quot;</span>), <span class="at">sheet =</span> <span class="st">&quot;Table E1&quot;</span>)</span></code></pre></div>
+<figcaption>Code 10.9</figcaption>
+</figure>
+
+    New names:
+    • `` -> `...2`
+    • `` -> `...3`
+    • `` -> `...4`
+    • `` -> `...5`
+
+    # A tibble: 46 × 5
+       Table E1:  Fraud and computer misuse by loss (of mo…¹ ...2  ...3  ...4  ...5 
+       <chr>                                                 <chr> <chr> <chr> <chr>
+     1 <NA>                                                  <NA>  <NA>  <NA>  <NA> 
+     2 England and Wales                                     <NA>  <NA>  <NA>  Adul…
+     3 Offence group3                                        Numb… Rate… Numb… Perc…
+     4 <NA>                                                  <NA>  <NA>  <NA>  <NA> 
+     5 FRAUD5                                                3648  78.0… 3078  6.58…
+     6 <NA>                                                  <NA>  <NA>  <NA>  <NA> 
+     7 With loss, no or only partial reimbursement           660   14.1… 613   1.31…
+     8 With loss, fully reimbursed                           2066  44.2… 1765  3.77…
+     9 Without loss                                          922   19.7… 804   1.72…
+    10 <NA>                                                  <NA>  <NA>  <NA>  <NA> 
+    # ℹ 36 more rows
+    # ℹ abbreviated name:
+    #   ¹​`Table E1:  Fraud and computer misuse by loss (of money or property) - number and rate of incidents and number and percentage of victims, year ending December 2018 CSEW1,2`
+
+It's clear that this dataset has not loaded in the way that we want, because the first row doesn't contain the column names. Fortunately, we can deal with this problem using the `skip` argument to the `read_excel()` function. This allows us to specify a number of rows to ignore at the start of the dataset. In this case, we want to ignore the first three rows of the data (the table title, a blank line and the metadata line), so we can specify `skip = 3`. The same `skip` argument also exists in the `read_csv()` function for reading CSV data and the `read_tsv()` function for reading tab-separated data.
+
+<a id="lst-messy-data-skip-cybercrime-header-rows"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">read_excel</span>(</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw&quot;</span>, <span class="st">&quot;cybercrime.xlsx&quot;</span>),</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="at">sheet =</span> <span class="st">&quot;Table E1&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="at">skip =</span> <span class="dv">3</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>)</span></code></pre></div>
+<figcaption>Code 10.10</figcaption>
+</figure>
+
+    # A tibble: 43 × 5
+       `Offence group3`                Number of incidents …¹ Rate per 1,000 adult…²
+       <chr>                                            <dbl>                  <dbl>
+     1 <NA>                                                NA                  NA   
+     2 FRAUD5                                            3648                  78.0 
+     3 <NA>                                                NA                  NA   
+     4 With loss, no or only partial …                    660                  14.1 
+     5 With loss, fully reimbursed                       2066                  44.2 
+     6 Without loss                                       922                  19.7 
+     7 <NA>                                                NA                  NA   
+     8 Bank and credit account fraud                     2433                  52.0 
+     9 With loss, no or only partial …                    235                   5.03
+    10 With loss, fully reimbursed                       1727                  36.9 
+    # ℹ 33 more rows
+    # ℹ abbreviated names: ¹​`Number of incidents (thousands)`,
+    #   ²​`Rate per 1,000 adults`
+    # ℹ 2 more variables: `Number of victims (thousands)4` <dbl>,
+    #   `Percentage victims once or more4` <dbl>
+
+This has dealt with the problem caused by the extra rows at the top of the data. But if we look at the bottom of the dataset, we will see that there are also several rows of footnotes. These footnotes are important for us to have read so that we understand the data, but they aren't part of the data itself.
+
+Figure: Bottom of the same Office for National Statistics spreadsheet. Computer-misuse estimates are followed by an unweighted sample-base row, a source line and five numbered explanatory notes. These footer rows describe the table and should not be read as further offence records.
+
+We can remove these extra rows at the end of our data using the `slice()` function from the `dplyr` package. `slice()` allows us to choose certain rows from our data by row number. Looking at the screenshot above, our data finishes on row 34 (row 36 looks like part of our data but the value there actually shows the number of people involved in the survey, not a number of incidents). But:
+
+- we have already removed the first three rows using the `skip` argument to `read_excel()`, and
+- row four of the original spreadsheet has become our column names,
+
+so row 34 on the spreadsheet is actually row 30 in our loaded dataset. Knowing this, we can remove all the rows below row 30 using the `slice()` function from the dplyr package:
+
+<a id="lst-messy-data-trim-cybercrime-footer-rows"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>cybercrime <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw&quot;</span>, <span class="st">&quot;cybercrime.xlsx&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">read_excel</span>(<span class="at">sheet =</span> <span class="st">&quot;Table E1&quot;</span>, <span class="at">skip =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>)</span></code></pre></div>
+<figcaption>Code 10.11</figcaption>
+</figure>
+
+It's important to check that we've sliced the correct number of rows, since it's easy to miscalculate and get this wrong. We can check by using `view()` to open the whole dataset in a separate tab in Positron, or use the `tail()` function to print the last few rows of the data in the R Console:
+
+<a id="lst-messy-data-tail-cybercrime"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">tail</span>(cybercrime)</span></code></pre></div>
+<figcaption>Code 10.12</figcaption>
+</figure>
+
+    # A tibble: 6 × 5
+      `Offence group3`                 Number of incidents …¹ Rate per 1,000 adult…²
+      <chr>                                             <dbl>                  <dbl>
+    1 Computer virus9                                     471                  10.1 
+    2 With loss, no or only partial r…                    157                   3.36
+    3 With loss, fully reimbursed                           0                   0   
+    4 Without loss                                        314                   6.71
+    5 <NA>                                                 NA                  NA   
+    6 Unauthorised access to personal…                    506                  10.8 
+    # ℹ abbreviated names: ¹​`Number of incidents (thousands)`,
+    #   ²​`Rate per 1,000 adults`
+    # ℹ 2 more variables: `Number of victims (thousands)4` <dbl>,
+    #   `Percentage victims once or more4` <dbl>
+
+The final problem with the structure of this dataset is the blank rows that are used to separate different crime categories in the original table. We can deal with this using the `remove_empty()` function from the janitor package, which removes all rows and/or columns that contain only `NA` values. We will also clean the column names at the same time and then rename the columns to be shorter, which will make it easier to refer to them in our code.
+
+<a id="lst-messy-data-remove-empty-cybercrime-columns"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>cybercrime <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw&quot;</span>, <span class="st">&quot;cybercrime.xlsx&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">read_excel</span>(<span class="at">sheet =</span> <span class="st">&quot;Table E1&quot;</span>, <span class="at">skip =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">remove_empty</span>(<span class="at">which =</span> <span class="st">&quot;rows&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="fu">rename</span>(</span>
+<span id="cb2-7"><a href="#cb2-7"></a>    <span class="at">offence =</span> offence_group3,</span>
+<span id="cb2-8"><a href="#cb2-8"></a>    <span class="at">crimes =</span> number_of_incidents_thousands,</span>
+<span id="cb2-9"><a href="#cb2-9"></a>    <span class="at">incidence =</span> rate_per_1_000_adults,</span>
+<span id="cb2-10"><a href="#cb2-10"></a>    <span class="at">victims =</span> number_of_victims_thousands_4,</span>
+<span id="cb2-11"><a href="#cb2-11"></a>    <span class="at">prevalence =</span> percentage_victims_once_or_more4</span>
+<span id="cb2-12"><a href="#cb2-12"></a>  )</span>
+<span id="cb2-13"><a href="#cb2-13"></a></span>
+<span id="cb2-14"><a href="#cb2-14"></a><span class="fu">head</span>(cybercrime)</span></code></pre></div>
+<figcaption>Code 10.13</figcaption>
+</figure>
+
+    # A tibble: 6 × 5
+      offence                                    crimes incidence victims prevalence
+      <chr>                                       <dbl>     <dbl>   <dbl>      <dbl>
+    1 FRAUD5                                       3648     78.0     3078      6.58 
+    2 With loss, no or only partial reimburseme…    660     14.1      613      1.31 
+    3 With loss, fully reimbursed                  2066     44.2     1765      3.78 
+    4 Without loss                                  922     19.7      804      1.72 
+    5 Bank and credit account fraud                2433     52.0     2056      4.40 
+    6 With loss, no or only partial reimburseme…    235      5.03     211      0.451
+
+This dataset now has a tidy structure: each row represents an observation (in this case, data about a particular type of crime), each column represents a piece of information about the observation and each cell represents a single value. Some values still contain footnote numbers. We will learn techniques for cleaning text in [Section 10.3](#sec-tidying-cell-content).
+
+<a id="sec-messy-data-separating-multiple-variables-stored-in-a-single-column"></a>
+<a id="separating-multiple-variables-stored-in-a-single-column"></a>
+
+### 10.2.3 Separating multiple variables stored in a single column
+
+Sometimes datasets include multiple variables in a single column. For example, data about crime victims stored in an object called `victims` might include a single column representing both age and sex.
+
+  first_name   last_name   age_sex
+  ------------ ----------- ---------
+  Kareem       David       26/M
+  Lyda         Gartrell    40
+  Lisa         Dean        21/F
+  Melina       Shehan      25/F
+  Alfredo      Matamoros   18/M
+
+It would be easier to wrangle this data (e.g. to filter by age) if the data in the `age_sex` column was stored in two separate columns. Making this change would also make sure our data meets the definition of being tidy: every variable should be stored in a separate column.
+
+We can split the `age_sex` column into two using the `separate_wider_delim()` function from the tidyr package. We specify the existing column we want to split, the names of the new columns using the `names` argument and the character that separates the two pieces of data using the `delim` argument (in this case, `/`).
+
+<a id="lst-messy-data-separate-victim-age-and-sex"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Create an example dataset of fictional crime victims</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>victims <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="sc">~</span>first_name , <span class="sc">~</span>last_name  , <span class="sc">~</span>age_sex ,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="st">&quot;Kareem&quot;</span>    , <span class="st">&quot;David&quot;</span>     , <span class="st">&quot;26/M&quot;</span>   ,</span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="st">&quot;Lyda&quot;</span>      , <span class="st">&quot;Gartrell&quot;</span>  , <span class="st">&quot;40&quot;</span>     ,</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="st">&quot;Lisa&quot;</span>      , <span class="st">&quot;Dean&quot;</span>      , <span class="st">&quot;21/F&quot;</span>   ,</span>
+<span id="cb2-7"><a href="#cb2-7"></a>  <span class="st">&quot;Melina&quot;</span>    , <span class="st">&quot;Shehan&quot;</span>    , <span class="st">&quot;25/F&quot;</span>   ,</span>
+<span id="cb2-8"><a href="#cb2-8"></a>  <span class="st">&quot;Alfredo&quot;</span>   , <span class="st">&quot;Matamoros&quot;</span> , <span class="st">&quot;18/M&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>)</span>
+<span id="cb2-10"><a href="#cb2-10"></a></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="co"># Separate `age_sex` column into separate columns for age and sex</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a><span class="fu">separate_wider_delim</span>(</span>
+<span id="cb2-13"><a href="#cb2-13"></a>  victims,</span>
+<span id="cb2-14"><a href="#cb2-14"></a>  <span class="at">cols =</span> age_sex,</span>
+<span id="cb2-15"><a href="#cb2-15"></a>  <span class="at">delim =</span> <span class="st">&quot;/&quot;</span>,</span>
+<span id="cb2-16"><a href="#cb2-16"></a>  <span class="at">names =</span> <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;sex&quot;</span>)</span>
+<span id="cb2-17"><a href="#cb2-17"></a>)</span></code></pre></div>
+<figcaption>Code 10.14</figcaption>
+</figure>
+
+    Error in `separate_wider_delim()`:
+    ! Expected 2 pieces in each element of `age_sex`.
+    ! 1 value was too short.
+    ℹ Use `too_few = "debug"` to diagnose the problem.
+    ℹ Use `too_few = "align_start"/"align_end"` to silence this message.
+
+This code produces an error because the second row of the data contains only one of the two expected pieces -- we don't know the value of the new column called `sex` for the row of data for Lyda Gartrell. In this example, we want the value `40` to go into the `age` column and the missing `sex` value to be recorded as `NA`. We can do this by specifying `too_few = "align_start"`.
+
+Because the original `age_sex` column stored text, both new columns initially contain text, too. Since age is numeric, we can convert it after separating the columns using `parse_number()`.
+
+<a id="lst-messy-data-handle-incomplete-victim-values"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>victims <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">separate_wider_delim</span>(</span>
+<span id="cb2-3"><a href="#cb2-3"></a>    <span class="at">cols =</span> age_sex,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>    <span class="at">delim =</span> <span class="st">&quot;/&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    <span class="at">names =</span> <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;sex&quot;</span>),</span>
+<span id="cb2-6"><a href="#cb2-6"></a>    <span class="at">too_few =</span> <span class="st">&quot;align_start&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>  <span class="fu">mutate</span>(<span class="at">age =</span> <span class="fu">parse_number</span>(age))</span></code></pre></div>
+<figcaption>Code 10.15</figcaption>
+</figure>
+
+    # A tibble: 5 × 4
+      first_name last_name   age sex  
+      <chr>      <chr>     <dbl> <chr>
+    1 Kareem     David        26 M    
+    2 Lyda       Gartrell     40 <NA> 
+    3 Lisa       Dean         21 F    
+    4 Melina     Shehan       25 F    
+    5 Alfredo    Matamoros    18 M    
+
+We have practised converting data into a tidy format using `pivot_longer()` and `pivot_wider()`, removing non-data rows using `slice()`, `remove_empty()` and the `skip` argument to functions such as `read_csv()`, and splitting columns with `separate_wider_delim()`. In [Section 10.3](#sec-tidying-cell-content), we'll learn how to tidy the content of individual cells.
+
+QuizTidying the structure of data
+
+**What issue might arise when working with wide-format data?**
+
+- It requires a greater number of observations
+- It cannot store numeric values
+- It makes it harder to filter, sort or summarise data (Correct answer)
+- It eliminates missing values
+
+**Which of the following best describes a tidy dataset?**
+
+- All data is stored in a single column
+- Each column represents a different data type (numeric, character, etc.)
+- Each row represents a variable and each column represents an observation
+- Each row represents an observation and each column represents a variable (Correct answer)
+
+**Which function is used to convert wide data to long format in R?**
+
+- spread()
+- pivot_longer() (Correct answer)
+- gather_rows()
+- transpose()
+
+**You want each crime type in a long dataset to become a separate column in a presentation table. What should you do?**
+
+- Use pivot_longer() because it creates more rows
+- Use pivot_wider() because values from one column should become several columns (Correct answer)
+- Use separate_wider_delim() because the data contains several crime types
+- Use remove_empty() because wide tables must not contain missing values
+
+<a id="sec-tidying-cell-content"></a>
+<a id="tidying-the-content-of-cells"></a>
+
+## 10.3 Tidying the content of cells
+
+As well as data with a messy structure, you might be provided with data with messy content *inside* some of the cells. In this section we will clean messy content, mostly using functions from the stringr package that is loaded automatically when we load tidyverse. Most of the main string-manipulation functions introduced here start with `str_`, which makes them easier to remember.
+
+We can change the case of text using one of four `str_to_` functions:
+
+  input              function                output
+  ------------------ ----------------------- ------------------
+  A stRinG oF TeXT   \`str_to_lower()\`      a string of text
+  A stRinG oF TeXT   \`str_to_upper()\`      A STRING OF TEXT
+  A stRinG oF TeXT   \`str_to_sentence()\`   A string of text
+  A stRinG oF TeXT   \`str_to_title()\`      A String Of Text
+
+We can also remove unwanted text from within values. For example, if there is unwanted white-space (spaces, tabs, etc.) at the beginning or end of a string of characters, we can remove it with `str_trim()`. `str_squish()` does the same thing, but also reduces any repeated white-space characters in a string of text down to a single space. For example, `str_squish(" A string of text")` produces the result `A string of text`.
+
+Figure: Cartoon labelled stringr: str_squish. Monsters remove spaces before and after the words a and cat, and remove an extra space between them while keeping a single separating space. Leading, trailing and repeated interior whitespace are removed.
+
+Data from the UK police open data website includes the words 'on or near' at the start of every value in the `location` column of the data. This is to remind users that the locations of crimes are deliberately obscured by being 'snapped' to the centre of the street on which they occur to protect victims' privacy.
+
+  month       longitude   latitude location                   lsoa_name
+  --------- ----------- ---------- -------------------------- --------------------------
+  2020-01        -1.120       53.3 On or near Supermarket     Bassetlaw 013C
+  2020-02        -0.993       53.2 On or near Turner Lane     Newark and Sherwood 001A
+  2020-10        -1.180       53.0 On or near Langley Close   Ashfield 013A
+
+We don't need this constant value for analysis, and for large datasets it can unnecessarily increase the size of the data when we save it to a file. For this reason we might want to remove this constant value using the `str_remove()` function. To see how this works, let's create a small example dataset similar to the UK police open data and then remove the constant text from the `location` column.
+
+<a id="lst-messy-data-remove-location-prefix"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Create example dataset similar to UK police open data</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>uk_data <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="sc">~</span>month    , <span class="sc">~</span>longitude , <span class="sc">~</span>latitude , <span class="sc">~</span>location                  , <span class="sc">~</span>lsoa_name                 ,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="st">&quot;2020-01&quot;</span> , <span class="sc">-</span><span class="fl">1.12</span>      , <span class="fl">53.3</span>      , <span class="st">&quot;On or near Supermarket&quot;</span>   , <span class="st">&quot;Bassetlaw 013C&quot;</span>           ,</span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="st">&quot;2020-02&quot;</span> , <span class="sc">-</span><span class="fl">0.993</span>     , <span class="fl">53.2</span>      , <span class="st">&quot;On or near Turner Lane&quot;</span>   , <span class="st">&quot;Newark and Sherwood 001A&quot;</span> ,</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="st">&quot;2020-10&quot;</span> , <span class="sc">-</span><span class="fl">1.18</span>      , <span class="fl">53.0</span>      , <span class="st">&quot;On or near Langley Close&quot;</span> , <span class="st">&quot;Ashfield 013A&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8"></a></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="co"># Remove constant text from the location column</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>uk_data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">location =</span> <span class="fu">str_remove</span>(location, <span class="st">&quot;On or near &quot;</span>))</span></code></pre></div>
+<figcaption>Code 10.16</figcaption>
+</figure>
+
+    # A tibble: 3 × 5
+      month   longitude latitude location      lsoa_name               
+      <chr>       <dbl>    <dbl> <chr>         <chr>                   
+    1 2020-01    -1.12      53.3 Supermarket   Bassetlaw 013C          
+    2 2020-02    -0.993     53.2 Turner Lane   Newark and Sherwood 001A
+    3 2020-10    -1.18      53   Langley Close Ashfield 013A           
+
+The `lsoa_name` code of this dataset includes the name of the small statistical area in which each crime occurred. Each name is made up of the name of the local government district covering the area followed by a unique code. If we wanted to extract just the district name (for example so we could count the number of crimes in each district) we can do that by removing the code that follows the district name. To do this we need to use a *regular expression*, which is a way of describing a pattern in a string of characters. Regular expressions can be used to find, extract or remove characters that match a specified pattern.
+
+Regular expressions can be complicated, so we will only scratch the surface of what's possible here. You can find out much more about them in the [article on regular expressions included in the stringr package](https://stringr.tidyverse.org/articles/regular-expressions.html).
+
+The coded description of the pattern of characters we need to match the code at the end of the `lsoa_name` column is `\\s\\w{4}$`. This is made up of three parts:
+
+- `\\s` means match exactly one white-space character (e.g. a space or a tab),
+- `\\w{4}` means match exactly four word characters (i.e. letters, numbers or underscores), and
+- `$` means match the end of the string.
+
+So `\\s\\w{4}$` means match exactly one white-space character followed by exactly four word characters at the end of the string. We can use this pattern as the second argument to the `str_remove()` function to remove the characters matched by the pattern.
+
+<a id="lst-messy-data-extract-district-name"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>uk_data <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">mutate</span>(<span class="at">district =</span> <span class="fu">str_remove</span>(lsoa_name, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">s</span><span class="sc">\\</span><span class="st">w{4}$&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="co"># Extract two columns to make them easier to compare</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">select</span>(lsoa_name, district)</span></code></pre></div>
+<figcaption>Code 10.17</figcaption>
+</figure>
+
+    # A tibble: 3 × 2
+      lsoa_name                district           
+      <chr>                    <chr>              
+    1 Bassetlaw 013C           Bassetlaw          
+    2 Newark and Sherwood 001A Newark and Sherwood
+    3 Ashfield 013A            Ashfield           
+
+Instead of using a regular expression to remove characters, we could instead use regular expressions together with `str_extract()` to keep only the characters matched by the pattern, `str_replace()` to replace the first group of characters matched by the pattern and `str_replace_all()` to replace all the groups of characters matched by the pattern. For more tips on using regular expressions together with functions from the stringr package, see the [stringr package cheat sheet](https://github.com/rstudio/cheatsheets/blob/main/strings.pdf) or visit [regexr.com](https://regexr.com/).
+
+<a id="sec-messy-data-converting-between-types-of-variable"></a>
+<a id="converting-between-types-of-variable"></a>
+
+### 10.3.1 Converting between types of variable
+
+Sometimes columns in your data will be stored as the wrong type of variable. `read_csv()` and other functions from the readr package try to guess what type of variable is contained in each column based on what is contained in the first few rows, but this does not always work. For example, a variable containing numbers might be stored as characters, meaning functions like `mean()` will not work.
+
+<a id="lst-messy-data-show-character-number-error"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Some numbers stored as text (note the quote marks around each number)</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>numbers_as_text <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;14&quot;</span>, <span class="st">&quot;6&quot;</span>, <span class="st">&quot;17&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co"># Trying to find the mean of these numbers stored as characters will produce</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="co"># `NA` and a warning</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="fu">mean</span>(numbers_as_text)</span></code></pre></div>
+<figcaption>Code 10.18</figcaption>
+</figure>
+
+    Warning in mean.default(numbers_as_text): argument is not numeric or logical:
+    returning NA
+
+    [1] NA
+
+In cases like this, we can use the `parse_number()` function from the readr package (part of tidyverse) to convert the character variable into a numeric variable.
+
+<a id="lst-messy-data-parse-character-numbers"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># If we use `parse_number()` then `mean()` now works</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="fu">mean</span>(<span class="fu">parse_number</span>(numbers_as_text))</span></code></pre></div>
+<figcaption>Code 10.19</figcaption>
+</figure>
+
+    [1] 12.33333
+
+Figure: Cartoon labelled readr: parse_number, just give me the numbers. Monsters scrape text away from an amount column containing 12.75 USD and SEAT 18A. The numeric parts can be extracted even when letters appear before or after them.
+
+We can use other functions in the `parse_*()` family to convert character values to other data types. For example, we can use `parse_logical()` to convert true/false values stored as text to `TRUE` and `FALSE` values. Be careful, though: if you try to convert a variable to a data type that makes no sense, you are likely to find all of your values replaced with `NA`.
+
+Sometimes numbers will be stored alongside other values, such as when currency values are stored together with a currency symbol. We can also deal with values like these by using `parse_number()`, which strips all the non-numeric characters from a value and then converts the numeric characters to a number. For example, `parse_number("Room 14A")` produces the numeric value `14`.
+
+WarningCheck what `parse_number()` removes
+
+`parse_number()` can sometimes throw away useful non-numeric information. In `"Room 14A"`, for example, the letter `A` might be an important part of the room identifier. Always check that the characters removed by `parse_number()` do not carry information that you need to keep.
+
+If there are multiple columns in a dataset that store non-text data as character values, we can also use the `type_convert()` function from the readr package to automatically convert them all.
+
+<a id="sec-messy-data-recoding-categorical-variables"></a>
+<a id="recoding-categorical-variables"></a>
+
+### 10.3.2 Recoding categorical variables
+
+Crime data often includes categorical variables, such as crime types or location categories. It can be useful to change these categories, for example so that we can join two datasets or abbreviate category names for use in the axis labels of a chart.
+
+We can use the `if_else()` function from the dplyr package to change particular values, but this only allows us to change a single value and can produce slightly untidy code. Instead we can use the `replace_values()` function from the dplyr package to change one or more values at the same time. For example, imagine we wanted to change the value `Supermarket` to `Shop` in the UK police data.
+
+<a id="lst-messy-data-recode-unknown-locations"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>uk_data <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-3"><a href="#cb2-3"></a>    <span class="co"># Once again we will first remove the unnecessary &#39;On or near &#39; using</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>    <span class="co"># `str_remove()`</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>    <span class="at">location =</span> <span class="fu">str_remove</span>(location, <span class="st">&quot;On or near &quot;</span>),</span>
+<span id="cb2-6"><a href="#cb2-6"></a>    <span class="at">location =</span> <span class="fu">replace_values</span>(</span>
+<span id="cb2-7"><a href="#cb2-7"></a>      location,</span>
+<span id="cb2-8"><a href="#cb2-8"></a>      <span class="st">&quot;Supermarket&quot;</span> <span class="sc">~</span> <span class="st">&quot;Shop&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>    )</span>
+<span id="cb2-10"><a href="#cb2-10"></a>  )</span></code></pre></div>
+<figcaption>Code 10.20</figcaption>
+</figure>
+
+    # A tibble: 3 × 5
+      month   longitude latitude location      lsoa_name               
+      <chr>       <dbl>    <dbl> <chr>         <chr>                   
+    1 2020-01    -1.12      53.3 Shop          Bassetlaw 013C          
+    2 2020-02    -0.993     53.2 Turner Lane   Newark and Sherwood 001A
+    3 2020-10    -1.18      53   Langley Close Ashfield 013A           
+
+The first argument to `replace_values()` is the name of the variable containing values to be replaced. That is followed by one or more formulas showing which values should be changed and what they should be changed to. The old and new values are separated by a tilde (`~`), with the old value on the left. Any values that do not match a formula keep their existing values.
+
+We can use `replace_values()` to make more-complicated changes. For example, we can change multiple values at the same time, including merging different values into the same new value:
+
+<a id="lst-messy-data-recode-locations-with-case-match"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>uk_data <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-3"><a href="#cb2-3"></a>    <span class="co"># Once again we will first remove the unnecessary &#39;On or near &#39; using</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>    <span class="co"># `str_remove()`</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>    <span class="at">location =</span> <span class="fu">str_remove</span>(location, <span class="st">&quot;On or near &quot;</span>),</span>
+<span id="cb2-6"><a href="#cb2-6"></a>    <span class="at">location =</span> <span class="fu">replace_values</span>(</span>
+<span id="cb2-7"><a href="#cb2-7"></a>      location,</span>
+<span id="cb2-8"><a href="#cb2-8"></a>      <span class="st">&quot;Supermarket&quot;</span> <span class="sc">~</span> <span class="st">&quot;Shop&quot;</span>,</span>
+<span id="cb2-9"><a href="#cb2-9"></a>      <span class="fu">c</span>(<span class="st">&quot;Bowden Avenue&quot;</span>, <span class="st">&quot;Langley Close&quot;</span>) <span class="sc">~</span> <span class="st">&quot;Bestwood Village&quot;</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>    )</span>
+<span id="cb2-11"><a href="#cb2-11"></a>  )</span></code></pre></div>
+<figcaption>Code 10.21</figcaption>
+</figure>
+
+    # A tibble: 3 × 5
+      month   longitude latitude location         lsoa_name               
+      <chr>       <dbl>    <dbl> <chr>            <chr>                   
+    1 2020-01    -1.12      53.3 Shop             Bassetlaw 013C          
+    2 2020-02    -0.993     53.2 Turner Lane      Newark and Sherwood 001A
+    3 2020-10    -1.18      53   Bestwood Village Ashfield 013A           
+
+<a id="sec-messy-data-missing-values"></a>
+<a id="missing-values"></a>
+
+### 10.3.3 Missing values
+
+We have already encountered the `NA` value, which R uses to represent a value that is missing from a dataset. While R uses `NA` to represent missing values, some data providers use other codes. For example, a data provider might use a dash (`-`) or two periods (`..`) to represent missing values. Fortunately, we can convert any value to `NA` so that we know that it represents a missing value.
+
+Imagine that you have been provided with a dataset of burglaries that includes an estimate of the value of the goods that were stolen in British pounds. You have been told that when the value of the stolen goods wasn't known, this is recorded as the value `-1` in the data. If we use `mean()` to estimate the average value of property stolen, the value `-1` will give us an incorrect result.
+
+<a id="lst-messy-data-show-missing-value-sentinel"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Create a dataset of burglary dates/times with the value of goods stolen</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>burglary_values <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="sc">~</span>crime_number , <span class="sc">~</span>value ,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>         <span class="dv">182304</span> ,   <span class="dv">1320</span> ,</span>
+<span id="cb2-5"><a href="#cb2-5"></a>         <span class="dv">294715</span> ,    <span class="dv">653</span> ,</span>
+<span id="cb2-6"><a href="#cb2-6"></a>         <span class="dv">405826</span> ,   <span class="dv">2068</span> ,</span>
+<span id="cb2-7"><a href="#cb2-7"></a>         <span class="dv">516937</span> ,     <span class="sc">-</span><span class="dv">1</span> ,</span>
+<span id="cb2-8"><a href="#cb2-8"></a>         <span class="dv">627048</span> ,    <span class="dv">580</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>)</span>
+<span id="cb2-10"><a href="#cb2-10"></a></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="co"># Try to calculate the mean value -- no error, but the answer is wrong</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a><span class="co"># `pull()` is used to extract the `value` column from `burglary_values`</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a>burglary_values <span class="sc">|&gt;</span> <span class="fu">pull</span>(<span class="st">&quot;value&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">mean</span>()</span></code></pre></div>
+<figcaption>Code 10.22</figcaption>
+</figure>
+
+    [1] 924
+
+If we instead convert the value `-1` to `NA` first, `mean()` will know to ignore that value as long as we specify the argument `na.rm = TRUE`.
+
+<a id="lst-messy-data-replace-sentinel-with-na"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Convert `-1` to `NA` first, now you get the correct mean value</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>burglary_values <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">if_else</span>(value <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, <span class="cn">NA</span>, value)) <span class="sc">|&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="co"># Calculate the mean value again, now excluding the missing value</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="fu">pull</span>(<span class="st">&quot;value&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="fu">mean</span>(<span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<figcaption>Code 10.23</figcaption>
+</figure>
+
+    [1] 1155.25
+
+Excluding the value `-1` makes a substantial difference to the mean, increasing it by over £100.
+
+Sometimes a row cannot be used for a particular analysis because a value that the analysis needs is missing. The `drop_na()` function removes rows containing `NA` in the columns we specify. For example, this code removes only rows in which the `address` value is missing:
+
+<a id="lst-messy-data-show-missing-addresses"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>example_addresses <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="sc">~</span>incident , <span class="sc">~</span>address          , <span class="sc">~</span>category  ,</span>
+<span id="cb2-3"><a href="#cb2-3"></a>          <span class="dv">1</span> , <span class="st">&quot;10 HIGH STREET&quot;</span>  , <span class="st">&quot;burglary&quot;</span> ,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>          <span class="dv">2</span> , <span class="cn">NA</span>                , <span class="st">&quot;robbery&quot;</span>  ,</span>
+<span id="cb2-5"><a href="#cb2-5"></a>          <span class="dv">3</span> , <span class="st">&quot;25 STATION ROAD&quot;</span> , <span class="cn">NA</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>)</span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="fu">drop_na</span>(example_addresses, address)</span></code></pre></div>
+<figcaption>Code 10.24</figcaption>
+</figure>
+
+    # A tibble: 2 × 3
+      incident address         category
+         <dbl> <chr>           <chr>   
+    1        1 10 HIGH STREET  burglary
+    2        3 25 STATION ROAD <NA>    
+
+The third row remains even though its `category` value is missing, because we specified only the `address` column. In contrast, `drop_na(example_addresses)` would remove every row containing an `NA` in any column, leaving only the first row.
+
+Do not routinely remove every incomplete row. A missing value in one column does not necessarily make the rest of that row unusable. Remove a row only when a missing value means that the row cannot be used for the analysis you intend to carry out. In the example in [Section 10.4](#sec-geocoding), an address is essential, so rows with missing addresses cannot be sent to the geocoding service.
+
+<a id="sec-null-island"></a>
+<a id="null-island"></a>
+
+### 10.3.4 Null Island
+
+The problem of missing values being stored as numbers manifests itself in a particularly frustrating way when it comes to spatial data. People and organisations that produce spatial datasets sometimes record missing coordinates as being *zero*, instead of being *missing*. This is a problem because the longitude/latitude coordinates "0, 0" correspond to a real location on the surface of the earth, in the Gulf of Guinea off the coast of Ghana. This location is incorrectly recorded in spatial datasets so often that it's become known as *Null Island*. Watch this video to find out more about Null Island and the problems it causes.
+
+Media: Video explaining Null Island and the problems caused by recording missing coordinates as zero [(open media)](https://www.youtube.com/embed/bjvIpI-1w84)
+
+TranscriptVideo transcript: Null Island: The Busiest Place That Doesn't Exist
+
+<a id="callout-7"></a>
+
+In the Atlantic Ocean, about a thousand miles west of Africa, is Null Island. It's a busy place: Thousands of people live there, millions of photos have been taken there, and occasionally, people teleport in for just a moment or two before disappearing to somewhere else. Or at least, that's what it looks like to a computer. Because if you actually set sail for Null Island, you'd find nothing but deep blue ocean and a lonely weather buoy.
+
+Or boo-ey, if you're American. There is one special thing you might notice: it's at exactly zero degrees longitude and zero degrees latitude -- and that's the key to why computers think this particular patch of ocean is a busy place. Any big database, whether it's storing information about people, photos, or cats, needs to know the difference between "nothing", like zero, and nothing, as in, there's no data, it's a mystery. That idea of "no data" is called "NULL".
+
+So here we know that Ser Pounce has black fur, and Mr Sniffywinkles has brown fur, but we don't know about Schrödinger. NULL doesn't mean "no colour" or "no fur at all". It literally means "there is no data here, we don't know what color her fur is". This isn't just a cat-related problem. If your phone doesn't know where you are, it might tag a photo you take with latitude NULL and longitude NULL, or it might tell an app that your location is NULL, NULL.
+
+No problem so far. But badly written apps can read that as co-ordinates "zero, zero": they've mistaken nothing for "nothing". So they'll think that you are on Null Island -- at least until your phone works out where you really are. More seriously, in a 2012 US election, many voters in Wisconsin lived in places that the Census Bureau didn't have co-ordinates for. So a new, automatic system said they lived on Null Island... which is definitely not in any Wisconsin election district.
+
+If the mistake hadn't been caught in time, they might have had problems voting. You can also get problems when you try to put the actual word "null" into a database, like you might try to do if you're one of the 300,000+ people with "Null" as your last name. It only takes a small programming error -- mistaking "Null" for NULL -- and suddenly, the computer thinks you don't exist, or at least you can't register an account with your favorite kitty-litter-cleanup-service.
+
+All this is a reminder that our world is complicated, and it's not always as easy as you might think to map our messy reality into a computer system. So the next time you see a photo tagged way out in the Atlantic Ocean, you'll know what's happened. Unless it really is a photo of that one, lonely weather buoy. Boo-ey. thanks to Tom Scott of the amazing youtube channel, Tom Scott, for helping write and brilliant other videos on his channel, Tom Scott.
+
+So if you see any coordinates on your map located in the Gulf of Guinea, off the coast of West Africa, you know that there are almost certainly rows in your data that have coordinates located at Null Island.
+
+<a id="map-null-island-world"></a>
+
+<figure>
+<p>Figure: A globe centred on the Atlantic Ocean marks Null Island at zero degrees longitude and zero degrees latitude, off the coast of West Africa.</p>
+<figcaption>Map 10.1</figcaption>
+</figure>
+
+When we make crime maps we are generally dealing with small areas such as cities and counties. So if you plot a dataset on a map and instead of seeing a map of the area you are interested in, you see a large area of the world with the place you are interested in in one corner and Null Island in the opposite corner, that almost certainly means some coordinates are located at Null Island.
+
+As an example, imagine we were trying to create a map of the home addresses of several (fictional) suspects for bank fraud in and around Cairo, Egypt. The data contain 10 rows stored in an object called `cairo_suspects` that looks like this:
+
+  ---------------------------------------------------------------------------------------------------------------------------------------------------
+  name                       address                                                                                                   lon        lat
+  -------------------------- -------------------------------------------------------------------------------------------------- ---------- ----------
+  Ahmed Hussein Ayman        94, El Sheikh Abd El Jalil Issa Street, Al Banafseg 8, Banafseg Districts, New Cairo City, Cairo     31.46236   30.04954
+
+  Mohamed Ali Mohamed        22, Noran Street, Al Salam First, Al Qalyubiya                                                       31.40320   30.16475
+
+  Mahmoud Mostafa Ali        43, Tarek Gamal Street, Cairo                                                                        31.29651   30.11844
+
+  Omar El-Badawi             7, Abou Bakr Al Sediq Street, Al-Obour, Al Qalyubiya                                                 31.37844   30.17814
+
+  Tarek Hazim Abdel-Rahman   16, Al Madina Al Mnoura Street, Ma' di, Cairo                                                        31.26321   29.97942
+
+  Youssef Sayyid             18, Fathy Abou Wedn Street, Shubra al Khayma, Al Qalyubiya                                           31.34177   30.15624
+
+  Hussein El-Masri           61, Al Ashgar Street, South West, El Shorouk City, May Fair, Cairo                                   31.61096   30.12838
+
+  Mariam Abdel Mubarak       15R, Mohamed Farid Street, EL Sheikh Mubarak, Cairo                                                  31.24903   29.99366
+
+  Farah Youssef Anwar        35, Al Sadat Road, Neighborhood 9, El Shorouk City, Sunrise, Cairo                                   31.62810   30.14780
+
+  Nour El-Seifi              23, Moustafa Kamel Street, Area 2, Badr, Cairo                                                        0.00000    0.00000
+  ---------------------------------------------------------------------------------------------------------------------------------------------------
+
+If we plotted these locations on a map, we might expect to see something like this:
+
+<a id="map-cairo-locations"></a>
+
+<figure>
+<p>Figure: Street map showing black points scattered across Cairo and its eastern suburbs. The displayed extent stays close to the city because all plotted locations are nearby.</p>
+<figcaption>Map 10.2</figcaption>
+</figure>
+
+But look again at the final row of data in the table above -- the coordinates for the final row are both zero. There are several reasons why this might be. Perhaps the address was recorded incorrectly in a police database and that meant that when the addresses were run through geocoding software (which we will learn more about in [Section 10.4](#sec-geocoding)), no coordinates for that row could be found. What this means is that when we plot the data on a map, that map will actually look like this:
+
+<a id="map-cairo-and-null-island"></a>
+
+<figure>
+<p>Figure: Map spanning north-east Africa and the Gulf of Guinea. Cairo locations overlap into a small cluster in the north-east, while one point lies far away at zero longitude and latitude off West Africa. The erroneous zero coordinates expand the map so far that the Cairo pattern can no longer be distinguished.</p>
+<figcaption>Map 10.3</figcaption>
+</figure>
+
+What we can see here is that most of the points on this map are correctly located in and around Cairo, but a single point is incorrectly located at Null Island.
+
+We can deal with the problem of our data including points located at Null Island using the `hotspot_clip()` function that we previously used to clip datasets to the boundaries of other datasets. In this case, `hotspot_clip()` removes any rows from the data that are not within the area that the data is supposed to cover.
+
+For example, we know that all the addresses of bank fraud suspects are supposed to be in Egypt, so we can safely clip the suspect data to the boundary of Egypt before mapping the data. There are lots of sources of data on the outlines of countries, but perhaps the most convenient to use in R is the data provided by the rnaturalearth package. We can use the `ne_countries()` function to retrieve the outline of Egypt as an SF object, which we can then use to clip the suspect dataset.
+
+<a id="lst-messy-data-null-island-exercise1"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Create dataset of fictional fraud suspects in Cairo</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="co"># Note these lines are more than 80 characters long, since if we don&#39;t keep each</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="co"># row in the dataset on a single line of code, it becomes very difficult to work</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co"># out which fields will end up in which rows</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>cairo_suspects <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="sc">~</span>name                      , <span class="sc">~</span>address                                                                                           , <span class="sc">~</span>lon       , <span class="sc">~</span>lat       ,</span>
+<span id="cb2-7"><a href="#cb2-7"></a>  <span class="st">&quot;Ahmed Hussein Ayman&quot;</span>      , <span class="st">&quot;94, El Sheikh Abd El Jalil Issa Street, Al Banafseg 8, Banafseg Districts, New Cairo City, Cairo&quot;</span> , <span class="fl">31.4623637</span> , <span class="fl">30.049543</span>  ,</span>
+<span id="cb2-8"><a href="#cb2-8"></a>  <span class="st">&quot;Mohamed Ali Mohamed&quot;</span>      , <span class="st">&quot;22, Noran Street, Al Salam First, Al Qalyubiya&quot;</span>                                                   , <span class="fl">31.4032012</span> , <span class="fl">30.1647536</span> ,</span>
+<span id="cb2-9"><a href="#cb2-9"></a>  <span class="st">&quot;Mahmoud Mostafa Ali&quot;</span>      , <span class="st">&quot;43, Tarek Gamal Street, Cairo&quot;</span>                                                                    , <span class="fl">31.296507</span>  , <span class="fl">30.1184382</span> ,</span>
+<span id="cb2-10"><a href="#cb2-10"></a>  <span class="st">&quot;Omar El-Badawi&quot;</span>           , <span class="st">&quot;7, Abou Bakr Al Sediq Street, Al-Obour, Al Qalyubiya&quot;</span>                                             , <span class="fl">31.3784444</span> , <span class="fl">30.1781414</span> ,</span>
+<span id="cb2-11"><a href="#cb2-11"></a>  <span class="st">&quot;Tarek Hazim Abdel-Rahman&quot;</span> , <span class="st">&quot;16, Al Madina Al Mnoura Street, Ma‘ di, Cairo&quot;</span>                                                    , <span class="fl">31.2632149</span> , <span class="fl">29.9794155</span> ,</span>
+<span id="cb2-12"><a href="#cb2-12"></a>  <span class="st">&quot;Youssef Sayyid&quot;</span>           , <span class="st">&quot;18, Fathy Abou Wedn Street, Shubra al Khayma, Al Qalyubiya&quot;</span>                                       , <span class="fl">31.3417734</span> , <span class="fl">30.1562442</span> ,</span>
+<span id="cb2-13"><a href="#cb2-13"></a>  <span class="st">&quot;Hussein El-Masri&quot;</span>         , <span class="st">&quot;61, Al Ashgar Street, South West, El Shorouk City, May Fair, Cairo&quot;</span>                               , <span class="fl">31.6109636</span> , <span class="fl">30.1283769</span> ,</span>
+<span id="cb2-14"><a href="#cb2-14"></a>  <span class="st">&quot;Mariam Abdel Mubarak&quot;</span>     , <span class="st">&quot;15R, Mohamed Farid Street, EL Sheikh Mubarak, Cairo&quot;</span>                                              , <span class="fl">31.2490346</span> , <span class="fl">29.9936643</span> ,</span>
+<span id="cb2-15"><a href="#cb2-15"></a>  <span class="st">&quot;Farah Youssef Anwar&quot;</span>      , <span class="st">&quot;35, Al Sadat Road, Neighborhood 9, El Shorouk City, Sunrise, Cairo&quot;</span>                               , <span class="fl">31.6280994</span> , <span class="fl">30.1478049</span> ,</span>
+<span id="cb2-16"><a href="#cb2-16"></a>  <span class="st">&quot;Nour El-Seifi&quot;</span>            , <span class="st">&quot;23, Moustafa Kamel Street, Area 2, Badr, Cairo&quot;</span>                                                   ,  <span class="dv">0</span>         ,  <span class="dv">0</span></span>
+<span id="cb2-17"><a href="#cb2-17"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb2-18"><a href="#cb2-18"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;lon&quot;</span>, <span class="st">&quot;lat&quot;</span>), <span class="at">crs =</span> <span class="st">&quot;EPSG:4326&quot;</span>)</span>
+<span id="cb2-19"><a href="#cb2-19"></a></span>
+<span id="cb2-20"><a href="#cb2-20"></a><span class="co"># By default, `ne_countries()` does not return an SF object, so we have to</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a><span class="co"># specify that is what we want using the `returnclass = &quot;sf&quot;` argument</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a>egypt_outline <span class="ot">&lt;-</span> rnaturalearth<span class="sc">::</span><span class="fu">ne_countries</span>(</span>
+<span id="cb2-23"><a href="#cb2-23"></a>  <span class="at">country =</span> <span class="st">&quot;Egypt&quot;</span>,</span>
+<span id="cb2-24"><a href="#cb2-24"></a>  <span class="at">returnclass =</span> <span class="st">&quot;sf&quot;</span></span>
+<span id="cb2-25"><a href="#cb2-25"></a>)</span>
+<span id="cb2-26"><a href="#cb2-26"></a></span>
+<span id="cb2-27"><a href="#cb2-27"></a><span class="co"># Clip dataset to the boundary of Egypt</span></span>
+<span id="cb2-28"><a href="#cb2-28"></a>cairo_suspects_valid <span class="ot">&lt;-</span> <span class="fu">hotspot_clip</span>(cairo_suspects, egypt_outline)</span></code></pre></div>
+<figcaption>Code 10.25</figcaption>
+</figure>
+
+    Warning in hotspot_clip(cairo_suspects, egypt_outline): `data` has points with the co-ordinates "0, 0".
+    ℹ This usually indicates a problem with the data.
+    ℹ Check co-ordinates are correct (e.g. by mapping them).
+
+    Removed 1 rows (10.0% of original rows) from `data`
+
+Now if we were to plot a map using the `cairo_suspects_valid` object, we would see the map covered only the Cairo area, as we originally wanted. Incidentally, you can see that `hotspot_clip()` knows that data with the coordinates 0,0 are usually a problem, and has warned us about this.
+
+QuizTidying the content of cells
+
+**What does `str_squish()` do?**
+
+- It changes every value to upper case
+- It removes leading and trailing whitespace and reduces repeated whitespace to one space (Correct answer)
+- It converts character values to numbers
+- It replaces every missing value with an empty string
+
+**What happens to values that do not match a formula supplied to `replace_values()`?**
+
+- Every value that does not appear in a formula is replaced with NA
+- Only one existing value can be changed in each call
+- Values that do not match a formula keep their existing values (Correct answer)
+- It can only be used with numeric variables
+
+**A row has no address but contains other useful information. What should you do?**
+
+- Remove every row that contains any missing value
+- Remove a row only if the missing address makes it unusable for geocoding (Correct answer)
+- Replace the missing address with the address from the previous row
+- Convert every value in the row to NA
+
+**What is the most likely explanation if one point appears at Null Island?**
+
+- The coordinates use the wrong number of decimal places
+- Missing coordinates may have been recorded as zero (Correct answer)
+- The map has been transformed to a local coordinate system
+- The dataset contains too many rows
+
+<a id="sec-geocoding"></a>
+<a id="geocoding-locations"></a>
+
+## 10.4 Geocoding locations
+
+Throughout this course we have used geographic data that includes locations stored as pairs of coordinates, e.g. latitude and longitude or easting and northing. Sometimes geographic data will not contain coordinates but instead store the locations of places or events as free-text addresses.
+
+Figure: Photograph of a sign for Kelley\'s Grill and Bar mounted on a brick wall. The sign includes a beer mug and a plate, helping identify the business discussed in the geocoding example.
+
+Address fields can be very messy indeed. This is because addresses can often be stored in different formats, include different abbreviations or use different spellings (including typos). For example, the official postal address 'Kelley's Grill & Bar, 15540 State Avenue, Basehor, Kansas 66007, United States' could be stored in a local police report as:
+
+- Kelly's Bar, 15540 US Highway 40, Basehor
+- Kelley's Grille, 15540 State
+- Kelley's, 15540 State Av
+- Kelley's Bar and Grill, 15540 State Ave
+- Kelley's Bar, State Av and 155th St
+- Kelly's Grill, State Ave btwn 155 and 158
+
+All of these address descriptions would probably be good enough for local police officers to know which building the author intended to reference. But since all these different addresses relate to the same physical location, they would make it very hard to (for example) work out how many incidents had occurred at Kelley's Grill & Bar using `count()` or a similar function.
+
+To make use of data containing addresses, it is typically necessary to *geocode* the locations, i.e. to convert the addresses into coordinates. The many ways to describe an address mean that geocoding is often quite hard.
+
+[](https://jessecambon.github.io/tidygeocoder/)
+
+We can geocode addresses in R using the [tidygeocoder package](https://jessecambon.github.io/tidygeocoder/), which provides an interface to several online geocoding services.
+
+Running a geocoding service requires an organisation to maintain a database of many millions of addresses and process large numbers of queries. Providers may limit how many addresses can be geocoded, charge for access or require users to register. Coverage, prices and usage limits change, so always check the provider's current terms before choosing a service. The tidygeocoder website has an [up-to-date comparison of supported services](https://jessecambon.github.io/tidygeocoder/articles/geocoder_services.html).
+
+For this small exercise we will use [Nominatim](https://nominatim.org/), which does not require registration and works worldwide. The public Nominatim server is intended for modest use, so read and follow its [usage policy](https://operations.osmfoundation.org/policies/nominatim/) before using it outside this exercise.
+
+ImportantDo not send sensitive addresses to a public geocoding service
+
+Geocoding sends address data to an external organisation. Do not use a public service to geocode confidential or sensitive records unless you have confirmed that doing so is permitted and appropriate. The data in this exercise are fictional.
+
+To illustrate the geocoding process, we will find coordinates for the addresses in the object `addresses`, which holds fictional data for 10 sexual assaults in Chicago. The incidents and their connection to these addresses are invented for teaching.
+
+Create a new R script in Positron and save it as `chapter_10.R` in the `R` folder. Keep all the permanent code for the geocoding analysis in this file.
+
+  offense_date           location_type   address
+  ---------------------- --------------- ----------------------
+  2019-01-01T00:00:00Z   residence       2400 W Carmen Ave
+  2019-01-01T00:00:00Z   residence       2700 S TRIPP AVE
+  2019-01-01T11:44:00Z   residence       3700 S PAULINA ST
+  2019-01-01T11:44:00Z   residence       3700 S Paulina St
+  2019-01-01T16:37:00Z   government      1100 S HAMILTON AVE
+  2019-01-02T17:09:00Z   gas station     NA
+  2019-01-02T17:09:00Z   gas station     8200 S HALSTED ST
+  2019-01-05T00:01:00Z   residence       1300 N HUDSON AVE
+  2019-01-05T14:00:00Z   other           6200 N Claremont Ave
+  2019-01-07T06:50:00Z   residence       9500 S BELL AVE
+
+Since most geocoding services limit the number of addresses you can look up at a time, the first step in geocoding is removing duplicate addresses and rows with missing address values. This avoids us geocoding identical addresses several times, which would otherwise unnecessarily increase our chance of hitting the limit on geocoding queries each day.
+
+We will also add the city, state and country to the end of each address, since at the moment (as with much data produced by local organisations) it includes only the building number and street. Including the country applies the same principle that we would use when geocoding addresses outside the United States.
+
+<a id="lst-messy-data-script-10-prepare"></a>
+
+<figure>
+<pre><code>chapter_10.R</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># This script prepares and geocodes fictional incident addresses in Chicago.</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="co"># Load packages</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, sfhotspot, tidygeocoder, tidyverse)</span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="co"># Create example dataset of addresses to be geocoded</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>addresses <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb2-8"><a href="#cb2-8"></a>  <span class="sc">~</span><span class="st">&quot;offense_date&quot;</span>        , <span class="sc">~</span><span class="st">&quot;location_type&quot;</span> , <span class="sc">~</span><span class="st">&quot;address&quot;</span>             ,</span>
+<span id="cb2-9"><a href="#cb2-9"></a>  <span class="st">&quot;2019-01-01T00:00:00Z&quot;</span> , <span class="st">&quot;residence&quot;</span>      , <span class="st">&quot;2400 W Carmen Ave&quot;</span>    ,</span>
+<span id="cb2-10"><a href="#cb2-10"></a>  <span class="st">&quot;2019-01-01T00:00:00Z&quot;</span> , <span class="st">&quot;residence&quot;</span>      , <span class="st">&quot;2700 S TRIPP AVE&quot;</span>     ,</span>
+<span id="cb2-11"><a href="#cb2-11"></a>  <span class="st">&quot;2019-01-01T11:44:00Z&quot;</span> , <span class="st">&quot;residence&quot;</span>      , <span class="st">&quot;3700 S PAULINA ST&quot;</span>    ,</span>
+<span id="cb2-12"><a href="#cb2-12"></a>  <span class="st">&quot;2019-01-01T11:44:00Z&quot;</span> , <span class="st">&quot;residence&quot;</span>      , <span class="st">&quot;3700 S Paulina St&quot;</span>    ,</span>
+<span id="cb2-13"><a href="#cb2-13"></a>  <span class="st">&quot;2019-01-01T16:37:00Z&quot;</span> , <span class="st">&quot;government&quot;</span>     , <span class="st">&quot;1100 S HAMILTON AVE&quot;</span>  ,</span>
+<span id="cb2-14"><a href="#cb2-14"></a>  <span class="st">&quot;2019-01-02T17:09:00Z&quot;</span> , <span class="st">&quot;gas station&quot;</span>    , <span class="cn">NA</span>                     ,</span>
+<span id="cb2-15"><a href="#cb2-15"></a>  <span class="st">&quot;2019-01-02T17:09:00Z&quot;</span> , <span class="st">&quot;gas station&quot;</span>    , <span class="st">&quot;8200 S HALSTED ST&quot;</span>    ,</span>
+<span id="cb2-16"><a href="#cb2-16"></a>  <span class="st">&quot;2019-01-05T00:01:00Z&quot;</span> , <span class="st">&quot;residence&quot;</span>      , <span class="st">&quot;1300 N HUDSON AVE&quot;</span>    ,</span>
+<span id="cb2-17"><a href="#cb2-17"></a>  <span class="st">&quot;2019-01-05T14:00:00Z&quot;</span> , <span class="st">&quot;other&quot;</span>          , <span class="st">&quot;6200 N Claremont Ave&quot;</span> ,</span>
+<span id="cb2-18"><a href="#cb2-18"></a>  <span class="st">&quot;2019-01-07T06:50:00Z&quot;</span> , <span class="st">&quot;residence&quot;</span>      , <span class="st">&quot;9500 S BELL AVE&quot;</span>      ,</span>
+<span id="cb2-19"><a href="#cb2-19"></a>)</span>
+<span id="cb2-20"><a href="#cb2-20"></a></span>
+<span id="cb2-21"><a href="#cb2-21"></a><span class="co"># Prepare each distinct, non-missing address for geocoding</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a>addresses_for_geocoding <span class="ot">&lt;-</span> addresses <span class="sc">|&gt;</span></span>
+<span id="cb2-23"><a href="#cb2-23"></a>  <span class="co"># Drop rows that have NA values in the `address` column</span></span>
+<span id="cb2-24"><a href="#cb2-24"></a>  <span class="fu">drop_na</span>(address) <span class="sc">|&gt;</span></span>
+<span id="cb2-25"><a href="#cb2-25"></a>  <span class="co"># Add city, state and country, then convert to upper case so that `distinct()`</span></span>
+<span id="cb2-26"><a href="#cb2-26"></a>  <span class="co"># will not treat identical addresses as different because of different cases,</span></span>
+<span id="cb2-27"><a href="#cb2-27"></a>  <span class="co"># e.g. &#39;ST&#39; vs &#39;St&#39; as abbreviations for &#39;Street&#39;</span></span>
+<span id="cb2-28"><a href="#cb2-28"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-29"><a href="#cb2-29"></a>    <span class="at">address =</span> <span class="fu">str_to_upper</span>(<span class="fu">str_glue</span>(<span class="st">&quot;{address}, CHICAGO, IL, UNITED STATES&quot;</span>))</span>
+<span id="cb2-30"><a href="#cb2-30"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-31"><a href="#cb2-31"></a>  <span class="co"># Select only the address column, since we won&#39;t send the other columns to the</span></span>
+<span id="cb2-32"><a href="#cb2-32"></a>  <span class="co"># geocoding function</span></span>
+<span id="cb2-33"><a href="#cb2-33"></a>  <span class="fu">select</span>(address) <span class="sc">|&gt;</span></span>
+<span id="cb2-34"><a href="#cb2-34"></a>  <span class="co"># Find all the unique rows in the data</span></span>
+<span id="cb2-35"><a href="#cb2-35"></a>  <span class="fu">distinct</span>(address)</span></code></pre></div>
+<figcaption>Code 10.26</figcaption>
+</figure>
+
+    # A tibble: 8 × 1
+      address                                         
+      <chr>                                           
+    1 2400 W CARMEN AVE, CHICAGO, IL, UNITED STATES   
+    2 2700 S TRIPP AVE, CHICAGO, IL, UNITED STATES    
+    3 3700 S PAULINA ST, CHICAGO, IL, UNITED STATES   
+    4 1100 S HAMILTON AVE, CHICAGO, IL, UNITED STATES 
+    5 8200 S HALSTED ST, CHICAGO, IL, UNITED STATES   
+    6 1300 N HUDSON AVE, CHICAGO, IL, UNITED STATES   
+    7 6200 N CLAREMONT AVE, CHICAGO, IL, UNITED STATES
+    8 9500 S BELL AVE, CHICAGO, IL, UNITED STATES     
+
+Run this code in the R Console to inspect the prepared addresses:
+
+<a id="lst-messy-data-script-10-preview-addresses"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">head</span>(addresses_for_geocoding)</span></code></pre></div>
+<figcaption>Code 10.27</figcaption>
+</figure>
+
+Since two addresses in the data were duplicates and one address was missing, we now have eight unique addresses, stored in a tibble with a single column. The `drop_na(address)` call removes only the row that cannot be geocoded, rather than discarding rows because values in unrelated columns are missing.
+
+We can use this object as the input to the `geocode()` function from the tidygeocoder package. tidygeocoder sends address text to a geocoding service and returns matching coordinates. The `address` argument specifies which column contains the addresses and the `method` argument specifies which geocoding service to use. Nominatim is based on OpenStreetMap data, so we choose it by specifying `method = "osm"`.
+
+<a id="lst-messy-data-script-10-geocode"></a>
+
+<figure>
+<pre><code>chapter_10.R</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Geocode each address using Nominatim</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>addresses_geocoded <span class="ot">&lt;-</span> tidygeocoder<span class="sc">::</span><span class="fu">geocode</span>(</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  addresses_for_geocoding,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="at">address =</span> <span class="st">&quot;address&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="at">method =</span> <span class="st">&quot;osm&quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>)</span></code></pre></div>
+<figcaption>Code 10.28</figcaption>
+</figure>
+
+<a id="lst-messy-data-script-10-inspect-geocoded"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>addresses_geocoded</span></code></pre></div>
+<figcaption>Code 10.29</figcaption>
+</figure>
+
+    # A tibble: 8 × 3
+      address                                            lat  long
+      <chr>                                            <dbl> <dbl>
+    1 2400 W CARMEN AVE, CHICAGO, IL, UNITED STATES     42   -87.7
+    2 2700 S TRIPP AVE, CHICAGO, IL, UNITED STATES      41.8 -87.7
+    3 3700 S PAULINA ST, CHICAGO, IL, UNITED STATES     41.8 -87.7
+    4 1100 S HAMILTON AVE, CHICAGO, IL, UNITED STATES   41.9 -87.7
+    5 8200 S HALSTED ST, CHICAGO, IL, UNITED STATES     41.7 -87.6
+    6 1300 N HUDSON AVE, CHICAGO, IL, UNITED STATES     41.9 -87.6
+    7 6200 N CLAREMONT AVE, CHICAGO, IL, UNITED STATES  42   -87.7
+    8 9500 S BELL AVE, CHICAGO, IL, UNITED STATES       41.7 -87.7
+
+Now that we have the latitude and longitude for each address, we can join them back to the original data using the address column to match the two datasets together. To do this we will create a temporary column in the original `addresses` object that matches the formatting changes we made to the original address.
+
+<a id="lst-messy-data-script-10-join"></a>
+
+<figure>
+<pre><code>chapter_10.R</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Join the geocoded coordinates back to the original rows</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>addresses_final <span class="ot">&lt;-</span> addresses <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="co"># Create a temporary address column to use in matching the geocoded addresses</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    <span class="at">temp_address =</span> <span class="fu">str_to_upper</span>(<span class="fu">str_glue</span>(</span>
+<span id="cb2-6"><a href="#cb2-6"></a>      <span class="st">&quot;{address}, CHICAGO, IL, UNITED STATES&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>    ))</span>
+<span id="cb2-8"><a href="#cb2-8"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>  <span class="co"># `left_join()` keeps all the rows in the left-hand dataset (the original</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>  <span class="co"># `addresses` object) and matching rows in the right-hand dataset (the</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a>  <span class="co"># geocoding results)</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a>  <span class="fu">left_join</span>(addresses_geocoded, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;temp_address&quot;</span> <span class="ot">=</span> <span class="st">&quot;address&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a>  <span class="co"># Remove the temporary address column</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a>  <span class="fu">select</span>(<span class="sc">-</span>temp_address)</span>
+<span id="cb2-15"><a href="#cb2-15"></a></span>
+<span id="cb2-16"><a href="#cb2-16"></a>addresses_final</span></code></pre></div>
+<figcaption>Code 10.30</figcaption>
+</figure>
+
+    # A tibble: 10 × 5
+       offense_date         location_type address                lat  long
+       <chr>                <chr>         <chr>                <dbl> <dbl>
+     1 2019-01-01T00:00:00Z residence     2400 W Carmen Ave     42   -87.7
+     2 2019-01-01T00:00:00Z residence     2700 S TRIPP AVE      41.8 -87.7
+     3 2019-01-01T11:44:00Z residence     3700 S PAULINA ST     41.8 -87.7
+     4 2019-01-01T11:44:00Z residence     3700 S Paulina St     41.8 -87.7
+     5 2019-01-01T16:37:00Z government    1100 S HAMILTON AVE   41.9 -87.7
+     6 2019-01-02T17:09:00Z gas station   <NA>                  NA    NA  
+     7 2019-01-02T17:09:00Z gas station   8200 S HALSTED ST     41.7 -87.6
+     8 2019-01-05T00:01:00Z residence     1300 N HUDSON AVE     41.9 -87.6
+     9 2019-01-05T14:00:00Z other         6200 N Claremont Ave  42   -87.7
+    10 2019-01-07T06:50:00Z residence     9500 S BELL AVE       41.7 -87.7
+
+Geocoding services return possible matches rather than guaranteed correct answers. Check for missing results and plot the returned coordinates to make sure they are in plausible locations before using them in an analysis.
+
+We can now use this data as we would any other spatial data. We will convert `addresses_final` to an SF object using `st_as_sf()`. Geocoding services return longitude and latitude using the WGS84 coordinate reference system, so we specify `crs = "EPSG:4326"`. We first remove the row with the missing address, since it could not be geocoded and therefore has no coordinates.
+
+<a id="lst-messy-data-script-10-map"></a>
+
+<figure>
+<pre><code>chapter_10.R</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Convert the geocoded results to an SF object and plot them over a basemap</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>addresses_sf <span class="ot">&lt;-</span> addresses_final <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="fu">drop_na</span>(long, lat) <span class="sc">|&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;long&quot;</span>, <span class="st">&quot;lat&quot;</span>), <span class="at">crs =</span> <span class="st">&quot;EPSG:4326&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="fu">hotspot_map</span>(addresses_sf, <span class="at">colour =</span> <span class="st">&quot;#CC0000&quot;</span>)</span></code></pre></div>
+<figcaption>Code 10.31</figcaption>
+</figure>
+
+<a id="map-chicago-geocoded-addresses"></a>
+
+<figure>
+<figure>
+<p>Figure: Street map of Chicago showing red points returned by geocoding eight fictional incident addresses. The points are spread north to south beside Lake Michigan, and some returned locations overlap. The map displays the geocoding results rather than verified crime locations.</p>
+</figure>
+<figcaption>Map 10.4</figcaption>
+</figure>
+
+All eight points should appear within Chicago. A missing point or a point far outside the city would tell us that we need to inspect the corresponding address and geocoding result before continuing with the analysis.
+
+QuizGeocoding locations
+
+**How should you prepare a dataset before sending its addresses to a rate-limited geocoding service?**
+
+- Send every row to the service so that no information is lost
+- Remove duplicated rows from every column in the original dataset
+- Remove missing addresses and send each distinct address only once (Correct answer)
+- Convert every address to latitude and longitude manually
+
+**What does tidygeocoder do in this exercise?**
+
+- It retrieves all mapped buildings near an address
+- It sends address text to a service and returns possible coordinates (Correct answer)
+- It guarantees that every returned location is correct
+- It converts an existing longitude and latitude to a different CRS
+
+**What should you do with geocoding results before relying on them?**
+
+- Accept every result because the service has already checked it
+- Delete any result that is not an exact text match
+- Check for missing results and map the coordinates to assess whether they are plausible (Correct answer)
+- Round every coordinate to a whole number
+
+<a id="in-summary"></a>
+
+## 10.5 In summary
+
+In this chapter we have learned to tidy messy data to make it easier to work with. In real-world data analysis (not just crime mapping), you will often have to deal with data that is messy in different ways. R allows us to clean data reproducibly, so that we can inspect the code used to make every change and reduce the risk of introducing mistakes.
+
+We have practised how to:
+
+- reshape data between long and wide formats using `pivot_longer()` and `pivot_wider()`;
+- skip or remove rows that are not part of a dataset;
+- separate multiple variables stored in one column;
+- clean and recode text, numeric and categorical values;
+- recognise missing or invalid values and remove rows only when necessary;
+- prepare, geocode and check address data.
+
+Your complete `chapter_10.R` script should now look like this:
+
+<a id="lst-messy-data-show-chapter-10-script"></a>
+
+<figure>
+<pre><code>chapter_10.R</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># This script prepares and geocodes fictional incident addresses in Chicago.</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="co"># Load packages</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, sfhotspot, tidygeocoder, tidyverse)</span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="co"># Create example dataset of addresses to be geocoded</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>addresses <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb2-8"><a href="#cb2-8"></a>  <span class="sc">~</span><span class="st">&quot;offense_date&quot;</span>        , <span class="sc">~</span><span class="st">&quot;location_type&quot;</span> , <span class="sc">~</span><span class="st">&quot;address&quot;</span>             ,</span>
+<span id="cb2-9"><a href="#cb2-9"></a>  <span class="st">&quot;2019-01-01T00:00:00Z&quot;</span> , <span class="st">&quot;residence&quot;</span>      , <span class="st">&quot;2400 W Carmen Ave&quot;</span>    ,</span>
+<span id="cb2-10"><a href="#cb2-10"></a>  <span class="st">&quot;2019-01-01T00:00:00Z&quot;</span> , <span class="st">&quot;residence&quot;</span>      , <span class="st">&quot;2700 S TRIPP AVE&quot;</span>     ,</span>
+<span id="cb2-11"><a href="#cb2-11"></a>  <span class="st">&quot;2019-01-01T11:44:00Z&quot;</span> , <span class="st">&quot;residence&quot;</span>      , <span class="st">&quot;3700 S PAULINA ST&quot;</span>    ,</span>
+<span id="cb2-12"><a href="#cb2-12"></a>  <span class="st">&quot;2019-01-01T11:44:00Z&quot;</span> , <span class="st">&quot;residence&quot;</span>      , <span class="st">&quot;3700 S Paulina St&quot;</span>    ,</span>
+<span id="cb2-13"><a href="#cb2-13"></a>  <span class="st">&quot;2019-01-01T16:37:00Z&quot;</span> , <span class="st">&quot;government&quot;</span>     , <span class="st">&quot;1100 S HAMILTON AVE&quot;</span>  ,</span>
+<span id="cb2-14"><a href="#cb2-14"></a>  <span class="st">&quot;2019-01-02T17:09:00Z&quot;</span> , <span class="st">&quot;gas station&quot;</span>    , <span class="cn">NA</span>                     ,</span>
+<span id="cb2-15"><a href="#cb2-15"></a>  <span class="st">&quot;2019-01-02T17:09:00Z&quot;</span> , <span class="st">&quot;gas station&quot;</span>    , <span class="st">&quot;8200 S HALSTED ST&quot;</span>    ,</span>
+<span id="cb2-16"><a href="#cb2-16"></a>  <span class="st">&quot;2019-01-05T00:01:00Z&quot;</span> , <span class="st">&quot;residence&quot;</span>      , <span class="st">&quot;1300 N HUDSON AVE&quot;</span>    ,</span>
+<span id="cb2-17"><a href="#cb2-17"></a>  <span class="st">&quot;2019-01-05T14:00:00Z&quot;</span> , <span class="st">&quot;other&quot;</span>          , <span class="st">&quot;6200 N Claremont Ave&quot;</span> ,</span>
+<span id="cb2-18"><a href="#cb2-18"></a>  <span class="st">&quot;2019-01-07T06:50:00Z&quot;</span> , <span class="st">&quot;residence&quot;</span>      , <span class="st">&quot;9500 S BELL AVE&quot;</span>      ,</span>
+<span id="cb2-19"><a href="#cb2-19"></a>)</span>
+<span id="cb2-20"><a href="#cb2-20"></a></span>
+<span id="cb2-21"><a href="#cb2-21"></a><span class="co"># Prepare each distinct, non-missing address for geocoding</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a>addresses_for_geocoding <span class="ot">&lt;-</span> addresses <span class="sc">|&gt;</span></span>
+<span id="cb2-23"><a href="#cb2-23"></a>  <span class="co"># Drop rows that have NA values in the `address` column</span></span>
+<span id="cb2-24"><a href="#cb2-24"></a>  <span class="fu">drop_na</span>(address) <span class="sc">|&gt;</span></span>
+<span id="cb2-25"><a href="#cb2-25"></a>  <span class="co"># Add city, state and country, then convert to upper case so that `distinct()`</span></span>
+<span id="cb2-26"><a href="#cb2-26"></a>  <span class="co"># will not treat identical addresses as different because of different cases,</span></span>
+<span id="cb2-27"><a href="#cb2-27"></a>  <span class="co"># e.g. &#39;ST&#39; vs &#39;St&#39; as abbreviations for &#39;Street&#39;</span></span>
+<span id="cb2-28"><a href="#cb2-28"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-29"><a href="#cb2-29"></a>    <span class="at">address =</span> <span class="fu">str_to_upper</span>(<span class="fu">str_glue</span>(<span class="st">&quot;{address}, CHICAGO, IL, UNITED STATES&quot;</span>))</span>
+<span id="cb2-30"><a href="#cb2-30"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-31"><a href="#cb2-31"></a>  <span class="co"># Select only the address column, since we won&#39;t send the other columns to the</span></span>
+<span id="cb2-32"><a href="#cb2-32"></a>  <span class="co"># geocoding function</span></span>
+<span id="cb2-33"><a href="#cb2-33"></a>  <span class="fu">select</span>(address) <span class="sc">|&gt;</span></span>
+<span id="cb2-34"><a href="#cb2-34"></a>  <span class="co"># Find all the unique rows in the data</span></span>
+<span id="cb2-35"><a href="#cb2-35"></a>  <span class="fu">distinct</span>(address)</span>
+<span id="cb2-36"><a href="#cb2-36"></a></span>
+<span id="cb2-37"><a href="#cb2-37"></a><span class="co"># Geocode each address using Nominatim</span></span>
+<span id="cb2-38"><a href="#cb2-38"></a></span>
+<span id="cb2-39"><a href="#cb2-39"></a>addresses_geocoded <span class="ot">&lt;-</span> tidygeocoder<span class="sc">::</span><span class="fu">geocode</span>(</span>
+<span id="cb2-40"><a href="#cb2-40"></a>  addresses_for_geocoding,</span>
+<span id="cb2-41"><a href="#cb2-41"></a>  <span class="at">address =</span> <span class="st">&quot;address&quot;</span>,</span>
+<span id="cb2-42"><a href="#cb2-42"></a>  <span class="at">method =</span> <span class="st">&quot;osm&quot;</span></span>
+<span id="cb2-43"><a href="#cb2-43"></a>)</span>
+<span id="cb2-44"><a href="#cb2-44"></a></span>
+<span id="cb2-45"><a href="#cb2-45"></a><span class="co"># Join the geocoded coordinates back to the original rows</span></span>
+<span id="cb2-46"><a href="#cb2-46"></a></span>
+<span id="cb2-47"><a href="#cb2-47"></a>addresses_final <span class="ot">&lt;-</span> addresses <span class="sc">|&gt;</span></span>
+<span id="cb2-48"><a href="#cb2-48"></a>  <span class="co"># Create a temporary address column to use in matching the geocoded addresses</span></span>
+<span id="cb2-49"><a href="#cb2-49"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-50"><a href="#cb2-50"></a>    <span class="at">temp_address =</span> <span class="fu">str_to_upper</span>(<span class="fu">str_glue</span>(</span>
+<span id="cb2-51"><a href="#cb2-51"></a>      <span class="st">&quot;{address}, CHICAGO, IL, UNITED STATES&quot;</span></span>
+<span id="cb2-52"><a href="#cb2-52"></a>    ))</span>
+<span id="cb2-53"><a href="#cb2-53"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-54"><a href="#cb2-54"></a>  <span class="co"># `left_join()` keeps all the rows in the left-hand dataset (the original</span></span>
+<span id="cb2-55"><a href="#cb2-55"></a>  <span class="co"># `addresses` object) and matching rows in the right-hand dataset (the</span></span>
+<span id="cb2-56"><a href="#cb2-56"></a>  <span class="co"># geocoding results)</span></span>
+<span id="cb2-57"><a href="#cb2-57"></a>  <span class="fu">left_join</span>(addresses_geocoded, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;temp_address&quot;</span> <span class="ot">=</span> <span class="st">&quot;address&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb2-58"><a href="#cb2-58"></a>  <span class="co"># Remove the temporary address column</span></span>
+<span id="cb2-59"><a href="#cb2-59"></a>  <span class="fu">select</span>(<span class="sc">-</span>temp_address)</span>
+<span id="cb2-60"><a href="#cb2-60"></a></span>
+<span id="cb2-61"><a href="#cb2-61"></a>addresses_final</span>
+<span id="cb2-62"><a href="#cb2-62"></a></span>
+<span id="cb2-63"><a href="#cb2-63"></a><span class="co"># Convert the geocoded results to an SF object and plot them over a basemap</span></span>
+<span id="cb2-64"><a href="#cb2-64"></a></span>
+<span id="cb2-65"><a href="#cb2-65"></a>addresses_sf <span class="ot">&lt;-</span> addresses_final <span class="sc">|&gt;</span></span>
+<span id="cb2-66"><a href="#cb2-66"></a>  <span class="fu">drop_na</span>(long, lat) <span class="sc">|&gt;</span></span>
+<span id="cb2-67"><a href="#cb2-67"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;long&quot;</span>, <span class="st">&quot;lat&quot;</span>), <span class="at">crs =</span> <span class="st">&quot;EPSG:4326&quot;</span>)</span>
+<span id="cb2-68"><a href="#cb2-68"></a></span>
+<span id="cb2-69"><a href="#cb2-69"></a><span class="fu">hotspot_map</span>(addresses_sf, <span class="at">colour =</span> <span class="st">&quot;#CC0000&quot;</span>)</span></code></pre></div>
+<figcaption>Code 10.32</figcaption>
+</figure>
+
+Save `chapter_10.R` by pressing .
+
+To check that the analysis is reproducible, restart R using the **Restart R** (**⟳**) button in Positron's **Console** panel, then run the script from beginning to end.
+
+Keep the script in the `R` folder.
+
+You can find out more about data cleaning and tidying with these resources:
+
+- A [tutorial on using the `pivot_longer()` and `pivot_wider()` functions to convert data between long and wide format](https://tidyr.tidyverse.org/articles/pivot.html).
+- A more-detailed [Introduction to `tidygeocoder`](https://jessecambon.github.io/tidygeocoder/articles/tidygeocoder.html).
+- An [introduction to some other packages that can help you clean and tidy data](https://rfortherestofus.com/2019/12/how-to-clean-messy-data-in-r/).
+
+QuizRevision questions
+
+Answer these questions to check you have understood the main points covered in this chapter. Write between 50 and 100 words to answer each question.
+
+1.  Why is tidy data important in crime mapping and data analysis? Explain the key principles of tidy data and discuss how its structure makes data analysis more efficient.
+2.  What are the differences between long and wide data formats? Give an example of when you would use `pivot_longer()` and when you would use `pivot_wider()`.
+3.  Describe how multiple variables stored in a single column can be separated into distinct columns, and what issues might arise in doing this.
+4.  Why can routinely removing every row that contains a missing value be harmful? Explain when using `drop_na()` is appropriate.
+5.  How does geocoding with tidygeocoder differ from retrieving mapped features from OpenStreetMap? What checks should you make after geocoding addresses?
+
+Figure: Cartoon of a smiling data table sitting on a bench between two monsters eating ice creams. The words make friends with tidy data encourage treating a consistent table structure as a helpful companion in analysis.
+
+[Artwork by Allison Horst](https://allisonhorst.com/)
