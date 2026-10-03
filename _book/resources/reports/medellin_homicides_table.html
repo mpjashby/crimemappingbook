@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-GB" xml:lang="en-GB"><head>
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="John Smith">
-<meta name="dcterms.date" content="2026-09-02">
+<meta name="author" content="Joe Bloggs">
+<meta name="dcterms.date" content="2026-10-03">
 
-<title>Medellín homicides map</title>
+<title>Homicides in Medellín, Colombia, 2010–2019</title>
 <style>
 
 span.smallcaps{font-variant: small-caps;}
@@ -2212,7 +2212,7 @@ vertical-align: -.125em;
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Medellín homicides map</h1>
+<h1 class="title">Homicides in Medellín, Colombia, 2010–2019</h1>
 </div>
 
 
@@ -2222,14 +2222,14 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>John Smith </p>
+             <p>Joe Bloggs </p>
           </div>
   </div>
     
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 2, 2026</p>
+      <p class="date">3 October 2026</p>
     </div>
   </div>
   
@@ -2241,49 +2241,718 @@ vertical-align: -.125em;
 </header>
 
 
+<p><a href="#tbl-homicide-counts" class="quarto-xref">Table 1</a> shows the number of homicides in each neighbourhood of Medellín in each year from 2010 to 2019. During that time, on average the La Candelaria neighbourhood had the highest number of homicides (126 per year).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load packages</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, here, httr2, sf, sfhotspot, tidyverse)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the original data</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">request</span>(</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;https://mpjashby.github.io/crimemappingdata/medellin_homicides.csv&quot;</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw&quot;</span>, <span class="st">&quot;medellin_homicides.csv&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;httr2_response&gt;
-GET https://mpjashby.github.io/crimemappingdata/medellin_homicides.csv
-Status: 200 OK
-Content-Type: text/csv
-Body: On disk &#39;/Users/mattashby/Documents/Crime Mapping Book/data/raw/medellin_homicides.csv&#39; (702486 bytes)</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>medellin_homicides <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw&quot;</span>, <span class="st">&quot;medellin_homicides.csv&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_csv2</span>() <span class="sc">|&gt;</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(longitud, latitud) <span class="sc">|&gt;</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;longitud&quot;</span>, <span class="st">&quot;latitud&quot;</span>), <span class="at">crs =</span> <span class="st">&quot;EPSG:4326&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>ℹ Using &quot;&#39;,&#39;&quot; as decimal and &quot;&#39;.&#39;&quot; as grouping mark. Use `read_delim()` for more control.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 9360 Columns: 6
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: &quot;;&quot;
-chr  (2): sexo, modalidad
-dbl  (3): longitud, latitud, edad
-dttm (1): fecha_hecho
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>homicide_table <span class="sc">|&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove columns we don&#39;t want to include in the table</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>mean_count) <span class="sc">|&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove count of offences with co-ordinates outside the city boundary</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(nombre)) <span class="sc">|&gt;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Format the table for nicer display</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-homicide-counts" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-homicide-counts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 1: Homicides in neighbourhoods of Medellín
+</figcaption>
+<div aria-describedby="tbl-homicide-counts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="muqxccbdpi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#muqxccbdpi table {
+font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+}
+#muqxccbdpi thead, #muqxccbdpi tbody, #muqxccbdpi tfoot, #muqxccbdpi tr, #muqxccbdpi td, #muqxccbdpi th {
+border-style: none;
+}
+#muqxccbdpi p {
+margin: 0;
+padding: 0;
+}
+#muqxccbdpi .gt_table {
+display: table;
+border-collapse: collapse;
+line-height: normal;
+margin-left: auto;
+margin-right: auto;
+color: #333333;
+font-size: 16px;
+font-weight: normal;
+font-style: normal;
+background-color: #FFFFFF;
+width: auto;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #A8A8A8;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #A8A8A8;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+}
+#muqxccbdpi .gt_caption {
+padding-top: 4px;
+padding-bottom: 4px;
+}
+#muqxccbdpi .gt_title {
+color: #333333;
+font-size: 125%;
+font-weight: initial;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-color: #FFFFFF;
+border-bottom-width: 0;
+}
+#muqxccbdpi .gt_subtitle {
+color: #333333;
+font-size: 85%;
+font-weight: initial;
+padding-top: 3px;
+padding-bottom: 5px;
+padding-left: 5px;
+padding-right: 5px;
+border-top-color: #FFFFFF;
+border-top-width: 0;
+}
+#muqxccbdpi .gt_heading {
+background-color: #FFFFFF;
+text-align: center;
+border-bottom-color: #FFFFFF;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+}
+#muqxccbdpi .gt_bottom_border {
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#muqxccbdpi .gt_col_headings {
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+}
+#muqxccbdpi .gt_col_heading {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: normal;
+text-transform: inherit;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: bottom;
+padding-top: 5px;
+padding-bottom: 6px;
+padding-left: 5px;
+padding-right: 5px;
+overflow-x: hidden;
+}
+#muqxccbdpi .gt_column_spanner_outer {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: normal;
+text-transform: inherit;
+padding-top: 0;
+padding-bottom: 0;
+padding-left: 4px;
+padding-right: 4px;
+}
+#muqxccbdpi .gt_column_spanner_outer:first-child {
+padding-left: 0;
+}
+#muqxccbdpi .gt_column_spanner_outer:last-child {
+padding-right: 0;
+}
+#muqxccbdpi .gt_column_spanner {
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+vertical-align: bottom;
+padding-top: 5px;
+padding-bottom: 5px;
+overflow-x: hidden;
+display: inline-block;
+width: 100%;
+}
+#muqxccbdpi .gt_spanner_row {
+border-bottom-style: hidden;
+}
+#muqxccbdpi .gt_group_heading {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: middle;
+text-align: left;
+}
+#muqxccbdpi .gt_empty_group_heading {
+padding: 0.5px;
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+vertical-align: middle;
+}
+#muqxccbdpi .gt_from_md > :first-child {
+margin-top: 0;
+}
+#muqxccbdpi .gt_from_md > :last-child {
+margin-bottom: 0;
+}
+#muqxccbdpi .gt_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+margin: 10px;
+border-top-style: solid;
+border-top-width: 1px;
+border-top-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: middle;
+overflow-x: hidden;
+}
+#muqxccbdpi .gt_stub {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-right-style: solid;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+padding-left: 5px;
+padding-right: 5px;
+}
+#muqxccbdpi .gt_stub_row_group {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-right-style: solid;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+padding-left: 5px;
+padding-right: 5px;
+vertical-align: top;
+}
+#muqxccbdpi .gt_row_group_first td {
+border-top-width: 2px;
+}
+#muqxccbdpi .gt_row_group_first th {
+border-top-width: 2px;
+}
+#muqxccbdpi .gt_summary_row {
+color: #333333;
+background-color: #FFFFFF;
+text-transform: inherit;
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#muqxccbdpi .gt_first_summary_row {
+border-top-style: solid;
+border-top-color: #D3D3D3;
+}
+#muqxccbdpi .gt_first_summary_row.thick {
+border-top-width: 2px;
+}
+#muqxccbdpi .gt_last_summary_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#muqxccbdpi .gt_grand_summary_row {
+color: #333333;
+background-color: #FFFFFF;
+text-transform: inherit;
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#muqxccbdpi .gt_first_grand_summary_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-top-style: double;
+border-top-width: 6px;
+border-top-color: #D3D3D3;
+}
+#muqxccbdpi .gt_last_grand_summary_row_top {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-style: double;
+border-bottom-width: 6px;
+border-bottom-color: #D3D3D3;
+}
+#muqxccbdpi .gt_striped {
+background-color: rgba(128, 128, 128, 0.05);
+}
+#muqxccbdpi .gt_table_body {
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#muqxccbdpi .gt_footnotes {
+color: #333333;
+background-color: #FFFFFF;
+border-bottom-style: none;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+}
+#muqxccbdpi .gt_footnote {
+margin: 0px;
+font-size: 90%;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#muqxccbdpi .gt_sourcenotes {
+color: #333333;
+background-color: #FFFFFF;
+border-bottom-style: none;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+}
+#muqxccbdpi .gt_sourcenote {
+font-size: 90%;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#muqxccbdpi .gt_left {
+text-align: left;
+}
+#muqxccbdpi .gt_center {
+text-align: center;
+}
+#muqxccbdpi .gt_right {
+text-align: right;
+font-variant-numeric: tabular-nums;
+}
+#muqxccbdpi .gt_font_normal {
+font-weight: normal;
+}
+#muqxccbdpi .gt_font_bold {
+font-weight: bold;
+}
+#muqxccbdpi .gt_font_italic {
+font-style: italic;
+}
+#muqxccbdpi .gt_super {
+font-size: 65%;
+}
+#muqxccbdpi .gt_footnote_marks {
+font-size: 75%;
+vertical-align: 0.4em;
+position: initial;
+}
+#muqxccbdpi .gt_asterisk {
+font-size: 100%;
+vertical-align: 0;
+}
+#muqxccbdpi .gt_indent_1 {
+text-indent: 5px;
+}
+#muqxccbdpi .gt_indent_2 {
+text-indent: 10px;
+}
+#muqxccbdpi .gt_indent_3 {
+text-indent: 15px;
+}
+#muqxccbdpi .gt_indent_4 {
+text-indent: 20px;
+}
+#muqxccbdpi .gt_indent_5 {
+text-indent: 25px;
+}
+#muqxccbdpi .katex-display {
+display: inline-flex !important;
+margin-bottom: 0.75em !important;
+}
+#muqxccbdpi div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+height: 0px !important;
+}
+</style>
 
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<table class="gt_table cell caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings header">
+<th id="nombre" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">nombre</th>
+<th id="a2010" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">2010</th>
+<th id="a2011" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">2011</th>
+<th id="a2012" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">2012</th>
+<th id="a2013" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">2013</th>
+<th id="a2014" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">2014</th>
+<th id="a2015" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">2015</th>
+<th id="a2016" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">2016</th>
+<th id="a2017" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">2017</th>
+<th id="a2018" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">2018</th>
+<th id="a2019" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">2019</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="nombre">La Candelaria</td>
+<td class="gt_row gt_right" headers="2010">201</td>
+<td class="gt_row gt_right" headers="2011">168</td>
+<td class="gt_row gt_right" headers="2012">145</td>
+<td class="gt_row gt_right" headers="2013">142</td>
+<td class="gt_row gt_right" headers="2014">116</td>
+<td class="gt_row gt_right" headers="2015">90</td>
+<td class="gt_row gt_right" headers="2016">98</td>
+<td class="gt_row gt_right" headers="2017">103</td>
+<td class="gt_row gt_right" headers="2018">108</td>
+<td class="gt_row gt_right" headers="2019">87</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="nombre">San Javier</td>
+<td class="gt_row gt_right" headers="2010">228</td>
+<td class="gt_row gt_right" headers="2011">220</td>
+<td class="gt_row gt_right" headers="2012">162</td>
+<td class="gt_row gt_right" headers="2013">110</td>
+<td class="gt_row gt_right" headers="2014">64</td>
+<td class="gt_row gt_right" headers="2015">30</td>
+<td class="gt_row gt_right" headers="2016">38</td>
+<td class="gt_row gt_right" headers="2017">46</td>
+<td class="gt_row gt_right" headers="2018">89</td>
+<td class="gt_row gt_right" headers="2019">49</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="nombre">Robledo</td>
+<td class="gt_row gt_right" headers="2010">111</td>
+<td class="gt_row gt_right" headers="2011">98</td>
+<td class="gt_row gt_right" headers="2012">69</td>
+<td class="gt_row gt_right" headers="2013">70</td>
+<td class="gt_row gt_right" headers="2014">56</td>
+<td class="gt_row gt_right" headers="2015">43</td>
+<td class="gt_row gt_right" headers="2016">53</td>
+<td class="gt_row gt_right" headers="2017">69</td>
+<td class="gt_row gt_right" headers="2018">55</td>
+<td class="gt_row gt_right" headers="2019">36</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="nombre">Aranjuez</td>
+<td class="gt_row gt_right" headers="2010">160</td>
+<td class="gt_row gt_right" headers="2011">110</td>
+<td class="gt_row gt_right" headers="2012">90</td>
+<td class="gt_row gt_right" headers="2013">52</td>
+<td class="gt_row gt_right" headers="2014">45</td>
+<td class="gt_row gt_right" headers="2015">32</td>
+<td class="gt_row gt_right" headers="2016">26</td>
+<td class="gt_row gt_right" headers="2017">27</td>
+<td class="gt_row gt_right" headers="2018">39</td>
+<td class="gt_row gt_right" headers="2019">34</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="nombre">Belen</td>
+<td class="gt_row gt_right" headers="2010">99</td>
+<td class="gt_row gt_right" headers="2011">108</td>
+<td class="gt_row gt_right" headers="2012">78</td>
+<td class="gt_row gt_right" headers="2013">52</td>
+<td class="gt_row gt_right" headers="2014">34</td>
+<td class="gt_row gt_right" headers="2015">32</td>
+<td class="gt_row gt_right" headers="2016">33</td>
+<td class="gt_row gt_right" headers="2017">48</td>
+<td class="gt_row gt_right" headers="2018">42</td>
+<td class="gt_row gt_right" headers="2019">53</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="nombre">Villa Hermosa</td>
+<td class="gt_row gt_right" headers="2010">119</td>
+<td class="gt_row gt_right" headers="2011">123</td>
+<td class="gt_row gt_right" headers="2012">109</td>
+<td class="gt_row gt_right" headers="2013">58</td>
+<td class="gt_row gt_right" headers="2014">32</td>
+<td class="gt_row gt_right" headers="2015">21</td>
+<td class="gt_row gt_right" headers="2016">29</td>
+<td class="gt_row gt_right" headers="2017">21</td>
+<td class="gt_row gt_right" headers="2018">20</td>
+<td class="gt_row gt_right" headers="2019">33</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="nombre">Castilla</td>
+<td class="gt_row gt_right" headers="2010">126</td>
+<td class="gt_row gt_right" headers="2011">103</td>
+<td class="gt_row gt_right" headers="2012">42</td>
+<td class="gt_row gt_right" headers="2013">45</td>
+<td class="gt_row gt_right" headers="2014">56</td>
+<td class="gt_row gt_right" headers="2015">46</td>
+<td class="gt_row gt_right" headers="2016">58</td>
+<td class="gt_row gt_right" headers="2017">33</td>
+<td class="gt_row gt_right" headers="2018">26</td>
+<td class="gt_row gt_right" headers="2019">29</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="nombre">Doce De Octubre</td>
+<td class="gt_row gt_right" headers="2010">133</td>
+<td class="gt_row gt_right" headers="2011">96</td>
+<td class="gt_row gt_right" headers="2012">53</td>
+<td class="gt_row gt_right" headers="2013">48</td>
+<td class="gt_row gt_right" headers="2014">40</td>
+<td class="gt_row gt_right" headers="2015">25</td>
+<td class="gt_row gt_right" headers="2016">23</td>
+<td class="gt_row gt_right" headers="2017">30</td>
+<td class="gt_row gt_right" headers="2018">23</td>
+<td class="gt_row gt_right" headers="2019">24</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="nombre">San Cristobal</td>
+<td class="gt_row gt_right" headers="2010">67</td>
+<td class="gt_row gt_right" headers="2011">73</td>
+<td class="gt_row gt_right" headers="2012">65</td>
+<td class="gt_row gt_right" headers="2013">54</td>
+<td class="gt_row gt_right" headers="2014">38</td>
+<td class="gt_row gt_right" headers="2015">24</td>
+<td class="gt_row gt_right" headers="2016">32</td>
+<td class="gt_row gt_right" headers="2017">37</td>
+<td class="gt_row gt_right" headers="2018">21</td>
+<td class="gt_row gt_right" headers="2019">39</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="nombre">Manrique</td>
+<td class="gt_row gt_right" headers="2010">166</td>
+<td class="gt_row gt_right" headers="2011">86</td>
+<td class="gt_row gt_right" headers="2012">46</td>
+<td class="gt_row gt_right" headers="2013">32</td>
+<td class="gt_row gt_right" headers="2014">20</td>
+<td class="gt_row gt_right" headers="2015">13</td>
+<td class="gt_row gt_right" headers="2016">13</td>
+<td class="gt_row gt_right" headers="2017">13</td>
+<td class="gt_row gt_right" headers="2018">17</td>
+<td class="gt_row gt_right" headers="2019">18</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="nombre">Guayabal</td>
+<td class="gt_row gt_right" headers="2010">66</td>
+<td class="gt_row gt_right" headers="2011">68</td>
+<td class="gt_row gt_right" headers="2012">55</td>
+<td class="gt_row gt_right" headers="2013">36</td>
+<td class="gt_row gt_right" headers="2014">29</td>
+<td class="gt_row gt_right" headers="2015">27</td>
+<td class="gt_row gt_right" headers="2016">26</td>
+<td class="gt_row gt_right" headers="2017">26</td>
+<td class="gt_row gt_right" headers="2018">29</td>
+<td class="gt_row gt_right" headers="2019">24</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="nombre">San Antonio De Prado</td>
+<td class="gt_row gt_right" headers="2010">45</td>
+<td class="gt_row gt_right" headers="2011">109</td>
+<td class="gt_row gt_right" headers="2012">77</td>
+<td class="gt_row gt_right" headers="2013">41</td>
+<td class="gt_row gt_right" headers="2014">8</td>
+<td class="gt_row gt_right" headers="2015">14</td>
+<td class="gt_row gt_right" headers="2016">15</td>
+<td class="gt_row gt_right" headers="2017">17</td>
+<td class="gt_row gt_right" headers="2018">15</td>
+<td class="gt_row gt_right" headers="2019">9</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="nombre">Laureles</td>
+<td class="gt_row gt_right" headers="2010">51</td>
+<td class="gt_row gt_right" headers="2011">41</td>
+<td class="gt_row gt_right" headers="2012">43</td>
+<td class="gt_row gt_right" headers="2013">38</td>
+<td class="gt_row gt_right" headers="2014">30</td>
+<td class="gt_row gt_right" headers="2015">28</td>
+<td class="gt_row gt_right" headers="2016">21</td>
+<td class="gt_row gt_right" headers="2017">24</td>
+<td class="gt_row gt_right" headers="2018">32</td>
+<td class="gt_row gt_right" headers="2019">25</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="nombre">Popular</td>
+<td class="gt_row gt_right" headers="2010">137</td>
+<td class="gt_row gt_right" headers="2011">25</td>
+<td class="gt_row gt_right" headers="2012">36</td>
+<td class="gt_row gt_right" headers="2013">20</td>
+<td class="gt_row gt_right" headers="2014">13</td>
+<td class="gt_row gt_right" headers="2015">9</td>
+<td class="gt_row gt_right" headers="2016">15</td>
+<td class="gt_row gt_right" headers="2017">13</td>
+<td class="gt_row gt_right" headers="2018">12</td>
+<td class="gt_row gt_right" headers="2019">20</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="nombre">Altavista</td>
+<td class="gt_row gt_right" headers="2010">29</td>
+<td class="gt_row gt_right" headers="2011">50</td>
+<td class="gt_row gt_right" headers="2012">46</td>
+<td class="gt_row gt_right" headers="2013">31</td>
+<td class="gt_row gt_right" headers="2014">11</td>
+<td class="gt_row gt_right" headers="2015">14</td>
+<td class="gt_row gt_right" headers="2016">12</td>
+<td class="gt_row gt_right" headers="2017">24</td>
+<td class="gt_row gt_right" headers="2018">46</td>
+<td class="gt_row gt_right" headers="2019">36</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="nombre">Buenos Aires</td>
+<td class="gt_row gt_right" headers="2010">61</td>
+<td class="gt_row gt_right" headers="2011">50</td>
+<td class="gt_row gt_right" headers="2012">40</td>
+<td class="gt_row gt_right" headers="2013">30</td>
+<td class="gt_row gt_right" headers="2014">20</td>
+<td class="gt_row gt_right" headers="2015">9</td>
+<td class="gt_row gt_right" headers="2016">16</td>
+<td class="gt_row gt_right" headers="2017">13</td>
+<td class="gt_row gt_right" headers="2018">7</td>
+<td class="gt_row gt_right" headers="2019">11</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="nombre">Santa Cruz</td>
+<td class="gt_row gt_right" headers="2010">90</td>
+<td class="gt_row gt_right" headers="2011">29</td>
+<td class="gt_row gt_right" headers="2012">31</td>
+<td class="gt_row gt_right" headers="2013">22</td>
+<td class="gt_row gt_right" headers="2014">17</td>
+<td class="gt_row gt_right" headers="2015">21</td>
+<td class="gt_row gt_right" headers="2016">8</td>
+<td class="gt_row gt_right" headers="2017">14</td>
+<td class="gt_row gt_right" headers="2018">11</td>
+<td class="gt_row gt_right" headers="2019">12</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="nombre">La America</td>
+<td class="gt_row gt_right" headers="2010">40</td>
+<td class="gt_row gt_right" headers="2011">39</td>
+<td class="gt_row gt_right" headers="2012">26</td>
+<td class="gt_row gt_right" headers="2013">23</td>
+<td class="gt_row gt_right" headers="2014">8</td>
+<td class="gt_row gt_right" headers="2015">9</td>
+<td class="gt_row gt_right" headers="2016">14</td>
+<td class="gt_row gt_right" headers="2017">12</td>
+<td class="gt_row gt_right" headers="2018">31</td>
+<td class="gt_row gt_right" headers="2019">34</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="nombre">Santa Elena</td>
+<td class="gt_row gt_right" headers="2010">12</td>
+<td class="gt_row gt_right" headers="2011">22</td>
+<td class="gt_row gt_right" headers="2012">22</td>
+<td class="gt_row gt_right" headers="2013">11</td>
+<td class="gt_row gt_right" headers="2014">10</td>
+<td class="gt_row gt_right" headers="2015">3</td>
+<td class="gt_row gt_right" headers="2016">3</td>
+<td class="gt_row gt_right" headers="2017">3</td>
+<td class="gt_row gt_right" headers="2018">0</td>
+<td class="gt_row gt_right" headers="2019">9</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="nombre">El Poblado</td>
+<td class="gt_row gt_right" headers="2010">22</td>
+<td class="gt_row gt_right" headers="2011">17</td>
+<td class="gt_row gt_right" headers="2012">7</td>
+<td class="gt_row gt_right" headers="2013">7</td>
+<td class="gt_row gt_right" headers="2014">11</td>
+<td class="gt_row gt_right" headers="2015">5</td>
+<td class="gt_row gt_right" headers="2016">8</td>
+<td class="gt_row gt_right" headers="2017">7</td>
+<td class="gt_row gt_right" headers="2018">11</td>
+<td class="gt_row gt_right" headers="2019">9</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="nombre">Palmitas</td>
+<td class="gt_row gt_right" headers="2010">0</td>
+<td class="gt_row gt_right" headers="2011">5</td>
+<td class="gt_row gt_right" headers="2012">1</td>
+<td class="gt_row gt_right" headers="2013">0</td>
+<td class="gt_row gt_right" headers="2014">1</td>
+<td class="gt_row gt_right" headers="2015">1</td>
+<td class="gt_row gt_right" headers="2016">3</td>
+<td class="gt_row gt_right" headers="2017">2</td>
+<td class="gt_row gt_right" headers="2018">0</td>
+<td class="gt_row gt_right" headers="2019">3</td>
+</tr>
+</tbody>
+</table>
+
 </div>
 </div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count number of homicides in February 2019</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>homicide_count <span class="ot">&lt;-</span> medellin_homicides <span class="sc">|&gt;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">year</span>(fecha_hecho) <span class="sc">==</span> <span class="dv">2019</span>, <span class="fu">month</span>(fecha_hecho) <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>There were 50 homicides recorded in February 2019.</p>
+</figure>
+</div>
+</div>
 
 </main>
 <!-- /main column -->

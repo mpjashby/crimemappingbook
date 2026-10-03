@@ -1,0 +1,79 @@
+---
+title: "Medellín homicides map"
+author: "John Smith"
+date: "today"
+format:
+  html:
+    embed-resources: true
+    fig-cap-location: top
+execute:
+  echo: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+# Load packages
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse)
+
+# Create the directory for the original downloaded data
+dir.create(here("data", "raw"), recursive = TRUE, showWarnings = FALSE)
+
+# Download the original data into the project
+request(
+  "https://mpjashby.github.io/crimemappingdata/medellin_homicides.csv"
+) |>
+  req_perform(path = here("data", "raw", "medellin_homicides.csv"))
+
+request(
+  "https://mpjashby.github.io/crimemappingdata/medellin_comunas.gpkg"
+) |>
+  req_perform(path = here("data", "raw", "medellin_comunas.gpkg"))
+
+# Load homicide data from the local copy
+medellin_homicides <- here("data", "raw", "medellin_homicides.csv") |>
+  read_csv2() |>
+  drop_na(longitud, latitud) |>
+  st_as_sf(coords = c("longitud", "latitud"), crs = "EPSG:4326")
+
+medellin_boundary <- here("data", "raw", "medellin_comunas.gpkg") |>
+  read_sf() |>
+  janitor::clean_names() |>
+  st_transform("EPSG:3115")
+```
+
+```{r}
+#| label: calculate-density
+#| include: false
+
+# Calculate crime density
+medellin_homicide_density <- medellin_homicides |>
+  st_transform("EPSG:3115") |>
+  # `hotspot_kde()` prints progress messages by default, but `include: false`
+  # prevents them from appearing in the finished report
+  hotspot_kde(bandwidth_adjust = 0.33, cell_size = 500) |>
+  hotspot_clip(medellin_boundary, quiet = TRUE)
+```
+
+@fig-homicides shows the density of homicides in Medellín, Colombia, from 2010 to 2019.
+
+```{r}
+#| label: fig-homicides
+#| message: false
+#| fig-cap: "Density of homicides in Medellín, 2010 to 2019"
+#| fig-alt: "Street map of Medellín showing estimated homicide density. The highest density is concentrated in the central part of the city."
+
+# Note we don't have to set `#| include: true` for this code chunk, because that
+# is the default. We do, however, have to set `#| message: false` to suppress
+# the message about a coordinate system already being present when we add the
+# boundary layer to the map.
+
+# Plot a basic density map
+hotspot_map(
+  medellin_homicide_density,
+  basemap_type = "cartolight",
+  caption = "Homicide data: Alcaldía de Medellín (CC-BY-SA)"
+) +
+  geom_sf(data = medellin_boundary, colour = "grey25", fill = NA)
+```

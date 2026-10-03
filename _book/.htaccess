@@ -2,6 +2,16 @@
 # These rules retain any filename or subpath after the chapter directory.
 RewriteEngine On
 
+# Preserve previous URLs for reports, examples and templates.
+RewriteRule ^11_writing_reports/(?:www/)?medellin_homicides\.(qmd|html)$ resources/reports/medellin_homicides_map.$1 [R=301,L,NE]
+RewriteRule ^11_writing_reports/(?:www/)?quarto_code_chunk(?:_echo)?\.(qmd|html)$ resources/examples/quarto_show_code.$1 [R=301,L,NE]
+RewriteRule ^11_writing_reports/(?:www/)?quarto_code_chunk_noecho\.(qmd|html)$ resources/examples/quarto_hide_code.$1 [R=301,L,NE]
+RewriteRule ^resources/example_quarto_report\.(qmd|html)$ resources/reports/medellin_homicides_table.$1 [R=301,L,NE]
+RewriteRule ^resources/template\.R$ resources/templates/crime_mapping_script.R [R=301,L,NE]
+RewriteRule ^resources/template\.qmd$ resources/templates/crime_mapping_report.qmd [R=301,L,NE]
+RewriteRule ^resources/edmonton_fire_rescue_demand\.(qmd|html)$ resources/reports/edmonton_fire_rescue_demand.$1 [R=301,L,NE]
+RewriteRule ^resources/yarra_waste_dumping\.(qmd|pdf)$ resources/reports/yarra_waste_dumping.$1 [R=301,L,NE]
+
 RewriteRule ^10_place_data(?:/(.*))?$ 12_place_data/$1 [R=301,L,NE]
 RewriteRule ^11_mapping_hotspots(?:/(.*))?$ 13_mapping_hotspots/$1 [R=301,L,NE]
 RewriteRule ^12_messy_data(?:/(.*))?$ 10_messy_data/$1 [R=301,L,NE]

@@ -7,12 +7,15 @@ format:
     embed-resources: true
 ---
 
-
 ```{r}
 #| label: setup
+#| include: false
 
 # Load packages
 pacman::p_load(here, httr2, sf, sfhotspot, tidyverse)
+
+# Create the directory for the original downloaded data
+dir.create(here("data", "raw"), recursive = TRUE, showWarnings = FALSE)
 
 # Download the original data
 request(
@@ -31,6 +34,7 @@ medellin_homicides <- here("data", "raw", "medellin_homicides.csv") |>
 
 ```{r}
 #| label: count-homicides
+#| echo: false
 
 # Count number of homicides in February 2019
 homicide_count <- medellin_homicides |>
