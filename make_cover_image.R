@@ -5,14 +5,18 @@ pacman::p_load(hexSticker, showtext, sf, sfhotspot, tidyverse)
 font_add_google("Red Hat Display", "roboto")
 
 # Load and wrangle bike theft data
-bike_thefts <- read_csv("https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz") |>
+bike_thefts <- read_csv(
+  "https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"
+) |>
   janitor::clean_names() |>
   st_as_sf(coords = c("x", "y"), crs = "EPSG:32610") |>
   filter(type == "Theft of Bicycle")
 
 # Create buffer around weighted centroid of the crime points
 centroid_buffer1 <- bike_thefts |> centr::mean_center() |> sf::st_buffer(2000)
-centroid_buffer2 <- bike_thefts |> centr::mean_center() |> sf::st_buffer(2000 * 2)
+centroid_buffer2 <- bike_thefts |>
+  centr::mean_center() |>
+  sf::st_buffer(2000 * 2)
 
 # Estimate density of bike thefts
 bike_theft_density <- hotspot_kde(
@@ -79,10 +83,19 @@ sticker(
 cover_image <- ggplot() +
   ggimage::geom_image(
     aes(x = 0, y = 0, image = image),
-    data = tibble(x = 0, y = 0, image = here::here("images/hex_cover_image.png")),
+    data = tibble(
+      x = 0,
+      y = 0,
+      image = here::here("images/hex_cover_image.png")
+    ),
     size = 0.75
   ) +
   theme_void()
 
-ggsave("images/cover_image.png", plot = cover_image, width = 600, height = 600, units = "px")
-
+ggsave(
+  "images/cover_image.png",
+  plot = cover_image,
+  width = 600,
+  height = 600,
+  units = "px"
+)
