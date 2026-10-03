@@ -29,7 +29,7 @@ In this chapter, we will learn how to:
 ::: {.callout-tip title="But can't I just use AI to fix my code?"}
 Whether an AI tool such as ChatGPT or Gemini can fix your code depends on the nature of the problem, the information you provide and the features available to you. AI tools can solve many problems well, but they can also produce plausible suggestions that are wrong.
 
-It's not always possible to rely on AI to fix problems with our code, and even when it is possible, it is still useful to understand the solution the AI is suggesting. We'll come back to using AI to help us fix bugs in our code later in this chapter.
+It's not always possible to rely on AI to fix problems with our code, and even when it is possible, it is still useful to understand the solution the AI is suggesting. We'll explore using AI to help us fix bugs in our code in @sec-ai-debugging.
 :::
 
 
@@ -356,7 +356,7 @@ Sometimes it won't be necessary to go through all the steps because the problem 
 
 ### Step 1: Understand the problem {#sec-handling-bugs-step-1-understand-the-problem}
 
-The first step in diagnosing a problem with our code is to reproduce it, then read _and understand_ any errors, warnings or messages produced. For simple bugs this will often be enough to solve the problem. For example, if you were to try to run this code with the `frauds` dataset we loaded earlier:
+The first step in diagnosing a problem with our code is to reproduce it, then read _and understand_ any errors, warnings or messages produced. For simple bugs this will often be enough to solve the problem. For example, if you were to try to run this code with the `frauds` dataset we loaded in @lst-handling-bugs-load-fraud-examples:
 
 ```{r}
 #| label: select-missing-column-error
@@ -580,11 +580,11 @@ This code produces a structured error message. The first line tells us that the 
 ! object 'offence_type' not found
 ```
 
-This suggests the error is on line 3 of the code, since that is the only line containing a reference to `offence_type`. To check this, we can *comment out* that line by placing a `#` symbol at the start of the line. One easy way to do that is to click anywhere on the line and then type {{< kbd win="Ctrl+/" mac="Command+/" >}}. Do this and re-run the code above -- it should now run without a problem.
+This suggests the error is on line 3 of the code, since that is the only line containing a reference to `offence_type`. To check this, we can *comment out* that line by placing a `#` symbol at the start of the line. One easy way to do that is to click anywhere on the line and then type {{< kbd win="Ctrl+/" mac="Command+/" >}}. Do this and re-run @lst-handling-bugs-filter-misspelt-offence-column -- it should now run without a problem.
 
 Now we know the problem is on the line `filter(offence_type == "impersonation")`, we can look at that line in more detail. Can you spot the problem with that line?
 
-The error message in this case has been caused by a typo -- the code `offence_type == "impersonation"` uses the British spelling of the word 'offence' but in the dataset the variable is spelled using the American English 'offense' (you can see the US spelling in the line of code above the line that is causing the error). Fix the typo and re-run the code above in Positron.
+The error message in this case has been caused by a typo -- the code `offence_type == "impersonation"` uses the British spelling of the word 'offence' but in the dataset the variable is spelled using the American English 'offense' (you can see the US spelling in the `select()` call in @lst-handling-bugs-filter-misspelt-offence-column). Fix the typo and re-run @lst-handling-bugs-filter-misspelt-offence-column in Positron.
 
 Sometimes a bug is introduced on one line but only becomes visible later. Consider this separate example, in which `select()` removes a column that is needed by `arrange()` later in the pipeline:
 
@@ -607,7 +607,7 @@ A useful next step in these circumstances is to look at the _inputs_ a function 
 
 A good way to identify which line of a code pipeline is causing the problem is to comment out all the lines except the first one, then run the code and see if it produces an error. If no error appears and the result produced by that line looks reasonable, then we continue to uncomment one line at a time until we find the problem.
 
-Re-run the code above, but comment out all the lines except the first one by putting `# ` at the start of each line. Remember to remove the `|>` from the end of the last _uncommented_ line of code, since otherwise you will find the code does not run as expected. Your code should now look like this:
+Re-run @lst-handling-bugs-isolate-fraud-filter, but comment out all the lines except the first one by putting `# ` at the start of each line. Remember to remove the `|>` from the end of the last _uncommented_ line of code, since otherwise you will find the code does not run as expected. Your code should now look like this:
 
 ```{r}
 #| label: inspect-fraud-selection
@@ -639,7 +639,7 @@ frauds |>
 
 Again, the code does not produce an error -- but the result now has only three columns. Checking the output at this stage shows that the `date` column has been removed. Add `date` to the list of columns that are included in `select()` before continuing.
 
-Uncommenting one line at a time is useful for runtime errors, but it is equally important to look for unexpected output. The following code runs without an error:
+Uncommenting one line at a time is useful for runtime errors, but it is equally important to look for unexpected output. @lst-handling-bugs-filter-impersonation-frauds runs without an error:
 
 ```{r}
 #| label: filter-impersonation-frauds
@@ -663,7 +663,7 @@ There is no error message, but there are no rows left in the result. This is a l
 count(frauds, offense_code)
 ```
 
-Uncommenting one line at a time until you find an error or unexpected output is a useful way to isolate problems, but it will not always work. In particular, it will not identify code that is missing entirely. For example, the following pipeline omits the step that changes the tibble into an SF object before using `st_transform()`:
+Uncommenting one line at a time until you find an error or unexpected output is a useful way to isolate problems, but it will not always work. In particular, it will not identify code that is missing entirely. For example, the pipeline in @lst-handling-bugs-transform-nonspatial-data-error omits the step that changes the tibble into an SF object before using `st_transform()`:
 
 ```{r}
 #| label: transform-nonspatial-data-error
@@ -685,9 +685,9 @@ In these cases it is particularly useful to check every argument that you have u
 
 Not all runtime errors are caused by problems with the code itself. Some bugs are caused by a mismatch between the structure your data actually has and the structure you thought it had when you wrote the code. We have already seen this in the code that referred to a column called `offense_category` in a dataset without that column.
 
-Bugs caused by a mismatch between the data you think you have and the data you actually have can be particularly frustrating because you cannot identify them by looking only at your code. Look at both the data used as input and the data produced by each important step. We used this technique above to find that `filter()` had removed every row because the value we specified was not present.
+Bugs caused by a mismatch between the data you think you have and the data you actually have can be particularly frustrating because you cannot identify them by looking only at your code. Look at both the data used as input and the data produced by each important step. We used this technique in @lst-handling-bugs-inspect-fraud-filter to find that `filter()` had removed every row because the value we specified was not present.
 
-Finding data problems is one of the reasons why we have used the `head()` function so often in previous chapters to look at the data at each step in writing a block of code. Looking at the results of a particular block of code before moving on to writing the next block can often save you from frustrating errors later on.
+Finding data problems is one of the reasons why we have used the `head()` function so often, starting in @sec-naming-objects to look at the data at each step in writing a block of code. Looking at the results of a particular block of code before moving on to writing the next block can often save you from frustrating errors later on.
 
 `head()` only shows the first few rows of a dataset, so it will not reveal every possible problem. You can use the `view()` function instead to open a complete version of the dataset in Positron's **Data Explorer**. The Data Explorer lets you inspect values, sort and temporarily filter rows, and see summaries for each column. These changes affect only the view and do not alter the object in R.
 
@@ -742,7 +742,7 @@ To make a reprex, we have to do three things:
 2. Make sure someone can run the example on their computer. This might involve using a dataset built into an R package or creating a small example dataset that has the same relevant structure as your data.
 3. Remove confidential, personal or otherwise sensitive information. Never share sensitive crime data, passwords, API keys or other credentials in a reprex.
 
-To practise making a reproducible example, we will create a new R script that we know will produce an error. Click **File**, then **New File ...** and choose **R File**. Save the file as `chapter_08.R` in the `R` folder of your crime mapping workspace, then paste the following code into it:
+To practise making a reproducible example, we will create a new R script that we know will produce an error. Click **File**, then **New File ...** and choose **R File**. Save the file as `chapter_08.R` in the `R` folder of your crime mapping workspace, then paste @lst-handling-bugs-show-chapter-08-error-script into it:
 
 ```{r}
 #| label: show-chapter-08-error-script
@@ -820,14 +820,14 @@ bronx_shootings + #<<
   )
 ```
 
-That means we can remove:
+That means we can remove these parts of @lst-handling-bugs-script-08-error-highlighted:
 
-1. The comments (lines 1, 4, 10, 14, 18, 21 and 29, above).
-2. The code that wrangles the shootings data in ways that don't affect this particular error (lines 7, 9 and 11--12).
-3. The code that loads and wrangles the precinct boundaries (lines 15--19).
-4. The code that fine-tunes the appearance of the map (lines 25--27 and 30--38).
+1. The comments.
+2. The code that wrangles the shootings data in ways that don't affect this particular error.
+3. The code that loads and wrangles the precinct boundaries.
+4. The code that fine-tunes the appearance of the map.
 
-We cannot remove the code that loads necessary packages (line 2), loads the data (lines 5--6) or produces the basic unformatted map (lines 22--24 and 28), because if we remove any of those lines then you will see the error message either changes to a different error message, or disappears.
+We cannot remove the code that loads necessary packages, loads the shootings data and converts it to an SF object, or produces the basic unformatted map. These are the highlighted lines in @lst-handling-bugs-script-08-error-highlighted. If we remove any of those lines, the error message either changes to a different error message or disappears.
 
 Removing the lines we don't need to reproduce the error leaves `chapter_08.R` looking like this. Note that we've also removed tailing `|>` and `+` operators that no longer connect to another line of code.
 
@@ -857,7 +857,7 @@ If we forgot to remove an operator at the end of a shortened expression, the cod
 :::
 
 
-Even though we have removed most of the previous code, this shorter code still produces the same error message. The bug must therefore be in one of the few remaining expressions. This makes the problem much easier to understand than it was in the original script.
+Even though we have removed most of @lst-handling-bugs-script-08-error-highlighted, the shorter code in @lst-handling-bugs-show-minimal-bronx-error still produces the same error message. The bug must therefore be in one of the few remaining expressions. This makes the problem much easier to understand than it was in the original script.
 
 
 ::: {.callout-tip collapse="true" title="But wouldn't this map look very different?"}
@@ -869,7 +869,7 @@ If this shortened code ran successfully rather than producing an error, the resu
 
 #### Reproducible data
 
-Our shortened code would make a useful example except for one thing: the data file `bronx_shootings.csv` only exists on your computer (because we downloaded it in a previous chapter). Someone trying to run the code elsewhere would instead get an error saying that the file could not be found.
+Our shortened code would make a useful example except for one thing: the data file `bronx_shootings.csv` only exists on your computer (because we downloaded it in @sec-creating-storing-map). Someone trying to run the code elsewhere would instead get an error saying that the file could not be found.
 
 You might not be able to share the original data that your code uses, for example if it is sensitive or too large to share. Fortunately, many R packages include small datasets for learning and testing. You can see a list of the datasets available in loaded packages by typing `data()` in the R Console.
 
@@ -919,7 +919,7 @@ Now that you have the minimum code needed to reproduce the error, it's almost ti
 
 <a href="https://reprex.tidyverse.org/" aria-label="Visit the reprex package website" class="no-external"><img src="../images/reprex.png" class="right-side-image" alt=""></a>
 
-Make sure the `chapter_08.R` file now only contains the three-line minimal working example above, then save the file. Now run this command in the R Console:
+Make sure the `chapter_08.R` file now only contains the three-line minimal working example in @lst-handling-bugs-script-08-minimal, then save the file. Now run this command in the R Console:
 
 ```{r}
 #| label: create-script-reprex
@@ -1004,7 +1004,7 @@ For more information on writing reproducible examples, see:
 :::
 
 
-## Using generative AI to help with debugging
+## Using generative AI to help with debugging {#sec-ai-debugging}
 
 
 Now we've created a reprex, the next step is to share it with someone who can help. If you are being taught R by an instructor, use the support routes provided for your course first. But in many cases, the easiest way to get help will be by using a generative AI tool based on a large language model (LLM).
@@ -1160,9 +1160,9 @@ For more detailed guidance, read [Twelve quick tips for AI-assisted coding in sc
 
 ## What caused the error in our reproducible example? {.unnumbered}
 
-The error in our reproducible example was very simple, but quite difficult to spot. On line 3 of the code below, we try to add the `hotspot_map()` function to the `memphis_robberies_jan` object using the `+` operator when what we wanted to do was pass the `memphis_robberies_jan` object to the `hotspot_map()` function using the `|>` operator. R does not know how to add a dataset to a function in this way, so it produced an error message.
+The error in our reproducible example was very simple, but quite difficult to spot. On line 3 of @lst-handling-bugs-show-ai-code-error, we try to add the `hotspot_map()` function to the `memphis_robberies_jan` object using the `+` operator when what we wanted to do was pass the `memphis_robberies_jan` object to the `hotspot_map()` function using the `|>` operator. R does not know how to add a dataset to a function in this way, so it produced an error message.
 
-If you replaced `+` with `|>` on line 3 of the code below, the code would now run normally. Since we have removed almost all of our original code to make a reproducible example, the resulting map looks nothing like what we wanted. This does not matter -- when we are producing a reprex we only care about reliably producing *the same* error. Now that we have fixed the error, we could go back and fix the original code to produce the map we wanted.
+If you replaced `+` with `|>` on line 3 of @lst-handling-bugs-show-ai-code-error, the code would now run normally. Since we have removed almost all of our original code to make a reproducible example, the resulting map looks nothing like what we wanted. This does not matter -- when we are producing a reprex we only care about reliably producing *the same* error. Now that we have fixed the error, we could go back and fix the original code to produce the map we wanted.
 
 ```{r}
 #| label: show-ai-code-error
@@ -1240,7 +1240,7 @@ We have practised how to:
 
 You can use the checklist in @sec-checklist-errors whenever you encounter a problem in your code.
 
-The corrected complete script from the reprex exercise is shown below. Replace the contents of `chapter_08.R` with this script. It uses the pipe operator to pass `bronx_shootings` to `hotspot_map()`.
+The corrected complete script from the reprex exercise is shown in @lst-handling-bugs-complete-script. Replace the contents of `chapter_08.R` with this script. It uses the pipe operator to pass `bronx_shootings` to `hotspot_map()`.
 
 ```{r}
 #| label: complete-script

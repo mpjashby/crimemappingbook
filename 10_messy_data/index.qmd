@@ -524,7 +524,7 @@ cybercrime <- here("data", "raw", "cybercrime.xlsx") |>
 head(cybercrime)
 ```
 
-This dataset now has a tidy structure: each row represents an observation (in this case, data about a particular type of crime), each column represents a piece of information about the observation and each cell represents a single value. We still need to clean up the footnote numbers that appear in some of the values, but we will deal with that later in this chapter.
+This dataset now has a tidy structure: each row represents an observation (in this case, data about a particular type of crime), each column represents a piece of information about the observation and each cell represents a single value. Some values still contain footnote numbers. We will learn techniques for cleaning text in @sec-tidying-cell-content.
 
 
 ### Separating multiple variables stored in a single column {#sec-messy-data-separating-multiple-variables-stored-in-a-single-column}
@@ -599,7 +599,7 @@ victims |>
   mutate(age = parse_number(age))
 ```
 
-We have practised converting data into a tidy format using `pivot_longer()` and `pivot_wider()`, removing non-data rows using `slice()`, `remove_empty()` and the `skip` argument to functions such as `read_csv()`, and splitting columns with `separate_wider_delim()`. In the next section, we'll learn how to tidy the content of individual cells.
+We have practised converting data into a tidy format using `pivot_longer()` and `pivot_wider()`, removing non-data rows using `slice()`, `remove_empty()` and the `skip` argument to functions such as `read_csv()`, and splitting columns with `separate_wider_delim()`. In @sec-tidying-cell-content, we'll learn how to tidy the content of individual cells.
 
 
 ::: {.callout-quiz .callout title="Tidying the structure of data"}
@@ -662,7 +662,7 @@ tidy_structure_quiz4 <- c(
 
 
 
-## Tidying the content of cells
+## Tidying the content of cells {#sec-tidying-cell-content}
 
 As well as data with a messy structure, you might be provided with data with messy content _inside_ some of the cells. In this section we will clean messy content, mostly using functions from the stringr package that is loaded automatically when we load tidyverse. Most of the main string-manipulation functions introduced here start with `str_`, which makes them easier to remember.
 
@@ -924,7 +924,7 @@ drop_na(example_addresses, address)
 
 The third row remains even though its `category` value is missing, because we specified only the `address` column. In contrast, `drop_na(example_addresses)` would remove every row containing an `NA` in any column, leaving only the first row.
 
-Do not routinely remove every incomplete row. A missing value in one column does not necessarily make the rest of that row unusable. Remove a row only when a missing value means that the row cannot be used for the analysis you intend to carry out. In the geocoding example later in this chapter, an address is essential, so rows with missing addresses cannot be sent to the geocoding service.
+Do not routinely remove every incomplete row. A missing value in one column does not necessarily make the rest of that row unusable. Remove a row only when a missing value means that the row cannot be used for the analysis you intend to carry out. In the example in @sec-geocoding, an address is essential, so rows with missing addresses cannot be sent to the geocoding service.
 
 
 ### Null Island {#sec-null-island}
@@ -1122,7 +1122,7 @@ If we plotted these locations on a map, we might expect to see something like th
 
 :::
 
-But look again at the final row of data in the table above -- the coordinates for the final row are both zero. There are several reasons why this might be. Perhaps the address was recorded incorrectly in a police database and that meant that when the addresses were run through geocoding software (which we will learn more about in the next section), no coordinates for that row could be found. What this means is that when we plot the data on a map, that map will actually look like this:
+But look again at the final row of data in the table above -- the coordinates for the final row are both zero. There are several reasons why this might be. Perhaps the address was recorded incorrectly in a police database and that meant that when the addresses were run through geocoding software (which we will learn more about in @sec-geocoding), no coordinates for that row could be found. What this means is that when we plot the data on a map, that map will actually look like this:
 
 ::: {#map-cairo-and-null-island}
 
@@ -1236,7 +1236,7 @@ tidy_content_quiz4 <- c(
 
 
 
-## Geocoding locations
+## Geocoding locations {#sec-geocoding}
 
 Throughout this course we have used geographic data that includes locations stored as pairs of coordinates, e.g. latitude and longitude or easting and northing. Sometimes geographic data will not contain coordinates but instead store the locations of places or events as free-text addresses.
 

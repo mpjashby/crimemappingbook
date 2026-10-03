@@ -297,7 +297,7 @@ You might notice that the values in the first row of the `x_start` and `y_start`
 
 This method for creating lines between points is one of several ways we could achieve the same result. For example, we could create lines connecting the points and store them as SF objects. However, the code to do that is more complicated and would give us slightly less control over the appearance of the lines.
 
-Using this method means the points and lines we want to put on our map are not SF objects, so we cannot use `geom_sf()` to add them to the map. Instead, we will add the points representing shooting locations to the map using `geom_point()` and add the lines between points using `geom_segment()`, both from the ggplot2 package. Since `hotspot_map()` only works for SF objects, we cannot use `hotspot_map()` in this case, either. That means we have to do some things manually that would normally be done for us automatically. The extra code is explained in the notes below the code chunk.
+Using this method means the points and lines we want to put on our map are not SF objects, so we cannot use `geom_sf()` to add them to the map. Instead, we will add the points representing shooting locations to the map using `geom_point()` and add the lines between points using `geom_segment()`, both from the ggplot2 package. Since `hotspot_map()` only works for SF objects, we cannot use `hotspot_map()` in this case, either. That means we have to do some things manually that would normally be done for us automatically. The extra code in @lst-crime-series-draw-hungerford-shootings-straight-lines is explained in the accompanying notes.
 
 Run this code in the R Console.
 
@@ -338,7 +338,7 @@ ggplot() +
 4. We use `theme_void()` to remove information that is often useful for a chart but not for a map, such as labels along the x- and y-axes showing coordinates.
 
 
-This map is not particularly useful -- we will return to that in a minute.
+This map is not particularly useful -- we will improve it in @sec-crime-series-extending-the-map-area and @sec-crime-series-adding-arrows-and-curves.
 
 If you look at this code, you'll see that we've included the function `coord_sf()` in our `ggplot()` stack. In all the previous maps that we have made, we have used `geom_sf()` to plot geographic data on our maps. `geom_sf()` understands how to translate coordinates specified using different coordinate systems to locations on the surface of each map. Other functions in the `geom_*()` family of functions do not know how to do this automatically, so we must specify the coordinate system by adding the `coord_sf()` function to the stack. We only need to use one argument to `coord_sf()`: the `crs` argument to specify the coordinate system that our data uses. In this case, we know that the coordinates in the `hungerford_shootings` and `hungerford_lines` objects are specified using the British National Grid, which has the EPSG code EPSG:27700.
 
@@ -356,7 +356,7 @@ By default, `ggplot()` works out the limits of the area shown on the map based o
 
 We can increase the size of the area shown on the plot in two ways. We could use the `fixed_plot_aspect()` function from the ggspatial package to control the aspect ratio of the plot (i.e. how tall it is relative to how wide it is). With some trial and error, we could use this to determine the best aspect ratio for showing the data on this map. However, this only allows us to control the overall size of the plot, not the amount of space around the data in each direction. 
 
-For more-specific control over what area is shown, we can use the `scale_x_continuous()` and `scale_y_continuous()` functions from the ggplot2 package. We have used the `scale_fill_distiller()` and `scale_fill_gradient()` functions in previous chapters to control how columns in the data are represented as colours on the map. The `scale_x_continuous()` and `scale_y_continuous()` functions are similar, in that they control the horizontal (X) and vertical (Y) axes on the map. We don't need to use most of the capabilities of these because `ggplot()` sets reasonable default values. The only argument we need to set is the `expand` argument, which controls how far the map should extend around the area covered by the data.
+For more-specific control over what area is shown, we can use the `scale_x_continuous()` and `scale_y_continuous()` functions from the ggplot2 package. We used the `scale_fill_distiller()` function in @sec-map-colour to control how columns in the data are represented as colours on the map. The `scale_x_continuous()` and `scale_y_continuous()` functions are similar, in that they control the horizontal (X) and vertical (Y) axes on the map. We don't need to use most of the capabilities of these because `ggplot()` sets reasonable default values. The only argument we need to set is the `expand` argument, which controls how far the map should extend around the area covered by the data.
 
 The easiest way to set the correct values for the `expand` argument is to use the `expansion()` helper function. We can use this to specify how much extra area around the data we want to include on the map. For example, `expansion(2)` means that the axis of the map should cover the area covered by the data and twice that distance either side of the data.
 
@@ -450,13 +450,13 @@ ggplot() +
 
 :::
 
-This makes it easier to see that the shootings started at the point on the left of the map, but makes the problem of understanding the sequence of events in the town itself even worse. We will deal with this in the next section.
+This makes it easier to see that the shootings started at the point on the left of the map, but makes the problem of understanding the sequence of events in the town itself even worse. We will deal with this in @sec-crime-series-multiple-maps.
 
 In @map-hungerford-shootings-arrowheads, we used the `geom_segment()` function to add the lines to our map. If we change this to `geom_curve()` the lines will become curved rather than straight. By specifying `curvature = -0.2` we get a slightly straighter line than the default, and a left-hand curve because the value of `curvature` is negative. These curves show only the sequence in which the locations were visited. They do not show the route travelled between locations, which is not recorded in the data.
 
 The other change we can make at this point is to add a layer of labels showing the order in which the shootings occurred. We don't want the labels to overlap the points, so instead of adding labels with the `geom_label()` function from the ggplot2 package we will use `geom_label_repel()` from the ggrepel package that we learned about in @sec-chart-continuous. `geom_label_repel()` creates labels that are automatically offset from the points they relate to. For now, we will just label the first two locations.
 
-At this point we can also make some minor changes to the map: adding a title and scale bar, putting a border around the map, and temporarily removing the base map attribution statement. The purpose of those changes will become clear in the next section.
+At this point we can also make some minor changes to the map: adding a title and scale bar, putting a border around the map, and temporarily removing the base map attribution statement. The purpose of those changes will become clear in @sec-crime-series-multiple-maps.
 
 Add this code to the `chapter_16.R` script file and run it.
 
@@ -536,7 +536,7 @@ hungerford_map_overall
 :::
 
 
-Now we have added arrowheads and curved lines, in the next section we will learn how to solve the problem of the events in the town itself being unclear on the map.
+Now we have added arrowheads and curved lines, in @sec-crime-series-multiple-maps we will learn how to solve the problem of the events in the town itself being unclear on the map.
 
 
 ::: {.callout-quiz .callout title="Mapping crime series"}
@@ -585,7 +585,7 @@ series_quiz3 <- c(
 :::
 
 
-## Multiple maps
+## Multiple maps {#sec-crime-series-multiple-maps}
 
 <p class="full-width-image"><img src="../images/patchwork_1.jpg" alt="Cartoon labelled patchwork: combine and arrange your ggplots. Monsters build a display with plots P1 and P2 side by side above a wider P3. A plan shows the expression (P1 + P2) / P3, linking the operators to the resulting layout."></p>
 
@@ -593,7 +593,7 @@ Our existing map is difficult to understand because we have a mix of some events
 
 <a href="https://patchwork.data-imaginist.com/" class="no-external" aria-label="Visit the patchwork package website"><img src="../images/patchwork.png" alt="" class="right-side-image"></a>
 
-To deal with this problem we can display two maps: an *overview map* showing the whole area covered by the points and a *detail map* showing only the events in the town of Hungerford itself. In @sec-small-multiple we created small-multiple maps with `facet_grid()`, but what we want to do here is slightly different. In this case the maps show the same data at different scales, rather than different data for the same area. To combine these maps, we need to use the [patchwork package](https://patchwork.data-imaginist.com/), which can combine multiple maps or charts made using `ggplot()` into a single output.
+To deal with this problem we can display two maps: an *overview map* showing the whole area covered by the points and a *detail map* showing only the events in the town of Hungerford itself. In @sec-map-change-over-time we created small-multiple maps with `facet_grid()`, but what we want to do here is slightly different. In this case the maps show the same data at different scales, rather than different data for the same area. To combine these maps, we need to use the [patchwork package](https://patchwork.data-imaginist.com/), which can combine multiple maps or charts made using `ggplot()` into a single output.
 
 We have already saved the overview map as `hungerford_map_overall`. We can create a detail map showing only the shootings in Hungerford itself by removing the first two points from `hungerford_shootings` (since they represent shootings outside the town itself). We can do this for all the existing layers using the `slice()` function from the dplyr package.
 
@@ -690,7 +690,7 @@ hungerford_map_overall / hungerford_map_town
 :::
 
 
-When we created the `hungerford_map_overall` object in the previous section, we gave the map title a _negative_ margin using the `plot.title` argument to the `theme()` function. This had the effect of moving the title downwards onto the map to save space, since the top-left corner of the map was empty. We also added a scale bar, since when you present two related maps of different scales next to one another, it is useful to show the scales of both maps to help readers relate them to one another. You can see in @map-hungerford-shootings-combined, for example, the very different scales of the two maps.
+When we created the `hungerford_map_overall` object in @sec-crime-series-adding-arrows-and-curves, we gave the map title a _negative_ margin using the `plot.title` argument to the `theme()` function. This had the effect of moving the title downwards onto the map to save space, since the top-left corner of the map was empty. We also added a scale bar, since when you present two related maps of different scales next to one another, it is useful to show the scales of both maps to help readers relate them to one another. You can see in @map-hungerford-shootings-combined, for example, the very different scales of the two maps.
 
 We can add shared titles and captions to combined maps created with patchwork using the `plot_annotation()` function. We will add an overall title for the combined maps, as well as adding back the base map attribution statement, since it applies to both maps so there is no need to take up space by adding it to each map individually.
 
@@ -819,7 +819,7 @@ When we are mapping crime data, it is important to remember that the rows in the
 
 <p class="full-width-image image-border"><img src="../images/roger_brereton.jpg" alt="Black-and-white photograph of uniformed pallbearers carrying a flower-topped coffin at the funeral of police constable Roger Brereton, who was killed in the Hungerford massacre. Other mourners and uniformed officers stand nearby."></p>
 
-The complete script below contains everything needed to download the original data and make and save the composite map. Save `chapter_16.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}.
+The complete script in @lst-crime-series-show-chapter-16-script contains everything needed to download the original data and make and save the composite map. Save `chapter_16.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}.
 
 {{< include /include/_check-reproducibility.qmd >}}
 

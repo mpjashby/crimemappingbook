@@ -121,7 +121,7 @@ In each chapter of this book, you will create one or more R script files to stor
 We will learn more about naming files in @sec-file-names, but for now it's enough to know that file names should help us keep our files organised. We will create two separate code files in this chapter, so we will use letters after the chapter number to distinguish between the different files.
 :::
 
-Each chapter in this book includes chunks of R code that you can run in Positron. We can think of this code as falling into two categories. _Permanent code_ is code that we need to run to complete a piece of data analysis. For example, in the next section we will see some permanent code that loads some crime data. We type permanent code in the R script file that we have just created. By the end of this chapter, the script file we have just created will contain all the code needed to make a basic crime map.
+Each chapter in this book includes chunks of R code that you can run in Positron. We can think of this code as falling into two categories. _Permanent code_ is code that we need to run to complete a piece of data analysis. For example, in @sec-load-data we will see some permanent code that loads some crime data. We type permanent code in the R script file that we have just created. By the end of this chapter, the script file we have just created will contain all the code needed to make a basic crime map.
 
 As well as permanent code, we sometimes also need to write _temporary code_. This is code that we don't need to complete an analytical task, but we do need _to write the permanent code that completes a task_. For example, we might need to write a piece of code that shows us the name of each column in a dataset, so we can refer to columns by name in our script file. Once we know the names of the columns, we no longer need the code we wrote to find out the column names, which is why we refer to it as temporary code.
 
@@ -174,7 +174,7 @@ permanent_code_quiz2 <- c(
 
 Before we can work with our data, we first load packages of functions for use in the analysis. For example, we will load the *tidyverse* package, which automatically loads several packages that are useful for data wrangling and analysis. The tidyverse package is the package we will use most often during this course, so much so that we will load it at the start of every script that we write.
 
-Copy the code below and paste it into the blank file `chapter_02a.R` that you created earlier. This adds these lines of code to your script, but you need to _run_ that code for it to do anything. It's easy to forget to run the code you've written, so whenever you write a piece of code in a script file, remember to run it!
+Copy @lst-your-first-crime-map-script-02a-packages and paste it into the blank file `chapter_02a.R` that you created earlier. This adds these lines of code to your script, but you need to _run_ that code for it to do anything. It's easy to forget to run the code you've written, so whenever you write a piece of code in a script file, remember to run it!
 
 ```{r}
 #| label: script-02a-packages
@@ -236,7 +236,7 @@ The first task in creating any crime map is to obtain the crime and other data n
 
 The data we will use will be records of homicides in the Downtown neighbourhood of Atlanta, Georgia, in 2019. This data is stored in an online repository, so the first thing we need to do is to download the data and store it so we can use it now and in future. We could use a web browser to download the data, then move it to the folder in which we want to store it, but there are several reasons not to do that. Two reasons will be enough for now: first, manually downloading the data often needs more steps (which becomes tedious if you have to do it many times), and second, it is easy to make mistakes when downloading data manually. Instead, we will use R to download the data for us.
 
-To do almost anything in R we use one or more _functions_. A _function_ in R is a piece of code that performs an action. You can think of functions as being like verbs (i.e. 'doing words'), which is why the names of functions are often verbs such as `filter()`, `select()`, etc. To download the homicide data we need we will use two functions, which we combine together using something called a _pipe operator_ that looks like this: `|>`. We will come back to the pipe operator later, because it is important but can be hard to understand. For now, just think of the combination of two functions linked by a pipe as a single unit of code -- we will come back to the details later.
+To do almost anything in R we use one or more _functions_. A _function_ in R is a piece of code that performs an action. You can think of functions as being like verbs (i.e. 'doing words'), which is why the names of functions are often verbs such as `filter()`, `select()`, etc. To download the homicide data we need we will use two functions, which we combine together using something called a _pipe operator_ that looks like this: `|>`. We will explore the pipe operator in @sec-pipe-operator, because it is important but can be hard to understand. For now, just think of the combination of two functions linked by a pipe as a single unit of code -- see @sec-pipe-operator when you are ready to explore the details.
 
 Copy these lines of code into your R script file. Now click anywhere on either line of the code and press {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard to run the code. Assuming your computer is connected to the internet, you should see some lines of text appear in the R Console.
 
@@ -303,7 +303,7 @@ head(homicides)
 If you see the error message `Error: object 'homicides' not found`, it means that the `homicides` object has not been created. There are two common causes of this error:
 
 1. You have not run the line of code that loads the data into R (the line that starts with `homicides <- read_csv(...)`). To fix this, go back to your R script file and run that line of code, then try running `head(homicides)` again.
-2. There is a typo in the code `head(homicides)` -- maybe a misspelling of the word 'homicides'. Check the code matches what is written above, then try running it again.
+2. There is a typo in the code `head(homicides)` -- maybe a misspelling of the word 'homicides'. Check the code matches @lst-your-first-crime-map-head-homicides, then try running it again.
 :::
 
 
@@ -599,7 +599,7 @@ based on the wrangled data
 
 So that people viewing the map will understand where the homicides occurred, we will plot the homicides on top of a _base map_ showing streets, parks and other geographic features obtained from an online web mapping service. Almost all crime maps need a base map, otherwise it would be very difficult to understand where the crimes occurred.
 
-To do that we will use a function called `hotspot_map()` from the sfhotspot R package. This is a package we will use a lot in this book, since it is specifically designed for analysing concentrations of crime. The `hotspot_map()` function is designed to make maps quickly using sensible defaults about what a map should generally look like. In future chapters we'll learn much more about how to make customised maps, but for now we will use the default settings to produce a simple map of the homicides.
+To do that we will use a function called `hotspot_map()` from the sfhotspot R package. This is a package we will use a lot in this book, since it is specifically designed for analysing concentrations of crime. The `hotspot_map()` function is designed to make maps quickly using sensible defaults about what a map should generally look like. In @sec-other-layers and @sec-map-context we'll learn much more about how to make customised maps, but for now we will use the default settings to produce a simple map of the homicides.
 
 Copy the code into the `chapter_02a.R` file, put the cursor somewhere on the line that includes the function `hotspot_map()`, then press {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard.
 
@@ -626,7 +626,7 @@ hotspot_map(
 
 When you run this code in Positron, you should see a map like @map-atlanta-downtown-homicides appear in the Plots panel in the bottom-right of the Positron window. Depending on the size of the screen you are using, the map might be quite small. If so, you might want to split the Plots panel out into a separate window so that you can see the map more clearly. To do this, look for two icons in the top-right corner of the Plots panel. The icon on the right is a rubbish bin, but the icon to the left of it looks like a square with an arrow pointing out of it. Click the small downward-facing triangle between the two icons and then click **Open Plots Gallery in New Window**. You will now see a larger version of the map in a separate window -- you can resize this window to make the map as large as you want on your screen.
 
-The map we have created with this code is very basic. Later in the course we will learn to make much better maps. For now, you can experiment with changing the appearance of the map by changing various parts of the code above. For example, you could change the colour of the points that mark the homicides by changing the code `colour = "orangered1"` to `colour = "mediumblue"`, or change the base map to a different style by changing the code `basemap_type = "cartolight"` to `basemap_type = "cartodark"`. Try some of these out -- after you make each change, press {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard to run the code again to see how the map changes.
+The map we have created with this code is very basic. Later in the course we will learn to make much better maps. For now, you can experiment with changing the appearance of the map by changing various parts of @lst-your-first-crime-map-script-02a-map. For example, you could change the colour of the points that mark the homicides by changing the code `colour = "orangered1"` to `colour = "mediumblue"`, or change the base map to a different style by changing the code `basemap_type = "cartolight"` to `basemap_type = "cartodark"`. Try some of these out -- after you make each change, press {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard to run the code again to see how the map changes.
 
 When you have finished experimenting with this code, save the `chapter_02a.R` file by hitting {{< kbd win="Ctrl-S" mac="Command-S" >}} on your keyboard.
 
@@ -753,7 +753,7 @@ Keep both `chapter_02a.R` and `chapter_02b.R` in your `R` folder. They are worki
 :::
 
 
-The map we have produced in this chapter is effective for showing the locations of just a few crimes, but is too limited to show more complicated patterns or larger datasets. In the following chapters, we will build the data-wrangling skills needed to work with larger datasets before returning to crime mapping in more detail.
+The map we have produced in this chapter is effective for showing the locations of just a few crimes, but is too limited to show more complicated patterns or larger datasets. In @sec-wrangling-data and @sec-transforming-data, we will build the data-wrangling skills needed to work with larger datasets before returning to crime mapping in @sec-second-map.
 
 
 ::: {.callout-quiz .callout title="Revision questions"}

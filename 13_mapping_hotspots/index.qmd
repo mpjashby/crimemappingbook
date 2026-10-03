@@ -377,7 +377,7 @@ hotspot_map(
 
 ::: {.callout-important title="`osmdata_sf()` returns data for a bounding box"}
 
-Remember that `osmdata_sf()` gets OSM data for the area covered by the _bounding box_ of the input feature, not the feature boundaries. This means some of the buildings returned by the code above will be outside the wards we are interested in. We will deal with that shortly.
+Remember that `osmdata_sf()` gets OSM data for the area covered by the _bounding box_ of the input feature, not the feature boundaries. This means some of the buildings returned by @lst-mapping-hotspots-script-13a-buildings will be outside the wards we are interested in. We will deal with that shortly.
 
 :::
 
@@ -460,7 +460,7 @@ head(burglary_risk)
 
 ::: {.callout-note title="What does `NaN` mean?" collapse="true"}
 
-You might recall from earlier in this chapter that by default, the value of the `kde` column in the object produced by `hotspot_dual_kde()` is calculated by dividing the density of burglary in each grid cell by the density of buildings in the same grid cell. There are two cases where this will produce a result that is not a finite number:
+You might recall from @sec-mapping-hotspots-calculating-dual-kernel-density that by default, the value of the `kde` column in the object produced by `hotspot_dual_kde()` is calculated by dividing the density of burglary in each grid cell by the density of buildings in the same grid cell. There are two cases where this will produce a result that is not a finite number:
 
   * If, for a particular cell, the density of burglaries and density of buildings are both zero, dividing one by the other will produce the result `NaN`, for 'not a number'.
   * If the density of burglaries is greater than zero but the density of buildings is exactly zero, the result will be `Inf`, for 'infinite'.
@@ -570,7 +570,7 @@ dual_kde_quiz2 <- c(
 
 
 
-## Finding hotspots using Gi*
+## Finding hotspots using Gi* {#sec-gi-hotspots}
 
 We have explored how to produce a better map of the density of crime in different areas. But how do we know which areas count as hotspots and which don't?
 
@@ -971,7 +971,7 @@ Higher values of `density_adjust` produce physically smaller hotspots that have 
 
 While you should set `min_pts` based on your expert judgement of the minimum number of crimes that might be worthy of action, deciding on the best value of `density_adjust` is usually a matter of trial and error. As a starting point, it's often useful to produce a DBSCAN map using the default `density_adjust = 2` and look at the results, then vary `density_adjust` up or down depending on how useful you think the results are likely to be in supporting the purpose of your analysis. This inevitably involves some skill, which you will develop with time and experience. In particular, it is important (as in all data analysis) to understand the purpose for which you are conducting analysis, and how people are going to use the results of the analysis you produce.
 
-Now that we have explored how to control the DBSCAN algorithm, let's create a DBSCAN map in R. We'll use the same robbery data as in the previous section. Create a new file called `chapter_13c.R` and save it in the `R` folder of your `crime_mapping` workspace as usual. Now add the code needed to load the packages and data we need, so that it's possible to run this script independently of the other scripts in this chapter. Read the two notes below this code, which explain two minor differences between this code and most of the similar code we have used before.
+Now that we have explored how to control the DBSCAN algorithm, let's create a DBSCAN map in R. We'll use the same robbery data as in @sec-gi-hotspots. Create a new file called `chapter_13c.R` and save it in the `R` folder of your `crime_mapping` workspace as usual. Now add the code needed to load the packages and data we need, so that it's possible to run this script independently of the other scripts in this chapter. Read the two notes accompanying @lst-mapping-hotspots-script-13c-prepare, which explain two minor differences between this code and most of the similar code we have used before.
 
 ```{r}
 #| label: script-13c-prepare

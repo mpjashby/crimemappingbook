@@ -27,7 +27,7 @@ san_fran_rob <- crimemappingdata::san_francisco_robbery
 
 ## Introduction
 
-**Over the next five chapters, we will learn all the skills needed to make a good crime map in R.** We will learn to:
+**From @sec-wrangling-data to @sec-map-context, we will learn all the skills needed to make a good crime map in R.** We will learn to:
 
 * load data from a variety of sources, select columns and filter rows (this chapter);
 * create new columns in datasets, change existing columns and summarise groups of rows (@sec-transforming-data);
@@ -97,7 +97,7 @@ As we learned in @sec-first-map, permanent code needed to repeat the analysis be
 
 In this chapter we will learn how to wrangle data in R using *functions* – specialised pieces of code that *do* something to the data we give them. The code to use a function (sometimes called *calling* the function) has two parts: the function name followed by a pair of parentheses, inside which are zero or more *arguments* separated by commas. Arguments are a way of providing input that a function works on, or to fine-tune the way the function works (we will see many examples of this later). Remember that you can identify a function in R because the name will always have parentheses after it.
 
-One basic R function is `sqrt()`, which calculates the square root of a number. The `sqrt()` function has only one argument: the number that we want to find the square root of. If we typed the following code into the R Console, R would show us the square root of 2.
+One basic R function is `sqrt()`, which calculates the square root of a number. The `sqrt()` function has only one argument: the number that we want to find the square root of. If we typed @lst-data-wrangling-calculate-square-root into the R Console, R would show us the square root of 2.
 
 ```{r}
 #| label: calculate-square-root
@@ -351,7 +351,7 @@ head(san_fran_rob)
 
 Loading data from Microsoft Excel files is very similar to loading CSV data, with a few important differences. Functions to load Excel data are contained in the `readxl` package.
 
-Create a second R script by repeating the Positron steps you used earlier. Name the file `chapter_03b.R` and save it in the `R` folder. Add the following code, then place the cursor on each statement and press {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} to run it.
+Create a second R script by repeating the Positron steps you used earlier. Name the file `chapter_03b.R` and save it in the `R` folder. Add @lst-data-wrangling-script-03b-download, then place the cursor on each statement and press {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} to run it.
 
 ```{r}
 #| label: script-03b-download
@@ -472,7 +472,7 @@ In this section we will learn how to reduce the size of our data by selecting on
 
 We can use the `select()` function from the [dplyr package](https://dplyr.tidyverse.org/) (one of the packages that is loaded automatically when we call the `pacman::p_load(tidyverse)` function) to select columns.
 
-If we wanted to select just the `date` and `location_type` columns from the `agg_assault_data` we loaded in the previous section, we can use this code:
+If we wanted to select just the `date` and `location_type` columns from the `agg_assault_data` we loaded in @sec-data-wrangling-loading-excel-data, we can use this code:
 
 ```{r}
 #| label: select-assault-date-and-location
@@ -485,7 +485,7 @@ select(agg_assault_data, date, location_type)
 
 <a href="https://dplyr.tidyverse.org/" aria-label="Visit the dplyr package website" class="no-external"><img src="../images/dplyr.png" class="right-side-image" alt=""></a>
 
-In a previous section, we mentioned that the code needed to run (or *call*) a function in R has two parts: the function name followed by a pair of parentheses, inside which are zero or more *arguments* separated by commas. The arguments in the `select()` function (and many other functions in the `dplyr` package) work in a slightly different way to many other functions. Here, the first argument is the name of the data object that we want to select from. All the remaining arguments (here, `date` and `location_type`) are the names of the columns we want to select from the data. 
+In @sec-data-wrangling-functions, we mentioned that the code needed to run (or *call*) a function in R has two parts: the function name followed by a pair of parentheses, inside which are zero or more *arguments* separated by commas. The arguments in the `select()` function (and many other functions in the `dplyr` package) work in a slightly different way to many other functions. Here, the first argument is the name of the data object that we want to select from. All the remaining arguments (here, `date` and `location_type`) are the names of the columns we want to select from the data.
 
 We can select as many columns as we want, by just adding the names of the columns separated by commas. The columns in our new dataset will appear in the order in which we specify them in the `select()` function.
 
@@ -596,7 +596,7 @@ filter(
 
 ::: {.callout-important title="`filter()` returns rows that meet all the criteria you specify"}
 
-When you run the code above, the result will contain only those rows in the original data for which the `location_category` column has the value 'retail' _and_ the `location_type` column has the value 'convenience store'.
+When you run @lst-data-wrangling-filter-convenience-store-assaults, the result will contain only those rows in the original data for which the `location_category` column has the value 'retail' _and_ the `location_type` column has the value 'convenience store'.
 :::
 
 As well as filtering using the `==` (equals) operator, we can filter using the greater-than (`>`), less-than (`<`), greater-than-or-equal-to (`>=`) and less-than-or-equal-to (`<=`) operators. For example, we can choose offences that occurred in residences on or after 1 July 2019:

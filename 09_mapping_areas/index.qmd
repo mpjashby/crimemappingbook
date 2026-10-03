@@ -22,7 +22,7 @@ pacman::p_load(here, httr2, leaflet, sf, sfhotspot, tidyverse)
 
 ## Introduction
 
-In previous chapters we have produced maps based on the locations of individual crimes, either showing the individual locations directly on a point map or showing patterns derived from the individual points on a density map. Data that includes the locations of individual crimes is sometimes known as _point data_ because we know the point in space at which each crime occurred. 
+In @sec-second-map we produced a point map showing the locations of individual crimes, and in @sec-kde we produced a density map showing patterns derived from those individual points. Data that includes the locations of individual crimes is sometimes known as _point data_ because we know the point in space at which each crime occurred.
 
 ::: {#map-mexico-city-carjacking-representations}
 
@@ -454,7 +454,7 @@ car_jacking_map
 :::
 
 
-We could build on this map in several ways. For example, in @sec-calculating-rates we will learn how to show crime _rates_ on a map, as an alternative to crime counts. But in the next section, we will learn how to make interactive crime maps.
+We could build on this map in several ways. For example, in @sec-calculating-rates we will learn how to show crime _rates_ on a map, as an alternative to crime counts. But in @sec-interactive-maps, we will learn how to make interactive crime maps.
 
 Your complete script for this analysis should now look like this:
 
@@ -471,7 +471,7 @@ Save `chapter_09a.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Keep 
 
 
 
-## Making an interactive map
+## Making an interactive map {#sec-interactive-maps}
 
 
 So far in this course, all the maps we have made using `hotspot_map()` have been static images. These are useful for lots of different circumstances, and are usually the only choice if we want to produce a written report as a Word document or PDF. But in some circumstances it may be useful to produce a map that you can interact with by zooming in or panning around different areas. This can be useful when readers might want to look at areas of the map in more detail than is possible without zooming in.
@@ -483,7 +483,7 @@ In this section we will make an interactive map of counts of murders in each dis
 
 Restart R using the **Restart R** (**&#10227;**) button in Positron's **Console** panel. Create a new R script and save it as `chapter_09b.R` in the `R` folder. Keep all the permanent code for the Uttar Pradesh analysis in this file.
 
-Paste the following code into `chapter_09b.R`, then run it by pressing {{< kbd win="Ctrl-A" mac="Command-A" >}} followed by {{< kbd win="Ctrl-Enter" mac="Command-Return" >}}. The code downloads copies of the source data into `data/raw`, then loads those local files.
+Paste @lst-mapping-areas-script-09b-prepare into `chapter_09b.R`, then run it by pressing {{< kbd win="Ctrl-A" mac="Command-A" >}} followed by {{< kbd win="Ctrl-Enter" mac="Command-Return" >}}. The code downloads copies of the source data into `data/raw`, then loads those local files.
 
 ```{r}
 #| label: script-09b-prepare
@@ -677,7 +677,7 @@ In this map we use the 'Stadia.AlidadeSmooth' style of base map, but leaflet can
 
 However, this map isn't very useful for understanding murders in Uttar Pradesh because it doesn't show how many murders there were in each district. To do that, we need to specify that each district should be coloured according to the values in the `murder` column of the `district_murders` object. With a map created by combining ggplot2 functions with `hotspot_map()`, we would do this with a function such as `scale_fill_distiller()` (see @sec-map-colour), but with a leaflet map the code we need is slightly more complicated and has two separate stages.
 
-The first stage is to create a custom function that converts the values in the `murder` column of the `district_murders` object into colours. To do this, we use the `colorNumeric()` function from the leaflet package. Yes, this means that we are using a function to create a function, which we will then later use to set an argument of another function -- programming languages are very powerful, but that sometimes means they are complicated. Fortunately, you can use the following code as a template for creating interactive choropleth maps in future.
+The first stage is to create a custom function that converts the values in the `murder` column of the `district_murders` object into colours. To do this, we use the `colorNumeric()` function from the leaflet package. Yes, this means that we are using a function to create a function, which we will then later use to set an argument of another function -- programming languages are very powerful, but that sometimes means they are complicated. Fortunately, you can use @lst-mapping-areas-script-09b-count-palette as a template for creating interactive choropleth maps in future.
 
 The `colorNumeric()` function (note the spelling of "color") allows us to specify the colour scheme using the `palette` argument. The `domain` argument specifies the values to which that scheme will be applied. Setting an explicit domain makes sure a particular value is always assigned the same colour. The `palette` argument accepts the same values as the palette argument to the `scale_fill_distiller()` function from ggplot2:
 
@@ -709,7 +709,7 @@ RColorBrewer::brewer.pal.info |>
 
 
 
-To create the custom colour palette function, we use the `<-` operator to assign the result produced by `colorNumeric()` to a name, just as we would with an object. We can give this custom function any name we like, but in the code below we'll call it `murder_colours`.
+To create the custom colour palette function, we use the `<-` operator to assign the result produced by `colorNumeric()` to a name, just as we would with an object. We can give this custom function any name we like, but in @lst-mapping-areas-script-09b-count-palette we'll call it `murder_colours`.
 
 Once we have created a custom colour palette function using `colorNumeric()`, we can use that function to create the appropriate values for the `fillColor` argument of the `addPolygons()` function in our existing `leaflet` stack. Since we want the map colours to be controlled by the `murder` column in the `district_murders` object, we specify `murder` as the only argument to the `murder_colours()` palette function we have created.
 
@@ -1025,7 +1025,7 @@ district_murders <- districts |>
 ```
 
 
-Add this code to your script file in place of the previous code that joined together the `districts` and `murders` datasets. Now look at the new `district_murders` object you've just created:
+Add this code to your script file in place of @lst-mapping-areas-script-09b-initial-join, which joined together the `districts` and `murders` datasets. Now look at the new `district_murders` object you've just created:
 
 ```{r}
 #| label: preview-district-murder-rates
@@ -1064,7 +1064,7 @@ district_murders <- districts |>
 
 ### Mapping crime rates {#sec-mapping-areas-mapping-crime-rates}
 
-To create a choropleth map of the murder rate using `leaflet`, we simply use the code from our previous interactive map but specify that the `murder_rate` column be used to determine the colour of each district polygon rather than the `murder` column. We will also change the base map to a different style.
+To create a choropleth map of the murder rate using `leaflet`, we simply use the code from our interactive map in @lst-mapping-areas-script-09b-count-map but specify that the `murder_rate` column be used to determine the colour of each district polygon rather than the `murder` column. We will also change the base map to a different style.
 
 
 ::: {.callout-important title="Be clear about how you calculated a crime rate"}

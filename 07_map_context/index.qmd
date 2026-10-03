@@ -3,7 +3,7 @@
 ![](../images/chapter-headers-2026/07_map_context.png){fig-alt="Students examine a map with colour swatches, north arrow and scale bar." width=100%}
 
 ::: {.abstract}
-In previous chapters we've learned how to make maps of crime data. In this chapter we'll learn to make those maps more useful by adding context using titles, legends and other supporting elements. In particular we'll focus on the important of _visual hierarchy_ in guiding a reader's attention to the most important parts of a map. We'll also learn how to save a finished map as a file so that it can be shared with others.
+In @sec-second-map and @sec-mapping-patterns we've learned how to make maps of crime data. In this chapter we'll learn to make those maps more useful by adding context using titles, legends and other supporting elements. In particular we'll focus on the important of _visual hierarchy_ in guiding a reader's attention to the most important parts of a map. We'll also learn how to save a finished map as a file so that it can be shared with others.
 :::
 
 
@@ -377,7 +377,7 @@ supporting_elements_quiz2 <- c(
 
 
 
-## Creating and storing a map
+## Creating and storing a map {#sec-creating-storing-map}
 
 Since we will be adding various elements to a map in this chapter, we will first create a map and save it as an R object. Any map produced using the `hotspot_map()` function can be saved as an object using the assignment operator `<-`. Just as for the result of any other R function, if we save it to an object the result will not be printed to the screen, but we can easily see the plot by simply typing the object name in the R console.
 
@@ -497,7 +497,7 @@ shootings_map
 
 :::
 
-The code used to create this map is very similar to the code we used in one of the previous chapters to make a map of bike theft in Vancouver, although there are a few differences.
+The code used to create this map is very similar to the code we used in @sec-kde to make a map of bike theft in Vancouver, although there are a few differences.
 
 
 ### Formatting numbers using the scales package {#sec-map-context-formatting-numbers-using-the-scales-package}
@@ -940,7 +940,7 @@ Declarative titles are usually more useful than descriptive titles because they 
 
 We can add a title to our map using the `labs()` (short for 'labels') function from the ggplot2 package. We can use `labs()` to add labels to various different parts of a map or plot, but for now we will just use the argument `title` to set the title. 
 
-To see how this works, run the following code in the R Console. Since we have stored the rest of the `hotspot_map()` stack in the `shootings_map` object, this code is equivalent to adding `labs()` to the end of the original stack.
+To see how this works, run @lst-map-context-add-title in the R Console. Since we have stored the rest of the `hotspot_map()` stack in the `shootings_map` object, this code is equivalent to adding `labs()` to the end of the original stack.
 
 ::: {#map-bronx-shootings-title}
 
@@ -1074,7 +1074,7 @@ The `theme()` function has a lot of potential arguments. If you need help using 
 
 Try opening the manual page for `theme()` now to see the list of possible arguments it can take. Fortunately, we will not need most of these arguments most of the time -- ggplot2 has default values built in for every value that can be changed using `theme()`, and these defaults will be reasonable in almost all cases.
 
-To reduce the visual prominence of the map caption, we can change the value of the `plot.caption` argument to `theme()`. Since the caption is a text element (rather than a polygon, line, etc.), we can use the helper function `element_text()` to do this. The following code changes the colour of the caption text to grey and makes the text smaller relative to the default using the helper function `rel()` (for relative sizing) -- `0.8` means the text will be 80% as big as it would have been by default. The caption remains dark enough to read against the white background.
+To reduce the visual prominence of the map caption, we can change the value of the `plot.caption` argument to `theme()`. Since the caption is a text element (rather than a polygon, line, etc.), we can use the helper function `element_text()` to do this. @lst-map-context-format-caption changes the colour of the caption text to grey and makes the text smaller relative to the default using the helper function `rel()` (for relative sizing) -- `0.8` means the text will be 80% as big as it would have been by default. The caption remains dark enough to read against the white background.
 
 Let's have a look at the effect of changing the caption's appearance using `theme()`:
 
@@ -1108,7 +1108,7 @@ The helper function `element_text()` has arguments to control the appearance of 
 
 The `margin` argument controls the space around the text. It is easiest to specify the value of `margin` using the helper function `margin()` designed for that purpose. You specify the top, right, bottom and left margin separately in that order -- to remember the order, think '**tr**ou**bl**e'. By default, margins are specified in points (the same units that are commonly used to specify font sizes).
 
-Now that we have finished setting the text elements for our map, we can save it as a new object that we can use as the basis for the other objects we want to add. Make sure you run this code, since we will need it for the rest of the code below.
+Now that we have finished setting the text elements for our map, we can save it as a new object that we can use as the basis for the other objects we want to add. Make sure you run @lst-map-context-store-titled-map, since the remaining examples use the object it creates.
 
 ```{r}
 #| label: store-titled-map

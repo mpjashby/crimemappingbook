@@ -446,7 +446,7 @@ violence |>
 
 <a href="https://gt.rstudio.com/" aria-label="Visit the gt package website" class="no-external"><img src="../images/gt.png" alt="" class="right-side-image"></a>
 
-The table we created in the last section was better than simply showing the raw data to readers of a report. But we can create much better display tables with the [gt package](https://gt.rstudio.com/), which is designed to format data for display. The gt package works in a similar way to the `ggplot2` package, in that tables are made up of stacks of functions that contribute to the appearance of the final table. One difference is that the layers in a gt stack are joined using the pipe operator (`|>`)
+The table we created in @sec-no-maps-making-data-wider-for-presentation was better than simply showing the raw data to readers of a report. But we can create much better display tables with the [gt package](https://gt.rstudio.com/), which is designed to format data for display. The gt package works in a similar way to the `ggplot2` package, in that tables are made up of stacks of functions that contribute to the appearance of the final table. One difference is that the layers in a gt stack are joined using the pipe operator (`|>`)
 rather than the plus operator (`+`).
 
 We can create a very basic gt table by just passing a data frame or tibble to the `gt()` function. So we can add `gt()` to the end of the pipeline of functions we have already started to build to create a good display table. At this point, the only argument we will add to `gt()` is the `rowname_col` argument, which we use to specify which column in the data holds the row labels (in this case, the name of each state).
@@ -659,7 +659,7 @@ The final structural feature we will add is a summary row containing the total n
 
 Summary rows can be produced using lots of different R functions. For example, we could use the `mean()` function to produce a summary row showing the mean (average) number of crimes of each type across the states. In this case, we want to know the total number of each type of crime across all states, so we will use the `sum()` function. To specify this, we pass the `fns` argument to `summary_rows()`. The `fns` argument has two parts, separated by a tilde (`~`). On the left-hand side we specify the label we want the summary row to have, and on the right-hand side we specify the function we want to use to calculate the summary. In this case, we can specify `fns = "regional total" ~ sum(.)` to say we want the summary row to have the label 'regional total' and that we want to summarise the rows using the `sum()` function. The `.` in the code `fns = "regional total" ~ sum(.)` is a placeholder that represents the data we want to summarise.
 
-As well as summarising the data in each column, we want to specify how the summary values should be formatted. To do that, we use the `fmt` argument of `summary_rows()`. This is also a two-sided ('formula') argument, with the two sides separated by a `~`. On the left-hand side we specify which summary values we want to format. In this case we want all the summary values to be formatted as numbers, so we can use the `everything()` helper function. On the right-hand side we use a call to one of the `fmt_*()` family of functions we used earlier: in this case, we use `fmt_number()`. Looking at the code below, you'll notice that the code `fmt = everything() ~ fmt_number(., decimals = 0)` again uses the `.` placeholder to specify that we want to format the summary value produced by `sum()`.
+As well as summarising the data in each column, we want to specify how the summary values should be formatted. To do that, we use the `fmt` argument of `summary_rows()`. This is also a two-sided ('formula') argument, with the two sides separated by a `~`. On the left-hand side we specify which summary values we want to format. In this case we want all the summary values to be formatted as numbers, so we can use the `everything()` helper function. On the right-hand side we use a call to one of the `fmt_*()` family of functions we used earlier: in this case, we use `fmt_number()`. Looking at @lst-no-maps-script-14a-table, you'll notice that the code `fmt = everything() ~ fmt_number(., decimals = 0)` again uses the `.` placeholder to specify that we want to format the summary value produced by `sum()`.
 
 The `summary_rows()` function produces a summary for each group of rows (in the case of this table, one summary for each region). As well as having a regional total, it would also be useful to have a total for all the groups together (i.e. for the whole country of Malaysia). To do that, we add the `grand_summary_rows()` function to our `gt()` stack, using the same arguments as for the `summary_rows()` function.
 
@@ -732,7 +732,7 @@ Save `chapter_14a.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Your 
 
 ::: {.callout-important title="Tables are not good at showing patterns"}
 
-Tables are good for showing detailed information, particularly when we want to present multiple pieces of information about a single place. But it can be hard to spot patterns in tables even with coloured cells. For this reason, **do not use tables when you are primarily trying to show the relationship between two or more variables**. In the next section, we will learn to create a bar chart in R to show patterns more effectively.
+Tables are good for showing detailed information, particularly when we want to present multiple pieces of information about a single place. But it can be hard to spot patterns in tables even with coloured cells. For this reason, **do not use tables when you are primarily trying to show the relationship between two or more variables**. In @sec-making-charts, we will learn to create a bar chart in R to show patterns more effectively.
 :::
 
 
@@ -782,11 +782,11 @@ tables_quiz3 <- c(
 
 
 
-## Making charts with ggplot2 and ggauto
+## Making charts with ggplot2 and ggauto {#sec-making-charts}
 
 <a href="https://ggplot2.tidyverse.org/" aria-label="Visit the ggplot2 package website" class="no-external"><img src="../images/ggplot2.png" alt="" class="right-side-image"></a>
 
-In previous chapters, all the visualisations we have created have been maps made with `hotspot_map()` and refined with functions from the ggplot2 package. Behind the scenes, `hotspot_map()` constructs a map using other functions from the ggplot2 package, by default making choices that try to produce a good map. We can't use `hotspot_map()` to make these choices for us when we are creating charts because it is specialised for creating maps. Instead, we can use the `ggauto()` function (from the package of the same name) to automatically choose a type of chart that is likely to be appropriate for the data we are working with. We can then use functions from the ggplot2 package to refine the chart in the same way we have refined maps.
+In @sec-other-layers and @sec-map-context, we created maps with `hotspot_map()` and refined them with functions from the ggplot2 package. Behind the scenes, `hotspot_map()` constructs a map using other functions from the ggplot2 package, by default making choices that try to produce a good map. We can't use `hotspot_map()` to make these choices for us when we are creating charts because it is specialised for creating maps. Instead, we can use the `ggauto()` function (from the package of the same name) to automatically choose a type of chart that is likely to be appropriate for the data we are working with. We can then use functions from the ggplot2 package to refine the chart in the same way we have refined maps.
 
 `ggauto()` can create several different types of chart automatically. It chooses which type of chart to make based on how many variables we want to visualise and whether the variables are continuous (e.g. numbers), dates/times (which we will learn more about in @sec-mapping-time), ordered categories or unordered categories. There are some types of chart that `ggauto()` can't handle, or for which the chart produced by `ggauto()` might not be appropriate for particular audiences. In those cases, we can use functions from the ggplot2 package to create a chart from scratch and then refine it to suit our needs.
 
@@ -894,7 +894,7 @@ Note that because `ggauto()` produces a chart, we need to add subsequent functio
 
 `ggauto()` has produced a useful bar chart, but to go any further we need to learn to construct charts ourselves using the full range of functions from the ggplot2 package. For example, we might need to do this if we wanted to change the colour of the bars so that the bar for each state was coloured according to which region it was in.
 
-We can start to learn how to create charts from scratch using functions from ggplot2 by looking at the code that would be needed to reproduce the bar chart in @fig-no-maps-ggauto-bar-labelled without using `ggauto()`. Look through this code and the explanations below it.
+We can start to learn how to create charts from scratch using functions from ggplot2 by looking at the code that would be needed to reproduce the bar chart in @fig-no-maps-ggauto-bar-labelled without using `ggauto()`. Look through @lst-bar-chart-ggplot and its accompanying explanations.
 
 
 ```{r}
@@ -941,7 +941,7 @@ violence |>
 6. The `theme_minimal()` function controls which ggplot2 _theme_ the chart uses. Themes control the supporting elements of a visualisation, such as the appearance of grid lines, which font is used for text, etc. We will learn more about themes in @sec-themes.
 7. The `theme()` function allows us to make further refinements to the theme used by the chart. There are lots of ways we can customise a chart theme. In this case we've removed the default horizontal grid lines (which aren't useful for horizontal bar charts), made the x-axis title right-aligned and moved the chart title to the top-left corner of the chart.
 
-Now you've seen how much code is needed to create a bar chart from scratch, you can see why `ggauto()` is useful for quickly producing a sensible starting point. However, sometimes we will need to go beyond what `ggauto()` can do, so it's useful to know how to create charts from scratch. Before we go beyond what `ggauto()` can do for us, we will first delve a bit deeper into some aspects of the code above that we haven't already covered.
+Now you've seen how much code is needed to create a bar chart from scratch, you can see why `ggauto()` is useful for quickly producing a sensible starting point. However, sometimes we will need to go beyond what `ggauto()` can do, so it's useful to know how to create charts from scratch. Before we go beyond what `ggauto()` can do for us, we will first delve a bit deeper into some aspects of @lst-bar-chart-ggplot that we haven't already covered.
 
 
 ### Controlling the order of categorical variables {#sec-factors}
@@ -1135,7 +1135,7 @@ Fortunately, there are lots of different R packages that provide colour palettes
 * `scale_colour_paletteer_d()`/`scale_fill_paletteer_d()` for _discrete_ scales that are suitable for representing categorical variables.
 * `scale_colour_paletteer_binned()`/`scale_fill_paletteer_binned()` for _binned_ scales that are suitable for showing continuous variables that have been sub-divided ('binned') into ordered categories.
 
-We can use each of these functions in the same way we have used functions like `scale_fill_distiller()` in previous chapters. The first argument to all the main functions in the paletteer package is the name of a colour palette, of which a total of `r scales::comma(nrow(paletteer::palettes_d_names) + nrow(paletteer::palettes_c_names) + nrow(paletteer::palettes_dynamic_names))` different palettes are available. We can specify which palette to use using the same syntax we have sometimes used to refer to R functions: `package_name::palette_name`. For example, to create a discrete colour scale using the OKeeffe2 palette from the [MetBrewer package](https://github.com/BlakeRMills/MetBrewer) (a palette inspired by the painting [_Red and Yellow Cliffs_ by Georgia O'Keeffe](https://www.metmuseum.org/art/collection/search/484833)) we could use `scale_colour_paletteer_d("MetBrewer::OKeeffe2")`.
+We can use each of these functions in the same way we have used functions like `scale_fill_distiller()` in @sec-map-colour. The first argument to all the main functions in the paletteer package is the name of a colour palette, of which a total of `r scales::comma(nrow(paletteer::palettes_d_names) + nrow(paletteer::palettes_c_names) + nrow(paletteer::palettes_dynamic_names))` different palettes are available. We can specify which palette to use using the same syntax we have sometimes used to refer to R functions: `package_name::palette_name`. For example, to create a discrete colour scale using the OKeeffe2 palette from the [MetBrewer package](https://github.com/BlakeRMills/MetBrewer) (a palette inspired by the painting [_Red and Yellow Cliffs_ by Georgia O'Keeffe](https://www.metmuseum.org/art/collection/search/484833)) we could use `scale_colour_paletteer_d("MetBrewer::OKeeffe2")`.
 
 There are many useful colour palettes in the [PrettyCols package](https://nrennie.rbind.io/PrettyCols/). Let's use the Bright palette from this package to control the colours on the chart. This is the final version of the code needed to make the bar chart we want, so we will save it in the `chapter_14b.R` file and then run it to see the finished result.
 
@@ -1395,7 +1395,7 @@ burglary |>
 
 ::: {.callout-tip collapse="true" title="What does the message `Picking joint bandwidth of 1.98` mean?"}
 
-As we explored in previous chapters, density estimation depends on us choosing a _bandwidth_ to control the degree of smoothing between data points. By default, `geom_density_ridges()` chooses a suitable bandwidth automatically and reports this in a message. The bandwidth is referred to as 'joint' because the same bandwidth is used for all the density curves on a chart.
+As we explored in @sec-mapping-crime-patterns-fine-tuning-cell-size-and-bandwidth, density estimation depends on us choosing a _bandwidth_ to control the degree of smoothing between data points. By default, `geom_density_ridges()` chooses a suitable bandwidth automatically and reports this in a message. The bandwidth is referred to as 'joint' because the same bandwidth is used for all the density curves on a chart.
 
 If you wanted to include a ridge plot in a Quarto document, you would probably not want this message to appear in your report. To suppress the message, you can use the Quarto chunk option `#| message: false`.
 :::

@@ -419,7 +419,7 @@ head(thefts)
 
 The Vancouver thefts dataset consists of `r scales::comma(nrow(thefts))` rows, each representing one theft. Before we can map this data, we will need to do some minor data wrangling to get it into the format we want.
 
-In the previous section, we downloaded the Vancouver theft data and then loaded the local file from `data/raw`. To load any file stored on our computer, R needs a _file path_ that specifies where the file is stored.
+In @sec-your-second-crime-map-reading-spatial-data, we downloaded the Vancouver theft data and then loaded the local file from `data/raw`. To load any file stored on our computer, R needs a _file path_ that specifies where the file is stored.
 
 You might have encountered file paths before, but you may not. A typical file path looks like this on a Mac or Linux computer:
 
@@ -447,9 +447,9 @@ or like this on Windows:
 C:\Users\john_smith\Documents\crime_mapping\data\raw\vancouver_thefts.csv
 ```
 
-The important thing to note here is that computers store files such as `vancouver_thefts.csv` in folders (also called directories), which are themselves often stored inside larger folders, etc. A file path tells a computer where to find a particular file. The file paths above can be read as telling the computer to open the `Users` directory, then the `john_smith` directory, then the `Documents` directory, then the `crime_mapping` directory (which you created in @sec-create-project), and finally the file `vancouver_thefts.csv`.
+The important thing to note here is that computers store files such as `vancouver_thefts.csv` in folders (also called directories), which are themselves often stored inside larger folders, etc. A file path tells a computer where to find a particular file. The file paths in @lst-your-second-crime-map-macos-absolute-path-example and @lst-your-second-crime-map-windows-absolute-path-example can be read as telling the computer to open the `Users` directory, then the `john_smith` directory, then the `Documents` directory, then the `crime_mapping` directory (which you created in @sec-create-project), and finally the file `vancouver_thefts.csv`.
 
-The two file paths shown above are called _absolute_ file paths, because they show the full location of a particular file on the computer. Absolute file paths on Windows start with `X:\` (where `X` is a letter representing which disk drive the file is on) and with `/` on Mac and Linux. But there are two problems with absolute paths: they can be very long so they clutter up your code, and (more importantly) they are only correct for a specific computer. If you write an R script that includes either of the file paths above, then you give that file for me to run, the code will immediately produce an error because there is no directory `/Users/john_smith` on my computer.
+The file paths in @lst-your-second-crime-map-macos-absolute-path-example and @lst-your-second-crime-map-windows-absolute-path-example are called _absolute_ file paths, because they show the full location of a particular file on the computer. Absolute file paths on Windows start with `X:\` (where `X` is a letter representing which disk drive the file is on) and with `/` on Mac and Linux. But there are two problems with absolute paths: they can be very long so they clutter up your code, and (more importantly) they are only correct for a specific computer. If you write an R script that includes either of those file paths, then you give that file for me to run, the code will immediately produce an error because there is no directory `/Users/john_smith` on my computer.
 
 ::: {.callout-important title="Never put absolute file paths in your code"}
 
@@ -532,10 +532,10 @@ thefts <- here("data", "raw", "vancouver_thefts.csv.gz") |> # <1>
 2. Load the data from the CSV file into R.
 3. Clean the column names so they are in `snake_case`.
 
-Add the code above to the `chapter_05.R` file and run that line of code. If you now run `head(thefts)` in the R Console, you will see that the data has stayed the same but all the column names are now in snake case. `clean_names()` would also have replaced any spaces with underscores, tried to separate words in the variable names and cleaned up several other potential problems. For this reason it is common to call `janitor::clean_names()` straight away after loading a dataset so that you can be confident that the column names will be in the format you expect.
+Add @lst-your-second-crime-map-script-05-clean-names to the `chapter_05.R` file and run that line of code. If you now run `head(thefts)` in the R Console, you will see that the data has stayed the same but all the column names are now in snake case. `clean_names()` would also have replaced any spaces with underscores, tried to separate words in the variable names and cleaned up several other potential problems. For this reason it is common to call `janitor::clean_names()` straight away after loading a dataset so that you can be confident that the column names will be in the format you expect.
 
 If we wanted to use the `clean_names()` function again, we would have to include the package name and `::` each time, so if our code was going to make repeated use of the function then it would probably be easier to load the package using
-the `pacman::p_load()` function as we have done in previous chapters.
+the `pacman::p_load()` function introduced in @sec-loading-packages.
 
 
 ### Converting our data to an SF object {#sec-your-second-crime-map-converting-our-data-to-an-sf-object}
@@ -1017,7 +1017,7 @@ hotspot_map(bike_thefts, basemap_type = "cartolight", size = 0.7, alpha = 0.1)
 
 Making the points semi-transparent goes _some_ way to making it easier to see where bike theft is most common in Vancouver, but the pattern is not clear and it is not possible to tell which darker points represent a handful of crimes at the same location and which represent hundreds of crimes at the same location. 
 
-To make our map truly useful, we need to use a different technique. In chapter @sec-mapping-patterns we will learn how to identify crime patterns by mapping the _density_ of crime. We will also learn more about aesthetics in @sec-other-layers.
+To make our map truly useful, we need to use a different technique. In @sec-mapping-patterns we will learn how to identify crime patterns by mapping the _density_ of crime. We will also learn more about aesthetics in @sec-other-layers.
 
 ::: {.callout-quiz .callout title="Producing maps in R"}
 
@@ -1050,7 +1050,7 @@ mapping_quiz3 <- c(
 
 :::
 
-Save `chapter_05.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Then start a new R session by clicking the **Restart R** (**&#10227;**) button in Positron's **Console** panel. This creates a blank canvas for the next chapter.
+Save `chapter_05.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. Then start a new R session by clicking the **Restart R** (**&#10227;**) button in Positron's **Console** panel. This creates a blank canvas for @sec-mapping-patterns.
 
 
 ## In summary

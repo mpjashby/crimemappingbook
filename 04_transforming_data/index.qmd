@@ -39,17 +39,17 @@ In this chapter, we will learn how to:
 - combine sequential operations with the pipe operator; and
 - check that a complete script runs in a fresh R session.
 
-Most of the examples in this chapter are labelled **R Console** because they are temporary code that helps us understand and practise each function. In @sec-complete-wrangling-scripts, we will use what we have learned to extend copies of the Chapter 3 scripts and create two complete, reproducible analyses.
+Most of the examples in this chapter are labelled **R Console** because they are temporary code that helps us understand and practise each function. In @sec-complete-wrangling-scripts, we will use what we have learned to extend copies of the scripts from @sec-wrangling-data and create two complete, reproducible analyses.
 
 The complete data-wrangling process follows these stages:
 
-::::: {.process role="img" aria-label="Workflow diagram with four stages in order: load data using the Chapter 3 code; transform it by filtering and creating columns; summarise it by counting and arranging rows; save the prepared data in data/processed."}
+::::: {.process role="img" aria-label="Workflow diagram with four stages in order: load data using the code from Loading and selecting data; transform it by filtering and creating columns; summarise it by counting and arranging rows; save the prepared data in data/processed."}
 
 :::: {.item color="#3182bd"}
 Load data
 
 ::: annotation
-using the code from Chapter 3
+using the code from @sec-wrangling-data
 :::
 ::::
 
@@ -99,7 +99,7 @@ For example, say we wanted to create a new column in our aggravated-assault data
 mutate(agg_assault_data, weekday = wday(date, label = TRUE))
 ```
 
-We can also change existing columns. However (as with objects) there is no way to undo this, so you should only replace columns if you are sure you will not need them. For example, if we wanted to remove the time portion of the `date` variable (which may sometimes be useful, as shown in the next section) using the `as_date()` function (also from the lubridate package) and at the same time create the weekday variable:
+We can also change existing columns. However (as with objects) there is no way to undo this, so you should only replace columns if you are sure you will not need them. For example, if we wanted to remove the time portion of the `date` variable using the `as_date()` function (also from the lubridate package) and at the same time create the weekday variable:
 
 ```{r}
 #| label: convert-date-and-derive-weekday
@@ -243,7 +243,7 @@ summarise(agg_assault_data, n = n(), .by = c(location_category, location_type))
 
 In this code, the `n()` function simply returns the number of rows of data in each group, i.e. the number of rows with each unique combination of values of `location_category` and `location_type`.
 
-Since counting the number of rows in each group in a dataset is a very common task, dplyr includes another function called `count()` that allows you to do the same thing as in the code above, but with slightly less typing. So if you wanted to know how many aggravated assaults had occurred in each location category and type, you could use this code instead of using `summarise()`:
+Since counting the number of rows in each group in a dataset is a very common task, dplyr includes another function called `count()` that allows you to do the same thing as in @lst-transforming-data-count-rows-with-summarise, but with slightly less typing. So if you wanted to know how many aggravated assaults had occurred in each location category and type, you could use this code instead of using `summarise()`:
 
 ```{r}
 #| label: count-rows-with-count
@@ -366,7 +366,7 @@ write_csv(
 )
 ```
 
-There are corresponding write functions for other types of data (which we will come back to when we learn how to handle spatial data), but in this course we will store most non-spatial data in CSV format because it can be read by many different programs.
+There are corresponding write functions for other types of data, but in this course we will store most non-spatial data in CSV format because it can be read by many different programs.
 
 
 ::: {.callout-quiz .callout title="Saving processed data"}
@@ -428,7 +428,7 @@ For example, `filter()` uses the `robbery2` object created by `select()`, but af
 
 It may be useful to read the pipe operator as 'and then', since piped code does the first thing *and then* the second thing with the result *and then* the third thing with the result of that, and so on. Piped code (sometimes called a *pipeline*) is a lot like the series of steps in a recipe.
 
-For example, instead of creating multiple objects called `robbery2`, `robbery3`, `robbery4` and `q1_weekday_counts` and so on, we can use a single code pipeline. We will add this pipeline to a script in @sec-complete-wrangling-scripts. For now, look at the code and the list below that explains what each line does -- note that each pipe operator (`|>`) corresponds to '_and then_' in the explanation below the code.
+For example, instead of creating multiple objects called `robbery2`, `robbery3`, `robbery4` and `q1_weekday_counts` and so on, we can use a single code pipeline. We will add this pipeline to a script in @sec-complete-wrangling-scripts. For now, look at @lst-transforming-data-weekday-counts-pipeline and its numbered explanations -- note that each pipe operator (`|>`) corresponds to '_and then_' in the explanations accompanying @lst-transforming-data-weekday-counts-pipeline.
 
 ```{r}
 #| label: weekday-counts-pipeline

@@ -3,7 +3,7 @@
 ![](../images/chapter-headers-2026/11_writing_reports.png){fig-alt="Students assemble a wide report containing maps and charts with blank content blocks." width=100%}
 
 ::: {.abstract}
-In previous chapters we've learned how to make crime maps, but almost every analysis also needs text, charts and other things to help the audience understand the main messages. In this chapter we will learn how to use a tool called Quarto to produce structured reports in Positron and export them to multiple formats, including HTML, Word and PDF.
+In @sec-second-map and @sec-mapping-patterns we've learned how to make crime maps, but almost every analysis also needs text, charts and other things to help the audience understand the main messages. In this chapter we will learn how to use a tool called Quarto to produce structured reports in Positron and export them to multiple formats, including HTML, Word and PDF.
 :::
 
 
@@ -141,12 +141,16 @@ other formats
 
 Markdown is extremely simple. It uses plain-text characters to represent common text formatting such as titles, emphasised text and so on. For example, the Markdown text:
 
+::::: {#lst-reports-markdown-example}
+
 ```lang-md
 # Introduction
 
 In this chapter we will learn to use a tool called *Quarto* to write reports
 directly in Positron.
 ```
+
+:::::
 
 produces the output:
 
@@ -169,7 +173,7 @@ In Markdown we use the hash character `#` followed by a space to indicate that a
 :::
 
 
-Markdown is designed to be easy to read and easy to write. It is perfectly possible, for example, to read the unformatted Markdown text in the example above. Since Markdown files (which have the file extension `.md`) are plain text, it's also possible to open them on virtually any computer. Markdown is very widely used on the web -- using underscores to mark out italic text
+Markdown is designed to be easy to read and easy to write. It is perfectly possible, for example, to read the unformatted Markdown text in @lst-reports-markdown-example. Since Markdown files (which have the file extension `.md`) are plain text, it's also possible to open them on virtually any computer. Markdown is very widely used on the web -- using underscores to mark out italic text
 and asterisks to mark out bold text even works in messaging apps such as Telegram and WhatsApp.
 
 In Markdown you describe the *structure* of a document, not its appearance. The appearance of the document (which fonts it uses, what margins the pages have and so on) is determined by the template Quarto uses to convert Markdown files into documents of different types. This can save you a lot of time, because you don't need to specify fonts and other formatting. Instead, you can concentrate on the structure of your argument rather than the details of formatting.
@@ -498,9 +502,13 @@ Quarto will process everything in a Quarto document after the header (marked wit
 
 You can include R code inside a line of Markdown text (known as *inline* code) and the result of that code will be included in the document output. Inline R code begins with a backtick character (`` ` ``) followed by a lower-case `r` and a space, and ends with another backtick. For example, add the following sentence beneath the header in `chapter_11.qmd`:
 
+::::: {#lst-reports-inline-date-example}
+
 ```lang-md
 This report was written on `r knitr::inline_expr('format(Sys.Date(), "%e %B %Y")')`.
 ```
+
+:::::
 
 Which would produce the output:
 
@@ -510,12 +518,14 @@ This report was written on `r format(Sys.Date(), "%e %B %Y")`
 :::
 
 ::: {.callout-important title="Remember spacing is important in Quarto"}
-Where you do (and don't) put spaces matters a lot when writing a Quarto document. For example, the inline R code above _must_ have a space after the `r` at the start of the code chunk but _must not_ have a space between the `` ` `` and the `r`, otherwise Quarto will not recognise it as inline R code. So `` `r `` works, but `` ` r `` does not.
+Where you do (and don't) put spaces matters a lot when writing a Quarto document. For example, the inline R code in @lst-reports-inline-date-example _must_ have a space after the `r` at the start of the code chunk but _must not_ have a space between the `` ` `` and the `r`, otherwise Quarto will not recognise it as inline R code. So `` `r `` works, but `` ` r `` does not.
 :::
 
 Putting R code inline is fine for simple pieces of code, but longer pieces of code included inline would become difficult to read (and therefore difficult to debug). Fortunately, we can put as much code as we like in a *code chunk*. To add an R code chunk to a Quarto document, type ```` ```{r} ```` (three backticks followed immediately by `{r}`) on a line on its own, add the R code on the following lines, then close the chunk with ```` ``` ```` (three more backticks) on a line on its own. Positron will highlight the chunk so that it stands out from the surrounding Markdown text.
 
 We can use code chunks to run longer pieces of code that would be difficult to read if the code were inline. For example, if you wanted to load a data file of crime data, filter it for crimes occurring in a particular month and then count the number of rows, you could do the calculation in a code chunk and then include the result inline:
+
+::::: {#lst-reports-count-homicides-example}
 
 ````{verbatim}
 ```{r}
@@ -530,9 +540,11 @@ homicide_count <- medellin_homicides |>
 There were `r scales::comma(homicide_count)` homicides recorded in February 2019.
 ````
 
+:::::
+
 If Positron does not highlight a code chunk, check that you saved the file with a `.qmd` extension and typed the opening and closing backticks correctly.
 
-To help keep track of code chunks, we can label them. Add `#| label:` immediately below the opening line of the chunk, followed by a short label containing letters, numbers and dashes (`-`). For example, we could label the chunk above by adding `#| label: count-all-crimes`. Labels appear in error messages and make it easier to find which part of a document needs attention.
+To help keep track of code chunks, we can label them. Add `#| label:` immediately below the opening line of the chunk, followed by a short label containing letters, numbers and dashes (`-`). For example, the chunk in @lst-reports-count-homicides-example already has the label `count-homicides`, specified by `#| label: count-homicides`. Labels appear in error messages and make it easier to find which part of a document needs attention.
 
 The package that converts Quarto documents into other formats is called knitr -- actually, it's a bit more complicated than that, but one of the nice things about Quarto is you don't need to worry about what's happening behind the scenes.
 
@@ -544,6 +556,8 @@ The package that converts Quarto documents into other formats is called knitr --
 The default Quarto template is set up so that the final document that is produced from your Quarto file will include both the code that you include in any code chunks *and* the output that the code produces. For example, we can use code like this to get our Medellín homicides report started:
 
 
+::::: {#lst-reports-visible-code-example}
+
 ```{r}
 #| label: show-code-chunk-output
 #| echo: false
@@ -551,6 +565,8 @@ The default Quarto template is set up so that the final document that is produce
 
 cat(read_file("../resources/examples/quarto_show_code.qmd"))
 ```
+
+:::::
 
 
 But that code produces the following output. That's probably not what you want because it has the raw R code in it as well as the output from that code:
@@ -567,8 +583,10 @@ We can control the results of code chunks using *chunk options*, sometimes calle
 
 To specify that the code in our R code chunks should not be printed in the final document, we can set the chunk option `#| echo: false`. To specify that both the R code and the _output_ produced by that code (e.g. charts, tables, etc.) should not be shown, we can set the chunk option `#| include: false`.
 
-If we change the code in our previous example to set `#| include: false` to suppress both code and output from the first code chunk and set `#| echo: false` for the second code chunk, the output becomes much more like the report we want:
+If we change the code in @lst-reports-visible-code-example to set `#| include: false` to suppress both code and output from the first code chunk and set `#| echo: false` for the second code chunk, the output becomes much more like the report we want:
 
+
+::::: {#lst-reports-hidden-code-example}
 
 ```{r}
 #| label: show-no-echo-example
@@ -577,6 +595,8 @@ If we change the code in our previous example to set `#| include: false` to supp
 
 cat(read_file("../resources/examples/quarto_hide_code.qmd"))
 ```
+
+:::::
 
 
 ::: {.faux-output}
@@ -601,11 +621,13 @@ execute:
 ---
 ```
 
-You might have noticed in the code above that instead of using `read_csv()` to load the data from the file `medellin_homicides.csv`, we are using a function called `read_csv2()`. That's because the file uses semicolons (`;`) to separate the columns, rather than commas. This is a common convention in countries that use a comma as the decimal mark (most countries in Europe and South America, as well as some elsewhere).
+You might have noticed in @lst-reports-hidden-code-example that instead of using `read_csv()` to load the data from the file `medellin_homicides.csv`, we are using a function called `read_csv2()`. That's because the file uses semicolons (`;`) to separate the columns, rather than commas. This is a common convention in countries that use a comma as the decimal mark (most countries in Europe and South America, as well as some elsewhere).
 
 If you use `read_csv()` to load a semicolon-delimited file, the values from all the columns on each row appear together in a single column. When you load a dataset and unexpectedly see it has been loaded as one column containing many semicolons, inspect the original file and consider using `read_csv2()` instead.
 
-Add the following setup chunk to `chapter_11.qmd`.
+Add the setup chunk in @lst-reports-setup-example to `chapter_11.qmd`.
+
+::::: {#lst-reports-setup-example}
 
 ````{verbatim}
 ```{r}
@@ -640,6 +662,8 @@ medellin_boundary <- here("data", "raw", "medellin_comunas.gpkg") |>
   st_transform("EPSG:3115")
 ```
 ````
+
+:::::
 1. Some rows in this dataset have missing coordinates. `st_as_sf()` will produce an error if there are missing coordinates, so we use `drop_na()` to remove them first.
 2. Since the column names are called `longitud` and `latitud`, we know that we should use the WGS84 coordinate reference system, which has the CRS code EPSG:4326.
 
@@ -719,6 +743,8 @@ The second chunk option we should add is either the `#| fig-cap` chunk option (f
 
 Add this code to the `chapter_11.qmd` Quarto file:
 
+::::: {#lst-reports-figure-reference-example}
+
 ````{verbatim}
 @fig-homicides shows the density of homicides in Medellín, Colombia, from 2010 to 2019.
 
@@ -743,7 +769,9 @@ hotspot_map(
 ```
 ````
 
-Once we have set the label and the caption for a code chunk, we can use that label to insert cross-references into our document. For example, in the code above you can see that the code chunk that creates the map of homicides in Medellín has the chunk option `#| label: fig-homicides`. Just above that code chunk, the figure produced by that chunk is referenced in the text using the code `@fig-homicides`. You can see in the output below that the cross-reference `@fig-homicides` has been changed to the text 'Figure 1', that the cross-reference is a hyperlink (to the part of the document containing the map) and that the map now has a caption that starts 'Figure 1'.
+:::::
+
+Once we have set the label and the caption for a code chunk, we can use that label to insert cross-references into our document. For example, in @lst-reports-figure-reference-example you can see that the code chunk that creates the map of homicides in Medellín has the chunk option `#| label: fig-homicides`. In the same listing, just before the code chunk, the figure produced by that chunk is referenced in the text using the code `@fig-homicides`. You can see in the output below that the cross-reference `@fig-homicides` has been changed to the text 'Figure 1', that the cross-reference is a hyperlink (to the part of the document containing the map) and that the map now has a caption that starts 'Figure 1'.
 
 
 ::: {.faux-output}

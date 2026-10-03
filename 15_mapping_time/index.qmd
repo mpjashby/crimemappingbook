@@ -974,7 +974,7 @@ We also specify `.complete = TRUE` to stop `slide_dbl()` from trying to calculat
 
 Once we've calculated a moving average, we can show this using the line on our chart on top of the existing points, to show the longer-term trends and how much short-term variation there is in the data.
 
-Add this code to the `chapter_15a.R` file and run it. You can see we are also adding some other functions to the `ggplot()` stack, which are explained in the notes below the code.
+Add @lst-mapping-time-plot-assault-moving-average to the `chapter_15a.R` file and run it. You can see we are also adding some other functions to the `ggplot()` stack, which are explained in the accompanying notes.
 
 
 ```{r}
@@ -1026,11 +1026,11 @@ You can experiment with the effect of setting a longer or shorter window for the
 
 The `aes()` function is used to specify which columns in the data will control which parts of the chart. We can use `aes()` in two ways. If we add `aes()` directly to the stack just after `ggplot()`, that will specify which columns in the data will control the appearance of _all_ the layers on the chart. Conversely, if we specify `aes()` inside one of the `geom_*()` family of functions, that will only affect the appearance of that specific layer.
 
-In the code above, we use `aes()` first to specify that the horizontal position of data in _all_ the layers should be controlled by the `week_date` column in the data. We then use `aes()` inside both `geom_point()` and `geom_line()` to specify which (different) columns in the data should be used to control the vertical position of the points and lines.
+In @lst-mapping-time-plot-assault-moving-average, we use `aes()` first to specify that the horizontal position of data in _all_ the layers should be controlled by the `week_date` column in the data. We then use `aes()` inside both `geom_point()` and `geom_line()` to specify which (different) columns in the data should be used to control the vertical position of the points and lines.
 :::
 
 
-## Showing repeating patterns over time
+## Showing repeating patterns over time {#sec-repeating-time-patterns}
 
 We have already seen that there is seasonal variation in the number of aggravated assaults in Chicago. As is very common for assaults, there are more offences in the summer and fewer in the winter. We can see this in the time-series chart we have already produced, but it's hard to see the detail. For example, we might want to know how consistent this seasonal variation is across different years. Is it, for example, consistent enough that the local police might want to restrict the number of officers who can take holidays in certain weeks of the year to maximise the number of officers available when violent crime is likely to be highest?
 
@@ -1294,13 +1294,13 @@ change_quiz3 <- c(
 
 
 
-## How to map change over time
+## How to map change over time {#sec-map-change-over-time}
 
 Time-series or seasonal charts are often the best way to show change in the frequency of crime over time. But it can also be useful to show maps of the patterns of crimes at different points in time. We might, for example, want to show the density of crime in an area for different periods in time.
 
 Choosing how to divide up time into periods is an important step in this process, because in doing so we are converting a continuous variable (time) into a number of categories (periods of time). Whenever we convert a continuous variable to a categorical one we inevitably lose information. For example, if we decided to categorise the maximum temperature every day as being either 'hot' or 'cold', we would lose a lot of information about whether a particular day was moderately hot, very hot, etc. The same is true of time, since by splitting time into periods (hours, days, weeks, etc.) we lose information about variations within each period. This is inevitable, since we can't produce infinite maps showing all the infinite moments in time, but it is the reason why choosing periods carefully is important.
 
-When choosing a period over which to count crime, it is important not to just use default periods like the day from 00:00 to 23:59 just because that is the standard definition of a day. As we saw in the previous section, the peaks of many types of crime like assaults cross over the boundaries between days because the peak frequency is late in the evening. For this reason it may be better to, for example, define a day as a period from 05:00 to 04:59 and count the number of crimes within each day according to that definition. This takes advantage of the fact that very few crimes concentrate in the early hours of the morning.
+When choosing a period over which to count crime, it is important not to just use default periods like the day from 00:00 to 23:59 just because that is the standard definition of a day. As we saw in @sec-repeating-time-patterns, the peaks of many types of crime like assaults cross over the boundaries between days because the peak frequency is late in the evening. For this reason it may be better to, for example, define a day as a period from 05:00 to 04:59 and count the number of crimes within each day according to that definition. This takes advantage of the fact that very few crimes concentrate in the early hours of the morning.
 
 Sometimes, it will be easy to choose periods because they will be dictated by the purpose for which you're creating the map. In this section we will create separate maps showing the density of aggravated assaults in a part of Chicago for each of the standard Chicago Police shifts of 06:00 to 13:59, 14:00 to 21:59 and 22:00 to 05:59 (bearing in mind that the actual hours some officers work may differ slightly).
 
@@ -1361,7 +1361,7 @@ head(assaults_by_shift)
 ```
 
 
-The next step is to produce a kernel density (KDE) layer for assaults occurring in each shift. In a previous chapter we learned how to do this using the sfhotspot package. We could run the `hotspot_kde()` function from that package three times to create the KDE layers for each shift, but there is a simpler way to apply the same function to different parts of a dataset using the `group_modify()` function from `dplyr`.
+The next step is to produce a kernel density (KDE) layer for assaults occurring in each shift. In @sec-kde we learned how to do this using the sfhotspot package. We could run the `hotspot_kde()` function from that package three times to create the KDE layers for each shift, but there is a simpler way to apply the same function to different parts of a dataset using the `group_modify()` function from `dplyr`.
 
 Normally, when we use a function to modify a dataset, that function is applied to the dataset as a whole. With `group_modify()`, we can apply a function to different parts of a dataset separately but still get the result as a single tibble with a column showing which group each row relates to (which is what we need to produce a map).
 
@@ -1488,7 +1488,7 @@ head(kde_by_shift)
 
 Now we have a KDE layer for each shift, we can create three maps for the three shifts. The key thing we need to do is tell R that we want to create multiple maps, with a separate map for each shift. We do that using `facet_grid()` in a similar way as we did in @sec-small-multiple.
 
-Normally when we use `hotspot_map()` to create a KDE map, in the background `hotspot_map()` identifies that the object we're trying to map is a KDE layer and automatically sets up the map with that in mind. Unfortunately, that won't work if we pass `kde_by_shift` to `hotspot_map()` because `kde_by_shift` isn't the direct output from `hotspot_kde()`, it's the output from `hotspot_kde()` that's then been passed through `group_modify()`, `ungroup()` and `st_as_sf()`. The information `hotspot_map()` needs to identify a KDE layer is lost along the way, so we will need to specify more arguments in `hotspot_map()` to give it the correct appearance, and add some extra functions to the stack as well. The extra code is explained in the notes immediately below the next chunk of code.
+Normally when we use `hotspot_map()` to create a KDE map, in the background `hotspot_map()` identifies that the object we're trying to map is a KDE layer and automatically sets up the map with that in mind. Unfortunately, that won't work if we pass `kde_by_shift` to `hotspot_map()` because `kde_by_shift` isn't the direct output from `hotspot_kde()`, it's the output from `hotspot_kde()` that's then been passed through `group_modify()`, `ungroup()` and `st_as_sf()`. The information `hotspot_map()` needs to identify a KDE layer is lost along the way, so we will need to specify more arguments in `hotspot_map()` to give it the correct appearance, and add some extra functions to the stack as well. The extra code in @lst-mapping-time-map-kde-by-shift is explained in the accompanying notes.
 
 
 ::: {#map-chicago-assault-density-by-shift}
@@ -1538,7 +1538,7 @@ hotspot_map(
 
 On this map we can see that some places have a relatively high density of assaults throughout all three shifts, but others only have a high density at certain times. We can perhaps make this clearer by highlighting the grid cells with the highest estimated density of assaults during each shift. We can do this using the `slice_max()` function from dplyr, which allows us to extract the rows in a dataset with the highest values of a particular variable. In this case we will use `slice_max()` together with `group_by()` to get the rows with the highest values _separately for each shift_ rather than those with the highest values across all three shifts combined.
 
-Add the following complete code to the end of `chapter_15a.R` and run it.
+Add @lst-mapping-time-map-highest-kde-by-shift to the end of `chapter_15a.R` and run it.
 
 
 ::: {#map-chicago-highest-assault-density-by-shift}
@@ -1673,7 +1673,7 @@ The first step in producing an animated map is to create a KDE layer for each ho
 
 Since the code to make animated maps is quite long, and our script file is fairly long already, let's start a new script file to store the code needed to make an animated map. Start a new R session by clicking the **Restart R** (**&#10227;**) button in the **Console** panel, then create `chapter_15b.R` in the `R` folder of your `crime_mapping` workspace.
 
-Copy this code into that file and run the code. There is quite a lot of code here, but all of it is code we have seen earlier in this chapter.
+Copy this code into that file and run the code. There is quite a lot of code here, but it builds on the code from @sec-map-change-over-time.
 
 
 ::: {.callout-important title="This code will take a while to run"}
@@ -1882,11 +1882,11 @@ chicago_downtown_kde_map <- hotspot_map(
 
 There is one other feature of gganimate we have used in the code used to make this map. You might have noticed that in the map `subtitle` is the code `{closest_state}`. This is a special code that gganimate will replace with the current value of the variable in the data that is used to control which facet appears in each frame of the animation. So for this map, `{closest_state}` will be replaced in the animation with the value of the `hour_name` variable in the data for each frame in the animation.
 
-One difference between animated maps and other maps we have created in previous chapters is that most of the controls that influence how a map is animated are not contained in a function we add to the `ggplot()` stack, but are instead included in the separate `animate()` function. `animate()` takes a `ggplot()` stack that includes the `transition_states()` function and converts it into the final animation. Among other things, `animate()` controls the type of file the animation will be saved in (by default, an animated GIF), the height and width of the plot and so on.
+One difference between animated maps and the static maps we created in @sec-map-change-over-time is that most of the controls that influence how a map is animated are not contained in a function we add to the `ggplot()` stack, but are instead included in the separate `animate()` function. `animate()` takes a `ggplot()` stack that includes the `transition_states()` function and converts it into the final animation. Among other things, `animate()` controls the type of file the animation will be saved in (by default, an animated GIF), the height and width of the plot and so on.
 
 One important element that is controlled by `animate()` is the speed of the animation. Controlling the length of the animation is important because if the animation is too quick, it will be hard for readers to see where the hotspots in each hour are. The `fps` (_frames per second_) argument can be used to control how quickly the animation moves between each state (in this case, each hour). For a fixed number of frames, a lower value of `fps` makes the animation slower and longer, while a higher value makes it faster and shorter. The default is 10 frames per second, so using `fps = 2` makes the animation five times longer than the default.
 
-We can save an animated map to a file by using `animate()` together with the `anim_save()` function. `anim_save()` saves the animation created by `animate()` in a file. For example, if we stored the map created above in an object called `chicago_downtown_kde_map`, we could save it to an animated GIF file.
+We can save an animated map to a file by using `animate()` together with the `anim_save()` function. `anim_save()` saves the animation created by `animate()` in a file. For example, if we stored the map created in @lst-mapping-time-build-animated-assault-map in an object called `chicago_downtown_kde_map`, we could save it to an animated GIF file.
 
 
 ```{r}
