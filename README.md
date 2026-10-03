@@ -2,6 +2,16 @@
 
 This repo contains the text of the online book [Learn Crime Mapping with R](http://books.lesscrime.info/learncrimemapping/).
 
+## Chapter scripts
+
+After editing chapter code, check that the scripts match the instructions students follow:
+
+```sh
+python3 checks/check_chapter_scripts.py
+```
+
+The check compares code and comments, including scripts copied from earlier chapters and partial-script checkpoints. It does not execute R or contact data services. See [checks/README.md](checks/README.md) for how to maintain the mapping when adding or replacing code chunks.
+
 ## Shared chapter text
 
 Repeated chapter instructions live in underscore-prefixed `.qmd` files in `include/`:

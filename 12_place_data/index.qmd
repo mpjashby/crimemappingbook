@@ -180,6 +180,7 @@ In this chapter, we will learn how to:
 To get started, open a new R script file in Positron and save it as `chapter_12.R` in the `R` folder of the workspace you created in @sec-create-project. Add a note to the top of this file explaining that the code will create a map of homicides in Medellin, Colombia, then add the code needed to load the packages we will use in this chapter:
 
 ```{r}
+#| label: script-12-packages
 #| filename: "chapter_12.R"
 
 # This script produces a map of the density of homicides in the La Candelaria
@@ -196,6 +197,7 @@ Remember to run each block of code that you add to the script by pressing {{< kb
 As we learned in @sec-reports, the Medellin homicide CSV file uses semicolons to separate columns, so we must load it with `read_csv2()` rather than `read_csv()`. We will first download the original file into `data/raw`, then load that local copy.
 
 ```{r}
+#| label: script-12-homicides
 #| filename: "chapter_12.R"
 
 # LOAD DATA --------------------------------------------------------------------
@@ -307,6 +309,7 @@ https://mpjashby.github.io/crimemappingdata/medellin_metro_lines.zip
 To load the data from this file, we can use the process outlined above. Add this code to your `chapter_12.R` script file. Read through the notes below this code to understand what each part of the code does.
 
 ```{r}
+#| label: script-12-metro
 #| filename: "chapter_12.R"
 
 ## Load metro lines ----
@@ -475,6 +478,7 @@ ggsave(
 You can calculate the bounding box of an SF object using the `st_bbox()` function from the sf package. In this case we want the bounding box of the La Candelaria neighbourhood, so we will need to load a dataset that includes the boundary of that neighbourhood. Add this code to the `chapter_12.R` script file and run it.
 
 ```{r}
+#| label: script-12-boundaries
 #| filename: "chapter_12.R"
 
 ## Load neighbourhood boundary ----
@@ -493,6 +497,7 @@ We can now calculate the bounding box of the neighbourhood we are interested in.
 
 
 ```{r}
+#| label: script-12-bbox
 #| filename: "chapter_12.R"
 
 # GET OSM DATA -----------------------------------------------------------------
@@ -524,6 +529,7 @@ The best place to find out how a feature you are interested in is recorded in th
 Now that we know the bounding box of the area we are interested in and the tag for the type of feature we want, we can download the data from OpenStreetMap.
 
 ```{r}
+#| label: script-12-osm
 #| filename: "chapter_12.R"
 #| eval: false
 
@@ -579,6 +585,7 @@ We will transform the data to EPSG:3115, a projected CRS for Medellín whose coo
 Add this code to the `chapter_12.R` file and run it.
 
 ```{r}
+#| label: script-12-wrangle
 #| filename: "chapter_12.R"
 
 ## WRANGLE DATA ----------------------------------------------------------------
@@ -611,6 +618,7 @@ Note that since we have used `hotspot_clip()` twice, this code produces two mess
 We now have everything we need to map homicides in La Candelaria in relation to bus stops. Let's add to our script file the code needed to create a density map.
 
 ```{r}
+#| label: script-12-map
 #| filename: "chapter_12.R"
 #| fig-alt: "A map of La Candelaria showing homicide density, bus stops and metro lines. The areas of highest homicide density do not appear to cluster around bus stops."
 

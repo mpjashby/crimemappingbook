@@ -1211,6 +1211,7 @@ We will also add the city, state and country to the end of each address, since a
 
 
 ```{r}
+#| label: script-10-prepare
 #| eval: false
 #| filename: "chapter_10.R"
 
@@ -1234,6 +1235,7 @@ addresses <- tribble(
   "2019-01-07T06:50:00Z" , "residence"      , "9500 S BELL AVE"      ,
 )
 
+# Prepare each distinct, non-missing address for geocoding
 addresses_for_geocoding <- addresses |>
   # Drop rows that have NA values in the `address` column
   drop_na(address) |>
@@ -1249,7 +1251,6 @@ addresses_for_geocoding <- addresses |>
   # Find all the unique rows in the data
   distinct(address)
 
-head(addresses_for_geocoding)
 ```
 
 
@@ -1290,14 +1291,26 @@ addresses_for_geocoding
 ```
 
 
+Run this code in the R Console to inspect the prepared addresses:
+
+```{r}
+#| label: script-10-preview-addresses
+#| eval: false
+#| filename: "R Console"
+
+head(addresses_for_geocoding)
+```
+
 Since two addresses in the data were duplicates and one address was missing, we now have eight unique addresses, stored in a tibble with a single column. The `drop_na(address)` call removes only the row that cannot be geocoded, rather than discarding rows because values in unrelated columns are missing.
 
 We can use this object as the input to the `geocode()` function from the tidygeocoder package. tidygeocoder sends address text to a geocoding service and returns matching coordinates. The `address` argument specifies which column contains the addresses and the `method` argument specifies which geocoding service to use. Nominatim is based on OpenStreetMap data, so we choose it by specifying `method = "osm"`.
 
 ```{r}
+#| label: script-10-geocode
 #| eval: false
 #| filename: "chapter_10.R"
 
+# Geocode each address using Nominatim
 addresses_geocoded <- tidygeocoder::geocode(
   addresses_for_geocoding,
   address = "address",
@@ -1324,7 +1337,8 @@ addresses_geocoded <- tribble(
 ```
 
 ```{r}
-#| filename: "chapter_10.R"
+#| label: script-10-inspect-geocoded
+#| filename: "R Console"
 
 addresses_geocoded
 ```
@@ -1332,8 +1346,10 @@ addresses_geocoded
 Now that we have the latitude and longitude for each address, we can join them back to the original data using the address column to match the two datasets together. To do this we will create a temporary column in the original `addresses` object that matches the formatting changes we made to the original address.
 
 ```{r}
+#| label: script-10-join
 #| filename: "chapter_10.R"
 
+# Join the geocoded coordinates back to the original rows
 addresses_final <- addresses |>
   # Create a temporary address column to use in matching the geocoded addresses
   mutate(
@@ -1356,9 +1372,11 @@ Geocoding services return possible matches rather than guaranteed correct answer
 We can now use this data as we would any other spatial data. We will convert `addresses_final` to an SF object using `st_as_sf()`. Geocoding services return longitude and latitude using the WGS84 coordinate reference system, so we specify `crs = "EPSG:4326"`. We first remove the row with the missing address, since it could not be geocoded and therefore has no coordinates.
 
 ```{r}
+#| label: script-10-map
 #| filename: "chapter_10.R"
 #| fig-alt: "OpenStreetMap of Chicago showing the locations returned by geocoding eight fictional incident addresses."
 
+# Convert the geocoded results to an SF object and plot them over a basemap
 addresses_sf <- addresses_final |>
   drop_na(long, lat) |>
   st_as_sf(coords = c("long", "lat"), crs = "EPSG:4326")

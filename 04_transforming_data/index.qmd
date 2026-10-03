@@ -320,6 +320,7 @@ In @sec-create-project we learned that it is important to keep our original down
 
 
 ```{r}
+#| label: save-processed-data-example
 #| eval: false
 #| filename: "Code to add later"
 
@@ -392,6 +393,7 @@ It may be useful to read the pipe operator as 'and then', since piped code does 
 For example, instead of creating multiple objects called `robbery2`, `robbery3`, `robbery4` and `q1_weekday_counts` and so on, we can use a single code pipeline. We will add this pipeline to a script in @sec-complete-wrangling-scripts. For now, look at the code and the list below that explains what each line does -- note that each pipe operator (`|>`) corresponds to '_and then_' in the explanation below the code.
 
 ```{r}
+#| label: weekday-counts-pipeline
 #| eval: false
 #| filename: "Code to add later"
 
@@ -464,9 +466,36 @@ Once you have tried this yourself, click the 'Solution' button to compare your c
 `r webexercises::hide("Solution")`
 
 ```{r}
+#| label: script-04a-solution
 #| eval: false
-#| file: "../R/chapter_04a.R"
 #| filename: "chapter_04a.R"
+
+# Load packages
+pacman::p_load(here, httr2, readxl, tidyverse)
+
+# Download the data from a URL and store it in a local file
+request(
+  "https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"
+) |>
+  req_perform(path = here("data", "raw", "san_francisco_robbery.csv"))
+
+# Load the local file into R
+san_fran_rob <- read_csv(here("data", "raw", "san_francisco_robbery.csv"))
+
+# Produce counts of robberies each weekday
+q1_weekday_counts <- san_fran_rob |>
+  filter(
+    as_date(date_time) >= ymd("2019-01-01"),
+    as_date(date_time) <= ymd("2019-03-31")
+  ) |>
+  mutate(weekday = wday(date_time, label = TRUE)) |>
+  count(weekday)
+
+# Save the processed data without changing the original file
+write_csv(
+  q1_weekday_counts,
+  here("data", "processed", "q1_weekday_counts.csv")
+)
 ```
 
 `r webexercises::unhide()`
@@ -483,9 +512,40 @@ Try to complete the script before clicking the 'Solution' button.
 `r webexercises::hide("Solution")`
 
 ```{r}
+#| label: script-04b-solution
 #| eval: false
-#| file: "../R/chapter_04b.R"
 #| filename: "chapter_04b.R"
+
+# Load packages
+pacman::p_load(here, httr2, readxl, tidyverse)
+
+# Download the data from a URL and store it in a local file
+request(
+  "https://mpjashby.github.io/crimemappingdata/aggravated_assaults.xlsx"
+) |>
+  req_perform(path = here("data", "raw", "aggravated_assaults.xlsx"))
+
+# Load the Austin data from the Excel workbook
+agg_assault_data <- read_excel(
+  here("data", "raw", "aggravated_assaults.xlsx"),
+  sheet = "Austin"
+)
+
+# Count aggravated assaults by location category and weekday
+agg_assault_counts <- agg_assault_data |>
+  filter(!is.na(location_category), !is.na(date)) |>
+  mutate(
+    date = as_date(date),
+    weekday = wday(date, label = TRUE)
+  ) |>
+  count(location_category, weekday) |>
+  arrange(location_category, weekday)
+
+# Save the processed data without changing the original file
+write_csv(
+  agg_assault_counts,
+  here("data", "processed", "aggravated_assault_counts.csv")
+)
 ```
 
 `r webexercises::unhide()`

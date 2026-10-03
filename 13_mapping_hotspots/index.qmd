@@ -187,11 +187,17 @@ Open `chapter_13a.R` in the `R` folder of your `crime_mapping` workspace. Add th
 
 
 ```{r}
+#| label: script-13a-prepare
 #| eval: false
 #| filename: "chapter_13a.R"
 
+# This script produces a dual kernel-density map of burglary risk in three
+# wards in Nottingham, England
+
 # Load packages
 pacman::p_load(here, httr2, osmdata, sf, sfhotspot, tidyverse)
+
+# LOAD DATA --------------------------------------------------------------------
 
 # Download the original data
 request(
@@ -256,7 +262,10 @@ projected using that system (EPSG:4326).
 Add this code to your R script and run it. The first time you run the code, it downloads building data from OpenStreetMap and saves a copy in `data/processed`. On later runs, it loads that saved copy so the analysis is faster and does not change if OpenStreetMap is updated.
 
 ```{r}
+#| label: script-13a-buildings
 #| filename: "chapter_13a.R"
+
+# GET BUILDING DATA ------------------------------------------------------------
 
 buildings_file <- here("data", "processed", "nottingham_buildings.rds")
 
@@ -364,7 +373,10 @@ Since we are only interested in buildings in three particular wards, we can also
 Add this code to the `chapter_13a.R` file and run it.
 
 ```{r}
+#| label: script-13a-centroids
 #| filename: "chapter_13a.R"
+
+# WRANGLE DATA -----------------------------------------------------------------
 
 # Extract polygon/multipolygon layers and combine them into a single object
 nottingham_building_centroids <- bind_rows(
@@ -394,6 +406,7 @@ We now have the object `burglaries` that contains the locations of each burglary
 
 
 ```{r}
+#| label: script-13a-density
 #| filename: "chapter_13a.R"
 
 # Estimate density of burglary risk
@@ -435,10 +448,13 @@ Add this code to your script file and run it to produce a map:
 
 
 ```{r}
+#| label: script-13a-map
 #| filename: "chapter_13a.R"
 #| fig-asp: 1
 #| out-width: "100%"
 #| fig-alt: "A map of three Nottingham wards in which estimated burglary risk is overwhelmingly concentrated in one grid cell on the University of Nottingham campus"
+
+# PLOT MAP ---------------------------------------------------------------------
 
 hotspot_map(
   burglary_risk,
@@ -573,13 +589,17 @@ In this example, we will find the hotspots of robbery in Nottingham in 2020, bas
 Add this code to the new script file and run it.
 
 ```{r}
+#| label: script-13b-hotspots
 #| eval: false
 #| filename: "chapter_13b.R"
 
-# Prepare ----------------------------------------------------------------------
+# This script produces a map of significant robbery hotspots in Nottingham,
+# England
 
 # Load packages
 pacman::p_load(here, httr2, sf, sfhotspot, tidyverse)
+
+# LOAD DATA --------------------------------------------------------------------
 
 # Download the original data
 request(
@@ -592,7 +612,7 @@ request(
 ) |>
   req_perform(path = here("data", "raw", "nottingham_wards.gpkg"))
 
-# Load Nottingham robbery data
+# Load data and transform to British National Grid so distances are in metres
 robbery <- here("data", "raw", "nottingham_robbery.csv.gz") |>
   read_csv() |>
   st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326") |>
@@ -679,13 +699,16 @@ By convention, $p$-values are considered to be significant if they are _less tha
 
 By default, if we apply the function `hotspot_map()` to a result produced by `hotspot_gistar()`, the map will show only those grid cells with a Gi* value that is significant (i.e. $p<0.05$). However, the default settings also mean that the map will show cells that are significant hotspots (i.e. $Z>0$) and cells that are significant coldspots (i.e. $Z<0$). In crime mapping we are generally only interested in the hotspots rather than the coldspots. To show only significant hotspots, we can use the `hotspot_map()` argument `sign = "hot"`.
 
-Let's make a map to see what the significant robbery hotspots look like:
+Add this complete map code to `chapter_13b.R` and run it to see what the significant robbery hotspots look like:
 
 ```{r}
-#| filename: "R Console"
+#| label: script-13b-map
+#| filename: "chapter_13b.R"
 #| fig-asp: 1.4
 #| out-width: "100%"
 #| fig-alt: "A map of Nottingham in which significant robbery-hotspot cells are shaded from light to dark blue according to robbery density"
+
+# PLOT MAP ---------------------------------------------------------------------
 
 hotspot_map(
   robbery_gistar,
@@ -876,6 +899,7 @@ While you should set `min_pts` based on your expert judgement of the minimum num
 Now that we have explored how to control the DBSCAN algorithm, let's create a DBSCAN map in R. We'll use the same robbery data as in the previous section. Create a new file called `chapter_13c.R` and save it in the `R` folder of your `crime_mapping` workspace as usual. Now add the code needed to load the packages and data we need, so that it's possible to run this script independently of the other scripts in this chapter. Read the two notes below this code, which explain two minor differences between this code and most of the similar code we have used before.
 
 ```{r}
+#| label: script-13c-prepare
 #| filename: "chapter_13c.R"
 #| eval: false
 
@@ -908,6 +932,7 @@ robbery <- here("data", "raw", "nottingham_robbery.csv.gz") |>
 
 
 ```{r}
+#| label: script-13c-initial-clusters
 #| filename: "chapter_13c.R"
 
 # FIND CLUSTERS ----------------------------------------------------------------
@@ -939,7 +964,10 @@ You can see from the `prop` column that `r scales::percent(pluck(robbery_dbscan,
 Change the existing code that creates the `robbery_dbscan` object in `chapter_13c.R` to the following and run it:
 
 ```{r}
+#| label: script-13c-final-clusters
 #| filename: "chapter_13c.R"
+
+# Find clusters using DBSCAN
 
 robbery_dbscan <- hotspot_dbscan(robbery, density_adjust = 5)
 ```
@@ -965,6 +993,7 @@ Add this code to `chapter_13c.R` and run it:
 
 
 ```{r}
+#| label: script-13c-map
 #| filename: "chapter_13c.R"
 
 # PLOT MAP ---------------------------------------------------------------------
@@ -1068,7 +1097,10 @@ Create a new file called `chapter_13d.R` in the `R` folder of your `crime_mappin
 Next, we should add the code needed to identify clusters of robbery using DBSCAN. Add this code to the new file and run it:
 
 ```{r}
+#| label: script-13d-clusters
 #| filename: "chapter_13d.R"
+
+# Find clusters using DBSCAN
 
 robbery_dbscan <- hotspot_dbscan(robbery, density_adjust = 5)
 ```
@@ -1079,6 +1111,7 @@ Add this code to your new file and run it:
 
 
 ```{r}
+#| label: script-13d-map
 #| filename: "chapter_13d.R"
 #| fig-asp: 1.4
 #| out-width: "100%"

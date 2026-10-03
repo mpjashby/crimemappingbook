@@ -110,6 +110,8 @@ In Chapter 5 you created `chapter_05.R`, which contains the code needed to downl
 
 Take care to copy the file rather than renaming the original. Keep `chapter_06.R` in the `R` folder throughout this chapter.
 
+Update the comment at the top of `chapter_06.R` to explain that this script produces a density map of bicycle thefts in Vancouver in 2020.
+
 Open `chapter_06.R` and remove the final line, which uses `hotspot_map()` to produce the previous dot map of bike thefts. During this chapter we will add new code to the `chapter_06.R` file to produce a map of crime density.
 
 After you have removed the final line from the code, run the rest of the code in the file by selecting all the code and pressing {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard.
@@ -369,6 +371,7 @@ To create a density map using sfhotspot, we first use the `hotspot_kde()` functi
 Add this code to the script file for this chapter and then run that line of code:
 
 ```{r}
+#| label: script-06-initial-density
 #| filename: "chapter_06.R"
 
 # Estimate density of bike thefts
@@ -812,6 +815,7 @@ You might see from these maps that there is another problem: some areas _within_
 As we did for the theft data in Chapter 5, we will first download the boundary data into `data/raw`, then read the local copy. This records where the data came from while keeping the analysis available if the website is temporarily unavailable later. Add this code immediately after the existing code that downloads the theft data but _above_ the code that loads and wrangles the data.
 
 ```{r}
+#| label: script-06-download-boundaries
 #| output: false
 #| filename: "chapter_06.R"
 
@@ -827,6 +831,7 @@ request(
 Add the following code after the pipeline that loads and wrangles the bike-theft data and before the code that creates `bike_theft_density`:
 
 ```{r}
+#| label: script-06-load-boundaries
 #| filename: "chapter_06.R"
 
 # Load Vancouver neighbourhood boundaries
@@ -840,18 +845,22 @@ You might have noticed that as well as loading the boundary data with `read_sf()
 Before we clip the density layer to the city boundary, check that your file `chapter_06.R` looks like this:
 
 ```{r}
+#| label: script-06-checkpoint
 #| eval: false
 #| filename: "chapter_06.R"
 
-# Load packages
-pacman::p_load(crsuggest, here, httr2, sf, sfhotspot, tidyverse)
+# This script produces a density map of bicycle thefts in Vancouver in 2020.
 
-# Download the raw data
+# Load packages
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse)
+
+# Download the raw data to a local file
 request(
   "https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"
 ) |>
   req_perform(path = here("data", "raw", "vancouver_thefts.csv.gz"))
 
+# Download Vancouver neighbourhood boundaries
 request(
   "https://mpjashby.github.io/crimemappingdata/vancouver_neighbourhoods.geojson"
 ) |>
@@ -860,7 +869,8 @@ request(
   )
 
 # Load and wrangle bike theft data
-thefts <- read_csv(here("data", "raw", "vancouver_thefts.csv.gz")) |>
+thefts <- here("data", "raw", "vancouver_thefts.csv.gz") |>
+  read_csv() |>
   janitor::clean_names() |>
   st_as_sf(coords = c("x", "y"), crs = "EPSG:32610")
 
@@ -877,9 +887,6 @@ bike_theft_density <- hotspot_kde(
   bandwidth_adjust = 0.5,
   quiet = TRUE
 )
-
-# Plot density map
-hotspot_map(bike_theft_density)
 ```
 
 
@@ -888,9 +895,10 @@ We can clip the KDE layer produced by `hotspot_kde()` to the boundary of the Cit
 We will now add the code needed to clip the KDE layer to the city boundary to `chapter_06.R`. Since we do not need the unclipped version of the KDE layer in the final map, we can combine `hotspot_kde()` and `hotspot_clip()` in one pipeline. Replace the code that creates `bike_theft_density` with this code:
 
 ```{r}
+#| label: script-06-initial-clip
 #| filename: "chapter_06.R"
 
-# Estimate density of bike thefts and clip result
+# Estimate density of bike thefts and clip the result
 bike_theft_density_clip <- bike_thefts |> # <1>
   hotspot_kde(bandwidth_adjust = 0.5, quiet = TRUE) |> # <2>
   hotspot_clip(vancouver_nbhds) # <3>
@@ -955,10 +963,13 @@ By default, `hotspot_kde()` calculates density estimates (KDE values) for every 
 
 We can do this by providing `hotspot_kde()` with a grid of cells for which KDE values should be calculated, rather than letting `hotspot_kde()` create the grid automatically. The easiest way to do this is to use the `hotspot_grid()` function to create a grid that covers all the areas within a set boundary, such as a city boundary. 
 
-In the `chapter_06.R` file, replace the code that creates `bike_theft_density` with this code:
+In the `chapter_06.R` file, replace the code that creates `bike_theft_density_clip` with this code:
 
 ```{r}
-# Estimate density of bike thefts and clip result
+#| label: script-06-final-density
+#| filename: "chapter_06.R"
+
+# Estimate density of bike thefts and clip the result
 bike_theft_density_clip <- bike_thefts |>
   hotspot_kde(
     grid = hotspot_grid(vancouver_nbhds, quiet = TRUE),
@@ -1056,10 +1067,11 @@ We can add functions from the ggplot2 package to `hotspot_map()` by using the `+
 
 The first family of functions we will learn about is the `geom_*()` family. The `geom_` functions are used to add _data_ -- such as points, lines or polygons -- to a map. Since map data is usually stored in an SF object, we use the `geom_sf()` function to add a spatial dataset to a map.
 
-Update the map-plotting code in `chapter_06.R` to match this code:
+Add this map-plotting code to the end of `chapter_06.R`:
 
 
 ```{r}
+#| label: script-06-boundary-map
 #| filename: "chapter_06.R"
 
 # Plot density map
@@ -1105,6 +1117,7 @@ Since we want the text of the labels to be the names of the neighbourhoods, we c
 Replace the existing `hotspot_map()` stack in the `chapter_06.R` file with this stack and then run that code. You will see that as well as specifying the label aesthetic using `aes()`, we have also specified several other aesthetics outside of `aes()` to make sure the labels are less visually prominent than the density layer (because the most-important element on a map is always the data layer).
 
 ```{r}
+#| label: script-06-final-map
 #| filename: "chapter_06.R"
 #| fig-alt: "A density map of recorded bicycle thefts in Vancouver in 2020. The highest estimated densities are in and around the Downtown and West End neighbourhoods. Neighbourhood boundaries and labels appear over a pale base map."
 

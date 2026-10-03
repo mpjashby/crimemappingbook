@@ -165,6 +165,7 @@ Once you have written the code to load the packages and data, click the **Soluti
 `r webexercises::hide()`
 
 ```{r}
+#| label: script-09a-prepare
 #| filename: "chapter_09a.R"
 #| output: false
 
@@ -204,9 +205,11 @@ Now that we have loaded our data, the next step is to count the number of offenc
 By default, `hotspot_count()` produces counts of points in cells in a grid (we saw this when we used `hotspot_kde()` in @sec-mapping-patterns). This is often useful, but in this case we instead want to produce a count for each alcaldía. To do that, we can pass the `cdmx_alcaldias` object to the `grid` argument of `hotspot_count()`. Add this code to your script file: 
 
 ```{r}
+#| label: script-09a-count
 #| eval: false
 #| filename: "chapter_09a.R"
 
+# Count carjacking offences in each alcaldía
 car_jacking_counts <- hotspot_count(cdmx_car_jacking, grid = cdmx_alcaldias)
 ```
 
@@ -406,11 +409,13 @@ maup_quiz1 <- c(
 We have already loaded the data we need to create a map of carjackings in Mexico City, and counted how many offences occurred in each alcaldía. Since we used `hotspot_count()` from the sfhotspot package to count the offences, we can use `hotspot_map()` to create a map of the counts. Add this code to your script file and run it.
 
 ```{r}
+#| label: script-09a-map
 #| filename: "chapter_09a.R"
 #| fig-asp: 1
 #| fig-alt: "A choropleth map of carjacking offences in Mexico City in 2019. Darker blue boroughs have more recorded offences, with Gustavo A. Madero having the highest count."
 #| out-width: "90%"
 
+# Create a choropleth map of carjacking counts
 car_jacking_map <- hotspot_map(
   car_jacking_counts,
   basemap_type = "cartolight",
@@ -451,16 +456,19 @@ Restart R using the **Restart R** (**&#10227;**) button in Positron's **Console*
 Paste the following code into `chapter_09b.R`, then run it by pressing {{< kbd win="Ctrl-A" mac="Command-A" >}} followed by {{< kbd win="Ctrl-Enter" mac="Command-Return" >}}. The code downloads copies of the source data into `data/raw`, then loads those local files.
 
 ```{r}
+#| label: script-09b-prepare
 #| eval: false
 #| filename: "chapter_09b.R"
 
 # This script produces interactive maps of murder counts and murder rates in
 # districts in Uttar Pradesh, India, in 2014.
 
+# PREPARE ----------------------------------------------------------------------
+
 # Load packages
 pacman::p_load(here, httr2, leaflet, sf, tidyverse)
 
-# Download the raw data
+# Download the raw murder-count and district-boundary data
 request(
   "https://mpjashby.github.io/crimemappingdata/uttar_pradesh_murders.csv"
 ) |>
@@ -547,7 +555,10 @@ Copy this code into your script file and run it.
 
 
 ```{r}
+#| label: script-09b-initial-join
 #| filename: "chapter_09b.R"
+
+# WRANGLE ----------------------------------------------------------------------
 
 # Join murder counts to district boundaries
 district_murders <- left_join(
@@ -654,11 +665,14 @@ Let's see this in action: add this code to the `chapter_09b.R` script file:
 
 ::: {aria-label="Interactive map with districts in Uttar Pradesh shaded by murder count, without a legend or labels"}
 ```{r}
+#| label: script-09b-count-palette
 #| filename: "chapter_09b.R"
 #| fig-asp: 1
 #| out-width: 100%
 
-# Create a custom colour palette function
+# VISUALISE --------------------------------------------------------------------
+
+# Create a custom colour palette function for murder counts
 murder_colours <- colorNumeric(
   palette = "Reds",
   domain = pull(district_murders, "murder")
@@ -698,6 +712,7 @@ There are three improvements we can make to this interactive map. The first is t
 Change the code in your script file to add the `addLegend()` function to the end of the stack:
 
 ```{r}
+#| label: script-09b-count-legend
 #| eval: false
 #| filename: "chapter_09b.R"
 
@@ -727,6 +742,7 @@ We can do this by adding the `addMiniMap()` function to the leaflet stack. We wi
 Update the leaflet stack in `chapter_09b.R` again to add the call to `addMiniMap()`:
 
 ```{r}
+#| label: script-09b-count-minimap
 #| eval: false
 #| filename: "chapter_09b.R"
 
@@ -757,11 +773,12 @@ Change the existing call to `addPolygons()` to add the district labels:
 
 ::: {aria-label="Interactive choropleth map of murder counts in districts in Uttar Pradesh in 2014"}
 ```{r}
+#| label: script-09b-count-map
 #| filename: "chapter_09b.R"
 #| fig-asp: 1
 #| out-width: "100%"
 
-# Create interactive map
+# Create an interactive map of murder counts
 leaflet(district_murders) |>
   # Add base map
   addProviderTiles("Stadia.AlidadeSmooth") |>
@@ -896,10 +913,11 @@ Residential population is a conventional denominator for homicide rates and is a
 
 The murder counts used here are for 2014, while the population dataset contains counts from India's 2011 census, published by the Registrar General and Census Commissioner of India. The resulting rates therefore use the closest population data available in this example, rather than the exact population in 2014. This limitation should be reported alongside the map.
 
-To calculate an incidence rate, we once again need to join two datasets together. This time, we need to add population data for districts in Uttar Pradesh. Add this code to `chapter_09b.R` alongside the code that downloads and loads the other two datasets:
+To calculate an incidence rate, we once again need to join two datasets together. This time, we need to add population data for districts in Uttar Pradesh. Add this code to `chapter_09b.R` immediately after the code that loads the district boundaries and before the `WRANGLE` section:
 
 
 ```{r}
+#| label: script-09b-population
 #| eval: false
 #| filename: "chapter_09b.R"
 
@@ -919,6 +937,7 @@ If we look at the column names in this new dataset, we will see that it includes
 
 
 ```{r}
+#| label: script-09b-population-join
 #| filename: "chapter_09b.R"
 
 # Join murder counts and population to district boundaries
@@ -940,13 +959,17 @@ head(district_murders)
 
 As with the result of the previous join, you can see that the `district_murders` object contains all the columns from the `districts` object, followed by the `murder` column from the `murders` dataset and then all the columns from the `district_pop` object _except_ the `district` column. 
 
-Now that we have a single dataset containing all the variables we need, we can calculate the incidence of murders per 100,000 people. To do that, we can add another line of code to the end of the pipeline we have just created. Update your script file with this code:
+Now that we have a single dataset containing all the variables we need, we can calculate the incidence of murders per 100,000 people. To do that, we can add another line of code to the end of the pipeline we have just created. Replace the existing `WRANGLE` section of your script file, including its section header and comments, with this code:
 
 
 ```{r}
+#| label: script-09b-rate-join
 #| filename: "chapter_09b.R"
 
-# Join murder counts and population to district boundaries
+# WRANGLE ----------------------------------------------------------------------
+
+# Join murder and population counts to district boundaries, then calculate the
+# murder rate per 100,000 residents
 district_murders <- districts |>
   # Join murder counts
   left_join(murders, by = join_by(district_name == district)) |>
@@ -974,6 +997,7 @@ Whenever we need to use a longer legend title, or other text, it can be useful t
 Add this code to `chapter_09b.R`. Then read through the notes below it to understand how it differs from the map of murder counts.
 
 ```{r}
+#| label: script-09b-rate-map
 #| filename: "chapter_09b.R"
 #| fig-asp: 1
 #| fig-alt: "Interactive choropleth map of murder rates in districts in Uttar Pradesh in 2014"
@@ -992,7 +1016,7 @@ leaflet(district_murders, elementId = "murder-rate-map") |>
     "Esri.WorldImagery", #<1>
     options = providerTileOptions(opacity = 0.3) #<2>
   ) |>
-  # Add district polygons coloured by number of murders
+  # Add district polygons coloured by murder rate
   addPolygons(
     fillColor = ~ murder_rate_colours(murder_rate), #<3>
     fillOpacity = 0.75,

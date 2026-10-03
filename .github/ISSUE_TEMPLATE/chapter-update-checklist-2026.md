@@ -20,6 +20,8 @@ assignees: mpjashby
 - [ ] Check chapter ends with an up-to-date summary.
 - [ ] Add bullet-point list of skills learned in this chapter.
 - [ ] Check chapter ends with a complete script where students are expected to produce one
+- [ ] Check organising comments appear in the chunks students save; for pipelines developed in the Console, put section headers only in the complete saved pipeline.
+- [ ] Reconcile script and chapter comments using the more detailed explanation; use chapter code for other differences.
 
 
 #### Replacing outdated content
@@ -47,6 +49,7 @@ assignees: mpjashby
 
 #### Functionality checks
 
+- [ ] Run `python3 checks/check_chapter_scripts.py` to compare chapter instructions, partial-script checkpoints and the scripts in `R/`; update `checks/chapter-scripts.json` when adding or replacing saved-code chunks.
 - [ ] Run every executable code chunk and fix any errors.
 - [ ] Reduce unnecessarily large image files using `harmonise_image_sizes()`.
 - [ ] Play every embedded video and check that it remains available.

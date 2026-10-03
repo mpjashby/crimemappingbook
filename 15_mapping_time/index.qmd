@@ -569,8 +569,13 @@ In this section we will learn how to construct a time-series chart like this. To
 #| eval: false
 #| filename: "chapter_15a.R"
 
+# This script creates charts and maps showing how aggravated assaults in
+# Chicago varied over time between 2010 and 2019
+
 # Load packages
 pacman::p_load(here, httr2, sf, sfhotspot, slider, tidyverse)
+
+# LOAD DATA --------------------------------------------------------------------
 
 # Download the original data
 request(
@@ -659,6 +664,8 @@ One complication of counting incidents by week is that our data might not fit ne
 ```{r}
 #| label: count-weekly-assaults
 #| filename: "chapter_15a.R"
+
+# SHOW CHANGE OVER TIME --------------------------------------------------------
 
 # Count number of aggravated assaults each week
 assault_weekly_counts <- assaults |>
@@ -1066,7 +1073,7 @@ To do this, we:
   2. Count the total number of crimes occurring in each hour of each day *across all ten years of the data* using `count()`.
   3. Create a pseudo-date-time using `make_datetime()`.
 
-We can do this in a single piece of code. Add this R code to the R script file just after the code that creates the `assault_weekly_counts` object. Remember to run this chunk of code.
+We can do this in a single piece of code. Add this R code to the end of the R script file. Remember to run this chunk of code.
 
 
 ```{r}
@@ -1227,12 +1234,14 @@ To do this, we will estimate the density of assaults separately for each shift p
 
 We can construct this column using the `case_when()` function from dplyr. `case_when()` allows us to specify any number of tests that we can apply to our data -- when a test is passed the function assigns the corresponding label to that row (the label is separated from the test by a tilde character `~`). `case_when()` is like `case_match()`, but for when we need to test for more-complicated things than just whether a variable has a particular value.
 
-Add this code to your R script file just after the code that creates the `assault_hourly_counts` object. Remember to run the code.
+Add this code to the end of your R script file, starting a new section for mapping change over time. Remember to run the code.
 
 
 ```{r}
 #| label: prepare-assaults-by-shift
 #| filename: "chapter_15a.R"
+
+# MAP CHANGE OVER TIME ---------------------------------------------------------
 
 # Calculate number of assaults by shift
 assaults_by_shift <- assaults |>
@@ -1433,6 +1442,8 @@ hotspot_map(
 
 On this map we can see that some places have a relatively high density of assaults throughout all three shifts, but others only have a high density at certain times. We can perhaps make this clearer by highlighting the grid cells with the highest estimated density of assaults during each shift. We can do this using the `slice_max()` function from dplyr, which allows us to extract the rows in a dataset with the highest values of a particular variable. In this case we will use `slice_max()` together with `group_by()` to get the rows with the highest values _separately for each shift_ rather than those with the highest values across all three shifts combined.
 
+Add the following complete code to the end of `chapter_15a.R` and run it.
+
 
 ```{r}
 #| label: map-highest-kde-by-shift
@@ -1572,10 +1583,13 @@ This code estimates the density of crime in each grid cell 24 times (once for ea
 #| eval: false
 #| filename: "chapter_15b.R"
 
-# PREPARE ----------------------------------------------------------------------
+# This script creates an animated map showing how the density of aggravated
+# assaults in downtown Chicago varied by hour between 2010 and 2019
 
 # Load packages
 pacman::p_load(gganimate, here, httr2, sf, sfhotspot, tidyverse)
+
+# LOAD DATA --------------------------------------------------------------------
 
 # Download the original data
 request(
@@ -1606,7 +1620,7 @@ cpd_districts <- here("data", "raw", "chicago_police_districts.kml") |>
 cpd_central <- filter(cpd_districts, name %in% c("1", "12", "18"))
 
 
-# WRANGLE ----------------------------------------------------------------------
+# WRANGLE DATA -----------------------------------------------------------------
 
 # Create a version of the dataset with a column showing which hour the assault
 # occurred in
@@ -1736,7 +1750,7 @@ Add this code to your script file and run it.
 #| filename: "chapter_15b.R"
 #| fig-asp: 1
 
-# VISUALISE --------------------------------------------------------------------
+# CREATE AND SAVE ANIMATION ----------------------------------------------------
 
 chicago_downtown_kde_map <- hotspot_map(
   hour_layers,

@@ -4,7 +4,6 @@
 # Load packages
 pacman::p_load(here, httr2, sf, sfhotspot, slider, tidyverse)
 
-
 # LOAD DATA --------------------------------------------------------------------
 
 # Download the original data
@@ -35,7 +34,6 @@ cpd_districts <- here("data", "raw", "chicago_police_districts.kml") |>
 # districts covering the downtown area
 cpd_central <- filter(cpd_districts, name %in% c("1", "12", "18"))
 
-
 # SHOW CHANGE OVER TIME --------------------------------------------------------
 
 # Count number of aggravated assaults each week
@@ -46,7 +44,8 @@ assault_weekly_counts <- assaults |>
   # Count the number of assaults each week
   count(week_date, name = "count") |>
   # The code `(n() - 1)` gives us the row number of the second-to-last row in
-  # the data because `n()` returns the number of rows in the data
+  # the data because `n()` returns the number of rows in the data. Note the
+  # parentheses!
   slice(2:(n() - 1))
 
 # Create plot of weekly assault counts with moving average
@@ -115,20 +114,34 @@ assault_weekly_counts |>
 
 # Create counts of assaults by hours of the day and week
 assault_hourly_counts <- assaults |>
+  # Extract day of the week and hour of the day from the date column
   mutate(wday = wday(date, label = TRUE), hour = hour(date)) |>
+  # Count crimes for each hour of each day of the week
   count(wday, hour, name = "count") |>
+  # By only setting the `hour` argument to `make_datetime()` we will create a
+  # date-time on 1 January 1970, but that doesn't matter because we will not
+  # show the date on the chart
   mutate(pseudo_date = make_datetime(hour = hour))
 
 # Create chart of assaults by hour of the day for each day of the week
 assault_hourly_counts |>
+  # Create a new column specifying if each day is a weekday or weekend
   mutate(weekend = if_else(wday %in% c("Sat", "Sun"), "Sat–Sun", "Mon–Fri")) |>
   ggplot() +
+  # Specify which columns in the data should control each part of the chart
   aes(x = pseudo_date, y = count, colour = wday) +
+  # Add lines
   geom_line(linewidth = 1) +
+  # Assign the facets to rows so that we can compare the same time on different
+  # days more easily (change `rows` to `cols` to see the alternative)
   facet_grid(rows = vars(weekend)) +
+  # Specify how dates should be shown on the x axis
   scale_x_datetime(date_breaks = "2 hours", date_labels = "%H:%M") +
+  # Make sure y axis starts at zero and labels have thousands separators
   scale_y_continuous(limits = c(0, NA), labels = scales::comma_format()) +
+  # Specify a qualitative colour scheme should be used
   scale_colour_brewer(type = "qual") +
+  # Add labels
   labs(
     x = NULL,
     y = "hourly total of aggravated assaults, 2010–2019",
@@ -136,11 +149,11 @@ assault_hourly_counts |>
   ) +
   theme_minimal()
 
-
 # MAP CHANGE OVER TIME ---------------------------------------------------------
 
 # Calculate number of assaults by shift
 assaults_by_shift <- assaults |>
+  # Restrict counts to just the central area of Chicago
   filter(district %in% c(1, 12, 18)) |>
   mutate(
     shift = case_when(
@@ -150,7 +163,9 @@ assaults_by_shift <- assaults |>
       TRUE ~ NA
     )
   ) |>
+  # Convert the data to an SF object
   st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326") |>
+  # Transform it to a coordinate reference system based on metres
   st_transform("EPSG:26916")
 
 # Create a grid to be used for every shift-specific KDE layer
@@ -158,19 +173,18 @@ grid <- hotspot_grid(cpd_central, cell_size = 200)
 
 # Estimate density of assaults for each CPD shift
 kde_by_shift <- assaults_by_shift |>
+  # Group dataset by which shift the assaults occurred in
   group_by(shift) |>
+  # Separately estimate density of assaults for each shift
   group_modify(
-    \(x, ...) {
-      hotspot_kde(
-        x,
-        grid = grid,
-        bandwidth_adjust = 0.5,
-        quiet = TRUE
-      )
-    }
+    \(x, ...) hotspot_kde(x, grid = grid, bandwidth_adjust = 0.5, quiet = TRUE)
   ) |>
+  # Ungroup the dataset
   ungroup() |>
+  # Convert the result to an SF object (because although `hotspot_kde()` returns
+  # an SF object, `group_modify()` silently converts it to a tibble)
   st_as_sf() |>
+  # Clip the result to the boundary of the three central police districts
   hotspot_clip(cpd_central, quiet = TRUE)
 
 # Create new dataset containing just the cells in each shift with the highest
@@ -187,6 +201,7 @@ hotspot_map(
   basemap_type = "cartolight",
   caption = "Crime data from Chicago Police Department"
 ) +
+  # Highlight the cells with the highest density in each shift
   geom_sf(
     data = kde_shift_highest,
     alpha = 0.75,
@@ -194,14 +209,17 @@ hotspot_map(
     fill = NA,
     linewidth = 1
   ) +
+  # Add district boundaries
   geom_sf(data = cpd_central, colour = "grey33", fill = NA) +
-  facet_grid(cols = vars(shift)) +
   # Add scale to control fill colour of KDE cells
   scale_fill_distiller(
     direction = 1,
     breaks = range(pull(kde_by_shift, kde)),
     labels = c("low", "high"),
   ) +
+  # Specify a separate map for each shift
+  facet_grid(cols = vars(shift)) +
+  # Add labels
   labs(
     title = "Aggravated assaults in downtown Chicago, 2010–2019",
     fill = "density of aggravated assaults"

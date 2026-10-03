@@ -172,6 +172,7 @@ Before we can work with our data, we first load packages of functions for use in
 Copy the code below and paste it into the blank file `chapter_02a.R` that you created earlier. This adds these lines of code to your script, but you need to _run_ that code for it to do anything. It's easy to forget to run the code you've written, so whenever you write a piece of code in a script file, remember to run it!
 
 ```{r}
+#| label: script-02a-packages
 #| filename: "chapter_02a.R"
 
 # Load the R packages we need to analyse this data
@@ -232,6 +233,7 @@ To do almost anything in R we use one or more _functions_. A _function_ in R is 
 Copy these lines of code into your R script file. Now click anywhere on either line of the code and press {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard to run the code. Assuming your computer is connected to the internet, you should see some lines of text appear in the R Console.
 
 ```{r}
+#| label: script-02a-download
 #| filename: "chapter_02a.R"
 
 # Download the data from a URL and store it in a local file
@@ -250,6 +252,7 @@ On the left-hand side of the Positron window, you should now be able to see that
 Now we have downloaded the data, we need to load it into our current R session so that we can use it. We will do that using the `read_csv()` function, which is part of one of the packages we loaded earlier by loading the tidyverse package. Copy this line of code into your R script file, click anywhere on the line of code and press {{< kbd win="Ctrl-Enter" mac="Command-Return" >}} on your keyboard to run the code.
 
 ```{r}
+#| label: script-02a-load
 #| filename: "chapter_02a.R"
 
 # Load the data into R
@@ -380,6 +383,7 @@ Copy this code into the `chapter_02a.R` file, then click anywhere on the new lin
 
 
 ```{r}
+#| label: script-02a-spatial
 #| filename: "chapter_02a.R"
 
 # Convert the data to a simple features object, which we can use in functions
@@ -412,6 +416,7 @@ To do this, we will use the `st_transform()` function, together with a code repr
 
 
 ```{r}
+#| label: script-02a-transform
 #| filename: "chapter_02a.R"
 
 # Transform the data coordinate reference system
@@ -444,11 +449,12 @@ everything needed for that stage is ready.
 At the moment, the file `chapter_02a.R` that you have created should look like this:
 
 ```{r}
+#| label: script-02a-checkpoint
 #| eval: false
 #| filename: chapter_02a.R
 
 # Load the R packages we need to analyse this data
-pacman::p_load(ggspatial, here, httr2, sf, tidyverse)
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse)
 
 # Download the data from a URL and store it in a local file
 request("https://mpjashby.github.io/crimemappingdata/downtown_homicides.csv") |>
@@ -570,6 +576,7 @@ Copy the code into the `chapter_02a.R` file, put the cursor somewhere on the lin
 
 
 ```{r}
+#| label: script-02a-map
 #| filename: chapter_02a.R
 #| fig-alt: "A map of homicides in downtown Atlanta, Georgia, in 2019. The map shows a street map of the area with four points marking the locations of homicides."
 
@@ -631,9 +638,40 @@ Now we have walked through the different parts of the code, we can create a map 
 Create a new script file in Positron by clicking the **File** menu then **New File**. In the box that appears, type `chapter_02b.R` and press {{< kbd Return >}} on your keyboard, then choose to save the file in the same `R` folder as we saved `chapter_02a.R` in. When the new file opens, paste this code into it.
 
 ```{r}
+#| label: script-02b-complete
 #| eval: false
-#| file: "../R/chapter_02b.R"
 #| filename: chapter_02b.R
+
+# Load the R packages we need to analyse this data
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse)
+
+# Download the data from a URL and store it in a local file
+request(
+  "https://mpjashby.github.io/crimemappingdata/glenrose_heights_homicides.csv"
+) |>
+  req_perform(path = here("data", "raw", "glenrose_heights_homicides.csv"))
+
+# Load the data into R
+homicides <- read_csv(here("data", "raw", "glenrose_heights_homicides.csv"))
+
+# Convert the data to a simple features object, which we can use in functions
+# that work on spatial data
+homicides_sf <- st_as_sf(
+  homicides,
+  coords = c("longitude", "latitude"),
+  crs = "EPSG:4326"
+)
+
+# Transform the data coordinate reference system
+homicides_sf_trans <- st_transform(homicides_sf, "EPSG:26967")
+
+# Create the map
+hotspot_map(
+  homicides_sf_trans,
+  basemap_type = "cartolight",
+  colour = "orangered1",
+  size = 4
+)
 ```
 
 ```{r}
