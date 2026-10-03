@@ -546,12 +546,12 @@ quarto book
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What is one reason why spatial relationships might not be important in some visualisations?</strong></p>
-<div id="radio_XSUPPJEFBH" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_XSUPPJEFBH" value=""> <span>Maps are outdated and not widely used in spatial analysis</span></label><label><input type="radio" autocomplete="off" name="radio_XSUPPJEFBH" value=""> <span>Charts can always show spatial relationships more clearly</span></label><label><input type="radio" autocomplete="off" name="radio_XSUPPJEFBH" value="answer"> <span>The relationships between places might not matter for the question at hand</span></label><label><input type="radio" autocomplete="off" name="radio_XSUPPJEFBH" value=""> <span>Maps cannot be used to display numerical data</span></label>
+<div id="radio_XQUERJVZWY" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_XQUERJVZWY" value=""> <span>Maps are outdated and not widely used in spatial analysis</span></label><label><input type="radio" autocomplete="off" name="radio_XQUERJVZWY" value=""> <span>Charts can always show spatial relationships more clearly</span></label><label><input type="radio" autocomplete="off" name="radio_XQUERJVZWY" value="answer"> <span>The relationships between places might not matter for the question at hand</span></label><label><input type="radio" autocomplete="off" name="radio_XQUERJVZWY" value=""> <span>Maps cannot be used to display numerical data</span></label>
 </div>
 <p><strong>What is a key factor in deciding whether to use a map, table, or chart?</strong></p>
-<div id="radio_FPPXKTMQOX" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_FPPXKTMQOX" value=""> <span>The software used to create the visualisation</span></label><label><input type="radio" autocomplete="off" name="radio_FPPXKTMQOX" value="answer"> <span>The question being answered and the audience’s needs</span></label><label><input type="radio" autocomplete="off" name="radio_FPPXKTMQOX" value=""> <span>The geographic location of the data</span></label><label><input type="radio" autocomplete="off" name="radio_FPPXKTMQOX" value=""> <span>The number of colours available in the mapping tool</span></label>
+<div id="radio_NWRJZIORZN" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_NWRJZIORZN" value=""> <span>The software used to create the visualisation</span></label><label><input type="radio" autocomplete="off" name="radio_NWRJZIORZN" value="answer"> <span>The question being answered and the audience’s needs</span></label><label><input type="radio" autocomplete="off" name="radio_NWRJZIORZN" value=""> <span>The geographic location of the data</span></label><label><input type="radio" autocomplete="off" name="radio_NWRJZIORZN" value=""> <span>The number of colours available in the mapping tool</span></label>
 </div>
 </div>
 </div>
@@ -605,16 +605,16 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
 <pre data-code-line-numbers=""><code># A tibble: 10 × 5
    region        state            year crime_type         count
    &lt;chr&gt;         &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt;
- 1 East Malaysia Sarawak          2017 rape                 150
- 2 West Malaysia Kelantan         2017 armed robbery          2
- 3 West Malaysia Terengganu       2017 armed robbery          0
- 4 East Malaysia Sarawak          2017 murder                27
- 5 West Malaysia Kelantan         2017 aggravated assault   252
- 6 West Malaysia Negeri Sembilan  2017 murder                14
- 7 West Malaysia Kuala Lumpur     2017 aggravated assault   651
- 8 West Malaysia Johor            2017 unarmed robbery     1701
- 9 East Malaysia Sabah            2017 unarmed robbery      284
-10 West Malaysia Johor            2017 murder                66</code></pre>
+ 1 West Malaysia Negeri Sembilan  2017 aggravated assault   241
+ 2 West Malaysia Pulau Pinang     2017 murder                17
+ 3 West Malaysia Kuala Lumpur     2017 murder                37
+ 4 West Malaysia Perlis           2017 rape                  30
+ 5 West Malaysia Kuala Lumpur     2017 aggravated assault   651
+ 6 West Malaysia Terengganu       2017 unarmed robbery      155
+ 7 West Malaysia Melaka           2017 murder                 7
+ 8 West Malaysia Negeri Sembilan  2017 unarmed robbery      536
+ 9 West Malaysia Perlis           2017 murder                 2
+10 West Malaysia Perak            2017 aggravated assault   380</code></pre>
 </div>
 </div>
 <p>The output of <code>slice_sample()</code> looks acceptable as a table, especially if it is included in a Quarto document, but readers of our reports probably don’t want to know the type of each variable (underneath the variable names) and won’t want to page through the table if there are more rows or columns than can fit in the available space. We can make this table much more useful for readers by wrangling it into a different format.</p>
@@ -718,7 +718,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
 </section>
 <section id="using-the-gt-package-to-make-better-tables" class="level3" data-number="14.2.2">
 <h3 data-number="14.2.2" class="anchored" data-anchor-id="using-the-gt-package-to-make-better-tables"><span class="header-section-number">14.2.2</span> Using the gt package to make better tables</h3>
-<p><a href="https://gt.rstudio.com/" aria-label="Visit the gt package website"><img src="../images/gt.png" alt="" class="right-side-image"></a></p>
+<p><a href="https://gt.rstudio.com/" aria-label="Visit the gt package website" class="no-external"><img src="../images/gt.png" alt="" class="right-side-image"></a></p>
 <p>The table we created in the last section was better than simply showing the raw data to readers of a report. But we can create much better display tables with the <a href="https://gt.rstudio.com/">gt package</a>, which is designed to format data for display. The gt package works in a similar way to the <code>ggplot2</code> package, in that tables are made up of stacks of functions that contribute to the appearance of the final table. One difference is that the layers in a gt stack are joined using the pipe operator (<code>|&gt;</code>) rather than the plus operator (<code>+</code>).</p>
 <p>We can create a very basic gt table by just passing a data frame or tibble to the <code>gt()</code> function. So we can add <code>gt()</code> to the end of the pipeline of functions we have already started to build to create a good display table. At this point, the only argument we will add to <code>gt()</code> is the <code>rowname_col</code> argument, which we use to specify which column in the data holds the row labels (in this case, the name of each state).</p>
 <div class="cell">
@@ -746,23 +746,23 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
 <span id="cb9-18"><a href="#cb9-18" aria-label="18"></a>  <span class="fu">gt</span>(<span class="at">rowname_col =</span> <span class="st">"state"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output-display">
-<div id="cxribuevhe" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#cxribuevhe table {
+<div id="olermqxfsk" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#olermqxfsk table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#cxribuevhe thead, #cxribuevhe tbody, #cxribuevhe tfoot, #cxribuevhe tr, #cxribuevhe td, #cxribuevhe th {
+#olermqxfsk thead, #olermqxfsk tbody, #olermqxfsk tfoot, #olermqxfsk tr, #olermqxfsk td, #olermqxfsk th {
   border-style: none;
 }
 
-#cxribuevhe p {
+#olermqxfsk p {
   margin: 0;
   padding: 0;
 }
 
-#cxribuevhe .gt_table {
+#olermqxfsk .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -788,12 +788,12 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-left-color: #D3D3D3;
 }
 
-#cxribuevhe .gt_caption {
+#olermqxfsk .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#cxribuevhe .gt_title {
+#olermqxfsk .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -805,7 +805,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-width: 0;
 }
 
-#cxribuevhe .gt_subtitle {
+#olermqxfsk .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -817,7 +817,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-top-width: 0;
 }
 
-#cxribuevhe .gt_heading {
+#olermqxfsk .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -829,13 +829,13 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#cxribuevhe .gt_bottom_border {
+#olermqxfsk .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#cxribuevhe .gt_col_headings {
+#olermqxfsk .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -850,7 +850,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#cxribuevhe .gt_col_heading {
+#olermqxfsk .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -870,7 +870,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   overflow-x: hidden;
 }
 
-#cxribuevhe .gt_column_spanner_outer {
+#olermqxfsk .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -882,15 +882,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 4px;
 }
 
-#cxribuevhe .gt_column_spanner_outer:first-child {
+#olermqxfsk .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#cxribuevhe .gt_column_spanner_outer:last-child {
+#olermqxfsk .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#cxribuevhe .gt_column_spanner {
+#olermqxfsk .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -902,11 +902,11 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   width: 100%;
 }
 
-#cxribuevhe .gt_spanner_row {
+#olermqxfsk .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#cxribuevhe .gt_group_heading {
+#olermqxfsk .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -932,7 +932,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   text-align: left;
 }
 
-#cxribuevhe .gt_empty_group_heading {
+#olermqxfsk .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -947,15 +947,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   vertical-align: middle;
 }
 
-#cxribuevhe .gt_from_md > :first-child {
+#olermqxfsk .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#cxribuevhe .gt_from_md > :last-child {
+#olermqxfsk .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#cxribuevhe .gt_row {
+#olermqxfsk .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -974,7 +974,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   overflow-x: hidden;
 }
 
-#cxribuevhe .gt_stub {
+#olermqxfsk .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -987,7 +987,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#cxribuevhe .gt_stub_row_group {
+#olermqxfsk .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1001,15 +1001,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   vertical-align: top;
 }
 
-#cxribuevhe .gt_row_group_first td {
+#olermqxfsk .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#cxribuevhe .gt_row_group_first th {
+#olermqxfsk .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#cxribuevhe .gt_summary_row {
+#olermqxfsk .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1019,16 +1019,16 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#cxribuevhe .gt_first_summary_row {
+#olermqxfsk .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#cxribuevhe .gt_first_summary_row.thick {
+#olermqxfsk .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#cxribuevhe .gt_last_summary_row {
+#olermqxfsk .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1038,7 +1038,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#cxribuevhe .gt_grand_summary_row {
+#olermqxfsk .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1048,7 +1048,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#cxribuevhe .gt_first_grand_summary_row {
+#olermqxfsk .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1058,7 +1058,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-top-color: #D3D3D3;
 }
 
-#cxribuevhe .gt_last_grand_summary_row_top {
+#olermqxfsk .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1068,11 +1068,11 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#cxribuevhe .gt_striped {
+#olermqxfsk .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#cxribuevhe .gt_table_body {
+#olermqxfsk .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1081,7 +1081,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#cxribuevhe .gt_footnotes {
+#olermqxfsk .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1095,7 +1095,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#cxribuevhe .gt_footnote {
+#olermqxfsk .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1104,7 +1104,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#cxribuevhe .gt_sourcenotes {
+#olermqxfsk .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1118,7 +1118,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#cxribuevhe .gt_sourcenote {
+#olermqxfsk .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1126,72 +1126,72 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#cxribuevhe .gt_left {
+#olermqxfsk .gt_left {
   text-align: left;
 }
 
-#cxribuevhe .gt_center {
+#olermqxfsk .gt_center {
   text-align: center;
 }
 
-#cxribuevhe .gt_right {
+#olermqxfsk .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#cxribuevhe .gt_font_normal {
+#olermqxfsk .gt_font_normal {
   font-weight: normal;
 }
 
-#cxribuevhe .gt_font_bold {
+#olermqxfsk .gt_font_bold {
   font-weight: bold;
 }
 
-#cxribuevhe .gt_font_italic {
+#olermqxfsk .gt_font_italic {
   font-style: italic;
 }
 
-#cxribuevhe .gt_super {
+#olermqxfsk .gt_super {
   font-size: 65%;
 }
 
-#cxribuevhe .gt_footnote_marks {
+#olermqxfsk .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#cxribuevhe .gt_asterisk {
+#olermqxfsk .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#cxribuevhe .gt_indent_1 {
+#olermqxfsk .gt_indent_1 {
   text-indent: 5px;
 }
 
-#cxribuevhe .gt_indent_2 {
+#olermqxfsk .gt_indent_2 {
   text-indent: 10px;
 }
 
-#cxribuevhe .gt_indent_3 {
+#olermqxfsk .gt_indent_3 {
   text-indent: 15px;
 }
 
-#cxribuevhe .gt_indent_4 {
+#olermqxfsk .gt_indent_4 {
   text-indent: 20px;
 }
 
-#cxribuevhe .gt_indent_5 {
+#olermqxfsk .gt_indent_5 {
   text-indent: 25px;
 }
 
-#cxribuevhe .katex-display {
+#olermqxfsk .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#cxribuevhe div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#olermqxfsk div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1372,23 +1372,23 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
 <span id="cb10-20"><a href="#cb10-20" aria-label="20"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">where</span>(is.numeric), <span class="at">decimals =</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output-display">
-<div id="tdejpezhuz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#tdejpezhuz table {
+<div id="fmudhaenfw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#fmudhaenfw table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#tdejpezhuz thead, #tdejpezhuz tbody, #tdejpezhuz tfoot, #tdejpezhuz tr, #tdejpezhuz td, #tdejpezhuz th {
+#fmudhaenfw thead, #fmudhaenfw tbody, #fmudhaenfw tfoot, #fmudhaenfw tr, #fmudhaenfw td, #fmudhaenfw th {
   border-style: none;
 }
 
-#tdejpezhuz p {
+#fmudhaenfw p {
   margin: 0;
   padding: 0;
 }
 
-#tdejpezhuz .gt_table {
+#fmudhaenfw .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1414,12 +1414,12 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-left-color: #D3D3D3;
 }
 
-#tdejpezhuz .gt_caption {
+#fmudhaenfw .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#tdejpezhuz .gt_title {
+#fmudhaenfw .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1431,7 +1431,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-width: 0;
 }
 
-#tdejpezhuz .gt_subtitle {
+#fmudhaenfw .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1443,7 +1443,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-top-width: 0;
 }
 
-#tdejpezhuz .gt_heading {
+#fmudhaenfw .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1455,13 +1455,13 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#tdejpezhuz .gt_bottom_border {
+#fmudhaenfw .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#tdejpezhuz .gt_col_headings {
+#fmudhaenfw .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1476,7 +1476,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#tdejpezhuz .gt_col_heading {
+#fmudhaenfw .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1496,7 +1496,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   overflow-x: hidden;
 }
 
-#tdejpezhuz .gt_column_spanner_outer {
+#fmudhaenfw .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1508,15 +1508,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 4px;
 }
 
-#tdejpezhuz .gt_column_spanner_outer:first-child {
+#fmudhaenfw .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#tdejpezhuz .gt_column_spanner_outer:last-child {
+#fmudhaenfw .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#tdejpezhuz .gt_column_spanner {
+#fmudhaenfw .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1528,11 +1528,11 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   width: 100%;
 }
 
-#tdejpezhuz .gt_spanner_row {
+#fmudhaenfw .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#tdejpezhuz .gt_group_heading {
+#fmudhaenfw .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1558,7 +1558,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   text-align: left;
 }
 
-#tdejpezhuz .gt_empty_group_heading {
+#fmudhaenfw .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1573,15 +1573,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   vertical-align: middle;
 }
 
-#tdejpezhuz .gt_from_md > :first-child {
+#fmudhaenfw .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#tdejpezhuz .gt_from_md > :last-child {
+#fmudhaenfw .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#tdejpezhuz .gt_row {
+#fmudhaenfw .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1600,7 +1600,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   overflow-x: hidden;
 }
 
-#tdejpezhuz .gt_stub {
+#fmudhaenfw .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1613,7 +1613,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#tdejpezhuz .gt_stub_row_group {
+#fmudhaenfw .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1627,15 +1627,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   vertical-align: top;
 }
 
-#tdejpezhuz .gt_row_group_first td {
+#fmudhaenfw .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#tdejpezhuz .gt_row_group_first th {
+#fmudhaenfw .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#tdejpezhuz .gt_summary_row {
+#fmudhaenfw .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1645,16 +1645,16 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#tdejpezhuz .gt_first_summary_row {
+#fmudhaenfw .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#tdejpezhuz .gt_first_summary_row.thick {
+#fmudhaenfw .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#tdejpezhuz .gt_last_summary_row {
+#fmudhaenfw .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1664,7 +1664,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#tdejpezhuz .gt_grand_summary_row {
+#fmudhaenfw .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1674,7 +1674,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#tdejpezhuz .gt_first_grand_summary_row {
+#fmudhaenfw .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1684,7 +1684,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-top-color: #D3D3D3;
 }
 
-#tdejpezhuz .gt_last_grand_summary_row_top {
+#fmudhaenfw .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1694,11 +1694,11 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#tdejpezhuz .gt_striped {
+#fmudhaenfw .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#tdejpezhuz .gt_table_body {
+#fmudhaenfw .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1707,7 +1707,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#tdejpezhuz .gt_footnotes {
+#fmudhaenfw .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1721,7 +1721,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#tdejpezhuz .gt_footnote {
+#fmudhaenfw .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1730,7 +1730,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#tdejpezhuz .gt_sourcenotes {
+#fmudhaenfw .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1744,7 +1744,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#tdejpezhuz .gt_sourcenote {
+#fmudhaenfw .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1752,72 +1752,72 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#tdejpezhuz .gt_left {
+#fmudhaenfw .gt_left {
   text-align: left;
 }
 
-#tdejpezhuz .gt_center {
+#fmudhaenfw .gt_center {
   text-align: center;
 }
 
-#tdejpezhuz .gt_right {
+#fmudhaenfw .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#tdejpezhuz .gt_font_normal {
+#fmudhaenfw .gt_font_normal {
   font-weight: normal;
 }
 
-#tdejpezhuz .gt_font_bold {
+#fmudhaenfw .gt_font_bold {
   font-weight: bold;
 }
 
-#tdejpezhuz .gt_font_italic {
+#fmudhaenfw .gt_font_italic {
   font-style: italic;
 }
 
-#tdejpezhuz .gt_super {
+#fmudhaenfw .gt_super {
   font-size: 65%;
 }
 
-#tdejpezhuz .gt_footnote_marks {
+#fmudhaenfw .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#tdejpezhuz .gt_asterisk {
+#fmudhaenfw .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#tdejpezhuz .gt_indent_1 {
+#fmudhaenfw .gt_indent_1 {
   text-indent: 5px;
 }
 
-#tdejpezhuz .gt_indent_2 {
+#fmudhaenfw .gt_indent_2 {
   text-indent: 10px;
 }
 
-#tdejpezhuz .gt_indent_3 {
+#fmudhaenfw .gt_indent_3 {
   text-indent: 15px;
 }
 
-#tdejpezhuz .gt_indent_4 {
+#fmudhaenfw .gt_indent_4 {
   text-indent: 20px;
 }
 
-#tdejpezhuz .gt_indent_5 {
+#fmudhaenfw .gt_indent_5 {
   text-indent: 25px;
 }
 
-#tdejpezhuz .katex-display {
+#fmudhaenfw .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#tdejpezhuz div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#fmudhaenfw div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1999,23 +1999,23 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
 <span id="cb11-22"><a href="#cb11-22" aria-label="22"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">where</span>(is.numeric), <span class="at">decimals =</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output-display">
-<div id="lbqxyqdbcj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#lbqxyqdbcj table {
+<div id="wcbsdknxtp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#wcbsdknxtp table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#lbqxyqdbcj thead, #lbqxyqdbcj tbody, #lbqxyqdbcj tfoot, #lbqxyqdbcj tr, #lbqxyqdbcj td, #lbqxyqdbcj th {
+#wcbsdknxtp thead, #wcbsdknxtp tbody, #wcbsdknxtp tfoot, #wcbsdknxtp tr, #wcbsdknxtp td, #wcbsdknxtp th {
   border-style: none;
 }
 
-#lbqxyqdbcj p {
+#wcbsdknxtp p {
   margin: 0;
   padding: 0;
 }
 
-#lbqxyqdbcj .gt_table {
+#wcbsdknxtp .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -2041,12 +2041,12 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-left-color: #D3D3D3;
 }
 
-#lbqxyqdbcj .gt_caption {
+#wcbsdknxtp .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#lbqxyqdbcj .gt_title {
+#wcbsdknxtp .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2058,7 +2058,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-width: 0;
 }
 
-#lbqxyqdbcj .gt_subtitle {
+#wcbsdknxtp .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2070,7 +2070,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-top-width: 0;
 }
 
-#lbqxyqdbcj .gt_heading {
+#wcbsdknxtp .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2082,13 +2082,13 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#lbqxyqdbcj .gt_bottom_border {
+#wcbsdknxtp .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#lbqxyqdbcj .gt_col_headings {
+#wcbsdknxtp .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2103,7 +2103,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#lbqxyqdbcj .gt_col_heading {
+#wcbsdknxtp .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2123,7 +2123,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   overflow-x: hidden;
 }
 
-#lbqxyqdbcj .gt_column_spanner_outer {
+#wcbsdknxtp .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2135,15 +2135,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 4px;
 }
 
-#lbqxyqdbcj .gt_column_spanner_outer:first-child {
+#wcbsdknxtp .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#lbqxyqdbcj .gt_column_spanner_outer:last-child {
+#wcbsdknxtp .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#lbqxyqdbcj .gt_column_spanner {
+#wcbsdknxtp .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2155,11 +2155,11 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   width: 100%;
 }
 
-#lbqxyqdbcj .gt_spanner_row {
+#wcbsdknxtp .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#lbqxyqdbcj .gt_group_heading {
+#wcbsdknxtp .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2185,7 +2185,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   text-align: left;
 }
 
-#lbqxyqdbcj .gt_empty_group_heading {
+#wcbsdknxtp .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2200,15 +2200,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   vertical-align: middle;
 }
 
-#lbqxyqdbcj .gt_from_md > :first-child {
+#wcbsdknxtp .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#lbqxyqdbcj .gt_from_md > :last-child {
+#wcbsdknxtp .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#lbqxyqdbcj .gt_row {
+#wcbsdknxtp .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2227,7 +2227,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   overflow-x: hidden;
 }
 
-#lbqxyqdbcj .gt_stub {
+#wcbsdknxtp .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2240,7 +2240,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#lbqxyqdbcj .gt_stub_row_group {
+#wcbsdknxtp .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2254,15 +2254,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   vertical-align: top;
 }
 
-#lbqxyqdbcj .gt_row_group_first td {
+#wcbsdknxtp .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#lbqxyqdbcj .gt_row_group_first th {
+#wcbsdknxtp .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#lbqxyqdbcj .gt_summary_row {
+#wcbsdknxtp .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2272,16 +2272,16 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#lbqxyqdbcj .gt_first_summary_row {
+#wcbsdknxtp .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#lbqxyqdbcj .gt_first_summary_row.thick {
+#wcbsdknxtp .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#lbqxyqdbcj .gt_last_summary_row {
+#wcbsdknxtp .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2291,7 +2291,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#lbqxyqdbcj .gt_grand_summary_row {
+#wcbsdknxtp .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2301,7 +2301,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#lbqxyqdbcj .gt_first_grand_summary_row {
+#wcbsdknxtp .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2311,7 +2311,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-top-color: #D3D3D3;
 }
 
-#lbqxyqdbcj .gt_last_grand_summary_row_top {
+#wcbsdknxtp .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2321,11 +2321,11 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#lbqxyqdbcj .gt_striped {
+#wcbsdknxtp .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#lbqxyqdbcj .gt_table_body {
+#wcbsdknxtp .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2334,7 +2334,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#lbqxyqdbcj .gt_footnotes {
+#wcbsdknxtp .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2348,7 +2348,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#lbqxyqdbcj .gt_footnote {
+#wcbsdknxtp .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2357,7 +2357,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#lbqxyqdbcj .gt_sourcenotes {
+#wcbsdknxtp .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2371,7 +2371,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#lbqxyqdbcj .gt_sourcenote {
+#wcbsdknxtp .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2379,72 +2379,72 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#lbqxyqdbcj .gt_left {
+#wcbsdknxtp .gt_left {
   text-align: left;
 }
 
-#lbqxyqdbcj .gt_center {
+#wcbsdknxtp .gt_center {
   text-align: center;
 }
 
-#lbqxyqdbcj .gt_right {
+#wcbsdknxtp .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#lbqxyqdbcj .gt_font_normal {
+#wcbsdknxtp .gt_font_normal {
   font-weight: normal;
 }
 
-#lbqxyqdbcj .gt_font_bold {
+#wcbsdknxtp .gt_font_bold {
   font-weight: bold;
 }
 
-#lbqxyqdbcj .gt_font_italic {
+#wcbsdknxtp .gt_font_italic {
   font-style: italic;
 }
 
-#lbqxyqdbcj .gt_super {
+#wcbsdknxtp .gt_super {
   font-size: 65%;
 }
 
-#lbqxyqdbcj .gt_footnote_marks {
+#wcbsdknxtp .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#lbqxyqdbcj .gt_asterisk {
+#wcbsdknxtp .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#lbqxyqdbcj .gt_indent_1 {
+#wcbsdknxtp .gt_indent_1 {
   text-indent: 5px;
 }
 
-#lbqxyqdbcj .gt_indent_2 {
+#wcbsdknxtp .gt_indent_2 {
   text-indent: 10px;
 }
 
-#lbqxyqdbcj .gt_indent_3 {
+#wcbsdknxtp .gt_indent_3 {
   text-indent: 15px;
 }
 
-#lbqxyqdbcj .gt_indent_4 {
+#wcbsdknxtp .gt_indent_4 {
   text-indent: 20px;
 }
 
-#lbqxyqdbcj .gt_indent_5 {
+#wcbsdknxtp .gt_indent_5 {
   text-indent: 25px;
 }
 
-#lbqxyqdbcj .katex-display {
+#wcbsdknxtp .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#lbqxyqdbcj div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#wcbsdknxtp div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -2620,23 +2620,23 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
 <span id="cb12-25"><a href="#cb12-25" aria-label="25"></a>  <span class="fu">data_color</span>(<span class="at">columns =</span> rape, <span class="at">palette =</span> <span class="st">"Blues"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output-display">
-<div id="pisfvsgcrg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#pisfvsgcrg table {
+<div id="nijtpjvtqw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#nijtpjvtqw table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#pisfvsgcrg thead, #pisfvsgcrg tbody, #pisfvsgcrg tfoot, #pisfvsgcrg tr, #pisfvsgcrg td, #pisfvsgcrg th {
+#nijtpjvtqw thead, #nijtpjvtqw tbody, #nijtpjvtqw tfoot, #nijtpjvtqw tr, #nijtpjvtqw td, #nijtpjvtqw th {
   border-style: none;
 }
 
-#pisfvsgcrg p {
+#nijtpjvtqw p {
   margin: 0;
   padding: 0;
 }
 
-#pisfvsgcrg .gt_table {
+#nijtpjvtqw .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -2662,12 +2662,12 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-left-color: #D3D3D3;
 }
 
-#pisfvsgcrg .gt_caption {
+#nijtpjvtqw .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#pisfvsgcrg .gt_title {
+#nijtpjvtqw .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2679,7 +2679,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-width: 0;
 }
 
-#pisfvsgcrg .gt_subtitle {
+#nijtpjvtqw .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2691,7 +2691,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-top-width: 0;
 }
 
-#pisfvsgcrg .gt_heading {
+#nijtpjvtqw .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2703,13 +2703,13 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#pisfvsgcrg .gt_bottom_border {
+#nijtpjvtqw .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#pisfvsgcrg .gt_col_headings {
+#nijtpjvtqw .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2724,7 +2724,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#pisfvsgcrg .gt_col_heading {
+#nijtpjvtqw .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2744,7 +2744,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   overflow-x: hidden;
 }
 
-#pisfvsgcrg .gt_column_spanner_outer {
+#nijtpjvtqw .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2756,15 +2756,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 4px;
 }
 
-#pisfvsgcrg .gt_column_spanner_outer:first-child {
+#nijtpjvtqw .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#pisfvsgcrg .gt_column_spanner_outer:last-child {
+#nijtpjvtqw .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#pisfvsgcrg .gt_column_spanner {
+#nijtpjvtqw .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2776,11 +2776,11 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   width: 100%;
 }
 
-#pisfvsgcrg .gt_spanner_row {
+#nijtpjvtqw .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#pisfvsgcrg .gt_group_heading {
+#nijtpjvtqw .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2806,7 +2806,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   text-align: left;
 }
 
-#pisfvsgcrg .gt_empty_group_heading {
+#nijtpjvtqw .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2821,15 +2821,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   vertical-align: middle;
 }
 
-#pisfvsgcrg .gt_from_md > :first-child {
+#nijtpjvtqw .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#pisfvsgcrg .gt_from_md > :last-child {
+#nijtpjvtqw .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#pisfvsgcrg .gt_row {
+#nijtpjvtqw .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2848,7 +2848,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   overflow-x: hidden;
 }
 
-#pisfvsgcrg .gt_stub {
+#nijtpjvtqw .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2861,7 +2861,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#pisfvsgcrg .gt_stub_row_group {
+#nijtpjvtqw .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2875,15 +2875,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   vertical-align: top;
 }
 
-#pisfvsgcrg .gt_row_group_first td {
+#nijtpjvtqw .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#pisfvsgcrg .gt_row_group_first th {
+#nijtpjvtqw .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#pisfvsgcrg .gt_summary_row {
+#nijtpjvtqw .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2893,16 +2893,16 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#pisfvsgcrg .gt_first_summary_row {
+#nijtpjvtqw .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#pisfvsgcrg .gt_first_summary_row.thick {
+#nijtpjvtqw .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#pisfvsgcrg .gt_last_summary_row {
+#nijtpjvtqw .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2912,7 +2912,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#pisfvsgcrg .gt_grand_summary_row {
+#nijtpjvtqw .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2922,7 +2922,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#pisfvsgcrg .gt_first_grand_summary_row {
+#nijtpjvtqw .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2932,7 +2932,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-top-color: #D3D3D3;
 }
 
-#pisfvsgcrg .gt_last_grand_summary_row_top {
+#nijtpjvtqw .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2942,11 +2942,11 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#pisfvsgcrg .gt_striped {
+#nijtpjvtqw .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#pisfvsgcrg .gt_table_body {
+#nijtpjvtqw .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2955,7 +2955,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#pisfvsgcrg .gt_footnotes {
+#nijtpjvtqw .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2969,7 +2969,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#pisfvsgcrg .gt_footnote {
+#nijtpjvtqw .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2978,7 +2978,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#pisfvsgcrg .gt_sourcenotes {
+#nijtpjvtqw .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2992,7 +2992,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#pisfvsgcrg .gt_sourcenote {
+#nijtpjvtqw .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -3000,72 +3000,72 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#pisfvsgcrg .gt_left {
+#nijtpjvtqw .gt_left {
   text-align: left;
 }
 
-#pisfvsgcrg .gt_center {
+#nijtpjvtqw .gt_center {
   text-align: center;
 }
 
-#pisfvsgcrg .gt_right {
+#nijtpjvtqw .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#pisfvsgcrg .gt_font_normal {
+#nijtpjvtqw .gt_font_normal {
   font-weight: normal;
 }
 
-#pisfvsgcrg .gt_font_bold {
+#nijtpjvtqw .gt_font_bold {
   font-weight: bold;
 }
 
-#pisfvsgcrg .gt_font_italic {
+#nijtpjvtqw .gt_font_italic {
   font-style: italic;
 }
 
-#pisfvsgcrg .gt_super {
+#nijtpjvtqw .gt_super {
   font-size: 65%;
 }
 
-#pisfvsgcrg .gt_footnote_marks {
+#nijtpjvtqw .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#pisfvsgcrg .gt_asterisk {
+#nijtpjvtqw .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#pisfvsgcrg .gt_indent_1 {
+#nijtpjvtqw .gt_indent_1 {
   text-indent: 5px;
 }
 
-#pisfvsgcrg .gt_indent_2 {
+#nijtpjvtqw .gt_indent_2 {
   text-indent: 10px;
 }
 
-#pisfvsgcrg .gt_indent_3 {
+#nijtpjvtqw .gt_indent_3 {
   text-indent: 15px;
 }
 
-#pisfvsgcrg .gt_indent_4 {
+#nijtpjvtqw .gt_indent_4 {
   text-indent: 20px;
 }
 
-#pisfvsgcrg .gt_indent_5 {
+#nijtpjvtqw .gt_indent_5 {
   text-indent: 25px;
 }
 
-#pisfvsgcrg .katex-display {
+#nijtpjvtqw .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#pisfvsgcrg div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#nijtpjvtqw div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -3263,23 +3263,23 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
 <span id="cb13-31"><a href="#cb13-31" aria-label="31"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output-display">
-<div id="bquoasraix" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#bquoasraix table {
+<div id="rqtswmfsea" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#rqtswmfsea table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#bquoasraix thead, #bquoasraix tbody, #bquoasraix tfoot, #bquoasraix tr, #bquoasraix td, #bquoasraix th {
+#rqtswmfsea thead, #rqtswmfsea tbody, #rqtswmfsea tfoot, #rqtswmfsea tr, #rqtswmfsea td, #rqtswmfsea th {
   border-style: none;
 }
 
-#bquoasraix p {
+#rqtswmfsea p {
   margin: 0;
   padding: 0;
 }
 
-#bquoasraix .gt_table {
+#rqtswmfsea .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -3305,12 +3305,12 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-left-color: #D3D3D3;
 }
 
-#bquoasraix .gt_caption {
+#rqtswmfsea .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#bquoasraix .gt_title {
+#rqtswmfsea .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -3322,7 +3322,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-width: 0;
 }
 
-#bquoasraix .gt_subtitle {
+#rqtswmfsea .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -3334,7 +3334,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-top-width: 0;
 }
 
-#bquoasraix .gt_heading {
+#rqtswmfsea .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -3346,13 +3346,13 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#bquoasraix .gt_bottom_border {
+#rqtswmfsea .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#bquoasraix .gt_col_headings {
+#rqtswmfsea .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3367,7 +3367,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#bquoasraix .gt_col_heading {
+#rqtswmfsea .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3387,7 +3387,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   overflow-x: hidden;
 }
 
-#bquoasraix .gt_column_spanner_outer {
+#rqtswmfsea .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3399,15 +3399,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 4px;
 }
 
-#bquoasraix .gt_column_spanner_outer:first-child {
+#rqtswmfsea .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#bquoasraix .gt_column_spanner_outer:last-child {
+#rqtswmfsea .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#bquoasraix .gt_column_spanner {
+#rqtswmfsea .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -3419,11 +3419,11 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   width: 100%;
 }
 
-#bquoasraix .gt_spanner_row {
+#rqtswmfsea .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#bquoasraix .gt_group_heading {
+#rqtswmfsea .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3449,7 +3449,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   text-align: left;
 }
 
-#bquoasraix .gt_empty_group_heading {
+#rqtswmfsea .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3464,15 +3464,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   vertical-align: middle;
 }
 
-#bquoasraix .gt_from_md > :first-child {
+#rqtswmfsea .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#bquoasraix .gt_from_md > :last-child {
+#rqtswmfsea .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#bquoasraix .gt_row {
+#rqtswmfsea .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3491,7 +3491,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   overflow-x: hidden;
 }
 
-#bquoasraix .gt_stub {
+#rqtswmfsea .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3504,7 +3504,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#bquoasraix .gt_stub_row_group {
+#rqtswmfsea .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3518,15 +3518,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   vertical-align: top;
 }
 
-#bquoasraix .gt_row_group_first td {
+#rqtswmfsea .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#bquoasraix .gt_row_group_first th {
+#rqtswmfsea .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#bquoasraix .gt_summary_row {
+#rqtswmfsea .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3536,16 +3536,16 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#bquoasraix .gt_first_summary_row {
+#rqtswmfsea .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#bquoasraix .gt_first_summary_row.thick {
+#rqtswmfsea .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#bquoasraix .gt_last_summary_row {
+#rqtswmfsea .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3555,7 +3555,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#bquoasraix .gt_grand_summary_row {
+#rqtswmfsea .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3565,7 +3565,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#bquoasraix .gt_first_grand_summary_row {
+#rqtswmfsea .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3575,7 +3575,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-top-color: #D3D3D3;
 }
 
-#bquoasraix .gt_last_grand_summary_row_top {
+#rqtswmfsea .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3585,11 +3585,11 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#bquoasraix .gt_striped {
+#rqtswmfsea .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#bquoasraix .gt_table_body {
+#rqtswmfsea .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3598,7 +3598,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#bquoasraix .gt_footnotes {
+#rqtswmfsea .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3612,7 +3612,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#bquoasraix .gt_footnote {
+#rqtswmfsea .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -3621,7 +3621,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#bquoasraix .gt_sourcenotes {
+#rqtswmfsea .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3635,7 +3635,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#bquoasraix .gt_sourcenote {
+#rqtswmfsea .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -3643,72 +3643,72 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#bquoasraix .gt_left {
+#rqtswmfsea .gt_left {
   text-align: left;
 }
 
-#bquoasraix .gt_center {
+#rqtswmfsea .gt_center {
   text-align: center;
 }
 
-#bquoasraix .gt_right {
+#rqtswmfsea .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#bquoasraix .gt_font_normal {
+#rqtswmfsea .gt_font_normal {
   font-weight: normal;
 }
 
-#bquoasraix .gt_font_bold {
+#rqtswmfsea .gt_font_bold {
   font-weight: bold;
 }
 
-#bquoasraix .gt_font_italic {
+#rqtswmfsea .gt_font_italic {
   font-style: italic;
 }
 
-#bquoasraix .gt_super {
+#rqtswmfsea .gt_super {
   font-size: 65%;
 }
 
-#bquoasraix .gt_footnote_marks {
+#rqtswmfsea .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#bquoasraix .gt_asterisk {
+#rqtswmfsea .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#bquoasraix .gt_indent_1 {
+#rqtswmfsea .gt_indent_1 {
   text-indent: 5px;
 }
 
-#bquoasraix .gt_indent_2 {
+#rqtswmfsea .gt_indent_2 {
   text-indent: 10px;
 }
 
-#bquoasraix .gt_indent_3 {
+#rqtswmfsea .gt_indent_3 {
   text-indent: 15px;
 }
 
-#bquoasraix .gt_indent_4 {
+#rqtswmfsea .gt_indent_4 {
   text-indent: 20px;
 }
 
-#bquoasraix .gt_indent_5 {
+#rqtswmfsea .gt_indent_5 {
   text-indent: 25px;
 }
 
-#bquoasraix .katex-display {
+#rqtswmfsea .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#bquoasraix div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#rqtswmfsea div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -3915,23 +3915,23 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
 <span id="cb14-43"><a href="#cb14-43" aria-label="43"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output-display">
-<div id="hwgjvoumju" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#hwgjvoumju table {
+<div id="eevmrgfufd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#eevmrgfufd table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#hwgjvoumju thead, #hwgjvoumju tbody, #hwgjvoumju tfoot, #hwgjvoumju tr, #hwgjvoumju td, #hwgjvoumju th {
+#eevmrgfufd thead, #eevmrgfufd tbody, #eevmrgfufd tfoot, #eevmrgfufd tr, #eevmrgfufd td, #eevmrgfufd th {
   border-style: none;
 }
 
-#hwgjvoumju p {
+#eevmrgfufd p {
   margin: 0;
   padding: 0;
 }
 
-#hwgjvoumju .gt_table {
+#eevmrgfufd .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -3957,12 +3957,12 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-left-color: #D3D3D3;
 }
 
-#hwgjvoumju .gt_caption {
+#eevmrgfufd .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#hwgjvoumju .gt_title {
+#eevmrgfufd .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -3974,7 +3974,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-width: 0;
 }
 
-#hwgjvoumju .gt_subtitle {
+#eevmrgfufd .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -3986,7 +3986,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-top-width: 0;
 }
 
-#hwgjvoumju .gt_heading {
+#eevmrgfufd .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -3998,13 +3998,13 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#hwgjvoumju .gt_bottom_border {
+#eevmrgfufd .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#hwgjvoumju .gt_col_headings {
+#eevmrgfufd .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -4019,7 +4019,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#hwgjvoumju .gt_col_heading {
+#eevmrgfufd .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4039,7 +4039,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   overflow-x: hidden;
 }
 
-#hwgjvoumju .gt_column_spanner_outer {
+#eevmrgfufd .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4051,15 +4051,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 4px;
 }
 
-#hwgjvoumju .gt_column_spanner_outer:first-child {
+#eevmrgfufd .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#hwgjvoumju .gt_column_spanner_outer:last-child {
+#eevmrgfufd .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#hwgjvoumju .gt_column_spanner {
+#eevmrgfufd .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -4071,11 +4071,11 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   width: 100%;
 }
 
-#hwgjvoumju .gt_spanner_row {
+#eevmrgfufd .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#hwgjvoumju .gt_group_heading {
+#eevmrgfufd .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4101,7 +4101,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   text-align: left;
 }
 
-#hwgjvoumju .gt_empty_group_heading {
+#eevmrgfufd .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -4116,15 +4116,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   vertical-align: middle;
 }
 
-#hwgjvoumju .gt_from_md > :first-child {
+#eevmrgfufd .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#hwgjvoumju .gt_from_md > :last-child {
+#eevmrgfufd .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#hwgjvoumju .gt_row {
+#eevmrgfufd .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4143,7 +4143,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   overflow-x: hidden;
 }
 
-#hwgjvoumju .gt_stub {
+#eevmrgfufd .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4156,7 +4156,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#hwgjvoumju .gt_stub_row_group {
+#eevmrgfufd .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4170,15 +4170,15 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   vertical-align: top;
 }
 
-#hwgjvoumju .gt_row_group_first td {
+#eevmrgfufd .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#hwgjvoumju .gt_row_group_first th {
+#eevmrgfufd .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#hwgjvoumju .gt_summary_row {
+#eevmrgfufd .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -4188,16 +4188,16 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#hwgjvoumju .gt_first_summary_row {
+#eevmrgfufd .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#hwgjvoumju .gt_first_summary_row.thick {
+#eevmrgfufd .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#hwgjvoumju .gt_last_summary_row {
+#eevmrgfufd .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4207,7 +4207,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#hwgjvoumju .gt_grand_summary_row {
+#eevmrgfufd .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -4217,7 +4217,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#hwgjvoumju .gt_first_grand_summary_row {
+#eevmrgfufd .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4227,7 +4227,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-top-color: #D3D3D3;
 }
 
-#hwgjvoumju .gt_last_grand_summary_row_top {
+#eevmrgfufd .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4237,11 +4237,11 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#hwgjvoumju .gt_striped {
+#eevmrgfufd .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#hwgjvoumju .gt_table_body {
+#eevmrgfufd .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -4250,7 +4250,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-bottom-color: #D3D3D3;
 }
 
-#hwgjvoumju .gt_footnotes {
+#eevmrgfufd .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -4264,7 +4264,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#hwgjvoumju .gt_footnote {
+#eevmrgfufd .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -4273,7 +4273,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#hwgjvoumju .gt_sourcenotes {
+#eevmrgfufd .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -4287,7 +4287,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   border-right-color: #D3D3D3;
 }
 
-#hwgjvoumju .gt_sourcenote {
+#eevmrgfufd .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -4295,72 +4295,72 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
   padding-right: 5px;
 }
 
-#hwgjvoumju .gt_left {
+#eevmrgfufd .gt_left {
   text-align: left;
 }
 
-#hwgjvoumju .gt_center {
+#eevmrgfufd .gt_center {
   text-align: center;
 }
 
-#hwgjvoumju .gt_right {
+#eevmrgfufd .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#hwgjvoumju .gt_font_normal {
+#eevmrgfufd .gt_font_normal {
   font-weight: normal;
 }
 
-#hwgjvoumju .gt_font_bold {
+#eevmrgfufd .gt_font_bold {
   font-weight: bold;
 }
 
-#hwgjvoumju .gt_font_italic {
+#eevmrgfufd .gt_font_italic {
   font-style: italic;
 }
 
-#hwgjvoumju .gt_super {
+#eevmrgfufd .gt_super {
   font-size: 65%;
 }
 
-#hwgjvoumju .gt_footnote_marks {
+#eevmrgfufd .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#hwgjvoumju .gt_asterisk {
+#eevmrgfufd .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#hwgjvoumju .gt_indent_1 {
+#eevmrgfufd .gt_indent_1 {
   text-indent: 5px;
 }
 
-#hwgjvoumju .gt_indent_2 {
+#eevmrgfufd .gt_indent_2 {
   text-indent: 10px;
 }
 
-#hwgjvoumju .gt_indent_3 {
+#eevmrgfufd .gt_indent_3 {
   text-indent: 15px;
 }
 
-#hwgjvoumju .gt_indent_4 {
+#eevmrgfufd .gt_indent_4 {
   text-indent: 20px;
 }
 
-#hwgjvoumju .gt_indent_5 {
+#eevmrgfufd .gt_indent_5 {
   text-indent: 25px;
 }
 
-#hwgjvoumju .katex-display {
+#eevmrgfufd .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#hwgjvoumju div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#eevmrgfufd div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -4624,16 +4624,16 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>In which of these circumstances is a table typically more effective than a map?</strong></p>
-<div id="radio_BZLVQBCUFW" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_BZLVQBCUFW" value="answer"> <span>When communicating multiple values about each area</span></label><label><input type="radio" autocomplete="off" name="radio_BZLVQBCUFW" value=""> <span>When displaying detailed spatial relationships</span></label><label><input type="radio" autocomplete="off" name="radio_BZLVQBCUFW" value=""> <span>When visualising trends over time</span></label><label><input type="radio" autocomplete="off" name="radio_BZLVQBCUFW" value=""> <span>When analysing spatial clusters</span></label>
+<div id="radio_XFVIJCSOTJ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_XFVIJCSOTJ" value="answer"> <span>When communicating multiple values about each area</span></label><label><input type="radio" autocomplete="off" name="radio_XFVIJCSOTJ" value=""> <span>When displaying detailed spatial relationships</span></label><label><input type="radio" autocomplete="off" name="radio_XFVIJCSOTJ" value=""> <span>When visualising trends over time</span></label><label><input type="radio" autocomplete="off" name="radio_XFVIJCSOTJ" value=""> <span>When analysing spatial clusters</span></label>
 </div>
 <p><strong>Why is it often preferable to present summary data in a wide format?</strong></p>
-<div id="radio_DBCCFWRDZV" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_DBCCFWRDZV" value=""> <span>It makes the data easier to analyse using statistical models</span></label><label><input type="radio" autocomplete="off" name="radio_DBCCFWRDZV" value="answer"> <span>It allows for easier comparisons across categories in a table</span></label><label><input type="radio" autocomplete="off" name="radio_DBCCFWRDZV" value=""> <span>It is the default format for spatial data in R</span></label><label><input type="radio" autocomplete="off" name="radio_DBCCFWRDZV" value=""> <span>It makes maps easier to interpret</span></label>
+<div id="radio_PYWJBURABN" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_PYWJBURABN" value=""> <span>It makes the data easier to analyse using statistical models</span></label><label><input type="radio" autocomplete="off" name="radio_PYWJBURABN" value="answer"> <span>It allows for easier comparisons across categories in a table</span></label><label><input type="radio" autocomplete="off" name="radio_PYWJBURABN" value=""> <span>It is the default format for spatial data in R</span></label><label><input type="radio" autocomplete="off" name="radio_PYWJBURABN" value=""> <span>It makes maps easier to interpret</span></label>
 </div>
 <p><strong>Which function is used in R to convert long-format data into wide-format data?</strong></p>
-<div id="radio_WCXKZQGJVD" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_WCXKZQGJVD" value=""> <span><code>pivot_longer()</code></span></label><label><input type="radio" autocomplete="off" name="radio_WCXKZQGJVD" value=""> <span><code>spread()</code></span></label><label><input type="radio" autocomplete="off" name="radio_WCXKZQGJVD" value="answer"> <span><code>pivot_wider()</code></span></label><label><input type="radio" autocomplete="off" name="radio_WCXKZQGJVD" value=""> <span><code>gather()</code></span></label>
+<div id="radio_PDDYEJNYQA" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_PDDYEJNYQA" value=""> <span><code>pivot_longer()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PDDYEJNYQA" value=""> <span><code>spread()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PDDYEJNYQA" value="answer"> <span><code>pivot_wider()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PDDYEJNYQA" value=""> <span><code>gather()</code></span></label>
 </div>
 </div>
 </div>
@@ -4641,7 +4641,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/malaysia_v
 </section>
 <section id="making-charts-with-ggplot2-and-ggauto" class="level2" data-number="14.3">
 <h2 data-number="14.3" class="anchored" data-anchor-id="making-charts-with-ggplot2-and-ggauto"><span class="header-section-number">14.3</span> Making charts with ggplot2 and ggauto</h2>
-<p><a href="https://ggplot2.tidyverse.org/" aria-label="Visit the ggplot2 package website"><img src="../images/ggplot2.png" alt="" class="right-side-image"></a></p>
+<p><a href="https://ggplot2.tidyverse.org/" aria-label="Visit the ggplot2 package website" class="no-external"><img src="../images/ggplot2.png" alt="" class="right-side-image"></a></p>
 <p>In previous chapters, all the visualisations we have created have been maps made with <code>hotspot_map()</code> and refined with functions from the ggplot2 package. Behind the scenes, <code>hotspot_map()</code> constructs a map using other functions from the ggplot2 package, by default making choices that try to produce a good map. We can’t use <code>hotspot_map()</code> to make these choices for us when we are creating charts because it is specialised for creating maps. Instead, we can use the <code>ggauto()</code> function (from the package of the same name) to automatically choose a type of chart that is likely to be appropriate for the data we are working with. We can then use functions from the ggplot2 package to refine the chart in the same way we have refined maps.</p>
 <p><code>ggauto()</code> can create several different types of chart automatically. It chooses which type of chart to make based on how many variables we want to visualise and whether the variables are continuous (e.g.&nbsp;numbers), dates/times (which we will learn more about in <a href="../15_mapping_time/index.html" class="quarto-xref"><span>Chapter 15</span></a>), ordered categories or unordered categories. There are some types of chart that <code>ggauto()</code> can’t handle, or for which the chart produced by <code>ggauto()</code> might not be appropriate for particular audiences. In those cases, we can use functions from the ggplot2 package to create a chart from scratch and then refine it to suit our needs.</p>
 <p>To see how this works, let’s start by creating a bar chart. Bar charts are useful for showing values of one <em>numeric</em> variable (e.g.&nbsp;a count of crimes) for each value of one <em>categorical</em> variable (e.g.&nbsp;states of a country). Before we create a bar chart, create a new R script file in the <code>R</code> folder of your <code>crime_mapping</code> workspace and save it as <code>chapter_14b.R</code>. Copy this code into that file and run it.</p>
@@ -4831,7 +4831,7 @@ Code&nbsp;14.1
 <p>If you were trying to find the three Malaysian states or territories with the most murders from this chart, it would be pretty easy to see on any bar chart that Selangor had the most murders, followed by Johor. But at a glance, it might not so easy to see which state or territory comes third unless the bars are ordered by their values. This is why alphabetical ordering of bars (which is the default used by ggplot2) is almost never the best choice for a bar chart.</p>
 <p>To order the bars according to the number of murders in each state, we need to convert the <code>state</code> column in the data to a new type of variable: a <em>factor</em>. Factors are what R calls categorical variables that have (a) a defined set of possible values and optionally (b) a defined order of values.</p>
 <p>One of the benefits of storing a variable as a factor is that we can specify an order for the categories. This is useful for categories that have a meaningful order, such as ‘bad’, ‘acceptable’, ‘good’, ‘excellent’. But we can also use this feature of factors to specify that values should appear in a particular order in any charts produced from the data, whatever the order of the values in the data itself.</p>
-<p><a href="https://forcats.tidyverse.org/" aria-label="Visit the forcats package website"><img src="../images/forcats.png" alt="" class="right-side-image"></a></p>
+<p><a href="https://forcats.tidyverse.org/" aria-label="Visit the forcats package website" class="no-external"><img src="../images/forcats.png" alt="" class="right-side-image"></a></p>
 <p>To work with factors in R we can use the <a href="https://forcats.tidyverse.org/">forcats package</a>, so-called because it’s <em>for</em> working with <em>categories</em>. forcats is loaded as part of tidyverse, so we don’t need to load it separately.</p>
 <p>All the functions in the forcats package start with the letters <code>fct_</code>, just as all the functions in the sfhotspot package start <code>hotspot_</code>. For our bar chart, we will use the <code>fct_reorder()</code> function. This takes a factor or character variable (such as the names of the Malaysian states and territories) and sets the order of the categories according to the values of a numeric variable (such as the number of murders in a state). So to re-order the <code>state</code> variable according to the count of murders, we can use <code>fct_reorder(state, count)</code>. Since we’re changing an existing variable, we do this inside a call to the <code>mutate()</code> function that we learned about in <a href="../04_transforming_data/index.html#sec-mutate" class="quarto-xref"><span>Section 4.2</span></a>. Look back to the code in <a href="#lst-bar-chart-ggplot" class="quarto-xref">Code&nbsp;<span>14.1</span></a> and you will see the line <code>mutate(state = fct_reorder(state, count))</code>.</p>
 </section>
@@ -4955,7 +4955,7 @@ Code&nbsp;14.2
 </div>
 </div>
 <p>From this we can see that this combination of colours works well for people with some types of colour blindness, but is likely to be hard for some people, and indeed for everyone if the chart is printed on a black-and-white printer.</p>
-<p><a href="https://emilhvitfeldt.github.io/paletteer/"><img src="../images/paletteer.png" class="right-side-image img-fluid" alt="paletteer package logo"></a></p>
+<p><a href="https://emilhvitfeldt.github.io/paletteer/" class="no-external" aria-label="Visit the paletteer package website"><img src="../images/paletteer.png" class="right-side-image img-fluid" alt=""></a></p>
 <p>Fortunately, there are lots of different R packages that provide colour palettes that are suitable for people with different colour vision. The <a href="https://emilhvitfeldt.github.io/paletteer/">paletteer package</a> brings a lot of these colour palettes together in one place. paletteer provides three pairs of functions for different types of colour scale:</p>
 <ul>
 <li><code>scale_colour_paletteer_c()</code>/<code>scale_fill_paletteer_c()</code> for <em>continuous</em> scales that are suitable for representing continuous variables.</li>
@@ -5099,16 +5099,16 @@ Code&nbsp;14.2
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>When creating a bar chart, why might you want to sort the bars by value?</strong></p>
-<div id="radio_ULGFGIXXZX" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_ULGFGIXXZX" value=""> <span>To follow the alphabetical order of locations</span></label><label><input type="radio" autocomplete="off" name="radio_ULGFGIXXZX" value=""> <span>To avoid using colours in the chart</span></label><label><input type="radio" autocomplete="off" name="radio_ULGFGIXXZX" value="answer"> <span>To make it easier to see which rows have the highest values</span></label><label><input type="radio" autocomplete="off" name="radio_ULGFGIXXZX" value=""> <span>To ensure a map is not needed</span></label>
+<div id="radio_JKHEBBZLRX" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_JKHEBBZLRX" value=""> <span>To follow the alphabetical order of locations</span></label><label><input type="radio" autocomplete="off" name="radio_JKHEBBZLRX" value=""> <span>To avoid using colours in the chart</span></label><label><input type="radio" autocomplete="off" name="radio_JKHEBBZLRX" value="answer"> <span>To make it easier to see which rows have the highest values</span></label><label><input type="radio" autocomplete="off" name="radio_JKHEBBZLRX" value=""> <span>To ensure a map is not needed</span></label>
 </div>
 <p><strong>What is one reason why a reference map might be included alongside a bar chart?</strong></p>
-<div id="radio_LUECWFQVBG" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_LUECWFQVBG" value=""> <span>To make the bar chart look more visually appealing</span></label><label><input type="radio" autocomplete="off" name="radio_LUECWFQVBG" value=""> <span>To display non-spatial variables</span></label><label><input type="radio" autocomplete="off" name="radio_LUECWFQVBG" value=""> <span>To replace the need for a table</span></label><label><input type="radio" autocomplete="off" name="radio_LUECWFQVBG" value="answer"> <span>To provide context for areas that the audience may not recognise</span></label>
+<div id="radio_TGAGBVOOOD" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_TGAGBVOOOD" value=""> <span>To make the bar chart look more visually appealing</span></label><label><input type="radio" autocomplete="off" name="radio_TGAGBVOOOD" value=""> <span>To display non-spatial variables</span></label><label><input type="radio" autocomplete="off" name="radio_TGAGBVOOOD" value=""> <span>To replace the need for a table</span></label><label><input type="radio" autocomplete="off" name="radio_TGAGBVOOOD" value="answer"> <span>To provide context for areas that the audience may not recognise</span></label>
 </div>
 <p><strong>Why might a bar chart be more effective than a choropleth map for presenting crime data?</strong></p>
-<div id="radio_PBJEPPSZHV" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_PBJEPPSZHV" value="answer"> <span>Bar charts allow for direct numeric comparisons between areas</span></label><label><input type="radio" autocomplete="off" name="radio_PBJEPPSZHV" value=""> <span>Bar charts can show detailed spatial relationships</span></label><label><input type="radio" autocomplete="off" name="radio_PBJEPPSZHV" value=""> <span>Bar charts are required for all crime analysis</span></label><label><input type="radio" autocomplete="off" name="radio_PBJEPPSZHV" value=""> <span>Bar charts are easier to make than maps</span></label>
+<div id="radio_NAUEFCNRIN" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_NAUEFCNRIN" value="answer"> <span>Bar charts allow for direct numeric comparisons between areas</span></label><label><input type="radio" autocomplete="off" name="radio_NAUEFCNRIN" value=""> <span>Bar charts can show detailed spatial relationships</span></label><label><input type="radio" autocomplete="off" name="radio_NAUEFCNRIN" value=""> <span>Bar charts are required for all crime analysis</span></label><label><input type="radio" autocomplete="off" name="radio_NAUEFCNRIN" value=""> <span>Bar charts are easier to make than maps</span></label>
 </div>
 </div>
 </div>
@@ -5297,12 +5297,12 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/northants_
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Which elements are combined in the raincloud plot produced by <code>ggauto()</code>?</strong></p>
-<div id="radio_BHAOUPAQRD" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_BHAOUPAQRD" value=""> <span>A density curve only</span></label><label><input type="radio" autocomplete="off" name="radio_BHAOUPAQRD" value="answer"> <span>A density curve, an interval-and-median summary and individual observations</span></label><label><input type="radio" autocomplete="off" name="radio_BHAOUPAQRD" value=""> <span>A fitted trend line and confidence interval</span></label><label><input type="radio" autocomplete="off" name="radio_BHAOUPAQRD" value=""> <span>A separate bar for every category</span></label>
+<div id="radio_HIGDLPROBW" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_HIGDLPROBW" value=""> <span>A density curve only</span></label><label><input type="radio" autocomplete="off" name="radio_HIGDLPROBW" value="answer"> <span>A density curve, an interval-and-median summary and individual observations</span></label><label><input type="radio" autocomplete="off" name="radio_HIGDLPROBW" value=""> <span>A fitted trend line and confidence interval</span></label><label><input type="radio" autocomplete="off" name="radio_HIGDLPROBW" value=""> <span>A separate bar for every category</span></label>
 </div>
 <p><strong>Why can ridge plots be useful when a numeric variable is divided into several categories?</strong></p>
-<div id="radio_DTHUJMOCSS" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_DTHUJMOCSS" value=""> <span>They show exact values for every observation</span></label><label><input type="radio" autocomplete="off" name="radio_DTHUJMOCSS" value=""> <span>They are always familiar to general audiences</span></label><label><input type="radio" autocomplete="off" name="radio_DTHUJMOCSS" value="answer"> <span>They make it easier to compare distributions across several categories</span></label><label><input type="radio" autocomplete="off" name="radio_DTHUJMOCSS" value=""> <span>They can only be used when every category has the same number of observations</span></label>
+<div id="radio_MQJIVFIAUV" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_MQJIVFIAUV" value=""> <span>They show exact values for every observation</span></label><label><input type="radio" autocomplete="off" name="radio_MQJIVFIAUV" value=""> <span>They are always familiar to general audiences</span></label><label><input type="radio" autocomplete="off" name="radio_MQJIVFIAUV" value="answer"> <span>They make it easier to compare distributions across several categories</span></label><label><input type="radio" autocomplete="off" name="radio_MQJIVFIAUV" value=""> <span>They can only be used when every category has the same number of observations</span></label>
 </div>
 </div>
 </div>
@@ -5491,7 +5491,7 @@ Body: On disk '/Users/mattashby/Documents/Crime Mapping Book/data/raw/south_afri
 <span id="cb41-45"><a href="#cb41-45" aria-label="45"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output-display">
-<div id="fig-scatter-label-areas" class="quarto-float quarto-figure quarto-figure-center anchored" width="672" alt="A scatter plot of municipal vehicle-theft rates divided by dashed median lines. Annotations explain the upper-left and lower-right areas, and semi-transparent points reveal overlapping observations.">
+<div id="fig-scatter-label-areas" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A scatter plot of municipal vehicle-theft rates divided by dashed median lines. Annotations explain the upper-left and lower-right areas, and semi-transparent points reveal overlapping observations." width="672">
 <figure class="quarto-float quarto-float-fig figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-scatter-label-areas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;14.1
@@ -5730,16 +5730,16 @@ Figure&nbsp;14.1
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What type of variables does a scatter plot usually compare?</strong></p>
-<div id="radio_EHMAWVJDLE" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_EHMAWVJDLE" value=""> <span>Two categorical variables</span></label><label><input type="radio" autocomplete="off" name="radio_EHMAWVJDLE" value="answer"> <span>Two numeric variables</span></label><label><input type="radio" autocomplete="off" name="radio_EHMAWVJDLE" value=""> <span>One spatial object and one categorical variable</span></label><label><input type="radio" autocomplete="off" name="radio_EHMAWVJDLE" value=""> <span>One numeric variable only</span></label>
+<div id="radio_YKFVXNCAKW" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_YKFVXNCAKW" value=""> <span>Two categorical variables</span></label><label><input type="radio" autocomplete="off" name="radio_YKFVXNCAKW" value="answer"> <span>Two numeric variables</span></label><label><input type="radio" autocomplete="off" name="radio_YKFVXNCAKW" value=""> <span>One spatial object and one categorical variable</span></label><label><input type="radio" autocomplete="off" name="radio_YKFVXNCAKW" value=""> <span>One numeric variable only</span></label>
 </div>
 <p><strong>Why might you use <code>geom_label_repel()</code> rather than <code>geom_label()</code>?</strong></p>
-<div id="radio_WUYGDNNAQT" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_WUYGDNNAQT" value="answer"> <span>It moves labels apart to reduce overlaps</span></label><label><input type="radio" autocomplete="off" name="radio_WUYGDNNAQT" value=""> <span>It removes points that do not have labels</span></label><label><input type="radio" autocomplete="off" name="radio_WUYGDNNAQT" value=""> <span>It converts labels into a legend</span></label><label><input type="radio" autocomplete="off" name="radio_WUYGDNNAQT" value=""> <span>It calculates a trend line through the points</span></label>
+<div id="radio_OTUSKMWKZW" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_OTUSKMWKZW" value="answer"> <span>It moves labels apart to reduce overlaps</span></label><label><input type="radio" autocomplete="off" name="radio_OTUSKMWKZW" value=""> <span>It removes points that do not have labels</span></label><label><input type="radio" autocomplete="off" name="radio_OTUSKMWKZW" value=""> <span>It converts labels into a legend</span></label><label><input type="radio" autocomplete="off" name="radio_OTUSKMWKZW" value=""> <span>It calculates a trend line through the points</span></label>
 </div>
 <p><strong>What can we conclude from horizontal and vertical median lines on a scatter plot?</strong></p>
-<div id="radio_JNRFOXKZIG" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_JNRFOXKZIG" value=""> <span>Exactly half of the points must be below and to the left of both lines</span></label><label><input type="radio" autocomplete="off" name="radio_JNRFOXKZIG" value=""> <span>The lines prove that the two variables are related</span></label><label><input type="radio" autocomplete="off" name="radio_JNRFOXKZIG" value="answer"> <span>Each line divides the observations in half for one variable</span></label><label><input type="radio" autocomplete="off" name="radio_JNRFOXKZIG" value=""> <span>Points above either line are statistical outliers</span></label>
+<div id="radio_GVDOAMLBAM" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_GVDOAMLBAM" value=""> <span>Exactly half of the points must be below and to the left of both lines</span></label><label><input type="radio" autocomplete="off" name="radio_GVDOAMLBAM" value=""> <span>The lines prove that the two variables are related</span></label><label><input type="radio" autocomplete="off" name="radio_GVDOAMLBAM" value="answer"> <span>Each line divides the observations in half for one variable</span></label><label><input type="radio" autocomplete="off" name="radio_GVDOAMLBAM" value=""> <span>Points above either line are statistical outliers</span></label>
 </div>
 </div>
 </div>
