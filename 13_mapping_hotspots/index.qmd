@@ -14,7 +14,7 @@ In this chapter we will learn three techniques for better understanding hotspots
 ::: {.callout-tip title="Before you start"}
 
 1. Open Positron or -- if you already have Positron open -- start a new R session by clicking the **Restart R** (**&#10227;**) button in the **Console** panel. This makes sure no code you ran previously will interfere with the work you do in this chapter.
-2. Make sure you are working in the crime mapping project workspace you created in @sec-create-project. In the top-right corner of the Positron window, you should see a folder icon and the words `crime-mapping`. If not, click the **File** menu, then **Open Folder ...** and choose the `crime-mapping` folder.
+2. Make sure you are working in the crime mapping project workspace you created in @sec-create-project. In the top-right corner of the Positron window, you should see a folder icon and the words `crime_mapping`. If not, click the **File** menu, then **Open Folder ...** and choose the `crime_mapping` folder.
 :::
 
 
@@ -175,7 +175,7 @@ Burglary is a good example of why the routine activities approach to thinking ab
 
 Before we can create our dual KDE layer, we have to complete some data wrangling. We will extract the boundaries for the wards of interest from a dataset of boundaries for all wards in Nottingham using `filter()` as we have done previously. To extract only the burglaries occurring in those three wards from a dataset of all burglaries in Nottingham, we will use `hotspot_clip()`. We will also transform both datasets to use the British National Grid (EPSG:27700), a projected CRS whose coordinates are measured in metres. Using a projected CRS makes it easy to specify a grid-cell size in metres. See @sec-choosing-projected-crs for how to choose an appropriate projected CRS.
 
-Open `chapter_13a.R` in the `R` folder of your crime-mapping workspace. Add this code to download the original datasets into `data/raw`, load the local copies and prepare them for analysis.
+Open `chapter_13a.R` in the `R` folder of your `crime_mapping` workspace. Add this code to download the original datasets into `data/raw`, load the local copies and prepare them for analysis.
 
 
 ```{r}
@@ -554,7 +554,7 @@ To determine if the number of crimes in each area is greater than we would expec
 
 We can calculate the Gi* statistic using the `hotspot_gistar()` function from the sfhotspot package. This works in a similar way to the `hotspot_kde()` function, in that it takes an SF object of the locations of crimes and returns an SF object with a grid of cells, along with the Gi* value for each grid cell. Like `hotspot_kde()`, `hotspot_gistar()` will choose default values for several ways in which we could fine-tune the calculation of the Gi* statistic, but we could override these defaults if we wanted to.
 
-Create a new file called `chapter_13b.R` in the `R` folder of your crime-mapping workspace as usual.
+Create a new file called `chapter_13b.R` in the `R` folder of your `crime_mapping` workspace as usual.
 
 In this example, we will find the hotspots of robbery in Nottingham in 2020, based on a grid of 100-metre cells. We will store this in an object called `robbery`, transform it to use the British National Grid coordinate system (so we can specify the cell size in metres) and then use the resulting object to calculate the Gi* values.
 
@@ -861,7 +861,7 @@ Higher values of `density_adjust` produce physically smaller hotspots that have 
 
 While you should set `min_pts` based on your expert judgement of the minimum number of crimes that might be worthy of action, deciding on the best value of `density_adjust` is usually a matter of trial and error. As a starting point, it's often useful to produce a DBSCAN map using the default `density_adjust = 2` and look at the results, then vary `density_adjust` up or down depending on how useful you think the results are likely to be in supporting the purpose of your analysis. This inevitably involves some skill, which you will develop with time and experience. In particular, it is important (as in all data analysis) to understand the purpose for which you are conducting analysis, and how people are going to use the results of the analysis you produce.
 
-Now that we have explored how to control the DBSCAN algorithm, let's create a DBSCAN map in R. We'll use the same robbery data as in the previous section. Create a new file called `chapter_13c.R` and save it in the `R` folder of your crime-mapping workspace as usual. Now add the code needed to load the packages and data we need, so that it's possible to run this script independently of the other scripts in this chapter. Read the two notes below this code, which explain two minor differences between this code and most of the similar code we have used before.
+Now that we have explored how to control the DBSCAN algorithm, let's create a DBSCAN map in R. We'll use the same robbery data as in the previous section. Create a new file called `chapter_13c.R` and save it in the `R` folder of your `crime_mapping` workspace as usual. Now add the code needed to load the packages and data we need, so that it's possible to run this script independently of the other scripts in this chapter. Read the two notes below this code, which explain two minor differences between this code and most of the similar code we have used before.
 
 ```{r}
 #| filename: "chapter_13c.R"
@@ -1049,7 +1049,7 @@ dbscan_quiz3 <- c(
 
 In this chapter we've learned to use three techniques that we can use alongside KDE mapping (@sec-mapping-patterns) that we can use to understand patterns of crime. Each technique has its own strengths and weaknesses, and you can use them either on their own or in combination. For example, we can use Gi* to identify areas with more crime than expected by chance, then use DBSCAN to identify the most dense clusters of crime within those areas. We can even show these two techniques on the same map.
 
-Create a new file called `chapter_13d.R` in the `R` folder of your crime-mapping workspace as usual. Add all the code from the file `chapter_13b.R` to the new file except the code that creates the map itself. Now run the code in the new file to load all the data we will need and calculate the Gi* values.
+Create a new file called `chapter_13d.R` in the `R` folder of your `crime_mapping` workspace as usual. Add all the code from the file `chapter_13b.R` to the new file except the code that creates the map itself. Now run the code in the new file to load all the data we will need and calculate the Gi* values.
 
 Next, we should add the code needed to identify clusters of robbery using DBSCAN. Add this code to the new file and run it:
 

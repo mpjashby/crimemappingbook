@@ -10,7 +10,7 @@ In @sec-first-map we learned the basics of creating a crime map in R. In this ch
 ::: {.callout-tip title="Before you start"}
 
 1. Open Positron or -- if you already have Positron open -- start a new R session by clicking the **Restart R** (**&#10227;**) button in the **Console** panel. This makes sure no code you ran previously will interfere with the work you do in this chapter.
-2. Make sure you are working in the crime mapping project workspace you created in @sec-create-project. In the top-right corner of the Positron window, you should see a folder icon and the words `crime-mapping`. If not, click the **File** menu, then **Open Folder ...** and choose the `crime-mapping` folder.
+2. Make sure you are working in the crime mapping project workspace you created in @sec-create-project. In the top-right corner of the Positron window, you should see a folder icon and the words `crime_mapping`. If not, click the **File** menu, then **Open Folder ...** and choose the `crime_mapping` folder.
 :::
 
 
@@ -404,7 +404,7 @@ You might have encountered file paths before, but you may not. A typical file pa
 #| filename: "Do not run this code"
 #| classes: "bad_code"
 
-/Users/john_smith/Documents/crime-mapping/data/raw/vancouver_thefts.csv
+/Users/john_smith/Documents/crime_mapping/data/raw/vancouver_thefts.csv
 ```
 
 or like this on Windows:
@@ -414,10 +414,10 @@ or like this on Windows:
 #| filename: "Do not run this code"
 #| classes: "bad_code"
 
-C:\Users\john_smith\Documents\crime-mapping\data\raw\vancouver_thefts.csv
+C:\Users\john_smith\Documents\crime_mapping\data\raw\vancouver_thefts.csv
 ```
 
-The important thing to note here is that computers store files such as `vancouver_thefts.csv` in folders (also called directories), which are themselves often stored inside larger folders, etc. A file path tells a computer where to find a particular file. The file paths above can be read as telling the computer to open the `Users` directory, then the `john_smith` directory, then the `Documents` directory, then the `crime-mapping` directory (which you created in @sec-create-project), and finally the file `vancouver_thefts.csv`.
+The important thing to note here is that computers store files such as `vancouver_thefts.csv` in folders (also called directories), which are themselves often stored inside larger folders, etc. A file path tells a computer where to find a particular file. The file paths above can be read as telling the computer to open the `Users` directory, then the `john_smith` directory, then the `Documents` directory, then the `crime_mapping` directory (which you created in @sec-create-project), and finally the file `vancouver_thefts.csv`.
 
 The two file paths shown above are called _absolute_ file paths, because they show the full location of a particular file on the computer. Absolute file paths on Windows start with `X:\` (where `X` is a letter representing which disk drive the file is on) and with `/` on Mac and Linux. But there are two problems with absolute paths: they can be very long so they clutter up your code, and (more importantly) they are only correct for a specific computer. If you write an R script that includes either of the file paths above, then you give that file for me to run, the code will immediately produce an error because there is no directory `/Users/john_smith` on my computer.
 
@@ -433,7 +433,7 @@ We can deal with that problem in a few ways. Fortunately, it's quite simple to d
 - work inside the project folder we created in @sec-create-project, and
 - use the `here()` function from the here package to specify the location of files as _relative paths_, where 'relative' means relative to the project folder.
 
-When you open the `crime-mapping` workspace in Positron, R knows to interpret relative file paths as being relative to the workspace folder. You can confirm the current working directory by running the function `getwd()` in the R Console (the 'WD' in `getwd()` means 'working directory').
+When you open the `crime_mapping` workspace in Positron, R knows to interpret relative file paths as being relative to the workspace folder. You can confirm the current working directory by running the function `getwd()` in the R Console (the 'WD' in `getwd()` means 'working directory').
 
 We can construct a file path in two ways using the `here()` function. The first, which we've been using up to now, is to specify each nested folder or file as a separate argument to the `here()` function. For example, to open the file `vancouver_thefts.csv` in the `raw` folder that is itself inside the `data` folder, we would use:
 
