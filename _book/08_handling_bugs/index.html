@@ -546,12 +546,12 @@ quarto book
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Which habit makes an analysis easier to check and reproduce?</strong></p>
-<div id="radio_YEOUNMBPGR" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_YEOUNMBPGR" value=""> <span>Run each permanent line directly in the Console and do not save it</span></label><label><input type="radio" autocomplete="off" name="radio_YEOUNMBPGR" value=""> <span>Use a different naming style for each object so that names stand out</span></label><label><input type="radio" autocomplete="off" name="radio_YEOUNMBPGR" value="answer"> <span>Keep permanent code in a named script and run the complete script from a new R session</span></label><label><input type="radio" autocomplete="off" name="radio_YEOUNMBPGR" value=""> <span>Store downloaded data in the same folder as R scripts</span></label>
+<div id="radio_CFPFUDYDCT" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_CFPFUDYDCT" value=""> <span>Run each permanent line directly in the Console and do not save it</span></label><label><input type="radio" autocomplete="off" name="radio_CFPFUDYDCT" value=""> <span>Use a different naming style for each object so that names stand out</span></label><label><input type="radio" autocomplete="off" name="radio_CFPFUDYDCT" value="answer"> <span>Keep permanent code in a named script and run the complete script from a new R session</span></label><label><input type="radio" autocomplete="off" name="radio_CFPFUDYDCT" value=""> <span>Store downloaded data in the same folder as R scripts</span></label>
 </div>
 <p><strong>Why does consistent formatting help with debugging?</strong></p>
-<div id="radio_FDVXIIHZNA" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_FDVXIIHZNA" value=""> <span>It prevents every possible bug</span></label><label><input type="radio" autocomplete="off" name="radio_FDVXIIHZNA" value="answer"> <span>It makes unusual or incomplete code easier to notice</span></label><label><input type="radio" autocomplete="off" name="radio_FDVXIIHZNA" value=""> <span>It allows R to guess what incomplete code should do</span></label><label><input type="radio" autocomplete="off" name="radio_FDVXIIHZNA" value=""> <span>It automatically corrects logic errors</span></label>
+<div id="radio_AZUNYFLQQT" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_AZUNYFLQQT" value=""> <span>It prevents every possible bug</span></label><label><input type="radio" autocomplete="off" name="radio_AZUNYFLQQT" value="answer"> <span>It makes unusual or incomplete code easier to notice</span></label><label><input type="radio" autocomplete="off" name="radio_AZUNYFLQQT" value=""> <span>It allows R to guess what incomplete code should do</span></label><label><input type="radio" autocomplete="off" name="radio_AZUNYFLQQT" value=""> <span>It automatically corrects logic errors</span></label>
 </div>
 </div>
 </div>
@@ -676,25 +676,18 @@ quarto book
 <p>When something is not quite right, or just when there is an issue in your code that you should be aware of, R has three ways of communicating with you: messages, warnings and errors (these are collectively sometimes called <em>conditions</em>).</p>
 <section id="messages" class="level3" data-number="8.3.1">
 <h3 data-number="8.3.1" class="anchored" data-anchor-id="messages"><span class="header-section-number">8.3.1</span> Messages</h3>
-<p><em>Messages</em> are usually for information only and typically don’t require you to take any action. For example, the function <code>get_crime_data()</code> from the <code>crimedata</code> package issues a message to tell you what data it is downloading. It does this because downloading data sometimes takes a few seconds and without a message you might wonder if the code was working.</p>
+<p><em>Messages</em> are usually for information only and typically don’t require you to take any action. For example, the <code>ggsave()</code> function issues a message to tell you the dimensions of the saved image.</p>
 <div class="cell bad_code">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>Do not run this code</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a>mesa_crimes <span class="ot">&lt;-</span> crimedata<span class="sc">::</span><span class="fu">get_crime_data</span>(<span class="at">cities =</span> <span class="st">"Mesa"</span>, <span class="at">quiet =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a><span class="fu">ggsave</span>(<span class="st">"example_plot.png"</span>, <span class="at">plot =</span> <span class="fu">ggplot</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</div>
+<div class="cell">
 <div class="cell-output cell-output-stderr">
-<pre data-code-line-numbers=""><code>Downloading list of URLs for data files.
-ℹ This takes a few seconds but is only done once per session.</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre data-code-line-numbers=""><code>Downloading crime_open_database_sample_mesa_2022.Rds
-
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |======================================================================| 100%</code></pre>
+<pre data-code-line-numbers=""><code>Saving 7 x 5 in image</code></pre>
 </div>
 </div>
 <p>Messages appear in the <strong>Console</strong> panel along with other output from R. When R prints a message about your code, any code underneath the code that generated the message will still run. For example, if you run these three lines of code (the second of which prints a message, using the <code>message()</code> function), the line after the message will run as expected:</p>
@@ -703,9 +696,9 @@ quarto book
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a><span class="dv">2</span> <span class="sc">*</span> <span class="dv">2</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-label="2"></a><span class="fu">message</span>(<span class="st">"This is a message. Make sure you understand it."</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-label="3"></a><span class="dv">2</span> <span class="sc">/</span> <span class="dv">2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a><span class="dv">2</span> <span class="sc">*</span> <span class="dv">2</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-label="2"></a><span class="fu">message</span>(<span class="st">"This is a message. Make sure you understand it."</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-label="3"></a><span class="dv">2</span> <span class="sc">/</span> <span class="dv">2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <div class="cell">
@@ -756,7 +749,7 @@ quarto book
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="fu">c</span>(<span class="st">"A"</span> <span class="st">"B"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-label="1"></a><span class="fu">c</span>(<span class="st">"A"</span> <span class="st">"B"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in parse(text = input): &lt;text&gt;:1:7: unexpected string constant
@@ -775,7 +768,7 @@ quarto book
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="dv">3</span> <span class="sc">*</span> <span class="st">"A"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-label="1"></a><span class="dv">3</span> <span class="sc">*</span> <span class="st">"A"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `3 * "A"`:
@@ -817,20 +810,20 @@ quarto book
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Which of the following terms is used in R to describe the way of communicating something for information only?</strong></p>
-<div id="radio_IYVMPKUMFH" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_IYVMPKUMFH" value="answer"> <span>A message</span></label><label><input type="radio" autocomplete="off" name="radio_IYVMPKUMFH" value=""> <span>A warning</span></label><label><input type="radio" autocomplete="off" name="radio_IYVMPKUMFH" value=""> <span>An error</span></label><label><input type="radio" autocomplete="off" name="radio_IYVMPKUMFH" value=""> <span>A condition</span></label>
+<div id="radio_PDCDWCNWRC" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_PDCDWCNWRC" value="answer"> <span>A message</span></label><label><input type="radio" autocomplete="off" name="radio_PDCDWCNWRC" value=""> <span>A warning</span></label><label><input type="radio" autocomplete="off" name="radio_PDCDWCNWRC" value=""> <span>An error</span></label><label><input type="radio" autocomplete="off" name="radio_PDCDWCNWRC" value=""> <span>A condition</span></label>
 </div>
 <p><strong>Which of these statements is true?</strong></p>
-<div id="radio_MLPQYOMRLD" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_MLPQYOMRLD" value=""> <span>It is generally okay not to worry about warnings produced by R code – in most cases you won't need to take any action anyway</span></label><label><input type="radio" autocomplete="off" name="radio_MLPQYOMRLD" value="answer"> <span>While you will often not need to take any action in response to a warning produced by your R code, it is still important to understand what caused the warning just in case you need to take action</span></label>
+<div id="radio_EUDUGUGIBM" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_EUDUGUGIBM" value=""> <span>It is generally okay not to worry about warnings produced by R code – in most cases you won't need to take any action anyway</span></label><label><input type="radio" autocomplete="off" name="radio_EUDUGUGIBM" value="answer"> <span>While you will often not need to take any action in response to a warning produced by your R code, it is still important to understand what caused the warning just in case you need to take action</span></label>
 </div>
 <p><strong>What type of bug occurs when code runs but produces the wrong result?</strong></p>
-<div id="radio_SDTWPMHFVP" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_SDTWPMHFVP" value=""> <span>A syntax error</span></label><label><input type="radio" autocomplete="off" name="radio_SDTWPMHFVP" value=""> <span>A runtime error</span></label><label><input type="radio" autocomplete="off" name="radio_SDTWPMHFVP" value="answer"> <span>A logic error</span></label><label><input type="radio" autocomplete="off" name="radio_SDTWPMHFVP" value=""> <span>A message</span></label>
+<div id="radio_WMSFFIXZAN" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_WMSFFIXZAN" value=""> <span>A syntax error</span></label><label><input type="radio" autocomplete="off" name="radio_WMSFFIXZAN" value=""> <span>A runtime error</span></label><label><input type="radio" autocomplete="off" name="radio_WMSFFIXZAN" value="answer"> <span>A logic error</span></label><label><input type="radio" autocomplete="off" name="radio_WMSFFIXZAN" value=""> <span>A message</span></label>
 </div>
 <p><strong>What is the difference between a syntax error and a runtime error?</strong></p>
-<div id="radio_OIEYKTJKVI" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_OIEYKTJKVI" value="answer"> <span>A syntax error stops R interpreting the code, while a runtime error occurs when R cannot complete an operation</span></label><label><input type="radio" autocomplete="off" name="radio_OIEYKTJKVI" value=""> <span>A syntax error produces an incorrect result, while a runtime error always produces a warning</span></label><label><input type="radio" autocomplete="off" name="radio_OIEYKTJKVI" value=""> <span>A syntax error occurs only in the Console, while a runtime error occurs only in scripts</span></label><label><input type="radio" autocomplete="off" name="radio_OIEYKTJKVI" value=""> <span>There is no difference between syntax errors and runtime errors</span></label>
+<div id="radio_OIQGXZTLGA" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_OIQGXZTLGA" value="answer"> <span>A syntax error stops R interpreting the code, while a runtime error occurs when R cannot complete an operation</span></label><label><input type="radio" autocomplete="off" name="radio_OIQGXZTLGA" value=""> <span>A syntax error produces an incorrect result, while a runtime error always produces a warning</span></label><label><input type="radio" autocomplete="off" name="radio_OIQGXZTLGA" value=""> <span>A syntax error occurs only in the Console, while a runtime error occurs only in scripts</span></label><label><input type="radio" autocomplete="off" name="radio_OIQGXZTLGA" value=""> <span>There is no difference between syntax errors and runtime errors</span></label>
 </div>
 </div>
 </div>
@@ -876,7 +869,7 @@ quarto book
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-label="1"></a><span class="fu">select</span>(frauds, offense_category)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-label="1"></a><span class="fu">select</span>(frauds, offense_category)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>You would see that R produced an error message saying something like:</p>
@@ -893,7 +886,7 @@ quarto book
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a><span class="fu">head</span>(frauds)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-label="1"></a><span class="fu">head</span>(frauds)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 6 × 6
@@ -914,7 +907,7 @@ quarto book
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-label="1"></a><span class="fu">str_wrap</span>(<span class="st">"A line of text that we want to break into shorter lines"</span>, <span class="at">length =</span> <span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-label="1"></a><span class="fu">str_wrap</span>(<span class="st">"A line of text that we want to break into shorter lines"</span>, <span class="at">length =</span> <span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `str_wrap()`:
@@ -957,7 +950,7 @@ This section gives more examples of how the function can be used.
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-label="1"></a><span class="fu">str_wrap</span>(<span class="st">"A line of text that we want to break into shorter lines"</span>, <span class="at">width =</span> <span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-label="1"></a><span class="fu">str_wrap</span>(<span class="st">"A line of text that we want to break into shorter lines"</span>, <span class="at">width =</span> <span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>[1] "A line of text that\nwe want to break\ninto shorter lines"</code></pre>
@@ -973,7 +966,7 @@ This section gives more examples of how the function can be used.
 <div class="code-with-filename-file">
 <pre><strong>Do not run this code</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, MASS)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, MASS)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>Since MASS was loaded last, a call to <code>select()</code> will now use the function of that name from MASS, not the function from the dplyr package loaded by tidyverse. Code intended to select the <code>offense_type</code> column would then produce an error like this:</p>
@@ -982,7 +975,7 @@ This section gives more examples of how the function can be used.
 <div class="code-with-filename-file">
 <pre><strong>Do not run this code</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-label="1"></a><span class="fu">select</span>(frauds, offense_type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-label="1"></a><span class="fu">select</span>(frauds, offense_type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <div class="cell">
@@ -999,7 +992,7 @@ This section gives more examples of how the function can be used.
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(MASS, tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(MASS, tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>Loading tidyverse last means that calls to <code>select()</code> and <code>filter()</code> will normally use the dplyr versions that we need for data wrangling.</p>
@@ -1036,11 +1029,11 @@ This section gives more examples of how the function can be used.
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-label="1"></a><span class="fu">library</span>(conflicted)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(MASS, tidyverse)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-label="3"></a></span>
-<span id="cb25-4"><a href="#cb25-4" aria-label="4"></a><span class="fu">conflict_prefer</span>(<span class="st">"select"</span>, <span class="st">"dplyr"</span>)</span>
-<span id="cb25-5"><a href="#cb25-5" aria-label="5"></a><span class="fu">conflict_prefer</span>(<span class="st">"filter"</span>, <span class="st">"dplyr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-label="1"></a><span class="fu">library</span>(conflicted)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(MASS, tidyverse)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-label="3"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-label="4"></a><span class="fu">conflict_prefer</span>(<span class="st">"select"</span>, <span class="st">"dplyr"</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-label="5"></a><span class="fu">conflict_prefer</span>(<span class="st">"filter"</span>, <span class="st">"dplyr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>In the rest of the script, unqualified calls to <code>select()</code> and <code>filter()</code> will use the dplyr functions. You can learn more in the <a href="https://conflicted.r-lib.org/">conflicted package documentation</a>.</p>
@@ -1058,8 +1051,8 @@ This section gives more examples of how the function can be used.
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>If you load two packages in R that both contain a function with the same name, which function will R use by default?</strong></p>
-<div id="radio_TQGVKZDCMP" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_TQGVKZDCMP" value=""> <span>The function that is from the <code>tidyverse</code> suite of packages.</span></label><label><input type="radio" autocomplete="off" name="radio_TQGVKZDCMP" value=""> <span>The function from the package that was loaded <em>first</em></span></label><label><input type="radio" autocomplete="off" name="radio_TQGVKZDCMP" value="answer"> <span>The function from the package that was loaded <em>last</em></span></label><label><input type="radio" autocomplete="off" name="radio_TQGVKZDCMP" value=""> <span>Neither function will run because R will produce an error.</span></label>
+<div id="radio_BRUJDYJGYF" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_BRUJDYJGYF" value=""> <span>The function that is from the <code>tidyverse</code> suite of packages.</span></label><label><input type="radio" autocomplete="off" name="radio_BRUJDYJGYF" value=""> <span>The function from the package that was loaded <em>first</em></span></label><label><input type="radio" autocomplete="off" name="radio_BRUJDYJGYF" value="answer"> <span>The function from the package that was loaded <em>last</em></span></label><label><input type="radio" autocomplete="off" name="radio_BRUJDYJGYF" value=""> <span>Neither function will run because R will produce an error.</span></label>
 </div>
 </div>
 </div>
@@ -1089,10 +1082,10 @@ This section gives more examples of how the function can be used.
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-label="2"></a>  <span class="fu">select</span>(offense_type, date, longitude, latitude) <span class="sc">|&gt;</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-label="3"></a>  <span class="fu">filter</span>(offence_type <span class="sc">==</span> <span class="st">"impersonation"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-label="4"></a>  <span class="fu">arrange</span>(date)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-label="2"></a>  <span class="fu">select</span>(offense_type, date, longitude, latitude) <span class="sc">|&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-label="3"></a>  <span class="fu">filter</span>(offence_type <span class="sc">==</span> <span class="st">"impersonation"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-label="4"></a>  <span class="fu">arrange</span>(date)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `filter()`:
@@ -1112,10 +1105,10 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude) <span class="sc">|&gt;</span></span>
-<span id="cb29-3"><a href="#cb29-3" aria-label="3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26A"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb29-4"><a href="#cb29-4" aria-label="4"></a>  <span class="fu">arrange</span>(date)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude) <span class="sc">|&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-label="3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-label="4"></a>  <span class="fu">arrange</span>(date)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `arrange()`:
@@ -1133,10 +1126,10 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-label="1"></a>frauds</span>
-<span id="cb31-2"><a href="#cb31-2" aria-label="2"></a><span class="co"># select(offense_code, longitude, latitude) |&gt;</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-label="3"></a><span class="co"># filter(offense_code == "26A") |&gt;</span></span>
-<span id="cb31-4"><a href="#cb31-4" aria-label="4"></a><span class="co"># arrange(date)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-label="1"></a>frauds</span>
+<span id="cb30-2"><a href="#cb30-2" aria-label="2"></a><span class="co"># select(offense_code, longitude, latitude) |&gt;</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-label="3"></a><span class="co"># filter(offense_code == "26A") |&gt;</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-label="4"></a><span class="co"># arrange(date)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>If you run this code, it will simply print the first few lines of the dataset. Remove the <code>#</code> comment symbol from the second line of the code and run it again, remembering to replace the pipe operator (<code>|&gt;</code>) at the end of line 1 and remove the <code>|&gt;</code> at the end of line 2.</p>
@@ -1145,10 +1138,10 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude)</span>
-<span id="cb32-3"><a href="#cb32-3" aria-label="3"></a><span class="co"># filter(offense_code == "26A") |&gt;</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-label="4"></a><span class="co"># arrange(date)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-label="3"></a><span class="co"># filter(offense_code == "26A") |&gt;</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-label="4"></a><span class="co"># arrange(date)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>Again, the code does not produce an error – but the result now has only three columns. Checking the output at this stage shows that the <code>date</code> column has been removed. Add <code>date</code> to the list of columns that are included in <code>select()</code> before continuing.</p>
@@ -1158,9 +1151,9 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, date, longitude, latitude) <span class="sc">|&gt;</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-label="3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26E"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, date, longitude, latitude) <span class="sc">|&gt;</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-label="3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26E"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 0 × 4
@@ -1174,7 +1167,7 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-label="1"></a><span class="fu">count</span>(frauds, offense_code)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-label="1"></a><span class="fu">count</span>(frauds, offense_code)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code># A tibble: 3 × 2
@@ -1191,10 +1184,10 @@ Caused by error:
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude) <span class="sc">|&gt;</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-label="3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26A"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb37-4"><a href="#cb37-4" aria-label="4"></a>  sf<span class="sc">::</span><span class="fu">st_transform</span>(<span class="st">"EPSG:3603"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-label="1"></a>frauds <span class="sc">|&gt;</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-label="2"></a>  <span class="fu">select</span>(offense_code, longitude, latitude) <span class="sc">|&gt;</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-label="3"></a>  <span class="fu">filter</span>(offense_code <span class="sc">==</span> <span class="st">"26A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-label="4"></a>  sf<span class="sc">::</span><span class="fu">st_transform</span>(<span class="st">"EPSG:3603"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `UseMethod()`:
@@ -1221,12 +1214,12 @@ Caused by error:
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What is a useful way to find where a bug was introduced?</strong></p>
-<div id="radio_OJJGPVTZJM" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_OJJGPVTZJM" value=""> <span>Change several arguments at once so that one of them is likely to work</span></label><label><input type="radio" autocomplete="off" name="radio_OJJGPVTZJM" value=""> <span>Inspect only the final result because intermediate results do not matter</span></label><label><input type="radio" autocomplete="off" name="radio_OJJGPVTZJM" value="answer"> <span>Run the code one stage at a time and inspect the result after each stage</span></label><label><input type="radio" autocomplete="off" name="radio_OJJGPVTZJM" value=""> <span>Ignore a result with zero rows if R did not produce an error</span></label>
+<div id="radio_JIQRRJESWO" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_JIQRRJESWO" value=""> <span>Change several arguments at once so that one of them is likely to work</span></label><label><input type="radio" autocomplete="off" name="radio_JIQRRJESWO" value=""> <span>Inspect only the final result because intermediate results do not matter</span></label><label><input type="radio" autocomplete="off" name="radio_JIQRRJESWO" value="answer"> <span>Run the code one stage at a time and inspect the result after each stage</span></label><label><input type="radio" autocomplete="off" name="radio_JIQRRJESWO" value=""> <span>Ignore a result with zero rows if R did not produce an error</span></label>
 </div>
 <p><strong>What can a function’s manual page help you check?</strong></p>
-<div id="radio_UJGBPJKJDK" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_UJGBPJKJDK" value=""> <span>Only the name of the package containing the function</span></label><label><input type="radio" autocomplete="off" name="radio_UJGBPJKJDK" value="answer"> <span>The inputs a function expects, its arguments and the value it returns</span></label><label><input type="radio" autocomplete="off" name="radio_UJGBPJKJDK" value=""> <span>A guarantee that the function is suitable for your analysis</span></label><label><input type="radio" autocomplete="off" name="radio_UJGBPJKJDK" value=""> <span>A list of every bug that the function can produce</span></label>
+<div id="radio_EXDZBEBPXJ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_EXDZBEBPXJ" value=""> <span>Only the name of the package containing the function</span></label><label><input type="radio" autocomplete="off" name="radio_EXDZBEBPXJ" value="answer"> <span>The inputs a function expects, its arguments and the value it returns</span></label><label><input type="radio" autocomplete="off" name="radio_EXDZBEBPXJ" value=""> <span>A guarantee that the function is suitable for your analysis</span></label><label><input type="radio" autocomplete="off" name="radio_EXDZBEBPXJ" value=""> <span>A list of every bug that the function can produce</span></label>
 </div>
 </div>
 </div>
@@ -1245,44 +1238,44 @@ Caused by error:
 </ol>
 <p>To practise making a reproducible example, we will create a new R script that we know will produce an error. Click <strong>File</strong>, then <strong>New File …</strong> and choose <strong>R File</strong>. Save the file as <code>chapter_08.R</code> in the <code>R</code> folder of your crime mapping workspace, then paste the following code into it:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-label="1"></a><span class="co"># Load packages</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, sf, sfhotspot, tidyverse)</span>
-<span id="cb39-3"><a href="#cb39-3" aria-label="3"></a></span>
-<span id="cb39-4"><a href="#cb39-4" aria-label="4"></a><span class="co"># Load Bronx shootings dataset and wrangle it</span></span>
-<span id="cb39-5"><a href="#cb39-5" aria-label="5"></a>bronx_shootings <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"bronx_shootings.csv"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb39-6"><a href="#cb39-6" aria-label="6"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
-<span id="cb39-7"><a href="#cb39-7" aria-label="7"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb39-8"><a href="#cb39-8" aria-label="8"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb39-9"><a href="#cb39-9" aria-label="9"></a>  <span class="fu">rename</span>(<span class="at">shooting_date =</span> occur_date, <span class="at">fatal =</span> murder) <span class="sc">|&gt;</span></span>
-<span id="cb39-10"><a href="#cb39-10" aria-label="10"></a>  <span class="co"># Keep only fatal shootings</span></span>
-<span id="cb39-11"><a href="#cb39-11" aria-label="11"></a>  <span class="fu">filter</span>(fatal <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb39-12"><a href="#cb39-12" aria-label="12"></a>  <span class="fu">select</span>(shooting_date, incident_key)</span>
-<span id="cb39-13"><a href="#cb39-13" aria-label="13"></a></span>
-<span id="cb39-14"><a href="#cb39-14" aria-label="14"></a><span class="co"># Load NYPD precincts and filter to keep just those from the Bronx</span></span>
-<span id="cb39-15"><a href="#cb39-15" aria-label="15"></a>bronx_precincts <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_precincts.gpkg"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb39-16"><a href="#cb39-16" aria-label="16"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
-<span id="cb39-17"><a href="#cb39-17" aria-label="17"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb39-18"><a href="#cb39-18" aria-label="18"></a>  <span class="co"># Filter just those precincts that are in the Bronx (40th to 52nd)</span></span>
-<span id="cb39-19"><a href="#cb39-19" aria-label="19"></a>  <span class="fu">filter</span>(precinct <span class="sc">%in%</span> <span class="dv">40</span><span class="sc">:</span><span class="dv">52</span>)</span>
-<span id="cb39-20"><a href="#cb39-20" aria-label="20"></a></span>
-<span id="cb39-21"><a href="#cb39-21" aria-label="21"></a><span class="co"># Map shootings</span></span>
-<span id="cb39-22"><a href="#cb39-22" aria-label="22"></a>bronx_shootings <span class="sc">+</span></span>
-<span id="cb39-23"><a href="#cb39-23" aria-label="23"></a>  <span class="fu">hotspot_map</span>(</span>
-<span id="cb39-24"><a href="#cb39-24" aria-label="24"></a>    <span class="at">basemap_type =</span> <span class="st">"none"</span>,</span>
-<span id="cb39-25"><a href="#cb39-25" aria-label="25"></a>    <span class="at">caption =</span> <span class="st">"Shootings data: NYC Open Data"</span>,</span>
-<span id="cb39-26"><a href="#cb39-26" aria-label="26"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
-<span id="cb39-27"><a href="#cb39-27" aria-label="27"></a>    <span class="at">colour =</span> <span class="st">"red2"</span></span>
-<span id="cb39-28"><a href="#cb39-28" aria-label="28"></a>  ) <span class="sc">+</span></span>
-<span id="cb39-29"><a href="#cb39-29" aria-label="29"></a>  <span class="co"># Add precinct boundaries</span></span>
-<span id="cb39-30"><a href="#cb39-30" aria-label="30"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bronx_precincts, <span class="at">colour =</span> <span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb39-31"><a href="#cb39-31" aria-label="31"></a>  <span class="fu">labs</span>(</span>
-<span id="cb39-32"><a href="#cb39-32" aria-label="32"></a>    <span class="at">title =</span> <span class="st">"Fatal shootings in the Bronx"</span>,</span>
-<span id="cb39-33"><a href="#cb39-33" aria-label="33"></a>    <span class="at">subtitle =</span> <span class="st">"January to December 2019"</span></span>
-<span id="cb39-34"><a href="#cb39-34" aria-label="34"></a>  ) <span class="sc">+</span></span>
-<span id="cb39-35"><a href="#cb39-35" aria-label="35"></a>  <span class="fu">theme</span>(</span>
-<span id="cb39-36"><a href="#cb39-36" aria-label="36"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey30"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
-<span id="cb39-37"><a href="#cb39-37" aria-label="37"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)</span>
-<span id="cb39-38"><a href="#cb39-38" aria-label="38"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-label="1"></a><span class="co"># Load packages</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, sf, sfhotspot, tidyverse)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-label="3"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-label="4"></a><span class="co"># Load Bronx shootings dataset and wrangle it</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-label="5"></a>bronx_shootings <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"bronx_shootings.csv"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-label="6"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-label="7"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-label="8"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-label="9"></a>  <span class="fu">rename</span>(<span class="at">shooting_date =</span> occur_date, <span class="at">fatal =</span> murder) <span class="sc">|&gt;</span></span>
+<span id="cb38-10"><a href="#cb38-10" aria-label="10"></a>  <span class="co"># Keep only fatal shootings</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-label="11"></a>  <span class="fu">filter</span>(fatal <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-label="12"></a>  <span class="fu">select</span>(shooting_date, incident_key)</span>
+<span id="cb38-13"><a href="#cb38-13" aria-label="13"></a></span>
+<span id="cb38-14"><a href="#cb38-14" aria-label="14"></a><span class="co"># Load NYPD precincts and filter to keep just those from the Bronx</span></span>
+<span id="cb38-15"><a href="#cb38-15" aria-label="15"></a>bronx_precincts <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_precincts.gpkg"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb38-16"><a href="#cb38-16" aria-label="16"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
+<span id="cb38-17"><a href="#cb38-17" aria-label="17"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb38-18"><a href="#cb38-18" aria-label="18"></a>  <span class="co"># Filter just those precincts that are in the Bronx (40th to 52nd)</span></span>
+<span id="cb38-19"><a href="#cb38-19" aria-label="19"></a>  <span class="fu">filter</span>(precinct <span class="sc">%in%</span> <span class="dv">40</span><span class="sc">:</span><span class="dv">52</span>)</span>
+<span id="cb38-20"><a href="#cb38-20" aria-label="20"></a></span>
+<span id="cb38-21"><a href="#cb38-21" aria-label="21"></a><span class="co"># Map shootings</span></span>
+<span id="cb38-22"><a href="#cb38-22" aria-label="22"></a>bronx_shootings <span class="sc">+</span></span>
+<span id="cb38-23"><a href="#cb38-23" aria-label="23"></a>  <span class="fu">hotspot_map</span>(</span>
+<span id="cb38-24"><a href="#cb38-24" aria-label="24"></a>    <span class="at">basemap_type =</span> <span class="st">"none"</span>,</span>
+<span id="cb38-25"><a href="#cb38-25" aria-label="25"></a>    <span class="at">caption =</span> <span class="st">"Shootings data: NYC Open Data"</span>,</span>
+<span id="cb38-26"><a href="#cb38-26" aria-label="26"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<span id="cb38-27"><a href="#cb38-27" aria-label="27"></a>    <span class="at">colour =</span> <span class="st">"red2"</span></span>
+<span id="cb38-28"><a href="#cb38-28" aria-label="28"></a>  ) <span class="sc">+</span></span>
+<span id="cb38-29"><a href="#cb38-29" aria-label="29"></a>  <span class="co"># Add precinct boundaries</span></span>
+<span id="cb38-30"><a href="#cb38-30" aria-label="30"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bronx_precincts, <span class="at">colour =</span> <span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb38-31"><a href="#cb38-31" aria-label="31"></a>  <span class="fu">labs</span>(</span>
+<span id="cb38-32"><a href="#cb38-32" aria-label="32"></a>    <span class="at">title =</span> <span class="st">"Fatal shootings in the Bronx"</span>,</span>
+<span id="cb38-33"><a href="#cb38-33" aria-label="33"></a>    <span class="at">subtitle =</span> <span class="st">"January to December 2019"</span></span>
+<span id="cb38-34"><a href="#cb38-34" aria-label="34"></a>  ) <span class="sc">+</span></span>
+<span id="cb38-35"><a href="#cb38-35" aria-label="35"></a>  <span class="fu">theme</span>(</span>
+<span id="cb38-36"><a href="#cb38-36" aria-label="36"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey30"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb38-37"><a href="#cb38-37" aria-label="37"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)</span>
+<span id="cb38-38"><a href="#cb38-38" aria-label="38"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>When you run this code, you should see some messages and then this error:</p>
 <div class="cell">
@@ -1312,45 +1305,45 @@ date (1): occur_date
 <div class="code-with-filename-file">
 <pre><strong>chapter_08.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42" data-source-line-numbers="nil" data-code-line-numbers="2,5,6,8,22,24,25,29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-label="1"></a><span class="co"># Load packages</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, sf, sfhotspot, tidyverse) </span>
-<span id="cb42-3"><a href="#cb42-3" aria-label="3"></a></span>
-<span id="cb42-4"><a href="#cb42-4" aria-label="4"></a><span class="co"># Load Bronx shootings dataset and wrangle it</span></span>
-<span id="cb42-5"><a href="#cb42-5" aria-label="5"></a>bronx_shootings <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"bronx_shootings.csv"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb42-6"><a href="#cb42-6" aria-label="6"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb42-7"><a href="#cb42-7" aria-label="7"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb42-8"><a href="#cb42-8" aria-label="8"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb42-9"><a href="#cb42-9" aria-label="9"></a>  <span class="fu">rename</span>(<span class="at">shooting_date =</span> occur_date, <span class="at">fatal =</span> murder) <span class="sc">|&gt;</span></span>
-<span id="cb42-10"><a href="#cb42-10" aria-label="10"></a>  <span class="co"># Keep only fatal shootings</span></span>
-<span id="cb42-11"><a href="#cb42-11" aria-label="11"></a>  <span class="fu">filter</span>(fatal <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb42-12"><a href="#cb42-12" aria-label="12"></a>  <span class="fu">select</span>(shooting_date, incident_key)</span>
-<span id="cb42-13"><a href="#cb42-13" aria-label="13"></a></span>
-<span id="cb42-14"><a href="#cb42-14" aria-label="14"></a><span class="co"># Load NYPD precincts and filter to keep just those from the Bronx</span></span>
-<span id="cb42-15"><a href="#cb42-15" aria-label="15"></a>bronx_precincts <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_precincts.gpkg"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb42-16"><a href="#cb42-16" aria-label="16"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
-<span id="cb42-17"><a href="#cb42-17" aria-label="17"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb42-18"><a href="#cb42-18" aria-label="18"></a>  <span class="co"># Filter just those precincts that are in the Bronx (40th to 52nd)</span></span>
-<span id="cb42-19"><a href="#cb42-19" aria-label="19"></a>  <span class="fu">filter</span>(precinct <span class="sc">%in%</span> <span class="dv">40</span><span class="sc">:</span><span class="dv">52</span>)</span>
-<span id="cb42-20"><a href="#cb42-20" aria-label="20"></a></span>
-<span id="cb42-21"><a href="#cb42-21" aria-label="21"></a><span class="co"># Map shootings</span></span>
-<span id="cb42-22"><a href="#cb42-22" aria-label="22"></a>bronx_shootings <span class="sc">+</span> </span>
-<span id="cb42-23"><a href="#cb42-23" aria-label="23"></a>  <span class="fu">hotspot_map</span>(</span>
-<span id="cb42-24"><a href="#cb42-24" aria-label="24"></a>    </span>
-<span id="cb42-25"><a href="#cb42-25" aria-label="25"></a>    <span class="at">basemap_type =</span> <span class="st">"none"</span>, </span>
-<span id="cb42-26"><a href="#cb42-26" aria-label="26"></a>    <span class="at">caption =</span> <span class="st">"Shootings data: NYC Open Data"</span>,</span>
-<span id="cb42-27"><a href="#cb42-27" aria-label="27"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
-<span id="cb42-28"><a href="#cb42-28" aria-label="28"></a>    <span class="at">colour =</span> <span class="st">"red2"</span></span>
-<span id="cb42-29"><a href="#cb42-29" aria-label="29"></a>  ) <span class="sc">+</span> </span>
-<span id="cb42-30"><a href="#cb42-30" aria-label="30"></a>  <span class="co"># Add precinct boundaries</span></span>
-<span id="cb42-31"><a href="#cb42-31" aria-label="31"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bronx_precincts, <span class="at">colour =</span> <span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb42-32"><a href="#cb42-32" aria-label="32"></a>  <span class="fu">labs</span>(</span>
-<span id="cb42-33"><a href="#cb42-33" aria-label="33"></a>    <span class="at">title =</span> <span class="st">"Fatal shootings in the Bronx"</span>,</span>
-<span id="cb42-34"><a href="#cb42-34" aria-label="34"></a>    <span class="at">subtitle =</span> <span class="st">"January to December 2019"</span></span>
-<span id="cb42-35"><a href="#cb42-35" aria-label="35"></a>  ) <span class="sc">+</span></span>
-<span id="cb42-36"><a href="#cb42-36" aria-label="36"></a>  <span class="fu">theme</span>(</span>
-<span id="cb42-37"><a href="#cb42-37" aria-label="37"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey30"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
-<span id="cb42-38"><a href="#cb42-38" aria-label="38"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)</span>
-<span id="cb42-39"><a href="#cb42-39" aria-label="39"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41" data-source-line-numbers="nil" data-code-line-numbers="2,5,6,8,22,24,25,29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-label="1"></a><span class="co"># Load packages</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, sf, sfhotspot, tidyverse) </span>
+<span id="cb41-3"><a href="#cb41-3" aria-label="3"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-label="4"></a><span class="co"># Load Bronx shootings dataset and wrangle it</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-label="5"></a>bronx_shootings <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"bronx_shootings.csv"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb41-6"><a href="#cb41-6" aria-label="6"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb41-7"><a href="#cb41-7" aria-label="7"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-label="8"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb41-9"><a href="#cb41-9" aria-label="9"></a>  <span class="fu">rename</span>(<span class="at">shooting_date =</span> occur_date, <span class="at">fatal =</span> murder) <span class="sc">|&gt;</span></span>
+<span id="cb41-10"><a href="#cb41-10" aria-label="10"></a>  <span class="co"># Keep only fatal shootings</span></span>
+<span id="cb41-11"><a href="#cb41-11" aria-label="11"></a>  <span class="fu">filter</span>(fatal <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-12"><a href="#cb41-12" aria-label="12"></a>  <span class="fu">select</span>(shooting_date, incident_key)</span>
+<span id="cb41-13"><a href="#cb41-13" aria-label="13"></a></span>
+<span id="cb41-14"><a href="#cb41-14" aria-label="14"></a><span class="co"># Load NYPD precincts and filter to keep just those from the Bronx</span></span>
+<span id="cb41-15"><a href="#cb41-15" aria-label="15"></a>bronx_precincts <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_precincts.gpkg"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-16"><a href="#cb41-16" aria-label="16"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
+<span id="cb41-17"><a href="#cb41-17" aria-label="17"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb41-18"><a href="#cb41-18" aria-label="18"></a>  <span class="co"># Filter just those precincts that are in the Bronx (40th to 52nd)</span></span>
+<span id="cb41-19"><a href="#cb41-19" aria-label="19"></a>  <span class="fu">filter</span>(precinct <span class="sc">%in%</span> <span class="dv">40</span><span class="sc">:</span><span class="dv">52</span>)</span>
+<span id="cb41-20"><a href="#cb41-20" aria-label="20"></a></span>
+<span id="cb41-21"><a href="#cb41-21" aria-label="21"></a><span class="co"># Map shootings</span></span>
+<span id="cb41-22"><a href="#cb41-22" aria-label="22"></a>bronx_shootings <span class="sc">+</span> </span>
+<span id="cb41-23"><a href="#cb41-23" aria-label="23"></a>  <span class="fu">hotspot_map</span>(</span>
+<span id="cb41-24"><a href="#cb41-24" aria-label="24"></a>    </span>
+<span id="cb41-25"><a href="#cb41-25" aria-label="25"></a>    <span class="at">basemap_type =</span> <span class="st">"none"</span>, </span>
+<span id="cb41-26"><a href="#cb41-26" aria-label="26"></a>    <span class="at">caption =</span> <span class="st">"Shootings data: NYC Open Data"</span>,</span>
+<span id="cb41-27"><a href="#cb41-27" aria-label="27"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<span id="cb41-28"><a href="#cb41-28" aria-label="28"></a>    <span class="at">colour =</span> <span class="st">"red2"</span></span>
+<span id="cb41-29"><a href="#cb41-29" aria-label="29"></a>  ) <span class="sc">+</span> </span>
+<span id="cb41-30"><a href="#cb41-30" aria-label="30"></a>  <span class="co"># Add precinct boundaries</span></span>
+<span id="cb41-31"><a href="#cb41-31" aria-label="31"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bronx_precincts, <span class="at">colour =</span> <span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb41-32"><a href="#cb41-32" aria-label="32"></a>  <span class="fu">labs</span>(</span>
+<span id="cb41-33"><a href="#cb41-33" aria-label="33"></a>    <span class="at">title =</span> <span class="st">"Fatal shootings in the Bronx"</span>,</span>
+<span id="cb41-34"><a href="#cb41-34" aria-label="34"></a>    <span class="at">subtitle =</span> <span class="st">"January to December 2019"</span></span>
+<span id="cb41-35"><a href="#cb41-35" aria-label="35"></a>  ) <span class="sc">+</span></span>
+<span id="cb41-36"><a href="#cb41-36" aria-label="36"></a>  <span class="fu">theme</span>(</span>
+<span id="cb41-37"><a href="#cb41-37" aria-label="37"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey30"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb41-38"><a href="#cb41-38" aria-label="38"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)</span>
+<span id="cb41-39"><a href="#cb41-39" aria-label="39"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>That means we can remove:</p>
@@ -1367,14 +1360,14 @@ date (1): occur_date
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, sf, sfhotspot, tidyverse)</span>
-<span id="cb43-2"><a href="#cb43-2" aria-label="2"></a></span>
-<span id="cb43-3"><a href="#cb43-3" aria-label="3"></a>bronx_shootings <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"bronx_shootings.csv"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb43-4"><a href="#cb43-4" aria-label="4"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
-<span id="cb43-5"><a href="#cb43-5" aria-label="5"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>)</span>
-<span id="cb43-6"><a href="#cb43-6" aria-label="6"></a></span>
-<span id="cb43-7"><a href="#cb43-7" aria-label="7"></a>bronx_shootings <span class="sc">+</span></span>
-<span id="cb43-8"><a href="#cb43-8" aria-label="8"></a>  <span class="fu">hotspot_map</span>(<span class="at">basemap_type =</span> <span class="st">"none"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, sf, sfhotspot, tidyverse)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-label="2"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-label="3"></a>bronx_shootings <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"bronx_shootings.csv"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-label="4"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-label="5"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>)</span>
+<span id="cb42-6"><a href="#cb42-6" aria-label="6"></a></span>
+<span id="cb42-7"><a href="#cb42-7" aria-label="7"></a>bronx_shootings <span class="sc">+</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-label="8"></a>  <span class="fu">hotspot_map</span>(<span class="at">basemap_type =</span> <span class="st">"none"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `UseMethod()`:
@@ -1423,7 +1416,7 @@ date (1): occur_date
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-label="1"></a><span class="fu">head</span>(memphis_robberies_jan)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-label="1"></a><span class="fu">head</span>(memphis_robberies_jan)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>Simple feature collection with 6 features and 3 fields
@@ -1449,10 +1442,10 @@ Geodetic CRS:  WGS 84
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sfhotspot, tidyverse)</span>
-<span id="cb47-2"><a href="#cb47-2" aria-label="2"></a></span>
-<span id="cb47-3"><a href="#cb47-3" aria-label="3"></a>memphis_robberies_jan <span class="sc">+</span></span>
-<span id="cb47-4"><a href="#cb47-4" aria-label="4"></a>  <span class="fu">hotspot_map</span>(<span class="at">basemap_type =</span> <span class="st">"none"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sfhotspot, tidyverse)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-label="2"></a></span>
+<span id="cb46-3"><a href="#cb46-3" aria-label="3"></a>memphis_robberies_jan <span class="sc">+</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-label="4"></a>  <span class="fu">hotspot_map</span>(<span class="at">basemap_type =</span> <span class="st">"none"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-error">
 <pre data-code-line-numbers=""><code>Error in `UseMethod()`:
@@ -1475,26 +1468,26 @@ Geodetic CRS:  WGS 84
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-label="1"></a>reprex<span class="sc">::</span><span class="fu">reprex</span>(<span class="at">input =</span> <span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"chapter_08.R"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-label="1"></a>reprex<span class="sc">::</span><span class="fu">reprex</span>(<span class="at">input =</span> <span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"chapter_08.R"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>The reprex package runs the example in a separate R session (to avoid conflicts with your current workspace) and produces a preview containing both the code and its output. In this case, the output from the reprex tool will look like this:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-label="1"></a><span class="co"># THIS CODE MUST BE RUN MANUALLY BEFORE THE CHAPTER IS RENDERED, OTHERWISE THE</span></span>
-<span id="cb50-2"><a href="#cb50-2" aria-label="2"></a><span class="co"># `include` DIRECTIVE BELOW WON'T WORK</span></span>
-<span id="cb50-3"><a href="#cb50-3" aria-label="3"></a></span>
-<span id="cb50-4"><a href="#cb50-4" aria-label="4"></a>reprex<span class="sc">::</span><span class="fu">reprex</span>(</span>
-<span id="cb50-5"><a href="#cb50-5" aria-label="5"></a>  <span class="at">input =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"chapter_08_minimal.R"</span>),</span>
-<span id="cb50-6"><a href="#cb50-6" aria-label="6"></a>  <span class="at">html_preview =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb50-7"><a href="#cb50-7" aria-label="7"></a>  <span class="at">advertise =</span> <span class="cn">FALSE</span></span>
-<span id="cb50-8"><a href="#cb50-8" aria-label="8"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-label="1"></a><span class="co"># THIS CODE MUST BE RUN MANUALLY BEFORE THE CHAPTER IS RENDERED, OTHERWISE THE</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-label="2"></a><span class="co"># `include` DIRECTIVE BELOW WON'T WORK</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-label="3"></a></span>
+<span id="cb49-4"><a href="#cb49-4" aria-label="4"></a>reprex<span class="sc">::</span><span class="fu">reprex</span>(</span>
+<span id="cb49-5"><a href="#cb49-5" aria-label="5"></a>  <span class="at">input =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>, <span class="st">"chapter_08_minimal.R"</span>),</span>
+<span id="cb49-6"><a href="#cb49-6" aria-label="6"></a>  <span class="at">html_preview =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb49-7"><a href="#cb49-7" aria-label="7"></a>  <span class="at">advertise =</span> <span class="cn">FALSE</span></span>
+<span id="cb49-8"><a href="#cb49-8" aria-label="8"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sfhotspot, tidyverse)</span>
-<span id="cb51-2"><a href="#cb51-2" aria-label="2"></a></span>
-<span id="cb51-3"><a href="#cb51-3" aria-label="3"></a>memphis_robberies_jan <span class="sc">+</span></span>
-<span id="cb51-4"><a href="#cb51-4" aria-label="4"></a>  <span class="fu">hotspot_map</span>(<span class="at">basemap_type =</span> <span class="st">"none"</span>)</span>
-<span id="cb51-5"><a href="#cb51-5" aria-label="5"></a><span class="co">#&gt; Error in `UseMethod()`:</span></span>
-<span id="cb51-6"><a href="#cb51-6" aria-label="6"></a><span class="co">#&gt; ! no applicable method for 'hotspot_map' applied to an object of class "character"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sfhotspot, tidyverse)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-label="2"></a></span>
+<span id="cb50-3"><a href="#cb50-3" aria-label="3"></a>memphis_robberies_jan <span class="sc">+</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-label="4"></a>  <span class="fu">hotspot_map</span>(<span class="at">basemap_type =</span> <span class="st">"none"</span>)</span>
+<span id="cb50-5"><a href="#cb50-5" aria-label="5"></a><span class="co">#&gt; Error in `UseMethod()`:</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-label="6"></a><span class="co">#&gt; ! no applicable method for 'hotspot_map' applied to an object of class "character"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>You can see that the reprex tool produces a file that contains all the R code in the original script and the output from each line of code as a comment. This makes it easy for anyone (or any tool) that we send this output to to see exactly what code we ran and what output it produced, without needing to run the code themselves. We can also see that the error message is still the same as before.</p>
 <div class="callout callout-style-default callout-important callout-titled" title="Check for sensitive information before sharing">
 <div class="callout-header d-flex align-content-center">
@@ -1520,12 +1513,12 @@ Geodetic CRS:  WGS 84
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What should a reprex contain?</strong></p>
-<div id="radio_JYPWIFQUYI" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_JYPWIFQUYI" value=""> <span>The complete analysis and the original confidential dataset</span></label><label><input type="radio" autocomplete="off" name="radio_JYPWIFQUYI" value="answer"> <span>The smallest code and non-sensitive data needed to reproduce the same problem</span></label><label><input type="radio" autocomplete="off" name="radio_JYPWIFQUYI" value=""> <span>Only a screenshot of the error message</span></label><label><input type="radio" autocomplete="off" name="radio_JYPWIFQUYI" value=""> <span>Every package installed on your computer</span></label>
+<div id="radio_QUUXKKYKXO" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_QUUXKKYKXO" value=""> <span>The complete analysis and the original confidential dataset</span></label><label><input type="radio" autocomplete="off" name="radio_QUUXKKYKXO" value="answer"> <span>The smallest code and non-sensitive data needed to reproduce the same problem</span></label><label><input type="radio" autocomplete="off" name="radio_QUUXKKYKXO" value=""> <span>Only a screenshot of the error message</span></label><label><input type="radio" autocomplete="off" name="radio_QUUXKKYKXO" value=""> <span>Every package installed on your computer</span></label>
 </div>
 <p><strong>What makes a request for debugging help easier to answer?</strong></p>
-<div id="radio_PEMIAGQZHT" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_PEMIAGQZHT" value=""> <span>Post the question on as many websites as possible</span></label><label><input type="radio" autocomplete="off" name="radio_PEMIAGQZHT" value=""> <span>Use a title such as 'R problem' so that it applies broadly</span></label><label><input type="radio" autocomplete="off" name="radio_PEMIAGQZHT" value="answer"> <span>Explain the expected result and include a checked reprex</span></label><label><input type="radio" autocomplete="off" name="radio_PEMIAGQZHT" value=""> <span>Remove the error message because it might distract readers</span></label>
+<div id="radio_VAMDVXTAPM" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_VAMDVXTAPM" value=""> <span>Post the question on as many websites as possible</span></label><label><input type="radio" autocomplete="off" name="radio_VAMDVXTAPM" value=""> <span>Use a title such as 'R problem' so that it applies broadly</span></label><label><input type="radio" autocomplete="off" name="radio_VAMDVXTAPM" value="answer"> <span>Explain the expected result and include a checked reprex</span></label><label><input type="radio" autocomplete="off" name="radio_VAMDVXTAPM" value=""> <span>Remove the error message because it might distract readers</span></label>
 </div>
 </div>
 </div>
@@ -1575,13 +1568,13 @@ Geodetic CRS:  WGS 84
 <p>For example, a useful prompt might be:</p>
 <blockquote class="blockquote">
 <p>I am learning R. I want this code to make a basic map, but it produces the error pasted below. Explain the cause in beginner-friendly language, then suggest one change for me to test. Do not rewrite the whole script.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sfhotspot, tidyverse)</span>
-<span id="cb52-2"><a href="#cb52-2" aria-label="2"></a></span>
-<span id="cb52-3"><a href="#cb52-3" aria-label="3"></a>memphis_robberies_jan <span class="sc">+</span></span>
-<span id="cb52-4"><a href="#cb52-4" aria-label="4"></a>  <span class="fu">hotspot_map</span>(<span class="at">basemap_type =</span> <span class="st">"none"</span>)</span>
-<span id="cb52-5"><a href="#cb52-5" aria-label="5"></a><span class="co">#&gt; Error in `UseMethod()`:</span></span>
-<span id="cb52-6"><a href="#cb52-6" aria-label="6"></a><span class="co">#&gt; ! no applicable method for 'hotspot_map' applied to an object of class </span></span>
-<span id="cb52-7"><a href="#cb52-7" aria-label="7"></a><span class="st">"character"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51" data-code-line-numbers=""><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sfhotspot, tidyverse)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-label="2"></a></span>
+<span id="cb51-3"><a href="#cb51-3" aria-label="3"></a>memphis_robberies_jan <span class="sc">+</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-label="4"></a>  <span class="fu">hotspot_map</span>(<span class="at">basemap_type =</span> <span class="st">"none"</span>)</span>
+<span id="cb51-5"><a href="#cb51-5" aria-label="5"></a><span class="co">#&gt; Error in `UseMethod()`:</span></span>
+<span id="cb51-6"><a href="#cb51-6" aria-label="6"></a><span class="co">#&gt; ! no applicable method for 'hotspot_map' applied to an object of class </span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-label="7"></a><span class="st">"character"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </blockquote>
 <p>Asking for an explanation and one change helps you remain in control of the debugging process. Read the explanation, check it against the relevant R manual page, make the change yourself and then inspect the result. Do not accept code merely because it looks convincing or runs without an error: it could still contain a logic error.</p>
 </section>
@@ -1600,12 +1593,12 @@ Geodetic CRS:  WGS 84
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What is the safest way to ask an LLM for debugging help?</strong></p>
-<div id="radio_QFSSPKEWSS" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_QFSSPKEWSS" value=""> <span>Ask the LLM to replace the complete analysis without explaining its changes</span></label><label><input type="radio" autocomplete="off" name="radio_QFSSPKEWSS" value="answer"> <span>Provide a non-sensitive reprex, the expected result and the exact problem</span></label><label><input type="radio" autocomplete="off" name="radio_QFSSPKEWSS" value=""> <span>Upload the original crime dataset so that the LLM has maximum context</span></label><label><input type="radio" autocomplete="off" name="radio_QFSSPKEWSS" value=""> <span>Accept any suggestion that runs without an error</span></label>
+<div id="radio_KVVRTYMVPL" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_KVVRTYMVPL" value=""> <span>Ask the LLM to replace the complete analysis without explaining its changes</span></label><label><input type="radio" autocomplete="off" name="radio_KVVRTYMVPL" value="answer"> <span>Provide a non-sensitive reprex, the expected result and the exact problem</span></label><label><input type="radio" autocomplete="off" name="radio_KVVRTYMVPL" value=""> <span>Upload the original crime dataset so that the LLM has maximum context</span></label><label><input type="radio" autocomplete="off" name="radio_KVVRTYMVPL" value=""> <span>Accept any suggestion that runs without an error</span></label>
 </div>
 <p><strong>Why must you verify code suggested by an LLM?</strong></p>
-<div id="radio_MLKUZQSGXA" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_MLKUZQSGXA" value=""> <span>An LLM checks every suggestion against the current package documentation</span></label><label><input type="radio" autocomplete="off" name="radio_MLKUZQSGXA" value=""> <span>Code that runs cannot contain a logic error</span></label><label><input type="radio" autocomplete="off" name="radio_MLKUZQSGXA" value="answer"> <span>An LLM can produce a plausible suggestion that is wrong for your analysis</span></label><label><input type="radio" autocomplete="off" name="radio_MLKUZQSGXA" value=""> <span>Different LLMs always return the same answer to a prompt</span></label>
+<div id="radio_ODUUQFHOCR" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_ODUUQFHOCR" value=""> <span>An LLM checks every suggestion against the current package documentation</span></label><label><input type="radio" autocomplete="off" name="radio_ODUUQFHOCR" value=""> <span>Code that runs cannot contain a logic error</span></label><label><input type="radio" autocomplete="off" name="radio_ODUUQFHOCR" value="answer"> <span>An LLM can produce a plausible suggestion that is wrong for your analysis</span></label><label><input type="radio" autocomplete="off" name="radio_ODUUQFHOCR" value=""> <span>Different LLMs always return the same answer to a prompt</span></label>
 </div>
 </div>
 </div>
@@ -1628,16 +1621,16 @@ Geodetic CRS:  WGS 84
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Why should you avoid using the <code>attach()</code> function?</strong></p>
-<div id="radio_BUZQRBNVJE" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_BUZQRBNVJE" value=""> <span>It deletes all the objects in your R environment</span></label><label><input type="radio" autocomplete="off" name="radio_BUZQRBNVJE" value=""> <span>It makes it impossible for you to share your code with anyone else</span></label><label><input type="radio" autocomplete="off" name="radio_BUZQRBNVJE" value="answer"> <span>It makes it hard to keep track of which values are stored in which dataset</span></label><label><input type="radio" autocomplete="off" name="radio_BUZQRBNVJE" value=""> <span>It has been superseded by the <code>if_else()</code> function</span></label>
+<div id="radio_GUPDOHWFSJ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_GUPDOHWFSJ" value=""> <span>It deletes all the objects in your R environment</span></label><label><input type="radio" autocomplete="off" name="radio_GUPDOHWFSJ" value=""> <span>It makes it impossible for you to share your code with anyone else</span></label><label><input type="radio" autocomplete="off" name="radio_GUPDOHWFSJ" value="answer"> <span>It makes it hard to keep track of which values are stored in which dataset</span></label><label><input type="radio" autocomplete="off" name="radio_GUPDOHWFSJ" value=""> <span>It has been superseded by the <code>if_else()</code> function</span></label>
 </div>
 <p><strong>What function should you generally use instead of <code>%&gt;%</code>?</strong></p>
-<div id="radio_APWOGDKQYU" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_APWOGDKQYU" value=""> <span><code>pluck()</code></span></label><label><input type="radio" autocomplete="off" name="radio_APWOGDKQYU" value=""> <span><code>mod()</code></span></label><label><input type="radio" autocomplete="off" name="radio_APWOGDKQYU" value=""> <span><code>pull()</code></span></label><label><input type="radio" autocomplete="off" name="radio_APWOGDKQYU" value="answer"> <span><code>|&gt;</code></span></label>
+<div id="radio_HHYLSPPYXJ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_HHYLSPPYXJ" value=""> <span><code>pluck()</code></span></label><label><input type="radio" autocomplete="off" name="radio_HHYLSPPYXJ" value=""> <span><code>mod()</code></span></label><label><input type="radio" autocomplete="off" name="radio_HHYLSPPYXJ" value=""> <span><code>pull()</code></span></label><label><input type="radio" autocomplete="off" name="radio_HHYLSPPYXJ" value="answer"> <span><code>|&gt;</code></span></label>
 </div>
 <p><strong>What happens if you try to run the code <code>as.numeric("100 degrees")</code>?</strong></p>
-<div id="radio_KNTMMAJBMJ" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_KNTMMAJBMJ" value=""> <span>The numeric value <code>100</code> is returned</span></label><label><input type="radio" autocomplete="off" name="radio_KNTMMAJBMJ" value="answer"> <span>The value <code>NA</code> is returned</span></label><label><input type="radio" autocomplete="off" name="radio_KNTMMAJBMJ" value=""> <span>The text value <code>"100"</code> is returned</span></label><label><input type="radio" autocomplete="off" name="radio_KNTMMAJBMJ" value=""> <span>R crashes</span></label>
+<div id="radio_VNHHPCQPGI" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_VNHHPCQPGI" value=""> <span>The numeric value <code>100</code> is returned</span></label><label><input type="radio" autocomplete="off" name="radio_VNHHPCQPGI" value="answer"> <span>The value <code>NA</code> is returned</span></label><label><input type="radio" autocomplete="off" name="radio_VNHHPCQPGI" value=""> <span>The text value <code>"100"</code> is returned</span></label><label><input type="radio" autocomplete="off" name="radio_VNHHPCQPGI" value=""> <span>R crashes</span></label>
 </div>
 </div>
 </div>
@@ -1655,10 +1648,10 @@ Geodetic CRS:  WGS 84
 <div class="code-with-filename-file">
 <pre><strong>R Console</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sfhotspot, tidyverse)</span>
-<span id="cb53-2"><a href="#cb53-2" aria-label="2"></a></span>
-<span id="cb53-3"><a href="#cb53-3" aria-label="3"></a>memphis_robberies_jan <span class="sc">+</span> <span class="co"># &lt;---- THE `+` OPERATOR HERE SHOULD BE A `|&gt;` OPERATOR</span></span>
-<span id="cb53-4"><a href="#cb53-4" aria-label="4"></a>  <span class="fu">hotspot_map</span>(<span class="at">basemap_type =</span> <span class="st">"none"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-label="1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sfhotspot, tidyverse)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-label="2"></a></span>
+<span id="cb52-3"><a href="#cb52-3" aria-label="3"></a>memphis_robberies_jan <span class="sc">+</span> <span class="co"># &lt;---- THE `+` OPERATOR HERE SHOULD BE A `|&gt;` OPERATOR</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-label="4"></a>  <span class="fu">hotspot_map</span>(<span class="at">basemap_type =</span> <span class="st">"none"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>The mistake in this code is easy to make because what <code>+</code> does to add a layer to a map created with <code>hotspot_map()</code> is similar to what <code>|&gt;</code> does to pass the result of one function to the next function in a data-wrangling pipeline. Remember that we use <code>+</code> to combine layers using functions from the ggplot2 package, and <code>|&gt;</code> to pass an object to a function.</p>
@@ -1678,12 +1671,12 @@ Geodetic CRS:  WGS 84
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>What might cause the error message <code>could not find function "blah"</code>?</strong></p>
-<div id="radio_PQXBELNNTI" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_PQXBELNNTI" value=""> <span>You have loaded packages in the wrong order</span></label><label><input type="radio" autocomplete="off" name="radio_PQXBELNNTI" value=""> <span>You have mis-typed the name of the <code>blah</code> object</span></label><label><input type="radio" autocomplete="off" name="radio_PQXBELNNTI" value="answer"> <span>You have not loaded the package that contains the <code>blah()</code> function</span></label><label><input type="radio" autocomplete="off" name="radio_PQXBELNNTI" value=""> <span>You have tried to use a generic function with a type of object the function does not know how to use</span></label>
+<div id="radio_VXILWVKQLI" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_VXILWVKQLI" value=""> <span>You have loaded packages in the wrong order</span></label><label><input type="radio" autocomplete="off" name="radio_VXILWVKQLI" value=""> <span>You have mis-typed the name of the <code>blah</code> object</span></label><label><input type="radio" autocomplete="off" name="radio_VXILWVKQLI" value="answer"> <span>You have not loaded the package that contains the <code>blah()</code> function</span></label><label><input type="radio" autocomplete="off" name="radio_VXILWVKQLI" value=""> <span>You have tried to use a generic function with a type of object the function does not know how to use</span></label>
 </div>
 <p><strong>What might cause the error message <code>non-numeric argument to binary operator</code>?</strong></p>
-<div id="radio_XWYOHCISUX" class="webex-radiogroup">
-<label><input type="radio" autocomplete="off" name="radio_XWYOHCISUX" value=""> <span>You have tried to use a function as if it is an object</span></label><label><input type="radio" autocomplete="off" name="radio_XWYOHCISUX" value="answer"> <span>You have tried to use a mathematical operator such as <code>+</code> or <code>-</code> with a non-numeric value such as a character value</span></label><label><input type="radio" autocomplete="off" name="radio_XWYOHCISUX" value=""> <span>You have used an argument name in a function that does not understand it</span></label><label><input type="radio" autocomplete="off" name="radio_XWYOHCISUX" value=""> <span>You have either mis-typed the function name or the package containing that function is not loaded</span></label>
+<div id="radio_JTWTVXCJMF" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_JTWTVXCJMF" value=""> <span>You have tried to use a function as if it is an object</span></label><label><input type="radio" autocomplete="off" name="radio_JTWTVXCJMF" value="answer"> <span>You have tried to use a mathematical operator such as <code>+</code> or <code>-</code> with a non-numeric value such as a character value</span></label><label><input type="radio" autocomplete="off" name="radio_JTWTVXCJMF" value=""> <span>You have used an argument name in a function that does not understand it</span></label><label><input type="radio" autocomplete="off" name="radio_JTWTVXCJMF" value=""> <span>You have either mis-typed the function name or the package containing that function is not loaded</span></label>
 </div>
 </div>
 </div>
@@ -1709,47 +1702,48 @@ Geodetic CRS:  WGS 84
 <div class="code-with-filename-file">
 <pre><strong>chapter_08.R</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-label="1"></a><span class="co"># Load packages</span></span>
-<span id="cb54-2"><a href="#cb54-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, sf, sfhotspot, tidyverse)</span>
-<span id="cb54-3"><a href="#cb54-3" aria-label="3"></a></span>
-<span id="cb54-4"><a href="#cb54-4" aria-label="4"></a><span class="co"># Load Bronx shootings dataset and wrangle it</span></span>
-<span id="cb54-5"><a href="#cb54-5" aria-label="5"></a>bronx_shootings <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"bronx_shootings.csv"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb54-6"><a href="#cb54-6" aria-label="6"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
-<span id="cb54-7"><a href="#cb54-7" aria-label="7"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb54-8"><a href="#cb54-8" aria-label="8"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb54-9"><a href="#cb54-9" aria-label="9"></a>  <span class="fu">rename</span>(<span class="at">shooting_date =</span> occur_date, <span class="at">fatal =</span> murder) <span class="sc">|&gt;</span></span>
-<span id="cb54-10"><a href="#cb54-10" aria-label="10"></a>  <span class="co"># Keep only fatal shootings</span></span>
-<span id="cb54-11"><a href="#cb54-11" aria-label="11"></a>  <span class="fu">filter</span>(fatal <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb54-12"><a href="#cb54-12" aria-label="12"></a>  <span class="fu">select</span>(shooting_date, incident_key)</span>
-<span id="cb54-13"><a href="#cb54-13" aria-label="13"></a></span>
-<span id="cb54-14"><a href="#cb54-14" aria-label="14"></a><span class="co"># Load NYPD precincts and filter to keep just those from the Bronx</span></span>
-<span id="cb54-15"><a href="#cb54-15" aria-label="15"></a>bronx_precincts <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_precincts.gpkg"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb54-16"><a href="#cb54-16" aria-label="16"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
-<span id="cb54-17"><a href="#cb54-17" aria-label="17"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb54-18"><a href="#cb54-18" aria-label="18"></a>  <span class="co"># Filter just those precincts that are in the Bronx (40th to 52nd)</span></span>
-<span id="cb54-19"><a href="#cb54-19" aria-label="19"></a>  <span class="fu">filter</span>(precinct <span class="sc">%in%</span> <span class="dv">40</span><span class="sc">:</span><span class="dv">52</span>)</span>
-<span id="cb54-20"><a href="#cb54-20" aria-label="20"></a></span>
-<span id="cb54-21"><a href="#cb54-21" aria-label="21"></a><span class="co"># Map shootings</span></span>
-<span id="cb54-22"><a href="#cb54-22" aria-label="22"></a>bronx_shootings <span class="sc">|&gt;</span></span>
-<span id="cb54-23"><a href="#cb54-23" aria-label="23"></a>  <span class="fu">hotspot_map</span>(</span>
-<span id="cb54-24"><a href="#cb54-24" aria-label="24"></a>    <span class="at">basemap_type =</span> <span class="st">"none"</span>,</span>
-<span id="cb54-25"><a href="#cb54-25" aria-label="25"></a>    <span class="at">caption =</span> <span class="st">"Shootings data: NYC Open Data"</span>,</span>
-<span id="cb54-26"><a href="#cb54-26" aria-label="26"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
-<span id="cb54-27"><a href="#cb54-27" aria-label="27"></a>    <span class="at">colour =</span> <span class="st">"red2"</span></span>
-<span id="cb54-28"><a href="#cb54-28" aria-label="28"></a>  ) <span class="sc">+</span></span>
-<span id="cb54-29"><a href="#cb54-29" aria-label="29"></a>  <span class="co"># Add precinct boundaries</span></span>
-<span id="cb54-30"><a href="#cb54-30" aria-label="30"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bronx_precincts, <span class="at">colour =</span> <span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb54-31"><a href="#cb54-31" aria-label="31"></a>  <span class="fu">labs</span>(</span>
-<span id="cb54-32"><a href="#cb54-32" aria-label="32"></a>    <span class="at">title =</span> <span class="st">"Fatal shootings in the Bronx"</span>,</span>
-<span id="cb54-33"><a href="#cb54-33" aria-label="33"></a>    <span class="at">subtitle =</span> <span class="st">"January to December 2019"</span></span>
-<span id="cb54-34"><a href="#cb54-34" aria-label="34"></a>  ) <span class="sc">+</span></span>
-<span id="cb54-35"><a href="#cb54-35" aria-label="35"></a>  <span class="fu">theme</span>(</span>
-<span id="cb54-36"><a href="#cb54-36" aria-label="36"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey30"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
-<span id="cb54-37"><a href="#cb54-37" aria-label="37"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)</span>
-<span id="cb54-38"><a href="#cb54-38" aria-label="38"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-label="1"></a><span class="co"># Load packages</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-label="2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, sf, sfhotspot, tidyverse)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-label="3"></a></span>
+<span id="cb53-4"><a href="#cb53-4" aria-label="4"></a><span class="co"># Load Bronx shootings dataset and wrangle it</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-label="5"></a>bronx_shootings <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"bronx_shootings.csv"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-label="6"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-label="7"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb53-8"><a href="#cb53-8" aria-label="8"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb53-9"><a href="#cb53-9" aria-label="9"></a>  <span class="fu">rename</span>(<span class="at">shooting_date =</span> occur_date, <span class="at">fatal =</span> murder) <span class="sc">|&gt;</span></span>
+<span id="cb53-10"><a href="#cb53-10" aria-label="10"></a>  <span class="co"># Keep only fatal shootings</span></span>
+<span id="cb53-11"><a href="#cb53-11" aria-label="11"></a>  <span class="fu">filter</span>(fatal <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb53-12"><a href="#cb53-12" aria-label="12"></a>  <span class="fu">select</span>(shooting_date, incident_key)</span>
+<span id="cb53-13"><a href="#cb53-13" aria-label="13"></a></span>
+<span id="cb53-14"><a href="#cb53-14" aria-label="14"></a><span class="co"># Load NYPD precincts and filter to keep just those from the Bronx</span></span>
+<span id="cb53-15"><a href="#cb53-15" aria-label="15"></a>bronx_precincts <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_precincts.gpkg"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb53-16"><a href="#cb53-16" aria-label="16"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
+<span id="cb53-17"><a href="#cb53-17" aria-label="17"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb53-18"><a href="#cb53-18" aria-label="18"></a>  <span class="co"># Filter just those precincts that are in the Bronx (40th to 52nd)</span></span>
+<span id="cb53-19"><a href="#cb53-19" aria-label="19"></a>  <span class="fu">filter</span>(precinct <span class="sc">%in%</span> <span class="dv">40</span><span class="sc">:</span><span class="dv">52</span>)</span>
+<span id="cb53-20"><a href="#cb53-20" aria-label="20"></a></span>
+<span id="cb53-21"><a href="#cb53-21" aria-label="21"></a><span class="co"># Map shootings</span></span>
+<span id="cb53-22"><a href="#cb53-22" aria-label="22"></a>bronx_shootings <span class="sc">|&gt;</span></span>
+<span id="cb53-23"><a href="#cb53-23" aria-label="23"></a>  <span class="fu">hotspot_map</span>(</span>
+<span id="cb53-24"><a href="#cb53-24" aria-label="24"></a>    <span class="at">basemap_type =</span> <span class="st">"none"</span>,</span>
+<span id="cb53-25"><a href="#cb53-25" aria-label="25"></a>    <span class="at">caption =</span> <span class="st">"Shootings data: NYC Open Data"</span>,</span>
+<span id="cb53-26"><a href="#cb53-26" aria-label="26"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<span id="cb53-27"><a href="#cb53-27" aria-label="27"></a>    <span class="at">colour =</span> <span class="st">"red2"</span></span>
+<span id="cb53-28"><a href="#cb53-28" aria-label="28"></a>  ) <span class="sc">+</span></span>
+<span id="cb53-29"><a href="#cb53-29" aria-label="29"></a>  <span class="co"># Add precinct boundaries</span></span>
+<span id="cb53-30"><a href="#cb53-30" aria-label="30"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> bronx_precincts, <span class="at">colour =</span> <span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb53-31"><a href="#cb53-31" aria-label="31"></a>  <span class="fu">labs</span>(</span>
+<span id="cb53-32"><a href="#cb53-32" aria-label="32"></a>    <span class="at">title =</span> <span class="st">"Fatal shootings in the Bronx"</span>,</span>
+<span id="cb53-33"><a href="#cb53-33" aria-label="33"></a>    <span class="at">subtitle =</span> <span class="st">"January to December 2019"</span></span>
+<span id="cb53-34"><a href="#cb53-34" aria-label="34"></a>  ) <span class="sc">+</span></span>
+<span id="cb53-35"><a href="#cb53-35" aria-label="35"></a>  <span class="fu">theme</span>(</span>
+<span id="cb53-36"><a href="#cb53-36" aria-label="36"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey30"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb53-37"><a href="#cb53-37" aria-label="37"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)</span>
+<span id="cb53-38"><a href="#cb53-38" aria-label="38"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
-<p>Save <code>chapter_08.R</code> by pressing <kbd title="mac: Command-S, windows: Ctrl-S" aria-hidden="true" data-mac="Command-S" data-windows="Ctrl-S"></kbd><span class="visually-hidden"></span>. To check that the analysis is reproducible, restart R using the <strong>Restart R</strong> (<strong>⟳</strong>) button in Positron’s <strong>Console</strong> panel and run the complete script from beginning to end.</p>
+<p>Save <code>chapter_08.R</code> by pressing <kbd title="mac: Command-S, windows: Ctrl-S" aria-hidden="true" data-mac="Command-S" data-windows="Ctrl-S"></kbd><span class="visually-hidden"></span>.</p>
+<p>To check that the analysis is reproducible, restart R using the <strong>Restart R</strong> (<strong>⟳</strong>) button in Positron’s <strong>Console</strong> panel, then run the script from beginning to end.</p>
 <div class="callout callout-style-default callout-quiz callout-titled" title="Revision questions">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">

@@ -5,11 +5,7 @@ In this chapter, we will learn how to identify and fix bugs in R code. We will l
 :::
 
 
-::: {.callout-tip title="Before you start"}
-
-1. Open Positron or -- if you already have Positron open -- start a new R session by clicking the **Restart R** (**&#10227;**) button in the **Console** panel. This makes sure no code you ran previously will interfere with the work you do in this chapter.
-2. Make sure you are working in the crime mapping project workspace you created in @sec-create-project. In the top-right corner of the Positron window, you should see a folder icon and the words `crime_mapping`. If not, click the **File** menu, then **Open Folder ...** and choose the `crime_mapping` folder.
-:::
+{{< include /include/_before-you-start.qmd >}}
 
 
 ## Introduction
@@ -128,14 +124,21 @@ When something is not quite right, or just when there is an issue in your code t
 
 ### Messages
 
-*Messages* are usually for information only and typically don't require you to take any action. For example, the function `get_crime_data()` from the `crimedata` package issues a message to tell you what data it is downloading. It does this because downloading data sometimes takes a few seconds and without a message you might wonder if the code was working.
+*Messages* are usually for information only and typically don't require you to take any action. For example, the `ggsave()` function issues a message to tell you the dimensions of the saved image.
 
 ```{r}
 #| label: crimedata-example
 #| filename: "Do not run this code"
 #| classes: "bad_code"
+#| eval: false
 
-mesa_crimes <- crimedata::get_crime_data(cities = "Mesa", quiet = FALSE)
+ggsave("example_plot.png", plot = ggplot())
+```
+
+```{r}
+#| echo: false
+
+ggsave(filename = tempfile(fileext = ".png"), plot = ggplot())
 ```
 
 Messages appear in the **Console** panel along with other output from R. When R prints a message about your code, any code underneath the code that generated the message will still run. For example, if you run these three lines of code (the second of which prints a message, using the `message()` function), the line after the message will run as expected:
@@ -1156,12 +1159,13 @@ The corrected complete script from the reprex exercise is shown below. Replace t
 #| filename: "chapter_08.R"
 ```
 
-Save `chapter_08.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}. To check that the analysis is reproducible, restart R using the **Restart R** (**&#10227;**) button in Positron's **Console** panel and run the complete script from beginning to end.
+Save `chapter_08.R` by pressing {{< kbd win="Ctrl-S" mac="Command-S" >}}.
 
+{{< include /include/_check-reproducibility.qmd >}}
 
 ::: {.callout-quiz .callout title="Revision questions"}
 
-Answer these questions to check you have understood the main points covered in this chapter. Write between 50 and 100 words to answer each question.
+{{< include /include/_revision-instructions.qmd >}}
 
 1. What are the key differences between messages, warnings, and errors in R? Provide an example of each and explain how they affect the execution of code.
 2. Explain the differences between syntax errors, runtime errors and logic errors in R. Why can logic errors be particularly difficult to identify?
