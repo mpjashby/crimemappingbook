@@ -79,13 +79,7 @@ districts <- read_sf(
   select(lad19nm, geometry)
 
 # Calculate violence counts at district level
-violence_counts <- violence %>%
-  st_join(districts) %>%
-  st_drop_geometry() %>%
-  count(lad19nm) %>%
-  drop_na() %>%
-  right_join(districts, by = "lad19nm") %>%
-  st_as_sf() %>%
+violence_counts <- sfhotspot::hotspot_count(violence, grid = districts) %>%
   mutate(hjust = if_else(n == max(n), 1, 0))
 
 # Download base map

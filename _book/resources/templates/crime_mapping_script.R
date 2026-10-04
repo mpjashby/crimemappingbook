@@ -25,11 +25,11 @@
 
 
 ## Load and clean data ----
-# Load all the data you will need here. If the data cannot be downloaded
-# directly from a URL, make sure include the code needed to download the file to
-# a local file first, then load the data from there. In this section you should
-# also do any necessary initial cleaning of the data, e.g. to clean the column
-# names.
+# Download data using httr2::request() and httr2::req_perform(), saving original
+# files in data/raw with paths built using here::here(). Create that directory
+# first if needed. If a download must be done manually, explain where to obtain
+# the file and where to save it. Read the local copies, then clean the data in R
+# without editing the original files.
 
 
 

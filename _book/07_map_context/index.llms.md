@@ -1,4 +1,4 @@
-Source: https://books.lesscrime.info/learncrimemapping/07_map_context/index.html
+Source: https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html
 
 <a id="quarto-document-content"></a>
 <a id="title-block-header"></a>

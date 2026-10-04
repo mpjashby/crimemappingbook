@@ -1,4 +1,4 @@
-Source: https://books.lesscrime.info/learncrimemapping/index.html
+Source: https://books.lesscrime.info/learncrimemapping/2026/index.html
 
 <a id="quarto-document-content"></a>
 <a id="title-block-header"></a>
@@ -19,6 +19,10 @@ Matt Ashby
 # Welcome!
 
 This book will give you the knowledge and skills to effectively communicate information about crime and related topics using maps. We will cover the principles of analysing geographic information and the strengths and weaknesses of different maps for communicating it.
+
+NoteBook editions
+
+This book is updated annually. Read the [2026 edition](https://books.lesscrime.info/learncrimemapping/2026/) (current), [2025 edition](https://books.lesscrime.info/learncrimemapping/2025/), [2024 edition](https://books.lesscrime.info/learncrimemapping/2024/).
 
 <a id="who-is-this-book-for"></a>
 

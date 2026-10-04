@@ -1,4 +1,4 @@
-Source: https://books.lesscrime.info/learncrimemapping/appendices/functions_to_avoid.html
+Source: https://books.lesscrime.info/learncrimemapping/2026/appendices/functions_to_avoid.html
 
 <a id="quarto-document-content"></a>
 <a id="title-block-header"></a>

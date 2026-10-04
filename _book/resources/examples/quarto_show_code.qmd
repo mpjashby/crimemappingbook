@@ -1,8 +1,8 @@
 ---
-title: "Medellín homicides map"
+title: "Quarto example: show R code"
 author: "John Smith"
 date: "today"
-format: 
+format:
   html:
     embed-resources: true
 ---
@@ -12,7 +12,7 @@ format:
 #| label: setup
 
 # Load packages
-pacman::p_load(here, httr2, sf, sfhotspot, tidyverse)
+pacman::p_load(here, httr2, tidyverse)
 
 # Create the directory for the original downloaded data
 dir.create(here("data", "raw"), recursive = TRUE, showWarnings = FALSE)
@@ -27,9 +27,7 @@ request(
 medellin_homicides <- here("data", "raw", "medellin_homicides.csv") |>
   read_csv2() |>
   # Remove rows with missing coordinates
-  drop_na(longitud, latitud) |>
-  # Convert the data to an SF object
-  st_as_sf(coords = c("longitud", "latitud"), crs = "EPSG:4326")
+  drop_na(longitud, latitud)
 ```
 
 ```{r}

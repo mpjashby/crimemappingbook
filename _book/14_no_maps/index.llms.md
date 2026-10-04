@@ -1,4 +1,4 @@
-Source: https://books.lesscrime.info/learncrimemapping/14_no_maps/index.html
+Source: https://books.lesscrime.info/learncrimemapping/2026/14_no_maps/index.html
 
 <a id="quarto-document-content"></a>
 <a id="title-block-header"></a>
@@ -160,16 +160,16 @@ We can get a feel for the data by looking at a random sample of rows using the `
     # A tibble: 10 × 5
        region        state            year crime_type         count
        <chr>         <chr>           <dbl> <chr>              <dbl>
-     1 West Malaysia Kedah            2017 armed robbery          2
-     2 West Malaysia Negeri Sembilan  2017 unarmed robbery      536
-     3 West Malaysia Perak            2017 aggravated assault   380
-     4 West Malaysia Kelantan         2017 rape                 114
-     5 East Malaysia Sarawak          2017 rape                 150
-     6 West Malaysia Kedah            2017 aggravated assault   364
-     7 West Malaysia Kedah            2017 unarmed robbery      490
-     8 West Malaysia Kelantan         2017 aggravated assault   252
-     9 West Malaysia Johor            2017 murder                66
-    10 West Malaysia Pulau Pinang     2017 unarmed robbery      706
+     1 West Malaysia Kelantan         2017 murder                13
+     2 West Malaysia Perlis           2017 unarmed robbery       53
+     3 West Malaysia Negeri Sembilan  2017 unarmed robbery      536
+     4 East Malaysia Sarawak          2017 armed robbery          3
+     5 East Malaysia Sabah            2017 armed robbery          0
+     6 West Malaysia Kuala Lumpur     2017 aggravated assault   651
+     7 West Malaysia Melaka           2017 armed robbery          1
+     8 West Malaysia Kuala Lumpur     2017 armed robbery          4
+     9 West Malaysia Pulau Pinang     2017 rape                  80
+    10 West Malaysia Johor            2017 rape                 196
 
 The output of `slice_sample()` looks acceptable as a table, especially if it is included in a Quarto document, but readers of our reports probably don't want to know the type of each variable (underneath the variable names) and won't want to page through the table if there are more rows or columns than can fit in the available space. We can make this table much more useful for readers by wrangling it into a different format.
 
@@ -301,7 +301,7 @@ We can create a very basic gt table by just passing a data frame or tibble to th
 <figcaption>Code 14.5</figcaption>
 </figure>
 
-<a id="padlaomyvi"></a>
+<a id="wfyzkpupsw"></a>
 
                     region          murder   rape   aggravated_assault   armed_robbery   unarmed_robbery
   ----------------- --------------- -------- ------ -------------------- --------------- -----------------
@@ -355,7 +355,7 @@ We don't want the numbers in the table to have any decimal places (since the cri
 <figcaption>Code 14.6</figcaption>
 </figure>
 
-<a id="cappvypdlx"></a>
+<a id="hsdoxzihpg"></a>
 
                     region          murder   rape   aggravated_assault   armed_robbery   unarmed_robbery
   ----------------- --------------- -------- ------ -------------------- --------------- -----------------
@@ -409,7 +409,7 @@ The `region` column only has two values: `West Malaysia` for states and territor
 <figcaption>Code 14.7</figcaption>
 </figure>
 
-<a id="wnqkmpsljr"></a>
+<a id="xcvnwxbqwj"></a>
 
 +-----------------+--------+------+--------------------+---------------+-----------------+
 |                 | murder | rape | aggravated_assault | armed_robbery | unarmed_robbery |
@@ -485,7 +485,7 @@ The easiest way to specify a colour palette is to use one of the built-in colour
 <figcaption>Code 14.8</figcaption>
 </figure>
 
-<a id="mdcafemalq"></a>
+<a id="hsejzccdjw"></a>
 
 +-----------------+--------+------+--------------------+---------------+-----------------+
 |                 | murder | rape | aggravated_assault | armed_robbery | unarmed_robbery |
@@ -576,7 +576,7 @@ We can use the `md()` helper function to use Markdown formatting to control the 
 <figcaption>Code 14.9</figcaption>
 </figure>
 
-<a id="gmaxczadcm"></a>
+<a id="uxowjfsdkm"></a>
 
 +-----------------+-------------+-------------+--------------+-------------+-------------+
 |                 | murder      | rape        | agg. assault | robbery\    | robbery\    |
@@ -680,7 +680,7 @@ Paste this code into the `chapter_14a.R` file and run it.
 <figcaption>Code 14.10</figcaption>
 </figure>
 
-<a id="tuosmuxvoi"></a>
+<a id="dacbfjpvpm"></a>
 
 +-----------------+-------------+-------------+--------------+-------------+-------------+
 |                 | murder      | rape        | agg. assault | robbery\    | robbery\    |

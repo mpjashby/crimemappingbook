@@ -21,6 +21,8 @@ repository root, render individual reports, for example:
 ```sh
 quarto render resources/reports/medellin_homicides_map.qmd --execute-dir .
 quarto render resources/reports/medellin_homicides_table.qmd --execute-dir . --cache-refresh
+quarto render resources/reports/edmonton_fire_rescue_demand.qmd --execute-dir . --cache-refresh
+quarto render resources/reports/yarra_waste_dumping.qmd --execute-dir . --cache-refresh
 quarto render resources/examples/quarto_show_code.qmd --execute-dir .
 quarto render resources/examples/quarto_hide_code.qmd --execute-dir .
 ```
@@ -36,10 +38,10 @@ placeholders and are not complete reports to render.
 The Edmonton example requires a manually downloaded dataset of about 300 MB at
 `data/raw/Fire_Response__Current_and_Historical_20250309.csv`, as explained in
 its source. The Yarra example requires access to its external data services and
-a PDF rendering installation. Its boundary-data URL could not be loaded during
-the 2026 update, so its original finished PDF is retained; reproducing the source
-may require a replacement boundary dataset. Both are additional examples rather than prerequisites
-for working through the book.
+a PDF rendering installation. It downloads the Geoscape boundary dataset linked
+in issue #81, repairs invalid polygons in R and keeps the original download in
+`data/raw/`. Both are additional examples rather than prerequisites for working
+through the book.
 
 Git ignores the other local files in the top level of this directory, including
 the assessment-specific template and old render caches. They are not published.

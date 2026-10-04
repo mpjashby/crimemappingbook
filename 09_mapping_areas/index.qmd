@@ -639,6 +639,33 @@ For the current data, the result has 75 rows (one for each district), no duplica
 
 
 
+::: {.callout-note collapse="true" title="Optional: attaching area information to individual crimes" #spatial-joins}
+
+`hotspot_count()` gives us one row per _area_, with the number of crimes in each area. Sometimes we instead want to join two spatial datasets but keep one row per crime and add information about the area in which it occurred. For example, we might want to attach borough names to records of individual crimes, based on the borough in which the crime happened. A **spatial join** can do this.
+
+Whereas `left_join()` matches values in columns, `st_join()` from the sf package matches features by their locations. For example, run this code in the R Console to attach borough names to the carjacking points we loaded earlier:
+
+```{r}
+#| label: optional-spatial-join
+#| lst-label: lst-mapping-areas-optional-spatial-join
+#| lst-cap: ""
+#| eval: false
+#| filename: "R Console"
+
+car_jacking_boroughs <- cdmx_car_jacking |>
+  st_transform(st_crs(cdmx_alcaldias)) |>
+  st_join(select(cdmx_alcaldias, nomgeo))
+```
+
+Both objects must use the same coordinate reference system, so we use `st_transform()` before joining them. The result keeps the crime-point geometry and adds the `nomgeo` column containing borough names. By default, `st_join()` matches features that intersect: a point inside an area or on its boundary matches that area.
+
+Unmatched crimes remain in the result with a missing (`NA`) borough name. A crime that matches more than one area appears in more than one row, for example if it lies on a shared boundary. Check the row counts and missing names before using the result, and investigate unexpected matches rather than simply deleting duplicate rows.
+
+Use `hotspot_count()` when you need area counts. Use `st_join()` when you need area attributes attached to individual records, for example to compare the characteristics of crimes in different boroughs.
+
+:::
+
+
 ### Interactive choropleth maps {#sec-mapping-areas-interactive-choropleth-maps}
 
 Data visualisations (including maps) in R are made using the ggplot2 package, sometimes in combination with specialist helper functions (such as `hotspot_map()`) for particular types of visualisation. But interactive maps are made using a different package: leaflet. The functions in the leaflet package work in a similar way to ggplot2, but with a few differences.

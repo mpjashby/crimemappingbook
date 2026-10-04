@@ -1,4 +1,4 @@
-Source: https://books.lesscrime.info/learncrimemapping/appendices/map_checklist.html
+Source: https://books.lesscrime.info/learncrimemapping/2026/appendices/map_checklist.html
 
 <a id="quarto-document-content"></a>
 <a id="title-block-header"></a>

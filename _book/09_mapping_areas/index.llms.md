@@ -1,4 +1,4 @@
-Source: https://books.lesscrime.info/learncrimemapping/09_mapping_areas/index.html
+Source: https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html
 
 <a id="quarto-document-content"></a>
 <a id="title-block-header"></a>
@@ -594,6 +594,31 @@ ImportantAlways check a join
 
 For the current data, the result has 75 rows (one for each district), no duplicated district names and no missing murder counts. If you receive a warning or a check gives an unexpected result, investigate it before continuing. See [Chapter 8](../08_handling_bugs/index.llms.md) if you need help dealing with warnings produced by R code.
 
+<a id="spatial-joins"></a>
+NoteOptional: attaching area information to individual crimes
+
+<a id="callout-10"></a>
+
+`hotspot_count()` gives us one row per *area*, with the number of crimes in each area. Sometimes we instead want to join two spatial datasets but keep one row per crime and add information about the area in which it occurred. For example, we might want to attach borough names to records of individual crimes, based on the borough in which the crime happened. A **spatial join** can do this.
+
+Whereas `left_join()` matches values in columns, `st_join()` from the sf package matches features by their locations. For example, run this code in the R Console to attach borough names to the carjacking points we loaded earlier:
+
+<a id="lst-mapping-areas-optional-spatial-join"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>car_jacking_boroughs <span class="ot">&lt;-</span> cdmx_car_jacking <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">st_transform</span>(<span class="fu">st_crs</span>(cdmx_alcaldias)) <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="fu">st_join</span>(<span class="fu">select</span>(cdmx_alcaldias, nomgeo))</span></code></pre></div>
+<figcaption>Code 9.10</figcaption>
+</figure>
+
+Both objects must use the same coordinate reference system, so we use `st_transform()` before joining them. The result keeps the crime-point geometry and adds the `nomgeo` column containing borough names. By default, `st_join()` matches features that intersect: a point inside an area or on its boundary matches that area.
+
+Unmatched crimes remain in the result with a missing (`NA`) borough name. A crime that matches more than one area appears in more than one row, for example if it lies on a shared boundary. Check the row counts and missing names before using the result, and investigate unexpected matches rather than simply deleting duplicate rows.
+
+Use `hotspot_count()` when you need area counts. Use `st_join()` when you need area attributes attached to individual records, for example to compare the characteristics of crimes in different boroughs.
+
 <a id="sec-mapping-areas-interactive-choropleth-maps"></a>
 <a id="interactive-choropleth-maps"></a>
 
@@ -615,13 +640,13 @@ We can create a very basic leaflet map using the `leaflet()` function to create 
 <span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">addProviderTiles</span>(<span class="st">&quot;Stadia.AlidadeSmooth&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb2-5"><a href="#cb2-5"></a>  <span class="co"># Add district polygons</span></span>
 <span id="cb2-6"><a href="#cb2-6"></a>  <span class="fu">addPolygons</span>(<span class="at">fillOpacity =</span> <span class="fl">0.75</span>)</span></code></pre></div>
-<figcaption>Code 9.10</figcaption>
+<figcaption>Code 9.11</figcaption>
 </figure>
 
 <a id="map-uttar-pradesh-districts-interactive"></a>
 
 <figure>
-<a id="htmlwidget-404bef9d58f64a54c777"></a>
+<a id="htmlwidget-307b781bb3e2f8384c28"></a>
 Interactive content: Interactive map of Uttar Pradesh district boundaries over a street base map. All districts have the same fill, so only their shapes and locations can be compared; no differences in murder counts are represented at this stage.
 <figcaption>Map 9.5</figcaption>
 </figure>
@@ -632,7 +657,7 @@ In this map we use the 'Stadia.AlidadeSmooth' style of base map, but leaflet can
 
 However, this map isn't very useful for understanding murders in Uttar Pradesh because it doesn't show how many murders there were in each district. To do that, we need to specify that each district should be coloured according to the values in the `murder` column of the `district_murders` object. With a map created by combining ggplot2 functions with `hotspot_map()`, we would do this with a function such as `scale_fill_distiller()` (see [Section 7.6](../07_map_context/index.llms.md#sec-map-colour)), but with a leaflet map the code we need is slightly more complicated and has two separate stages.
 
-The first stage is to create a custom function that converts the values in the `murder` column of the `district_murders` object into colours. To do this, we use the `colorNumeric()` function from the leaflet package. Yes, this means that we are using a function to create a function, which we will then later use to set an argument of another function -- programming languages are very powerful, but that sometimes means they are complicated. Fortunately, you can use [Code 9.11](#lst-mapping-areas-script-09b-count-palette) as a template for creating interactive choropleth maps in future.
+The first stage is to create a custom function that converts the values in the `murder` column of the `district_murders` object into colours. To do this, we use the `colorNumeric()` function from the leaflet package. Yes, this means that we are using a function to create a function, which we will then later use to set an argument of another function -- programming languages are very powerful, but that sometimes means they are complicated. Fortunately, you can use [Code 9.12](#lst-mapping-areas-script-09b-count-palette) as a template for creating interactive choropleth maps in future.
 
 The `colorNumeric()` function (note the spelling of "color") allows us to specify the colour scheme using the `palette` argument. The `domain` argument specifies the values to which that scheme will be applied. Setting an explicit domain makes sure a particular value is always assigned the same colour. The `palette` argument accepts the same values as the palette argument to the `scale_fill_distiller()` function from ggplot2:
 
@@ -640,7 +665,7 @@ The `colorNumeric()` function (note the spelling of "color") allows us to specif
 <p>Figure: Eighteen labelled sequential colour palettes arranged left to right in four rows, each progressing from pale shades on the left to dark shades on the right. Row one: Blues, BuGn, BuPu, GnBu, Greens. Row two: Greys, Oranges, OrRd, PuBu, PuBuGn. Row three: PuRd, Purples, RdPu, Reds, YlGn. Row four: YlGnBu, YlOrBr, YlOrRd. Some strips use a single hue and others change hue as they darken. In the names, Bu means blue, Gn green, Pu purple, Or orange, Rd red and Yl yellow. For example, YlGnBu progresses from pale yellow through green to dark blue, Blues stays within blue shades, and Greys progresses from pale grey to black. These strips show colour order; the map scale settings determine which end represents higher values.</p>
 </figure>
 
-To create the custom colour palette function, we use the `<-` operator to assign the result produced by `colorNumeric()` to a name, just as we would with an object. We can give this custom function any name we like, but in [Code 9.11](#lst-mapping-areas-script-09b-count-palette) we'll call it `murder_colours`.
+To create the custom colour palette function, we use the `<-` operator to assign the result produced by `colorNumeric()` to a name, just as we would with an object. We can give this custom function any name we like, but in [Code 9.12](#lst-mapping-areas-script-09b-count-palette) we'll call it `murder_colours`.
 
 Once we have created a custom colour palette function using `colorNumeric()`, we can use that function to create the appropriate values for the `fillColor` argument of the `addPolygons()` function in our existing `leaflet` stack. Since we want the map colours to be controlled by the `murder` column in the `district_murders` object, we specify `murder` as the only argument to the `murder_colours()` palette function we have created.
 
@@ -669,13 +694,13 @@ Let's see this in action: add this code to the `chapter_09b.R` script file:
 <span id="cb2-17"><a href="#cb2-17"></a>    <span class="at">weight =</span> <span class="dv">2</span>,</span>
 <span id="cb2-18"><a href="#cb2-18"></a>    <span class="at">color =</span> <span class="st">&quot;black&quot;</span></span>
 <span id="cb2-19"><a href="#cb2-19"></a>  )</span></code></pre></div>
-<figcaption>Code 9.11</figcaption>
+<figcaption>Code 9.12</figcaption>
 </figure>
 
 <a id="map-uttar-pradesh-murder-count-colours"></a>
 
 <figure>
-<a id="htmlwidget-bc75ecc02c0f94927f15"></a>
+<a id="htmlwidget-3f4a6d79a43d90526315"></a>
 Interactive content: Interactive choropleth map of recorded murders in Uttar Pradesh districts in 2014. Darker red represents larger district totals, with substantial variation between districts. This version has no legend or district-value labels, so exact values cannot be read from the shading.
 <figcaption>Map 9.6</figcaption>
 </figure>
@@ -717,7 +742,7 @@ Change the code in your script file to add the `addLegend()` function to the end
 <span id="cb2-15"><a href="#cb2-15"></a>    <span class="at">values =</span> <span class="sc">~</span>murder,</span>
 <span id="cb2-16"><a href="#cb2-16"></a>    <span class="at">title =</span> <span class="st">&quot;number of murders&quot;</span></span>
 <span id="cb2-17"><a href="#cb2-17"></a>  )</span></code></pre></div>
-<figcaption>Code 9.12</figcaption>
+<figcaption>Code 9.13</figcaption>
 </figure>
 
 Next, we can add an inset map in the corner of the main map. This is useful for interactive maps because if we zoom in to show only a small area, we will be able to use the inset map to stay aware of the wider context.
@@ -749,7 +774,7 @@ Update the leaflet stack in `chapter_09b.R` again to add the call to `addMiniMap
 <span id="cb2-17"><a href="#cb2-17"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb2-18"><a href="#cb2-18"></a>  <span class="co"># Add inset map</span></span>
 <span id="cb2-19"><a href="#cb2-19"></a>  <span class="fu">addMiniMap</span>(<span class="at">toggleDisplay =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<figcaption>Code 9.13</figcaption>
+<figcaption>Code 9.14</figcaption>
 </figure>
 
 Finally, we can add labels to the districts, which will appear when we move the pointer over a district or select it on some touchscreens. We do this by adding the `label` argument to the existing `addPolygons()` function. The label will contain both the district name and murder count, so readers are not expected to estimate values from colour alone.
@@ -780,13 +805,13 @@ Change the existing call to `addPolygons()` to add the district labels:
 <span id="cb2-18"><a href="#cb2-18"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb2-19"><a href="#cb2-19"></a>  <span class="co"># Add inset map</span></span>
 <span id="cb2-20"><a href="#cb2-20"></a>  <span class="fu">addMiniMap</span>(<span class="at">toggleDisplay =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<figcaption>Code 9.14</figcaption>
+<figcaption>Code 9.15</figcaption>
 </figure>
 
 <a id="map-uttar-pradesh-murder-count-popups"></a>
 
 <figure>
-<a id="htmlwidget-fe81c93723816e21363a"></a>
+<a id="htmlwidget-402c8c896ac2064eb461"></a>
 Interactive content: Interactive choropleth map of recorded murders in Uttar Pradesh districts in 2014. Darker red represents larger district totals. Higher counts are concentrated in the west, particularly around Meerut, Aligarh and Agra; much of the east is paler, although counts vary between neighbouring districts. A legend explains the count scale, an inset locates the view within the wider area, and interactive district labels give names and counts. The example demonstrates adding colour, a legend, an inset and labels to an interactive map.
 <figcaption>Map 9.7</figcaption>
 </figure>
@@ -891,7 +916,7 @@ To calculate an incidence rate, we once again need to join two datasets together
 <span id="cb2-7"><a href="#cb2-7"></a><span class="co"># Load district population counts</span></span>
 <span id="cb2-8"><a href="#cb2-8"></a>district_pop <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw&quot;</span>, <span class="st">&quot;uttar_pradesh_population.csv&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb2-9"><a href="#cb2-9"></a>  <span class="fu">read_csv</span>(<span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<figcaption>Code 9.15</figcaption>
+<figcaption>Code 9.16</figcaption>
 </figure>
 
 If we look at the column names in this new dataset, we will see that it includes a column called `district` that contains the district names. Just as we did before, we can use the `left_join()` function to add the columns from the `district_pop` dataset to the combined dataset we have already produced. To do that, let's create a pipeline that combines all the datasets one after the other:
@@ -906,7 +931,7 @@ If we look at the column names in this new dataset, we will see that it includes
 <span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">left_join</span>(murders, <span class="at">by =</span> <span class="fu">join_by</span>(district_name <span class="sc">==</span> district)) <span class="sc">|&gt;</span></span>
 <span id="cb2-5"><a href="#cb2-5"></a>  <span class="co"># Join population counts</span></span>
 <span id="cb2-6"><a href="#cb2-6"></a>  <span class="fu">left_join</span>(district_pop, <span class="at">by =</span> <span class="fu">join_by</span>(district_name <span class="sc">==</span> district))</span></code></pre></div>
-<figcaption>Code 9.16</figcaption>
+<figcaption>Code 9.17</figcaption>
 </figure>
 
 Add this code to your script file in place of [Code 9.9](#lst-mapping-areas-script-09b-initial-join), which joined together the `districts` and `murders` datasets. Now look at the new `district_murders` object you've just created:
@@ -916,7 +941,7 @@ Add this code to your script file in place of [Code 9.9](#lst-mapping-areas-scr
 <figure>
 <pre><code>R Console</code></pre>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">head</span>(district_murders)</span></code></pre></div>
-<figcaption>Code 9.17</figcaption>
+<figcaption>Code 9.18</figcaption>
 </figure>
 
     Simple feature collection with 6 features and 9 fields
@@ -955,7 +980,7 @@ Now that we have a single dataset containing all the variables we need, we can c
 <span id="cb2-9"><a href="#cb2-9"></a>  <span class="fu">left_join</span>(district_pop, <span class="at">by =</span> <span class="fu">join_by</span>(district_name <span class="sc">==</span> district)) <span class="sc">|&gt;</span></span>
 <span id="cb2-10"><a href="#cb2-10"></a>  <span class="co"># Calculate murder rate</span></span>
 <span id="cb2-11"><a href="#cb2-11"></a>  <span class="fu">mutate</span>(<span class="at">murder_rate =</span> murder <span class="sc">/</span> population <span class="sc">*</span> <span class="dv">100000</span>)</span></code></pre></div>
-<figcaption>Code 9.18</figcaption>
+<figcaption>Code 9.19</figcaption>
 </figure>
 
 <a id="sec-mapping-areas-mapping-crime-rates"></a>
@@ -963,7 +988,7 @@ Now that we have a single dataset containing all the variables we need, we can c
 
 ### 9.5.4 Mapping crime rates
 
-To create a choropleth map of the murder rate using `leaflet`, we simply use the code from our interactive map in [Code 9.14](#lst-mapping-areas-script-09b-count-map) but specify that the `murder_rate` column be used to determine the colour of each district polygon rather than the `murder` column. We will also change the base map to a different style.
+To create a choropleth map of the murder rate using `leaflet`, we simply use the code from our interactive map in [Code 9.15](#lst-mapping-areas-script-09b-count-map) but specify that the `murder_rate` column be used to determine the colour of each district polygon rather than the `murder` column. We will also change the base map to a different style.
 
 ImportantBe clear about how you calculated a crime rate
 
@@ -977,7 +1002,7 @@ Add this code to `chapter_09b.R`. Then read through the notes below it to unders
 
 <figure>
 <pre><code>chapter_09b.R</code></pre>
-<a id="annotated-cell-42"></a>
+<a id="annotated-cell-44"></a>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r code-annotation-code number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Create a colour palette for murder rates</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a>murder_rate_colours <span class="ot">&lt;-</span> <span class="fu">colorNumeric</span>(</span>
 <span id="cb2-3"><a href="#cb2-3"></a>  <span class="at">palette =</span> <span class="st">&quot;Reds&quot;</span>,</span>
@@ -1012,7 +1037,7 @@ Add this code to `chapter_09b.R`. Then read through the notes below it to unders
 <span id="cb2-32"><a href="#cb2-32"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb2-33"><a href="#cb2-33"></a>  <span class="co"># Add inset map</span></span>
 <span id="cb2-34"><a href="#cb2-34"></a>  <span class="fu">addMiniMap</span>(<span class="at">toggleDisplay =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<figcaption>Code 9.19</figcaption>
+<figcaption>Code 9.20</figcaption>
 </figure>
 
 <a id="map-uttar-pradesh-murder-rates"></a>
@@ -1221,7 +1246,7 @@ Your complete `chapter_09b.R` script should now look like this:
 <span id="cb2-109"><a href="#cb2-109"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb2-110"><a href="#cb2-110"></a>  <span class="co"># Add inset map</span></span>
 <span id="cb2-111"><a href="#cb2-111"></a>  <span class="fu">addMiniMap</span>(<span class="at">toggleDisplay =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<figcaption>Code 9.20</figcaption>
+<figcaption>Code 9.21</figcaption>
 </figure>
 
 Save `chapter_09b.R` by pressing .

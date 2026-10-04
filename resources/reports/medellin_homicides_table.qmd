@@ -6,6 +6,8 @@ date-format: "D MMMM YYYY"
 format:
   html:
     embed-resources: true
+execute:
+  echo: false
 ---
 
 ```{r}
@@ -23,7 +25,7 @@ format:
 # used in any error messages produced when you render the document, making it
 # easier to find the source of errors.
 
-pacman::p_load(here, httr2, sf, tidyverse)
+pacman::p_load(gt, here, httr2, janitor, sf, sfhotspot, tidyverse)
 ```
 
 ```{r}
@@ -48,7 +50,7 @@ request(
 # Load homicide data from the local copy
 homicides <- read_csv2(here("data", "raw", "medellin_homicides.csv")) |>
   janitor::clean_names() |>
-  remove_missing(vars = c("longitud", "latitud"), na.rm = TRUE) |>
+  drop_na(longitud, latitud) |>
   st_as_sf(coords = c("longitud", "latitud"), crs = "EPSG:4326") |>
   st_transform("EPSG:3115")
 
@@ -66,12 +68,24 @@ medellin_comunas <- read_sf(
 #| label: wrangle-data
 #| include: false
 
-# Count number of homicides in each neighbourhood
+# Count homicides in each neighbourhood separately for each year
 homicide_count <- homicides |>
   mutate(year = lubridate::year(fecha_hecho)) |>
-  st_join(medellin_comunas) |>
+  group_by(year) |>
+  # `.x` contains the homicide points for one year
+  group_modify(~ hotspot_count(.x, grid = medellin_comunas)) |>
+  ungroup() |>
+  # `group_modify()` returns a tibble; restore its spatial class before
+  # removing geometry for the table
+  st_as_sf() |>
   st_drop_geometry() |>
-  count(nombre, year)
+  select(nombre, year, n) |>
+  # Include years with no homicides anywhere in the city as well
+  complete(
+    nombre = medellin_comunas$nombre,
+    year = 2010:2019,
+    fill = list(n = 0)
+  )
 
 # Convert that data into a format that is suitable for displaying in a table
 homicide_table <- homicide_count |>
@@ -100,8 +114,7 @@ homicide_table <- homicide_count |>
 homicide_table |>
   # Remove columns we don't want to include in the table
   select(-mean_count) |>
-  # Remove count of offences with co-ordinates outside the city boundary
-  filter(!is.na(nombre)) |>
-  # Format the table for nicer display
-  gt::gt()
+  # Use neighbourhood names as row labels and format whole-number counts
+  gt(rowname_col = "nombre") |>
+  fmt_number(columns = where(is.numeric), decimals = 0)
 ```

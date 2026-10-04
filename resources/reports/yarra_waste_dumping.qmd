@@ -1,19 +1,20 @@
 ---
 title: "Concentrations of illegal waste dumping in Yarra, Victoria, 2018"
 author: "Matt Ashby"
-date: "March 2025"
+date: "today"
+date-format: "DD MMMM YYYY"
 format:
   pdf:
     fig-cap-location: top
 execute:
   echo: false
+  freeze: auto
 ---
 
 
-::: {.callout-important}
-#### This is an example report used for teaching purposes
+::: {.callout-important title="This is an example report used for teaching purposes"}
 
-This is an example report used to help students understand how different types of report can be created using the Quarto markup language and the R programming language. **This contents of this report should not be relied upon for operational use.**
+This is an example report used to help students understand how different types of report can be created using the Quarto markup language and the R programming language. **The contents of this report should not be relied upon for operational use.**
 :::
 
 
@@ -22,11 +23,25 @@ This is an example report used to help students understand how different types o
 #| include: false
 
 # Load packages ----
-pacman::p_load(ggspatial, patchwork, scales, sf, tidyverse)
-
+pacman::p_load(
+  ggrepel,
+  ggspatial,
+  here,
+  httr2,
+  janitor,
+  paletteer,
+  patchwork,
+  scales,
+  sf,
+  sfhotspot,
+  tidyverse
+)
 
 
 # Load data ----
+
+# Create the directory for original downloads
+dir.create(here("data", "raw"), recursive = TRUE, showWarnings = FALSE)
 
 
 ## Incidents of illegal waste dumping ----
@@ -35,19 +50,24 @@ pacman::p_load(ggspatial, patchwork, scales, sf, tidyverse)
 # of the suburb in which it occurred. Therefore to map the data we will need to
 # aggregate the incidents to suburbs and count the number in each suburb.
 # Source: https://data.gov.au/data/dataset/yarra-dumped-waste
-waste <- read_csv("https://data.gov.au/data/dataset/a03ae98f-da63-4669-9abf-fef9947b666a/resource/467fcec1-fd07-407a-ae19-790262d2d6c7/download/yarra-dumped-waste.csv") |> 
+request(
+  "https://data.gov.au/data/dataset/a03ae98f-da63-4669-9abf-fef9947b666a/resource/467fcec1-fd07-407a-ae19-790262d2d6c7/download/yarra-dumped-waste.csv"
+) |>
+  req_perform(path = here("data", "raw", "yarra_dumped_waste.csv"))
+
+waste <- read_csv(here("data", "raw", "yarra_dumped_waste.csv")) |>
   # Keep only those rows representing incidents in 2018. Note that the `date`
   # column stores dates as a numeric value in YYYYMMDD format.
-  filter(between(date, 20180101, 20181231), !is.na(suburb)) |> 
+  filter(between(date, 20180101, 20181231), !is.na(suburb)) |>
   mutate(
     # Harmonise spelling of suburb name to facilitate joining with the boundaries
     suburb = str_to_title(suburb),
-    # Where `waste_type` contains multiple values separated by ';', replace 
+    # Where `waste_type` contains multiple values separated by ';', replace
     # those values with 'Multiple waste types'
     # `volume_m3` is stored as text, so convert this to a number
     volume_m3 = parse_number(volume_m3),
     waste_type = case_when(
-      str_detect(waste_type, "\\;") ~ "Multiple waste types", 
+      str_detect(waste_type, "\\;") ~ "Multiple waste types",
       TRUE ~ waste_type
     )
   )
@@ -56,49 +76,61 @@ waste <- read_csv("https://data.gov.au/data/dataset/a03ae98f-da63-4669-9abf-fef9
 ## Boundaries of suburbs in the state of Victoria ----
 
 # Source: https://data.gov.au/dataset/ds-dga-af33dd8c-0534-4e18-9245-fc64440f742e/details?q=suburb%20boundary
-suburbs <- read_sf("https://data.gov.au/geoserver/vic-suburb-locality-boundaries-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_af33dd8c_0534_4e18_9245_fc64440f742e&outputFormat=json") |> 
-  mutate(vic_loca_2 = str_to_title(vic_loca_2)) |> 
-  select(vic_loca_2, geometry)
+request(
+  "https://data.gov.au/geoserver/vic-suburb-locality-boundaries-geoscape-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_af33dd8c_0534_4e18_9245_fc64440f742e&outputFormat=json"
+) |>
+  req_perform(path = here("data", "raw", "victoria_suburb_boundaries.geojson"))
+
+suburbs <- read_sf(here("data", "raw", "victoria_suburb_boundaries.geojson")) |>
+  janitor::clean_names() |>
+  # The Geoscape dataset stores suburb names in LOC_NAME
+  mutate(suburb = str_to_title(loc_name)) |>
+  select(suburb) |>
+  # Keep only the suburbs represented in the Yarra incident data
+  semi_join(distinct(waste, suburb), by = join_by(suburb)) |>
+  st_transform("EPSG:7899") |>
+  # Repair invalid boundaries before creating the detailed-map masks
+  st_make_valid()
 
 
 # Wrangle data ----
 
-waste_counts <- waste |> 
+waste_counts <- waste |>
   # Count the number of incidents in each suburb and the total volume of waste
   # dumped
   summarise(
-    incidents = n(), 
-    volume = sum(volume_m3, na.rm = TRUE), 
+    incidents = n(),
+    volume = sum(volume_m3, na.rm = TRUE),
     .by = suburb
-  ) |> 
+  ) |>
   # Join boundaries
-  left_join(suburbs, by = join_by(suburb == vic_loca_2)) |> 
+  left_join(suburbs, by = join_by(suburb)) |>
   # Convert to an SF object (no arguments needed because R can extract the
   # necessary information from the existing `geometry` column in the data)
-  st_as_sf() |> 
+  st_as_sf() |>
   # Convert to local co-ordinate reference system
   st_transform("EPSG:7899")
 
-waste_counts_type <- waste |> 
-  # Convert all but the most-common four types of waste into 'other'
-  mutate(waste_type = fct_lump_n(waste_type, n = 5)) |> 
-  # Count the number of incidents of each type in each suburb and the total 
+waste_counts_type <- waste |>
+  # Convert all but the most-common five types of waste into 'other'
+  mutate(waste_type = fct_lump_n(waste_type, n = 5)) |>
+  # Count the number of incidents of each type in each suburb and the total
   # volume of waste dumped
   summarise(
-    incidents = n(), 
-    volume = sum(volume_m3, na.rm = TRUE), 
+    incidents = n(),
+    volume = sum(volume_m3, na.rm = TRUE),
     .by = c(suburb, waste_type)
-  ) |> 
+  ) |>
   # Some suburbs might have zero counts for some types of waste. These will be
   # missing from the summarised data, so we add them back in with `complete()`.
-  complete(suburb, waste_type, fill = list(incidents = 0, volume = 0)) |> 
+  complete(suburb, waste_type, fill = list(incidents = 0, volume = 0)) |>
   # Join boundaries
-  left_join(suburbs, by = join_by(suburb == vic_loca_2)) |> 
+  left_join(suburbs, by = join_by(suburb)) |>
   # Add rank of each suburb in terms of volume of waste
-  mutate(rank = min_rank(desc(volume)), .by = waste_type) |> 
+  mutate(rank = min_rank(desc(volume)), .by = waste_type) |>
   # Convert to an SF object (no arguments needed because R can extract the
   # necessary information from the existing `geometry` column in the data)
-  st_as_sf() |> 
+  st_as_sf() |>
   # Convert to local co-ordinate reference system
   st_transform("EPSG:7899")
 ```
@@ -109,11 +141,11 @@ This report identifies the parts of the City of Yarra that had the highest volum
 
 ```{r}
 #| label: median-volume
-# We will save this to an object because we need the result twice: once to 
+# We will save this to an object because we need the result twice: once to
 # report the value itself and once to work out whether 'metres' should be
 # singular or plural
 
-median_volume <- median(pull(waste, "volume_m3"))
+median_volume <- median(pull(waste, "volume_m3"), na.rm = TRUE)
 
 yarra_population <- 91543
 ```
@@ -121,25 +153,25 @@ yarra_population <- 91543
 
 In 2018 there were `r comma(nrow(waste))` incidents of illegal dumping of waste in Yarra, with `r comma(sum(pull(waste_counts, "volume")))` cubic metres of waste being reported as dumped. The population of Yarra is approximately `r comma(yarra_population, accuracy = 100)`, indicating that in 2018 there was one reported dumping of illegal waste for every `r number(yarra_population / nrow(waste), accuracy = 0.1)` residents.
 
-The typical incident involved only a small quantity of waste, with half of reported incidents involving `r median_volume` cubic `r if_else(median_volume == 1, "metre", "metres")` of waste or less and no incidents involving more than `r max(pull(waste, "volume_m3"))` cubic metres of waste.
+The typical incident involved only a small quantity of waste, with half of reported incidents involving `r median_volume` cubic `r if_else(median_volume == 1, "metre", "metres")` of waste or less and no incidents involving more than `r max(pull(waste, "volume_m3"), na.rm = TRUE)` cubic metres of waste.
 
 
 ```{r}
 #| label: top-suburbs
-top_suburbs <- waste_counts |> 
+top_suburbs <- waste_counts |>
   mutate(
     # Calculate the proportion of waste dumped in each suburb
     prop = volume / sum(volume),
     # Construct a suitable label for each suburb
     label = str_glue("{suburb} ({percent(prop, accuracy = 1)})")
-  ) |> 
+  ) |>
   # Keep only the three suburbs with the highest volume of dumped waste
-  slice_max(order_by = volume, n = 3) |> 
+  slice_max(order_by = volume, n = 3) |>
   mutate(
     # Add some extra context to the first label
     label_long = if_else(
-      row_number() == 1, 
-      str_replace(label, "\\)", " of all the waste dumped in Yarra)"), 
+      row_number() == 1,
+      str_replace(label, "\\)", " of all the waste dumped in Yarra)"),
       label
     ),
     row = row_number(),
@@ -161,27 +193,35 @@ top_suburbs <- waste_counts |>
 #| warning: false
 #| message: false
 
-# This code produces a warning because `geom_sf_label()` produces slightly 
-# misaligned labels when using lat/lon data, but this misalignment is nowhere
-# near big enough to worry about.
-
-ggplot(waste_counts) +
-  # Add base map
-  annotation_map_tile(type = "cartolight", zoomin = 1, progress = "none") +
-  # Add volume
-  geom_sf(aes(fill = volume), alpha = 0.7, colour = "grey25") +
+hotspot_map(
+  waste_counts,
+  aes(fill = volume),
+  alpha = 0.7,
+  colour = "grey25",
+  basemap_type = "cartolight",
+  caption = "Data from City of Yarra, Geoscape Australia and OpenStreetMap"
+) +
   # Add suburb names
-  geom_sf_label(
-    aes(label = str_to_upper(str_wrap(suburb, width = 10))), 
-    alpha = 0.5,
-    colour = "grey25", 
-    label.size = NA,
+  # Move labels apart so the small central suburbs remain readable
+  geom_label_repel(
+    aes(
+      label = str_to_upper(str_wrap(suburb, width = 10)),
+      geometry = geometry
+    ),
+    data = waste_counts,
+    stat = "sf_coordinates",
+    seed = 1,
+    max.overlaps = Inf,
+    fill = "white",
+    alpha = 0.8,
+    colour = "grey25",
+    linewidth = 0,
     lineheight = 1,
     size = 2.25
   ) +
   # Control scale showing number of incidents
   paletteer::scale_fill_paletteer_c(
-    "ggthemes::Green", 
+    "ggthemes::Green",
     labels = scales::label_comma()
   ) +
   # Add labels
@@ -203,7 +243,7 @@ ggplot(waste_counts) +
 ```
 
 
-It is not possible with the available data to identify where within each suburb dumping incidents were most concentrated. Further analysis would be necessary to identify the streets or open spaces with most incidents, but @fig-nbhd-maps shows the boundaries of the three suburbs that had the highest volume of dumped waste. 
+It is not possible with the available data to identify where within each suburb dumping incidents were most concentrated. Further analysis would be necessary to identify the streets or open spaces with most incidents, but @fig-nbhd-maps shows the boundaries of the three suburbs that had the highest volume of dumped waste.
 
 
 ```{r}
@@ -216,19 +256,31 @@ It is not possible with the available data to identify where within each suburb 
 #| message: false
 
 # Make a map showing where the top suburbs are
-locator_map <- ggplot(top_suburbs) +
-  # Add base map
-  annotation_map_tile(type = "cartolight", zoomin = 0) +
-  # Add all suburb boundaries
-  geom_sf(data = waste_counts, colour = "grey25", fill = NA) +
+locator_map <- hotspot_map(
+  waste_counts,
+  colour = "grey25",
+  fill = NA,
+  basemap_type = "cartolight",
+  caption = NULL
+) +
+  # Use the shared patchwork caption instead of repeating it in each panel
+  labs(caption = NULL) +
   # Add top suburb boundaries
-  geom_sf(alpha = 0.2, colour = "red3", fill = "red3", linewidth = 1) +
+  geom_sf(
+    data = top_suburbs,
+    alpha = 0.2,
+    colour = "red3",
+    fill = "red3",
+    linewidth = 1
+  ) +
   # Add top suburb numbers
   geom_sf_label(
-    aes(label = ordinal(row)), 
+    aes(label = ordinal(row)),
+    data = top_suburbs,
+    fill = "white",
     alpha = 0.75,
-    colour = "grey25", 
-    label.size = NA,
+    colour = "grey25",
+    linewidth = 0,
     lineheight = 1,
     size = 2.25
   ) +
@@ -243,22 +295,26 @@ locator_map <- ggplot(top_suburbs) +
 # Create a function that takes a one-row SF object containing the outline of a
 # suburb and then makes a map showing that boundary
 top_suburb_map <- function(suburb_data) {
-  
   # Create a mask around each suburb that will cover all the area of the map
   # *except* the suburb itself
-  cutout <- suburb_data |> 
+  cutout <- suburb_data |>
     # Put a 10km buffer around each suburb
-    st_buffer(10000) |> 
+    st_buffer(10000) |>
     # Cut out the area of the suburb from the buffer area
     st_difference(suburb_data)
-  
-  ggplot(suburb_data) +
-    # Add base map
-    annotation_map_tile(type = "osm", zoomin = 0) +
+
+  hotspot_map(
+    suburb_data,
+    colour = "red3",
+    fill = NA,
+    basemap_type = "osm",
+    caption = NULL
+  ) +
+    labs(caption = NULL) +
     # Add mask
     annotation_spatial(data = cutout, alpha = 0.6, fill = "white") +
-    # Add top suburbs boundary
-    geom_sf(colour = "red3", fill = NA, linewidth = 1) +
+    # Add top suburb boundary above the mask
+    geom_sf(data = suburb_data, colour = "red3", fill = NA, linewidth = 1) +
     labs(subtitle = pluck(suburb_data, "label_num", 1)) +
     # Make map cover a square area
     fixed_plot_aspect(ratio = 1) +
@@ -267,12 +323,11 @@ top_suburb_map <- function(suburb_data) {
     theme(
       panel.border = element_rect(colour = "white", fill = NA, linewidth = 1)
     )
-  
 }
 
 # Create map for each suburb and combine it with the locator map
 wrap_plots(
-  locator_map, 
+  locator_map,
   top_suburb_map(slice(top_suburbs, 1)),
   top_suburb_map(slice(top_suburbs, 2)),
   top_suburb_map(slice(top_suburbs, 3)),
@@ -289,14 +344,14 @@ wrap_plots(
 #| label: waste-type-counts
 #| include: false
 
-waste_type_counts <- waste_counts_type |> 
+waste_type_counts <- waste_counts_type |>
   # Convert from SF to tibble to make `count()` faster
-  st_drop_geometry() |> 
+  st_drop_geometry() |>
   # Calculate total volume of waste of each type
-  count(waste_type, wt = volume, sort = TRUE) |> 
+  count(waste_type, wt = volume, sort = TRUE) |>
   mutate(
     # Calculate proportion of waste that was of each type
-    prop = n / sum(n), 
+    prop = n / sum(n),
     # Construct text showing each type and proportion
     label = str_glue(
       "{str_to_lower(waste_type)} ({percent(prop, accuracy = 1)})"
@@ -305,52 +360,61 @@ waste_type_counts <- waste_counts_type |>
 ```
 
 
+Each panel in @fig-type-maps has its own colour scale, so compare the numeric legends rather than shades between panels.
+
 Dumped waste was categorised into several types: `r knitr::combine_words(pull(waste_type_counts, "label"), oxford_comma = FALSE)`. There was some variation in where different types of waste were dumped. @fig-type-maps shows the volume of waste of each main type that were reported as being dumped in each suburb. For example, while the suburb of `r pluck(slice_max(filter(waste_counts_type, waste_type == "General waste"), order_by = volume, n = 1), "suburb")` had the highest volume of dumping of general waste, `r pluck(slice_max(filter(waste_counts_type, waste_type == "Multiple waste types"), order_by = volume, n = 1), "suburb")` had the highest volume of dumping that involved multiple waste types.
 
 
 ```{r}
 #| label: fig-type-maps
 #| fig-alt: "Faceted choropleth maps compare volumes of different waste types dumped in Yarra suburbs in 2018. Each panel names the waste type and its share of total volume. Green shading represents cubic metres, and ranked labels identify the top three suburbs for that type. Each panel has its own scale, so shades should not be compared directly across panels."
-#| fig-asp: 1.4
+#| fig-asp: 0.8
 #| fig-cap: "Volume of illegal waste of different types dumped in Yarra suburbs, 2018"
 #| out-width: "100%"
 
-waste_counts_type |> 
-  mutate(total_volume = sum(volume), .by = waste_type) |> 
+waste_counts_type |>
+  mutate(total_volume = sum(volume), .by = waste_type) |>
   mutate(
     prop = total_volume / sum(volume),
     waste_type_label = fct_reorder(
-      str_glue("{waste_type} ({percent(prop, accuracy = 1)})"), 
-      total_volume, 
+      str_glue("{waste_type} ({percent(prop, accuracy = 1)})"),
+      total_volume,
       .desc = TRUE
     )
-  ) |> 
-  group_split(waste_type_label) |> 
+  ) |>
+  group_split(waste_type_label) |>
   map(function(type_data) {
-    
-    ggplot(type_data) +
-      # Add base map
-      annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
-      # Add volume
-      geom_sf(aes(fill = volume), alpha = 0.7, colour = "grey25") +
+    hotspot_map(
+      type_data,
+      aes(fill = volume),
+      alpha = 0.7,
+      colour = "grey25",
+      basemap_type = "cartolight",
+      caption = NULL
+    ) +
+      labs(caption = NULL) +
       # Add top suburb numbers
       geom_sf_label(
         aes(label = ordinal(rank)),
         data = slice_max(type_data, order_by = volume, n = 3),
+        fill = "white",
         alpha = 0.75,
-        colour = "grey25", 
-        label.size = NA,
+        colour = "grey25",
+        linewidth = 0,
         lineheight = 1,
         size = 2.25
       ) +
       # Control scale showing number of incidents
       paletteer::scale_fill_paletteer_c(
-        "ggthemes::Green", 
+        "ggthemes::Green",
         labels = scales::label_comma()
       ) +
       # Add labels
       labs(
-        subtitle = pluck(type_data, "waste_type_label"),
+        subtitle = str_wrap(
+          pluck(type_data, "waste_type_label", 1),
+          width = 22
+        ),
         fill = NULL
       ) +
       # Make map cover a square area
@@ -359,7 +423,10 @@ waste_counts_type |>
       theme_void() +
       theme(
         # Give the legend a semi-transparent background
-        legend.background = element_rect(colour = NA, fill = rgb(1, 1, 1, 0.75)),
+        legend.background = element_rect(
+          colour = NA,
+          fill = rgb(1, 1, 1, 0.75)
+        ),
         # Make legend key smaller
         legend.key.height = unit(0.75, "lines"),
         legend.key.width = unit(0.75, "lines"),
@@ -373,9 +440,8 @@ waste_counts_type |>
         # Add small white border to seprate maps
         panel.border = element_rect(colour = "white", fill = NA, linewidth = 1)
       )
-    
-  }) |> 
-  wrap_plots(ncol = 2) +
+  }) |>
+  wrap_plots(ncol = 3) +
   # Add common caption at the bottom of all the maps
   plot_annotation(
     caption = "Data from City of Yarra, Geoscape Australia and OpenStreetMap",

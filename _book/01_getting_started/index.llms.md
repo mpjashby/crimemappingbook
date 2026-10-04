@@ -1,4 +1,4 @@
-Source: https://books.lesscrime.info/learncrimemapping/01_getting_started/index.html
+Source: https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html
 
 <a id="quarto-document-content"></a>
 <a id="title-block-header"></a>

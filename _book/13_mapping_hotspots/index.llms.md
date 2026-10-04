@@ -1,4 +1,4 @@
-Source: https://books.lesscrime.info/learncrimemapping/13_mapping_hotspots/index.html
+Source: https://books.lesscrime.info/learncrimemapping/2026/13_mapping_hotspots/index.html
 
 <a id="quarto-document-content"></a>
 <a id="title-block-header"></a>

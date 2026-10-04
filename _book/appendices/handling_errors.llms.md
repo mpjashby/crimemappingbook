@@ -1,4 +1,4 @@
-Source: https://books.lesscrime.info/learncrimemapping/appendices/handling_errors.html
+Source: https://books.lesscrime.info/learncrimemapping/2026/appendices/handling_errors.html
 
 <a id="quarto-document-content"></a>
 <a id="title-block-header"></a>

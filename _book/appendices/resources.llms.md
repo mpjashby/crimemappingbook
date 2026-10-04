@@ -1,4 +1,4 @@
-Source: https://books.lesscrime.info/learncrimemapping/appendices/resources.html
+Source: https://books.lesscrime.info/learncrimemapping/2026/appendices/resources.html
 
 <a id="quarto-document-content"></a>
 <a id="title-block-header"></a>

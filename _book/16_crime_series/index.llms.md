@@ -1,4 +1,4 @@
-Source: https://books.lesscrime.info/learncrimemapping/16_crime_series/index.html
+Source: https://books.lesscrime.info/learncrimemapping/2026/16_crime_series/index.html
 
 <a id="quarto-document-content"></a>
 <a id="title-block-header"></a>

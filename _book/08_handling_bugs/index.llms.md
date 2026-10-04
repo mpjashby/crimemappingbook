@@ -1,4 +1,4 @@
-Source: https://books.lesscrime.info/learncrimemapping/08_handling_bugs/index.html
+Source: https://books.lesscrime.info/learncrimemapping/2026/08_handling_bugs/index.html
 
 <a id="quarto-document-content"></a>
 <a id="title-block-header"></a>
