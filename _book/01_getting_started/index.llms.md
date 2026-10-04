@@ -376,9 +376,30 @@ You only need to install the Air tool once, then it will format your R code auto
 
 Now press on your keyboard to run the code.
 
+<a id="registering-to-use-base-maps"></a>
+
+## 1.7 Registering to use base maps
+
+Throughout this book we will make maps that include a layer called a *base map*, which shows the streets, buildings and other features of the area we are mapping. We will learn more about base maps in [Section 7.7](../07_map_context/index.llms.md#sec-base-maps). To include base maps in our own maps, we need to use an external service as a source of base-map data. There are several base-map providers available, and in this book we will use a service called CARTO. To do that we need to first register for an account (called an *API key*) with that service.
+
+To register for a free CARTO API key:
+
+1.  Go to the [CARTO website base-map registration page](https://carto.com/basemaps/apikey/).
+2.  Complete the form marked *Request a key*. You should answer the question 'Is this a commercial project?' with 'No'. You should answer the question 'What are you building?' with 'Learning how to make crime maps'. Do not enable any of the options in the 'Restrictions' section. Accept the terms and conditions then submit the form.
+3.  You will receive an email from CARTO containing a long string of letters and numbers. This is your API key.
+4.  R needs to know your API key to access the CARTO service. To do that, you need to store the API key somewhere where R can access it. The easiest way to do that is to put the API key in a special file called `.Renviron` that R reads whenever you start a new R session. To open the `.Renviron` file, run this code in the R Console: `usethis::edit_r_environ()`
+5.  A text editor will open showing the `.Renviron` file. If there are already any lines in the file, do not delete or change them. Instead, add a new line to the end of the file and type the text `CARTO_API_KEY=` followed by your API key in double quotes. For example, if your API key was `1234567890abcdef`, the line you add to the `.Renviron` file would look like this:
+
+``` {.sourceCode .numberSource .text .number-lines .code-with-copy}
+CARTO_API_KEY="1234567890abcdef"
+```
+
+6.  Make sure there is no blank space at the start or end of the new line you have added to the `.Renviron` file. Save the file by pressing on your keyboard, then close the text editor.
+7.  Changes to the `.Renviron` file will not take effect until you start a new R session. To do that, click the **Restart R** (**⟳**) button in the **Console** panel in Positron.
+
 <a id="in-summary"></a>
 
-## 1.7 In summary
+## 1.8 In summary
 
 We have explored why crime mapping is useful for understanding crime and why crime is typically concentrated in space, and practised finding our way around Positron and keeping our files organised. In [Chapter 2](../02_your_first_crime_map/index.llms.md) we will produce our first crime map in R.
 
