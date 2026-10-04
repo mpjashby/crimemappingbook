@@ -4,10 +4,10 @@ This repo contains the text of the online book [Learn Crime Mapping with R](http
 
 ## Chapter scripts
 
-After editing chapter code, check that the scripts match the instructions students follow:
+Full book renders automatically check that scripts match the instructions students follow and that labels are consistent. To check chapter scripts separately while editing:
 
 ```sh
-python3 checks/check_chapter_scripts.py
+Rscript checks/check_chapter_scripts.R
 ```
 
 The check compares code and comments, including scripts copied from earlier chapters and partial-script checkpoints. It does not execute R or contact data services. See [checks/README.md](checks/README.md) for how to maintain the mapping when adding or replacing code chunks.
@@ -27,3 +27,7 @@ Edit these files to update the instructions everywhere they appear. Include them
 ```
 
 Leave a blank line before and after an include shortcode. Keep chapter-specific filenames, questions and prerequisites in the chapter itself. Shared files should have no YAML metadata or chapter-specific identifiers; use project-root paths for any links or images because relative paths resolve from the chapter that includes the file.
+
+## Publishing annual editions
+
+See [publishing/README.md](publishing/README.md) for building the combined website, preserving historical editions and activating yearless redirects. Upload the assembled `_site/` directory rather than `_book/` to the book website root.

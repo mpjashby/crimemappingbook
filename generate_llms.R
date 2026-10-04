@@ -593,7 +593,7 @@ generate_llms <- function(args = commandArgs(trailingOnly = TRUE)) {
   # Show usage information without rendering, loading dependencies or writing output.
   if ("--help" %in% args) {
     # Print the supported command-line invocation and flags.
-    cat("Usage: Rscript generate_llms.R [--skip-render] [--strict]\n",
+    cat("Usage: Rscript generate_llms.R [--skip-render] [--strict] [--output-dir=DIR]\n",
         # Explain the required working directory and dependencies.
         "Run from the book root. Requires yaml, xml2 and Quarto.\n",
         # State that normal invocation renders the whole book before conversion.
@@ -601,12 +601,15 @@ generate_llms <- function(args = commandArgs(trailingOnly = TRUE)) {
         # Make the freshness limitation of using existing HTML explicit.
         "--skip-render assumes existing HTML is current; it does not verify freshness.\n",
         # Explain strict mode's missing-description failure policy.
-        "--strict fails if figures or interactive media lack text alternatives.\n", sep = "")
+        "--strict fails if figures or interactive media lack text alternatives.\n",
+        "--output-dir=DIR selects a project-relative render directory.\n", sep = "")
     # Stop processing after printing help, with no generation side effects.
     return(invisible(NULL))
   }
   # Identify any command-line arguments outside the supported flag set.
-  unknown <- setdiff(args, c("--skip-render", "--strict"))
+  output_args <- args[startsWith(args, "--output-dir=")]
+  if (length(output_args) > 1L) fail("Specify --output-dir only once.")
+  unknown <- setdiff(args, c("--skip-render", "--strict", output_args))
   # Reject misspelled flags instead of silently choosing unexpected behaviour.
   if (length(unknown)) fail("Unknown arguments: ", paste(unknown, collapse = " "))
   # Check each required R package without attaching it or installing anything.
@@ -627,6 +630,7 @@ generate_llms <- function(args = commandArgs(trailingOnly = TRUE)) {
   pages <- read_manifest(config)
   # Honour an explicitly configured Quarto output directory.
   output_dir <- config$project[["output-dir"]]
+  if (length(output_args)) output_dir <- sub("^--output-dir=", "", output_args)
   # Use Quarto's book default when the configuration does not override it.
   if (is.null(output_dir)) output_dir <- "_book"
   # Require a usable relative output directory for this project.

@@ -1,12 +1,12 @@
 # Checking chapter scripts
 
-Run from the repository root:
+The chapter-script and book-label checks run automatically before a full `quarto render`. Failures stop the render; partial and preview renders skip these book-wide checks. To run a check independently, use the commands below from the repository root:
 
 ```sh
-python3 checks/check_chapter_scripts.py
+Rscript checks/check_chapter_scripts.R
 ```
 
-This uses only Python's standard library. It reads chapter sources and compares the scripts students should produce with `R/chapter_*.R`. It checks executable code and comments separately, ignoring indentation, blank lines, Quarto chunk options, numbered code annotations and line-highlight markers. Internal whitespace and strings remain significant. It does not run R, download data or change files.
+This uses R with the `jsonlite` package. It reads chapter sources and compares the scripts students should produce with `R/chapter_*.R`. It checks executable code and comments separately, ignoring indentation, blank lines, Quarto chunk options, numbered code annotations and line-highlight markers. Internal whitespace and strings remain significant. It does not run R, download data or change files.
 
 ## Reconciliation rules
 
@@ -33,7 +33,7 @@ When changing a pipeline, check the surrounding instructions as well as the mapp
 ## Testing the checker
 
 ```sh
-python3 -m unittest discover -s checks -p 'test_*.py'
+Rscript checks/test_checks.R
 ```
 
 The tests mutate disposable copies to verify detection of code and comment drift, changed checkpoints, inherited changes and new unmapped instructions. They also check that intermediate examples remain separate and that a script cannot be verified against an include of itself.
@@ -41,7 +41,7 @@ The tests mutate disposable copies to verify detection of code and comment drift
 ## Checking book labels
 
 ```sh
-python3 checks/check_book_labels.py
+Rscript checks/check_book_labels.R
 ```
 
 This checks every tracked or new non-ignored Quarto source for missing or duplicate execution labels
@@ -87,9 +87,9 @@ anchor for multiple output images, using blank subcaptions.
 ## Checking image alternatives
 
 ```sh
-python3 checks/check_image_alternatives.py
+Rscript checks/check_image_alternatives.R
 quarto render --execute --cache-refresh
-python3 checks/check_image_alternatives.py --rendered _book
+Rscript checks/check_image_alternatives.R --rendered _book
 ```
 
 The source check covers published chapters, setup pages, appendices, shared
@@ -167,3 +167,5 @@ district value. Keep their `fig-alt` and enclosing group’s `aria-label` consis
 
 For Mermaid diagrams, also supply `accTitle` and `accDescr` inside the diagram.
 Quarto chunk `fig-alt` alone does not name the browser-rendered Mermaid SVG.
+
+The image-alternative checker additionally requires `xml2`; regression tests require `testthat`. The image check remains a separate review step and is not run by the Quarto hooks. Raw HTML diagnostics identify the affected element by its HTML path.
