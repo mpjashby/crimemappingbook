@@ -184,6 +184,7 @@ QuizOpen data
 - We can use open data for any purpose as long as we comply with the requirements of the licence the data is released under (Correct answer)
 - We can download open data but we cannot use it for any project that will be published online
 
+<a id="sec-place-shapefiles"></a>
 <a id="shapefiles"></a>
 
 ## 12.3 Shapefiles
@@ -304,6 +305,7 @@ QuizShapefiles
 - load_shapefile()
 - import_shp()
 
+<a id="sec-place-openstreetmap"></a>
 <a id="data-from-openstreetmap"></a>
 
 ## 12.4 Data from OpenStreetMap

@@ -169,3 +169,7 @@ For Mermaid diagrams, also supply `accTitle` and `accDescr` inside the diagram.
 Quarto chunk `fig-alt` alone does not name the browser-rendered Mermaid SVG.
 
 The image-alternative checker additionally requires `xml2`; regression tests require `testthat`. The image check remains a separate review step and is not run by the Quarto hooks. Raw HTML diagnostics identify the affected element by its HTML path.
+
+## Chapter code library
+
+`Rscript checks/check_code_library.R` checks that the appendix links every completed chapter script in `chapter-scripts.json`, plus the Chapter 11 Quarto report, exactly once. It explicitly excludes the three deliberately broken Chapter 8 examples, requires section references in descriptions, and checks that all download sources exist and are declared as published resources. It uses `jsonlite` and `yaml` and runs before a full book render.

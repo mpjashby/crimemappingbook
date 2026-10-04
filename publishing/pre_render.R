@@ -7,7 +7,7 @@ pre_render_main <- function() {
     return(invisible(NULL))
   }
   # Separate processes keep checker globals and CLI arguments isolated.
-  for (script in c("checks/check_chapter_scripts.R", "checks/check_book_labels.R")) {
+  for (script in c("checks/check_chapter_scripts.R", "checks/check_book_labels.R", "checks/check_code_library.R")) {
     status <- system2(file.path(R.home("bin"), "Rscript"), shQuote(script))
     if (status != 0L) stop("Source check failed: ", script, call. = FALSE)
   }

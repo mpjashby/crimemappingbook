@@ -93,7 +93,7 @@ At a very basic level, computers can store data in two ways: they can store numb
 
 [](https://lubridate.tidyverse.org/)
 
-R deals with this problem by *storing* dates internally as if they were numbers and *displaying* them (e.g. in the console or in a Quarto document) as if they were text, by default in the format `2026-10-03`. Fortunately, we don't have to worry about how dates and times are stored internally in R because we can use the [lubridate package](https://lubridate.tidyverse.org/) to work with them. lubridate contains functions for working with dates, including extracting parts of a date with functions such as `month()` and converting text to date values with functions like `ymd()`.
+R deals with this problem by *storing* dates internally as if they were numbers and *displaying* them (e.g. in the console or in a Quarto document) as if they were text, by default in the format `2026-10-04`. Fortunately, we don't have to worry about how dates and times are stored internally in R because we can use the [lubridate package](https://lubridate.tidyverse.org/) to work with them. lubridate contains functions for working with dates, including extracting parts of a date with functions such as `month()` and converting text to date values with functions like `ymd()`.
 
 Because of the special nature of dates, if we want to work with a date variable (for example to create a chart of crime over time) it is important that it is stored as a date, not as text or as a number. Many R functions for reading data, including `read_csv()`, `read_tsv()` and `read_excel()`, will try to recognise columns of data that contain dates and times stored in common formats. These will automatically be stored as date variables when the data is loaded.
 
@@ -101,20 +101,20 @@ If R does not recognise automatically that a value contains a date, we can conve
 
 If a date is stored in multiple columns in a dataset, e.g. one column for the year, one column for the month and one column for the day, we can create a single date column using the `make_date()` function to combine them. Similarly, we can create a date-time column using the `make_datetime()` function. For example, imagine we have a dataset of crimes called `thefts`:
 
-<a id="dlxhqoykxi"></a>
+<a id="aazqzmfdjw"></a>
 
   year   month_of_year   day_of_month   hour   minute   x          y
   ------ --------------- -------------- ------ -------- ---------- ---------
-  2020   9               1              18     0        491637.5   5459387
-  2020   9               5              18     30       492301.0   5458898
-  2020   9               9              0      0        491006.8   5458603
-  2020   9               11             22     30       490776.5   5458368
-  2020   9               11             23     30       491569.2   5458022
-  2020   9               13             17     46       491672.8   5458843
-  2020   9               14             14     0        491933.5   5459112
-  2020   9               16             7      0        493244.5   5453038
-  2020   9               18             5      31       490246.8   5458367
-  2020   9               22             17     30       491015.9   5459166
+  2020   9               11             17     0        496578.5   5450383
+  2020   9               15             14     0        494940.2   5457913
+  2020   9               15             23     0        493459.2   5454981
+  2020   9               18             14     0        490580.8   5459849
+  2020   9               20             13     41       491064.7   5458966
+  2020   9               22             18     0        490617.3   5456852
+  2020   9               24             0      30       491081.7   5458471
+  2020   9               25             7      30       491595.7   5458049
+  2020   9               25             14     30       497956.6   5450335
+  2020   9               30             8      20       495498.5   5458711
 
 We could use the three columns `year`, `month_of_year` and `day_of_month` to create a column containing the full date using the code:
 
@@ -216,19 +216,19 @@ When analysing dates and times, it is often useful to be able to extract date or
 
     Current month (as text): October
 
-    Current day of the year (days since 1 Jan): 276
+    Current day of the year (days since 1 Jan): 277
 
-    Current day of the month: 3
+    Current day of the month: 4
 
-    Current day of the week (as a number): 7
+    Current day of the week (as a number): 1
 
-    Current day of the week (as text): Sat
+    Current day of the week (as text): Sun
 
-    Current hour of the day: 23
+    Current hour of the day: 21
 
-    Current minute: 50
+    Current minute: 47
 
-    Current second: 52.1593968868256
+    Current second: 3.79871606826782
 
 It is sometimes useful to be able to add to or subtract from dates. For example, if you wanted to filter a dataset so that only records from the past 28 days were included, you would need to work out the date 28 days ago. We can do this with a group of functions from lubridate that store a period of time that we can then add to or subtract from an existing date. These functions are `years()`, `months()`, `weeks()`, `days()`, `hours()`, `minutes()`, and `seconds()`.
 
@@ -246,7 +246,7 @@ To subtract 28 days from today's date (which we can retrieve with the `today()` 
 <figcaption>Code 15.6</figcaption>
 </figure>
 
-    Today is 2026-10-03 and 28 days ago was 2026-09-05
+    Today is 2026-10-04 and 28 days ago was 2026-09-06
 
 Adding or subtracting periods from dates can be very useful when combined with the `filter()` function from the dplyr package. For example, if we had a dataset of crimes stored in an object called `crimes` and wanted to extract only those that occurred in the most-recent seven days, we could do this:
 
@@ -1430,6 +1430,7 @@ Save `chapter_15a.R` by pressing . Your complete `chapter_15a.R` script should n
 <figcaption>Code 15.33</figcaption>
 </figure>
 
+<a id="sec-animated-maps"></a>
 <a id="making-animated-maps"></a>
 
 ## 15.6 Making animated maps

@@ -881,7 +881,7 @@ Your complete `chapter_11.qmd` file should now look like this:
 
 Save `chapter_11.qmd` by pressing .
 
-You can also download [a second complete example report](../resources/reports/medellin_homicides_table.qmd), which produces a table rather than a map, to practise these skills with a different output. This file uses the gt package to make a professional table, which we will learn more about in [Chapter 14](../14_no_maps/index.llms.md). You can find these examples and reusable templates in [Appendix F](../appendices/resources.llms.md).
+You can also download [a second complete example report](../resources/reports/medellin_homicides_table.qmd), which produces a table rather than a map, to practise these skills with a different output. This file uses the gt package to make a professional table, which we will learn more about in [Chapter 14](../14_no_maps/index.llms.md). You can find these examples and reusable templates in [Appendix G](../appendices/resources.llms.md).
 
 There is a lot more you can do with Quarto. To find out more, refer to these resources.
 

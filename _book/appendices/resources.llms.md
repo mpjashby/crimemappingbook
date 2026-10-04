@@ -2,11 +2,13 @@ Source: https://books.lesscrime.info/learncrimemapping/2026/appendices/resources
 
 <a id="quarto-document-content"></a>
 <a id="title-block-header"></a>
-<a id="appendix-f-example-reports-and-templates"></a>
+<a id="appendix-g-example-reports-and-templates"></a>
 
-# `<a id="sec-resources"></a>`{=html}Appendix F --- Example reports and templates
+# `<a id="sec-resources"></a>`{=html}Appendix G --- Example reports and templates
 
 These files provide examples to learn from and starting points for your own crime-mapping projects. You can view a finished report in your browser, or download its Quarto or R source file to see how the text and R code produce the report.
+
+The completed scripts developed in the chapters are available in [Appendix F](chapter_code.llms.md), including the Medellín map report from [Chapter 11](../11_writing_reports/index.llms.md).
 
   Resource description                                                                                                                                                                                                                                       Source                                                                 Output
   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------------------------------------------- ------------------------------------------------------------------------

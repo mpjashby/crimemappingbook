@@ -484,6 +484,7 @@ QuizProcessing the data
 - To automatically debug the code.
 - To make the R script run faster.
 
+<a id="sec-drawing-first-map"></a>
 <a id="drawing-the-map"></a>
 
 ## 2.6 Drawing the map
