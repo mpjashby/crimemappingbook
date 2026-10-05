@@ -407,9 +407,28 @@ CARTO_API_KEY="1234567890abcdef"
 6.  Make sure there is no blank space at the start or end of the new line you have added to the `.Renviron` file. Save the file by pressing on your keyboard, then close the text editor.
 7.  Changes to the `.Renviron` file will not take effect until you start a new R session. To do that, click the **Restart R** (**⟳**) button in the **Console** panel in Positron.
 
+<a id="sec-check-workspace"></a>
+<a id="checking-your-setup"></a>
+
+## 1.8 Checking your setup
+
+Before moving on to making your first crime map, check that your software and workspace are set up correctly. Paste the following code into the R Console and press :
+
+<a id="lst-getting-started-check-workspace"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>learncrimemapping<span class="sc">::</span><span class="fu">check_workspace</span>()</span></code></pre></div>
+<figcaption>Code 1.2</figcaption>
+</figure>
+
+The function prints a message for each check, including those that succeed. Read through the output and look for messages saying **PROBLEM** or **MANUAL CHECK**. Complete any instructions given in these messages: they will explain what you need to fix or check yourself, and may include R code to paste into the Console.
+
+After completing the instructions, run `learncrimemapping::check_workspace()` again to check your setup. If you are unsure how to resolve a problem, ask your lecturer for help and show them the output so they can see which checks worked and which need attention.
+
 <a id="in-summary"></a>
 
-## 1.8 In summary
+## 1.9 In summary
 
 We have explored why crime mapping is useful for understanding crime and why crime is typically concentrated in space, and practised finding our way around Positron and keeping our files organised. In [Chapter 2](../02_your_first_crime_map/index.llms.md) we will produce our first crime map in R.
 
