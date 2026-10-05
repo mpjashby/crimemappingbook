@@ -21,6 +21,7 @@ check_sources <- function(sources) {
   errors <- anchors <- character()
   counts <- c(chunks = 0L, diagrams = 0L, listings = 0L, headings = 0L)
   for (path in names(sources)) {
+    if (!book_source(path)) next
     text <- sources[[path]]
     defaults <- document_defaults(text)
     labels <- character()
@@ -75,7 +76,7 @@ check_book_labels_main <- function(args = commandArgs(trailingOnly = TRUE)) {
   on.exit(setwd(old), add = TRUE)
   paths <- system2("git", c("ls-files", "--cached", "--others", "--exclude-standard", shQuote("*.qmd")), stdout = TRUE)
   if (!is.null(attr(paths, "status"))) check_fail("Cannot list Quarto sources with Git")
-  paths <- unique(paths[!startsWith(paths, "_book/") & file.exists(paths)])
+  paths <- unique(paths[vapply(paths, book_source, logical(1L)) & file.exists(paths)])
   result <- check_sources(setNames(lapply(paths, check_read), paths))
   if (length(result$errors)) check_fail(paste(result$errors, collapse = "\n"))
   message("Checked ", result$counts["chunks"], " labelled R chunks, ", result$counts["diagrams"],

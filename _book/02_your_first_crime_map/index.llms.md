@@ -169,6 +169,12 @@ The data we will use will be records of homicides in the Downtown neighbourhood 
 
 To do almost anything in R we use one or more *functions*. A *function* in R is a piece of code that performs an action. You can think of functions as being like verbs (i.e. 'doing words'), which is why the names of functions are often verbs such as `filter()`, `select()`, etc. To download the homicide data we need we will use two functions, which we combine together using something called a *pipe operator* that looks like this: `|>`. We will explore the pipe operator in [Section 4.6](../04_transforming_data/index.llms.md#sec-pipe-operator), because it is important but can be hard to understand. For now, just think of the combination of two functions linked by a pipe as a single unit of code -- see [Section 4.6](../04_transforming_data/index.llms.md#sec-pipe-operator) when you are ready to explore the details.
 
+ImportantCheck where your files will be stored
+
+Before we download any data, it is important to be sure where that data will end up. To check that Positron is using the correct folder, we will use the `here()` function. This function is part of the *here* package, which we loaded earlier. The `here()` function helps us build file paths inside our `crime_mapping` workspace. Before downloading the data, run `here::here()` in the R Console. Check that the path printed in the Console *ends* in `crime_mapping` (the rest of the path will depend on how folders are organised on your particular computer).
+
+If the result produced by `here::here()` does not end in `crime_mapping`, it means that the current working directory is not the correct one. In this case, use **File \> Open Folder ...** to open your `crime_mapping` folder in Positron, restart R using the **Restart R** button in the Console panel, then run the code in [Code 2.1](#lst-your-first-crime-map-script-02a-packages) again. Once you have done that, run `here::here()` again to check the path before continuing.
+
 Copy these lines of code into your R script file. Now click anywhere on either line of the code and press on your keyboard to run the code. Assuming your computer is connected to the internet, you should see some lines of text appear in the R Console.
 
 <a id="lst-your-first-crime-map-script-02a-download"></a>
@@ -189,7 +195,7 @@ Copy these lines of code into your R script file. Now click anywhere on either l
 
 TipWhat does this output mean?
 
-<a id="callout-6"></a>
+<a id="callout-7"></a>
 
 The `request()` and `req_perform()` functions are part of the *httr2* package, which is used to download data from the internet. The output you see in the R Console is a summary of the request that was made to download the data. It shows the URL that was requested and the status code returned by the server. In this case the status code `200 OK` means the request was successful. The output also shows the size of the downloaded file.
 
@@ -217,7 +223,7 @@ Now we have downloaded the data, we need to load it into our current R session s
 
 TipWhat does this output mean?
 
-<a id="callout-7"></a>
+<a id="callout-8"></a>
 
 When `read_csv()` loads data from a file, it produces a short summary of the data and prints that in the R Console. Looking at this message, you can see that the data contains 4 rows and 4 columns of values in each row. You can also see the names of the columns: 'report_number', 'label', 'longitude' and 'latitude'.
 
@@ -252,7 +258,7 @@ To check the data has been loaded correctly, we can view the loaded data using t
 
 TipError: object 'homicides' not found
 
-<a id="callout-9"></a>
+<a id="callout-10"></a>
 
 If you see the error message `Error: object 'homicides' not found`, it means that the `homicides` object has not been created. There are two common causes of this error:
 

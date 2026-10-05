@@ -84,6 +84,21 @@ testthat::test_that("hashes and escapes inside strings remain executable code", 
 })
 label_errors <- function(text, path = "02_your_first_crime_map/index.qmd") checks$check_sources(setNames(list(text), path))$errors
 
+testthat::test_that("book label checks exclude slides and supporting documents", {
+  invalid <- '### Unlabelled heading\n```{r}\nx <- 1\n```'
+  excluded <- c("lectures/2026/01_introduction/index.qmd", "resources/reports/example.qmd",
+    "resources/templates/example.qmd", "checks/fixtures/numbered-outputs.qmd", "_book/index.qmd", "webexercises.qmd")
+  result <- checks$check_sources(setNames(rep(list(invalid), length(excluded)), excluded))
+  testthat::expect_identical(result$errors, character())
+  testthat::expect_true(all(result$counts == 0L))
+  for (path in c("02_your_first_crime_map/index.qmd", "index.qmd", "contents.qmd", "setup.qmd",
+                 "appendices/common_errors.qmd", "include/example.qmd")) {
+    errors <- label_errors(invalid, path)
+    testthat::expect_true(contains(errors, "level-3 heading"))
+    testthat::expect_true(contains(errors, "execution label"))
+  }
+})
+
 testthat::test_that("labels and visible listing metadata are required", {
   testthat::expect_true(contains(label_errors('```{r}\n#| echo: false\nplot(1:3)\n```'), "execution label"))
   testthat::expect_true(contains(label_errors('```{r}\n#| label: hidden-map\n#| echo: false\n#| lst-label: lst-hidden-map\n#| lst-cap: ""\nplot(1:3)\n```'), "hidden code"))

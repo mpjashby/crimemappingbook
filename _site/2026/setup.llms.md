@@ -202,9 +202,9 @@ To install RTools:
 11. Wait for the installation to complete.
 12. Click **Finish**.
 
-<a id="set-up-r-for-crime-mapping"></a>
+<a id="step-4-set-up-r-for-crime-mapping"></a>
 
-## Set up R for crime mapping
+## Step 4: Set up R for crime mapping
 
 As we will learn in subsequent chapters, most of the mapping capabilities in R are provided by add-on packages. To download and install the packages you will need to run the code included in this book:
 

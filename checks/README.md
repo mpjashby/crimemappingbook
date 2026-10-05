@@ -44,11 +44,13 @@ The tests mutate disposable copies to verify detection of code and comment drift
 Rscript checks/check_book_labels.R
 ```
 
-This checks every tracked or new non-ignored Quarto source for missing or duplicate execution labels
+This checks tracked or new non-ignored book Quarto sources for missing or duplicate execution labels
 and missing level-3 heading identifiers. It also checks that visible executable R
 code in the textbook has a `lst-` identifier and a blank listing caption, hidden
 code stays out of listing numbering, and numbered chart chunks have captions and
-alternative text. Supporting reports retain their own numbering conventions.
+alternative text. The scope includes numbered chapter sources, front matter,
+appendices and included book content. Lecture slides, supporting reports,
+templates, test fixtures and generated output are excluded.
 Fenced teaching examples and R comments are excluded from heading checks. Chunks
 in commented-out teaching sections retain execution labels but do not need visible
 listing metadata.

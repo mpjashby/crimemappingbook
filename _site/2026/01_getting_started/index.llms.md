@@ -353,6 +353,8 @@ Before continuing, compare the Explorer panel in Positron with the screenshot ab
 - `raw` and `processed` are directly inside `data`; and
 - you have not accidentally created one of these folders inside another folder.
 
+If the `crime_mapping` folder is not shown at the top of the Explorer, you should click on the **Open Folder ...** icon in the Explorer toolbar and select the `crime_mapping` folder to open it. this is important since otherwise the next step will not work.
+
 If the folders are not in the right places, correct that now. Correcting the structure will make the instructions in later chapters much easier to follow.
 
 <a id="formatting-your-r-code-automatically"></a>
@@ -361,20 +363,16 @@ If the folders are not in the right places, correct that now. Correcting the str
 
 R code can be written in lots of different ways, some of them easier to read and maintain than others. Well-formatted code is easier to read and less likely to contain mistakes, which we will cover in more detail in [Chapter 8](../08_handling_bugs/index.llms.md). Positron includes a tool called Air that can format your R code automatically whenever you save a file.
 
-You only need to install the Air tool once, then it will format your R code automatically whenever you save a file. To install Air, find the R Console panel in the bottom-left corner of Positron and paste [Code 1.1](#lst-getting-started-enable-air-formatting) to the right of the prompt arrow (`>`):
+Air is included with Positron, but you need to enable automatic formatting for your workspace. You only need to do this once for the `crime_mapping` workspace.
 
-<a id="lst-getting-started-enable-air-formatting"></a>
+1.  Check that `crime_mapping` is the folder shown at the top of the Explorer panel.
+2.  Open the Command Palette by pressing on your keyboard. The Command Palette lets you find and run commands in Positron.
+3.  Paste the text `Air: Initialize Workspace Folder`, then click on the matching command that appears in the list below the Command Palette box.
+4.  If you are asked to choose a workspace folder, select `crime_mapping`.
 
-<figure>
-<pre><code>R Console</code></pre>
-<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;usethis&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
-<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;usethis&quot;</span>)</span>
-<span id="cb2-3"><a href="#cb2-3"></a>}</span>
-<span id="cb2-4"><a href="#cb2-4"></a>usethis<span class="sc">::</span><span class="fu">use_air</span>()</span></code></pre></div>
-<figcaption>Code 1.1</figcaption>
-</figure>
+This makes two small changes to the `crime_mapping` folder that you created above by creating a file called `air.toml` and a folder called `.vscode`. These tell Positron how to format your code. You do not need to edit these files or open them, but you should not delete them.
 
-Now press on your keyboard to run the code.
+Positron will now format your R scripts automatically whenever you save them.
 
 <a id="registering-to-use-base-maps"></a>
 
@@ -387,7 +385,19 @@ To register for a free CARTO API key:
 1.  Go to the [CARTO website base-map registration page](https://carto.com/basemaps/apikey/).
 2.  Complete the form marked *Request a key*. You should answer the question 'Is this a commercial project?' with 'No'. You should answer the question 'What are you building?' with 'Learning how to make crime maps'. Do not enable any of the options in the 'Restrictions' section. Accept the terms and conditions then submit the form.
 3.  You will receive an email from CARTO containing a long string of letters and numbers. This is your API key.
-4.  R needs to know your API key to access the CARTO service. To do that, you need to store the API key somewhere where R can access it. The easiest way to do that is to put the API key in a special file called `.Renviron` that R reads whenever you start a new R session. To open the `.Renviron` file, run this code in the R Console: `usethis::edit_r_environ()`
+4.  R needs to know your API key to access the CARTO service. To do that, you need to store the API key somewhere where R can access it. The easiest way to do that is to put the API key in a special file called `.Renviron` that R reads whenever you start a new R session. To install the `usethis` package if needed and open the `.Renviron` file, paste the following code into the R Console and press :
+
+<a id="lst-open-r-environ"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;usethis&quot;</span>)) {</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;usethis&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a>}</span>
+<span id="cb2-4"><a href="#cb2-4"></a>usethis<span class="sc">::</span><span class="fu">edit_r_environ</span>()</span></code></pre></div>
+<figcaption>Code 1.1</figcaption>
+</figure>
+
 5.  A text editor will open showing the `.Renviron` file. If there are already any lines in the file, do not delete or change them. Instead, add a new line to the end of the file and type the text `CARTO_API_KEY=` followed by your API key in double quotes. For example, if your API key was `1234567890abcdef`, the line you add to the `.Renviron` file would look like this:
 
 ``` {.sourceCode .numberSource .text .number-lines .code-with-copy}
