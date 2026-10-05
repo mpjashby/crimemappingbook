@@ -1,6 +1,6 @@
 # Prepare a book update for GitHub
 
-Run these commands from the repository root (the folder containing `_quarto.yml`), using the Positron terminal. Choose the guide matching your update. Nothing is committed, pushed or uploaded automatically.
+Run these commands from the repository root (the folder containing `_quarto.yml`), using the Positron terminal. Choose the guide matching your update. Nothing is committed or pushed automatically. Once deployment is configured, pushing changes to `_site/` on `main` uploads the committed website automatically using GitHub Actions.
 
 A complete `quarto render` now prepares the publishing output automatically:
 
@@ -74,18 +74,15 @@ Resolve failures and repeat the full render after source changes. See the checki
 
 ### 5. Commit and prepare the GitHub update
 
-Use the Positron Git panel to review, stage and commit the changed source files, manifest, generated edition metadata, relevant `_freeze/` updates and rendered `_book/` (including LLM files and file removals). Do not stage unrelated changes or force-add `_site/` or `publishing/cache/`: these are ignored generated files. The rendered `_book/` belongs in Git because its final snapshot will be archived in a later year.
-
-After committing, run:
+Back up the live website before publishing a new annual edition. Run the site checks before committing:
 
 ```sh
-Rscript publishing/prepare_site.R
 Rscript publishing/check_site.R
 ```
 
-This records the new commit in `_site/edition-provenance.json` without rendering again. Then push using the Positron Git panel. Pushing does not publish the website.
+Use the Positron Git panel to review, stage and commit the changed source files, manifest, generated edition metadata, relevant `_freeze/` updates, rendered `_book/` and complete `_site/`, including LLM files and generated file removals. Keep `publishing/cache/` and temporary assembly directories ignored and avoid staging unrelated work. `_book/` supplies the snapshot for future archives; `_site/` supplies the complete website for deployment.
 
-When publishing the website, upload and verify the new year directory before activating the root `.htaccess`. Also upload the refreshed older edition directories so their notices and edition navigation point to the new edition. Upload the contents of `_site/`, including its hidden root `.htaccess`; do not upload `_book/` to the website root. Back up the live website first and preserve every archived year.
+Push using the Positron Git panel. Changes to `_site/` on `main` trigger the deployment described below. All editions upload before the root `.htaccess` is updated. The transfer does not delete remote files or provide an atomic switch of the whole site.
 
 ## Guide 2: Update the current annual edition
 
@@ -125,18 +122,26 @@ If publishing scripts changed, also run `Rscript publishing/test_prepare_site.R`
 
 ### 4. Commit and prepare the GitHub update
 
-Use the Positron Git panel to review, stage and commit the source changes, relevant `_freeze/` updates and rendered `_book/`, including its LLM files and generated removals. The rendered `_book/` belongs in Git so its final snapshot can become a future archive. Keep ignored `_site/` and `publishing/cache/` out of the commit and avoid staging unrelated work.
+Run `Rscript publishing/check_site.R`, then use the Positron Git panel to review, stage and commit the source changes, relevant `_freeze/` updates, rendered `_book/` and complete `_site/`, including LLM files and generated removals. Keep `publishing/cache/` ignored and avoid staging unrelated work.
 
-After committing, run:
+Push using the Positron Git panel. Changes to `_site/` on `main` automatically upload the committed website. Do not regenerate `_site/` after committing unless you also review and commit the regenerated output. Its provenance identifies the source HEAD at assembly time, which can precede the commit containing the assembled site; `working_tree_modified` records whether there were uncommitted changes during assembly.
 
-```sh
-Rscript publishing/prepare_site.R
-Rscript publishing/check_site.R
-```
+## GitHub Actions deployment
 
-This refreshes the deployment provenance with the new commit without rendering again. Push using the Positron Git panel.
+The workflow in `.github/workflows/deploy.yml` uploads the contents of committed `_site/` using `publishing/deploy.lftp`. It runs on pushes to `main` that change `_site/`, the transfer script or the workflow. Deployments run one at a time; an active upload is not cancelled by a later push. There is no scheduled task or separate CI account to maintain.
 
-Pushing does not publish the website. When ready, back up the live website and upload the current year directory and shared root files from `_site/`, including the hidden root `.htaccess`. Existing archived year directories do not need uploading for an ordinary current-edition content update. Do not upload `_book/` directly to the website root.
+Before the first deployment:
+
+1. In the GitHub repository, open **Settings → Secrets and variables → Actions**.
+2. Add repository secrets named `FTP_USERNAME` and `FTP_PASSWORD` containing the FTP account username and password. Never commit the password.
+3. Back up the existing website and commit the complete `_site/` alongside the workflow and transfer script. Include the hidden `.htaccess` and `.edition-site` files.
+4. Push to `main`, then check **Actions → Deploy book website** for the result. Disable the Buddy deployment so the two services cannot upload simultaneously.
+
+The account comes from the `FTP_USERNAME` secret and connects to `ftp.lesscrime.info:21`. The destination is `subdomains/books/learncrimemapping`, relative to the FTP login directory; deployment fails if this directory does not exist. The client requires explicit FTPS and encrypted data transfers. Certificate trust and expiry checks remain enabled, but hostname checking is disabled because the hosting provider's certificate does not cover `ftp.lesscrime.info`. This weakens server identity verification. Restore `ssl:check-hostname yes` when the provider supplies a matching certificate.
+
+The upload includes current and archived editions and hidden files. It updates the root `.htaccess` last and never deletes remote files. Consequently, files removed from Git can remain online; review and remove obsolete remote files separately when necessary. A failed upload can leave a partially updated website. After resolving the failure, rerun the workflow to complete the upload.
+
+To upload again without another commit, open **Actions → Deploy book website → Run workflow** and select `main`. Other branches cannot deploy. GitHub Actions uploads the checked-out site without rendering R or Quarto. Review the published home pages, navigation, search and downloads after deployment.
 
 ## Checking and recovery notes
 

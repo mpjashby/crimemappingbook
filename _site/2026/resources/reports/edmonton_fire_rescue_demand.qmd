@@ -1,0 +1,567 @@
+---
+title: "Fire hotspots in Edmonton, 2024"
+author: "Matt Ashby"
+date: "today"
+date-format: "DD MMMM YYYY"
+format:
+  html:
+    embed-resources: true
+    fig-cap-location: top
+execute:
+  echo: false
+  freeze: auto
+---
+
+
+::: {.callout-important title="This is an example report used for teaching purposes"}
+
+This is an example report used to help students understand how different types of report can be created using the Quarto markup language and the R programming language. **The contents of this report should not be relied upon for operational use.**
+:::
+
+
+```{r}
+#| label: setup
+#| include: false
+
+pacman::p_load(ggspatial, gt, here, httr2, scales, sf, sfhotspot, tidyverse)
+```
+
+
+```{r}
+#| label: load-data
+#| include: false
+#| cache: true
+
+# CO-ORDINATE REFERENCE SYSTEM
+# All spatial datasets will be transformed to use EPSG:3780 which is appropriate
+# for Alberta and uses metres as its unit of measurement
+
+## INCIDENTS -------------------------------------------------------------------
+
+# DOWNLOADING THIS DATA
+# To reproduce this report, use the March 2025 snapshot of the fire-response
+# dataset (about 300 MB). Download it from the City of Edmonton open-data portal
+# and save it as data/raw/Fire_Response__Current_and_Historical_20250309.csv.
+# The current dataset may include revisions, so counts could differ if you use
+# a newer download. We download the smaller spatial datasets below using httr2.
+
+dir.create(here("data", "raw"), recursive = TRUE, showWarnings = FALSE)
+
+# MISSING VALUES
+# A small proportion of rows in the data have missing co-ordinates. We will need
+# to remove these before analysis, but it would be useful to point out how many
+# rows have been removed. To enable this we will store the data including the
+# rows with missing co-ordinates, then create a new object that does not include
+# those rows and will be used for most of the analysis.
+
+# Source: https://data.edmonton.ca/d/7hsn-idqi
+incidents <- here(
+  "data",
+  "raw",
+  "Fire_Response__Current_and_Historical_20250309.csv"
+) |>
+  read_csv() |>
+  # Remove duplicate columns (these are usually two columns storing the same
+  # data, but in different formats)
+  select(
+    -dispatch_month,
+    -dispatch_day,
+    -dispatch_month_name,
+    -dispatch_dayofweek,
+    -dispatch_date,
+    -dispatch_datetime,
+    -event_close_date,
+    -event_close_datetime,
+    -geometry_point
+  ) |>
+  filter(
+    # Remove 'incidents' that are actually fire crews telling the control room
+    # that they are engaged in training (which means they might not be available
+    # to respond to incidents).
+    !event_description %in% c("TRAINING/MAINTENANCE", "MESS"),
+    # Remove 'incidents' that are actually fire crews notifying the control room
+    # that they are, for example, attending a school to deliver some fire-safety
+    # training
+    !event_type_group %in% c("CM", "DR", "86", "FP", "T0", "MP"),
+    # Remove incidents that did not occur in 2024
+    dispatch_year == 2024
+  )
+
+fires <- incidents |>
+  filter(event_type_group %in% c("FR", "OF", "VF")) |>
+  # Categorise different types of fire
+  mutate(
+    # Extract the first two digits of `event_type_code`, which indicates the
+    # type of fire involved in an incident. All structure-fire codes start "69",
+    # so we further separate those into residential and other structure fires.
+    code2 = str_sub(event_type_code, end = 2),
+    # Set the fire types
+    fire_subtype = case_when(
+      code2 == "57" ~ "explosion",
+      code2 == "67" ~ "outside fire",
+      code2 == "71" ~ "vehicle fire",
+      code2 == "82" ~ "vegetation/woodland fire",
+      code2 == "69" & str_detect(event_type_description, "RESIDENTIAL") ~
+        "residential structure fire",
+      code2 == "69" ~ "other structure fire",
+      .default = "other non-structure fire"
+    )
+  ) |>
+  # Remove rows with missing co-ordinates
+  drop_na(longitude, latitude) |>
+  # Convert to SF object
+  st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326") |>
+  # Transform data to use local co-ordinate reference system
+  st_transform("EPSG:3780")
+
+
+## EVERYTHING ELSE -------------------------------------------------------------
+
+# Source: https://data.edmonton.ca/d/b4y7-zhnz
+request("https://data.edmonton.ca/resource/b4y7-zhnz.geojson") |>
+  req_perform(path = here("data", "raw", "edmonton_fire_stations.geojson"))
+
+fire_stations <- read_sf(here(
+  "data",
+  "raw",
+  "edmonton_fire_stations.geojson"
+)) |>
+  select(name, address) |>
+  # Transform data to use local co-ordinate reference system
+  st_transform("EPSG:3780")
+
+# Source: https://data.edmonton.ca/d/65fr-66s6
+request("https://data.edmonton.ca/resource/65fr-66s6.geojson") |>
+  req_perform(path = here("data", "raw", "edmonton_neighbourhoods.geojson"))
+
+neighbourhoods <- read_sf(here(
+  "data",
+  "raw",
+  "edmonton_neighbourhoods.geojson"
+)) |>
+  # Transform data to use local co-ordinate reference system
+  st_transform("EPSG:3780")
+
+# Create a single polygon showing the boundary of the city
+edmonton <- neighbourhoods |>
+  st_union() |>
+  st_as_sf()
+
+# Create polygons for each district in the city
+districts <- summarise(
+  neighbourhoods,
+  across(geometry, st_union),
+  .by = district
+)
+```
+
+
+This report has been prepared for Edmonton Fire Rescue Services (EFRS) to identify hotspot locations for fires in the city of Edmonton during the calendar year 2024. This report is based on the [EFRS Fire Response dataset](https://data.edmonton.ca/d/7hsn-idqi). The information in this dataset is recorded by EFRS staff while co-ordinating the response to each incident. The large volume of incidents and rapid pace of operations in a fire control room mean it is likely the data will contain some errors, but it is not possible to quantify these or assess how they might affect the conclusions drawn in this report. However, it is likely the majority of recording errors are effectively random, and so are unlikely to bias this analysis towards a particular conclusion.
+
+
+```{r}
+#| label: incident-type-count
+
+# Create a character value containing an list of incidents by type, ordered by
+# incident frequency with the most frequent types first
+incident_type_count <- incidents |>
+  mutate(
+    # Convert categories to lower case
+    event_description = str_to_lower(event_description),
+    event_description = replace_values(
+      event_description,
+      # Collapse all types of fire into one category
+      c("outside fire", "fire", "vehicle fire") ~ "fire",
+      # Add label to 'citizen assist' category, which is otherwise hard to
+      # interpret
+      "citizen assist" ~
+        "citizen assist (e.g. animal rescue or person trapped in a lift)"
+    ),
+    # Lump event categories that make up less than 2% of incidents into an
+    # 'other' category
+    event_description = fct_lump_prop(
+      event_description,
+      prop = 0.02,
+      other_level = "other"
+    )
+  ) |>
+  # Count the number of incidents in each category
+  count(event_description, sort = TRUE) |>
+  mutate(
+    # Calculate the percentage of incidents in each category
+    prop = n / sum(n),
+    # Construct a text label
+    label = str_glue("{percent(prop, accuracy = 1)} as {event_description}"),
+    # Give the first row a slightly different label
+    label = if_else(
+      row_number() == 1,
+      str_replace(label, " as ", " were classified as "),
+      label
+    )
+  )
+
+daily_incident_count <- incidents |>
+  count(dispatch_date_date) |>
+  pull("n") |>
+  mean()
+```
+
+
+Between 1 January and 31 December 2024, EFRS responded to a total of `r comma(nrow(incidents))` incidents, with an average of `r number(daily_incident_count, accuracy = 1)` per day. Of those, `r knitr::combine_words(pull(incident_type_count, "label"))`. The rest of this report will focus on the `r percent(pluck(filter(incident_type_count, event_description == "fire"), "prop", 1))` of incidents that were categorised as fires.
+
+
+```{r}
+#| label: fire-kde
+#| include: false
+#| cache: true
+
+# Create a grid of cells to be used in KDE calculations
+kde_grid <- hotspot_grid(neighbourhoods, cell_size = 400, grid_type = "hex")
+
+# Estimate fire density and identify significant concentrations with Getis-Ord Gi*
+fires_kde <- fires |>
+  hotspot_gistar(grid = kde_grid, bandwidth_adjust = 0.3, quiet = TRUE) |>
+  hotspot_clip(edmonton, quiet = TRUE)
+
+downtown_buffer <- fires_kde |>
+  # Keep only the single grid cell with the highest density of fires
+  slice_max(order_by = kde, n = 1, with_ties = FALSE) |>
+  # Find the centre point of that grid cell
+  st_centroid() |>
+  # Create a circle 1km around that point
+  st_buffer(1000)
+
+# Find count of fires within 1km of point with highest density
+downtown_count <- hotspot_count(fires, grid = downtown_buffer, quiet = TRUE)
+```
+
+
+```{r}
+#| label: fig-fire-map
+#| fig-alt: "Density map of calls to fires in Edmonton in 2024, showing only locations with more fires than expected by chance. Darker red represents greater concentration, strongest in a small downtown area. District boundaries provide context; unshaded areas are not identified as significant concentrations."
+#| fig-asp: 0.8
+#| fig-cap: "Locations of calls to fires in Edmonton, 2024"
+#| out-width: "100%"
+#| message: false
+
+# Show estimated density only in cells identified as significant concentrations
+hotspot_map(
+  edmonton,
+  fill = NA,
+  colour = NA,
+  basemap_type = "cartolight",
+  caption = "Data from City of Edmonton and OpenStreetMap"
+) +
+  annotation_spatial(
+    aes(fill = kde),
+    data = filter(fires_kde, gistar > 0, pvalue < 0.05),
+    colour = NA,
+    alpha = 0.7
+  ) +
+  # Add district boundaries
+  annotation_spatial(data = districts, colour = "grey50", fill = NA) +
+  # Add city boundaries
+  geom_sf(data = edmonton, colour = "grey25", fill = NA) +
+  # Add district labels
+  geom_sf_text(
+    aes(label = str_wrap(str_to_upper(district), width = 10)),
+    data = districts,
+    colour = "grey50",
+    lineheight = 1,
+    size = 2.1
+  ) +
+  # Control appearance of legend fill
+  scale_fill_gradient(
+    low = rgb(1, 0.8, 0.8),
+    high = rgb(0.6, 0, 0),
+    breaks = range(pull(fires_kde, kde)),
+    labels = c("lower", "higher")
+  ) +
+  fixed_plot_aspect(ratio = 1) +
+  labs(
+    caption = "Data from City of Edmonton and OpenStreetMap",
+    fill = "concentration\nof fires"
+  ) +
+  theme_void()
+```
+
+
+@fig-fire-map shows locations in the city of Edmonton with more fires than would be expected by chance. The map shows that fires are very heavily concentrated in a small area in downtown Edmonton. There were `r comma(pluck(downtown_count, "n"))` fires within 1 kilometre of this point in 2024, around `r percent(pluck(downtown_count, "n") / nrow(fires))` of all fires in Edmonton in that period. This is despite that area being only `r percent(as.numeric(st_area(downtown_buffer) / st_area(st_union(neighbourhoods))), accuracy = 0.1)` of the area of the city.
+
+
+```{r}
+#| label: downtown-kde
+#| include: false
+#| cache: true
+
+# Calculate a KDE surface for just the area within 5km of the point with the
+# highest density of fires
+downtown_kde <- fires |>
+  # `downtown_buffer` stores a buffer 1km around the point of highest density,
+  # so we can add 4000m to that to make a 5km buffer
+  hotspot_clip(st_buffer(downtown_buffer, dist = 4000), quiet = TRUE) |>
+  # Estimate density
+  hotspot_gistar(
+    cell_size = 100,
+    bandwidth_adjust = 0.3,
+    grid_type = "hex",
+    quiet = TRUE
+  )
+```
+
+
+```{r}
+#| label: fig-downtown-map
+#| fig-alt: "Detailed density map of fire calls in downtown Edmonton in 2024. Significant concentrations occur around Downtown and Boyle Street and along the 107th Avenue corridor. Darker red indicates greater concentration, and numbered boxes locate Edmonton Fire Rescue Services stations relative to these areas."
+#| fig-asp: 0.8
+#| fig-cap: "Locations of calls to fires in downtown Edmonton, 2024"
+#| out-width: "100%"
+
+# Use an invisible 3km buffer to control the extent of the detailed map
+hotspot_map(
+  st_buffer(downtown_buffer, dist = 2000),
+  colour = NA,
+  fill = NA,
+  basemap_type = "cartolight",
+  caption = "Data from City of Edmonton and OpenStreetMap"
+) +
+  # Add neighbourhood boundaries
+  annotation_spatial(data = neighbourhoods, colour = "grey50", fill = NA) +
+  # Add KDE layer, using `annotation_spatial()` so the map doesn't expand to
+  # cover the larger area covered by the KDE layer
+  annotation_spatial(
+    aes(fill = kde),
+    data = filter(downtown_kde, gistar > 0, pvalue < 0.05),
+    alpha = 0.7,
+    colour = NA
+  ) +
+  # Add fire station locations
+  geom_sf_label(
+    aes(label = name),
+    data = filter(fire_stations, name %in% c("01", "02", "05", "21", "22")),
+    colour = "white",
+    fill = "red3",
+    fontface = "bold",
+    linewidth = 0,
+    size = 2.6
+  ) +
+  # Add neighbourhood labels
+  geom_sf_text(
+    aes(label = str_wrap(name, width = 10)),
+    data = filter(neighbourhoods, name %in% c("DOWNTOWN", "BOYLE STREET")),
+    colour = "grey50",
+    lineheight = 1,
+    size = 2.1
+  ) +
+  # Control appearance of legend fill
+  scale_fill_gradient(
+    low = rgb(1, 0.8, 0.8),
+    high = rgb(0.6, 0, 0),
+    breaks = range(pull(fires_kde, kde)),
+    labels = c("lower", "higher")
+  ) +
+  labs(
+    subtitle = "Numbered boxes show EFRS stations",
+    caption = "Data from City of Edmonton and OpenStreetMap",
+    fill = "concentration\nof fires"
+  ) +
+  theme_void()
+```
+
+
+@fig-downtown-map shows the places within downtown Edmonton with more fires than would be expected by chance. This shows that fires are concentrated around the Downtown and Boyle Street neighbourhoods, as well as along the 107th Avenue corridor.
+
+
+```{r}
+#| label: fig-fire-types
+#| fig-alt: "Horizontal bar chart ranks Edmonton fire types by their recorded counts in 2024. Outdoor fires have by far the longest bar, accounting for more than two thirds of fires. Residential structure fires are the most common structure fires. Percentage labels supplement the count axis."
+#| fig-asp: 0.5
+#| fig-cap: "Frequency of different types of fire in Edmonton, 2024"
+#| out-width: "100%"
+
+fires |>
+  # Convert the SF object to a tibble, since we don't need the geometry and it
+  # slows down functions lik `count()`
+  st_drop_geometry() |>
+  # Count the number of fires of each type
+  count(fire_subtype) |>
+  mutate(
+    # Order the fire types in order of frequency
+    fire_subtype = fct_reorder(fire_subtype, n),
+    # Construct a label for each bar
+    label = percent(n / sum(n), accuracy = 0.1)
+  ) |>
+  # Initiate chart
+  ggplot() +
+  # Specify how columns in the data should be represented on the chart
+  aes(x = n, y = fire_subtype, label = label) +
+  # Add labels (behind bars in case labels might cut off the end of the bars)
+  geom_label(hjust = 0, linewidth = 0) +
+  # Add bars
+  geom_col(fill = "red3") +
+  # Specify appearance of x-axis
+  scale_x_continuous(labels = label_comma(), expand = expansion(c(0, 0.1))) +
+  # Set chart labels
+  labs(
+    x = "number of fires",
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    # Remove unnecessary gridlines
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank()
+  )
+```
+
+
+@fig-fire-types shows the number of fires of each type that were recorded as occurring in Edmonton in 2024. More than two thirds of fires were outdoor fires, e.g. a fire caused by a lightning strike or illegal burning of rubbish. The majority of structure fires were in residential structures.
+
+
+```{r}
+#| label: fire-types-kde
+#| include: false
+#| cache: true
+
+fire_type_counts <- fires |>
+  st_drop_geometry() |>
+  count(fire_subtype, sort = TRUE) |>
+  mutate(
+    prop = n / sum(n),
+    label = str_glue("{fire_subtype} ({percent(prop, accuracy = 0.1)})")
+  )
+
+fire_types_kde <- fires |>
+  # Keep just the most-common types of fire
+  filter(
+    fire_subtype %in%
+      c(
+        "outside fire",
+        "residential structure fire",
+        "vegetation/woodland fire",
+        "other structure fire"
+      )
+  ) |>
+  # Reorder the fire subtypes in descending order of frequency
+  mutate(
+    fire_subtype = fct_relevel(
+      fire_subtype,
+      pull(fire_type_counts, "fire_subtype")
+    )
+  ) |>
+  group_by(fire_subtype) |>
+  group_modify(
+    ~ hotspot_gistar(.x, grid = kde_grid, bandwidth_adjust = 0.3, quiet = TRUE)
+  ) |>
+  ungroup() |>
+  st_as_sf() |>
+  hotspot_clip(edmonton, quiet = TRUE)
+
+# Keep points strictly inside exactly one district, so district totals do not
+# count a fire more than once at shared boundaries or in overlapping polygons
+fires_in_districts <- fires |>
+  filter(lengths(st_within(fires, districts)) == 1)
+
+fire_types_district_counts <- fires_in_districts |>
+  group_by(fire_subtype) |>
+  # `.x` contains the fire points for one subtype
+  group_modify(~ hotspot_count(.x, grid = districts, quiet = TRUE)) |>
+  ungroup() |>
+  # Restore the spatial class lost by `group_modify()`, then remove geometry
+  # because the following calculations and table only need district counts
+  st_as_sf() |>
+  st_drop_geometry() |>
+  select(fire_subtype, district, n) |>
+  arrange(desc(n)) |>
+  # Calculate proportion of fires of each type occurring in each district
+  mutate(prop = n / sum(n), .by = fire_subtype)
+```
+
+
+@fig-types-map shows where the four most-common types of fire concentrated. All panels use the same colour scale, allowing direct comparison of estimated densities between fire types. Outside fires are heavily concentrated downtown, while the other types of fire are more widely distributed. While
+`r percent(pluck(filter(fire_types_district_counts, fire_subtype == "outside fire"), "prop", 1), accuracy = 1)` of outside fires assigned to a district occurred in the `r pluck(filter(fire_types_district_counts, fire_subtype == "outside fire"), "district", 1)` district (one of `r nrow(districts)` districts in Edmonton), the district with the highest proportion of residential structure fires had only `r percent(pluck(filter(fire_types_district_counts, fire_subtype == "residential structure fire"), "prop", 1), accuracy = 1)` of assigned residential structure fires. @tbl-district-counts shows the number of fires of each type in each district. District counts and percentages exclude `r nrow(fires) - sum(fire_types_district_counts$n)` fires that could not be assigned to exactly one district interior, so each counted fire belongs to only one district. These fires remain included in the city-wide maps and fire-type totals.
+
+
+```{r}
+#| label: fig-types-map
+#| fig-alt: "Four density maps compare the most common Edmonton fire types in 2024. Darker red marks greater concentrations among cells with more fires than expected by chance. Outside fires have a strong downtown concentration; the other types are more widely spread. Panel labels identify fire types and a shared legend explains concentration."
+#| fig-asp: 1.4
+#| fig-cap: "Locations of calls to different types of fire in Edmonton, 2024"
+#| out-width: "100%"
+
+# Use one colour scale across the panels so densities can be compared directly
+fire_types_map_data <- fire_types_kde |>
+  # Keep all cells to show the whole city, but shade only significant cells
+  mutate(map_density = if_else(gistar > 0 & pvalue < 0.05, kde, NA_real_)) |>
+  left_join(fire_type_counts, by = join_by(fire_subtype)) |>
+  mutate(label = fct_inorder(label))
+
+hotspot_map(
+  fire_types_map_data,
+  aes(fill = map_density),
+  colour = NA,
+  alpha = 0.7,
+  basemap_type = "cartolight",
+  caption = "Data from City of Edmonton and OpenStreetMap"
+) +
+  # Repeat city and district boundaries in every panel
+  geom_sf(data = districts, colour = "grey50", fill = NA) +
+  geom_sf(data = edmonton, colour = "grey25", fill = NA) +
+  facet_wrap(vars(label), ncol = 2) +
+  scale_fill_gradient(
+    low = rgb(1, 0.8, 0.8),
+    high = rgb(0.6, 0, 0),
+    breaks = range(pull(fire_types_map_data, kde)),
+    labels = c("lower", "higher"),
+    na.value = "transparent"
+  ) +
+  labs(fill = "concentration\nof fires")
+```
+
+
+```{r}
+#| label: tbl-district-counts
+#| tbl-cap: "Number of fires of each type in each Edmonton district, 2024"
+#| warning: false
+
+fire_types_district_counts |>
+  # Count total number of fires of each type (to arrange columns)
+  mutate(sum_type = sum(n), .by = fire_subtype) |>
+  mutate(
+    # Add space in column names that need it to allow them to be broken over
+    # multiple lines
+    fire_subtype = str_remove(fire_subtype, " fire") |>
+      replace_values("vegetation/woodland" ~ "vegetation/ woodland"),
+    # Arrange the fire types in order of frequency
+    fire_subtype = fct_reorder(fire_subtype, sum_type)
+  ) |>
+  # Remove columns we don't want to appear in the table
+  select(-prop, -sum_type) |>
+  # Convert to wider format for presentation
+  pivot_wider(names_from = fire_subtype, values_from = n, values_fill = 0) |>
+  # Arrange districts in alphabetical order (since we will show fire frequency
+  # with colour)
+  arrange(district) |>
+  # Convert to gt object
+  gt(rowname_col = "district") |>
+  # Add row spanning all columns above header
+  tab_spanner(label = "type of fire", columns = everything()) |>
+  # Format numbers
+  fmt_number(decimals = 0) |>
+  # Colour cells according to number of fires
+  data_color(
+    palette = "Reds",
+    domain = range(pull(fire_types_district_counts, "n")),
+    na_color = "white"
+  ) |>
+  # Add a summary row
+  grand_summary_rows(
+    # Specify summary row should have the label 'Edmonton' with values
+    # calculated as the sum of the number of fires in each column
+    fns = "Edmonton" ~ sum(.),
+    # Specify the summary values should be formatted as numbers
+    fmt = ~ fmt_number(., decimals = 0)
+  ) |>
+  # Add a note at the bottom of the table explaining what the colours mean
+  tab_source_note("Column shading shows number of fires")
+```

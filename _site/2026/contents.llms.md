@@ -1,0 +1,77 @@
+Source: https://books.lesscrime.info/learncrimemapping/2026/contents.html
+
+<a id="quarto-document-content"></a>
+<a id="title-block-header"></a>
+<a id="contents"></a>
+
+# Contents
+
+This book is divided into 16 chapters, each covering a different topic related to crime mapping with R. Some chapters focus on mapping skills, while others focus on data wrangling or on how good coding practice can make your life easier. The chapters build on one another, so the easiest way to go through the book is to work through the chapters in order. But if you already know some R coding, and something about mapping, you might want to jump into a specific chapter to get what you need.
+
+**Before you start, make sure you [install the software you need for this book](setup.llms.md).**
+
+[Chapter 1: Getting Started](01_getting_started/index.llms.md)
+: Get started with crime mapping by learning about why putting crime on maps is useful, and get a tour of the Positron software we will use throughout this course.
+
+[Chapter 2: Your first crime map](02_your_first_crime_map/index.llms.md)
+: Quickly walk (or jog) through the process of creating a complete crime map in R.
+
+[Chapter 3: Loading and selecting data](03_data_wrangling/index.llms.md)
+: Learn how to load tabular data, name objects and choose the rows and columns needed for an analysis.
+
+[Chapter 4: Transforming and summarising data](04_transforming_data/index.llms.md)
+: Learn how to create new values, summarise and arrange rows, build pipelines and save processed data.
+
+[Chapter 5: Your second crime map](05_your_second_crime_map/index.llms.md)
+: Walk through each specific stage in the process of creating a crime map, while learning how to name files and organise scripts with comments.
+
+[Chapter 6: Mapping crime patterns](06_mapping_crime_patterns/index.llms.md)
+: Learn how to use maps to identify patterns of crime in cities.
+
+[Chapter 7: Giving a map context](07_map_context/index.llms.md)
+: Learn how to make your maps easier to understand using supporting elements such as titles and legends.
+
+[Chapter 8: Handling bugs in your code](08_handling_bugs/index.llms.md)
+: Learn how to find and fix problems with the R code that you write.
+
+[Chapter 9: Mapping area data](09_mapping_areas/index.llms.md)
+: Learn how to make thematic (choropleth) maps that use data for areas to accomplish tasks such as mapping crime rates.
+
+[Chapter 10: Handling messy data](10_messy_data/index.llms.md)
+: Learn how to handle different types of messy data and transform them into tidy data that is easier to analyse.
+
+[Chapter 11: Writing reports in R](11_writing_reports/index.llms.md)
+: Learn how to use Markdown and Quarto to write reports in Positron, and how writing reproducible reports makes your analysis more reliable.
+
+[Chapter 12: Using data about places](12_place_data/index.llms.md)
+: Learn how to find and use additional spatial data to improve your crime maps, for example by adding the locations of local facilities that might be important in generating patterns of crime.
+
+[Chapter 13: Mapping hotspots](13_mapping_hotspots/index.llms.md)
+: Learn how to identify which areas have more crime than we would expect by chance, and how to map the density of crime risk.
+
+[Chapter 14: Presenting spatial data without maps](14_no_maps/index.llms.md)
+: Learn how to use tables and different types of charts to communicate spatial information about crime in circumstances where maps are not the best choice.
+
+[Chapter 15: Mapping crime over time](15_mapping_time/index.llms.md)
+: Learn how spatial concentrations of crime vary over time, how to analyse spatio-temporal crime patterns and how to make animated maps.
+
+[Chapter 16: Mapping crime series](16_crime_series/index.llms.md)
+: Learn how to map serial crimes and spree crimes, as well as how to combine multiple maps in R.
+
+<a id="features-used-in-this-book"></a>
+
+## Features used in this book
+
+ImportantImportant things you should know
+
+Throughout the book you will see boxes marked with an exclamation mark that contain information that it is particularly important for you to know to avoid common mistakes in writing code or making maps. Pay special attention to these points and remember to ask questions if anything isn't clear.
+
+TipClick on this line of text
+
+<a id="callout-2"></a>
+
+In this book you will also see lines of text marked by a light-bulb symbol that you can click on to find out more information about a particular issue. This is generally information that you do not need to know to complete a task, but which might be useful in other circumstances or which might answer some questions that you have. You can skip these boxes if you want to, or come back to them later if you have a question.
+
+QuizHow to use this book
+
+Finally, you will see boxes like this one throughout the book that give you the opportunity to check your understanding of a particular section of that chapter. Sometimes this will be in the form of a multiple-choice question, and sometimes you'll be asked to write some code in the R Console. You will always be able to check whether your answers are correct.

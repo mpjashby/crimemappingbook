@@ -30,4 +30,4 @@ Leave a blank line before and after an include shortcode. Keep chapter-specific 
 
 ## Publishing annual editions
 
-See [publishing/README.md](publishing/README.md) for building the combined website, preserving historical editions and activating yearless redirects. Upload the assembled `_site/` directory rather than `_book/` to the book website root.
+See [publishing/README.md](publishing/README.md) for building the combined website, preserving historical editions and activating yearless redirects. Commit the assembled `_site/` directory alongside `_book/`; GitHub Actions uploads its contents to the book website root when pushed to `main`. See the publishing guide for the required FTP password secret.

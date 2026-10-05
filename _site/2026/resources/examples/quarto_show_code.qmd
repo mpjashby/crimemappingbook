@@ -1,0 +1,42 @@
+---
+title: "Quarto example: show R code"
+author: "John Smith"
+date: "today"
+format:
+  html:
+    embed-resources: true
+---
+
+
+```{r}
+#| label: setup
+
+# Load packages
+pacman::p_load(here, httr2, tidyverse)
+
+# Create the directory for the original downloaded data
+dir.create(here("data", "raw"), recursive = TRUE, showWarnings = FALSE)
+
+# Download the original data
+request(
+  "https://mpjashby.github.io/crimemappingdata/medellin_homicides.csv"
+) |>
+  req_perform(path = here("data", "raw", "medellin_homicides.csv"))
+
+# Load data
+medellin_homicides <- here("data", "raw", "medellin_homicides.csv") |>
+  read_csv2() |>
+  # Remove rows with missing coordinates
+  drop_na(longitud, latitud)
+```
+
+```{r}
+#| label: count-homicides
+
+# Count number of homicides in February 2019
+homicide_count <- medellin_homicides |>
+  filter(year(fecha_hecho) == 2019, month(fecha_hecho) == 2) |>
+  nrow()
+```
+
+There were `r scales::comma(homicide_count)` homicides recorded in February 2019.

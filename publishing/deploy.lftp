@@ -1,0 +1,20 @@
+# The workflow selects the server and username; LFTP_PASSWORD supplies the password.
+set cmd:fail-exit yes
+set net:timeout 30
+set net:max-retries 3
+set net:reconnect-interval-base 5
+set ftp:ssl-allow yes
+set ftp:ssl-force yes
+set ftp:ssl-protect-data yes
+set ftp:ssl-protect-list yes
+set ftp:passive-mode yes
+set ssl:verify-certificate yes
+# Provider's certificate does not cover ftp.lesscrime.info.
+# Restore this to yes once the provider fixes the certificate hostname.
+set ssl:check-hostname no
+# Require the existing destination; do not create a potentially incorrect path.
+cd subdomains/books/learncrimemapping
+# Upload all editions before activating the root redirects. No remote deletions.
+mirror --reverse --verbose --parallel=2 --exclude '^\.htaccess$' _site/ .
+put _site/.htaccess -o .htaccess
+bye

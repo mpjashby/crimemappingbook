@@ -1,0 +1,32 @@
+# Generated from publishing/editions.json. Install at the book website root.
+RewriteEngine On
+ErrorDocument 404 /learncrimemapping/404.html
+# Do not cache the moving current-edition pointer.
+<IfModule mod_headers.c>
+  Header always set Cache-Control "no-store" "expr=%{REQUEST_STATUS} == 302"
+</IfModule>
+# Explicit years must never fall through to the current edition.
+RewriteRule ^[0-9]{4}(?:/|$) - [L]
+RewriteRule ^404\.html$ - [END]
+RewriteRule ^11_writing_reports/(?:www/)?medellin_homicides\.(qmd|html)$ /learncrimemapping/2026/resources/reports/medellin_homicides_map.$1 [R=302,END]
+RewriteRule ^11_writing_reports/(?:www/)?quarto_code_chunk(?:_echo)?\.(qmd|html)$ /learncrimemapping/2026/resources/examples/quarto_show_code.$1 [R=302,END]
+RewriteRule ^11_writing_reports/(?:www/)?quarto_code_chunk_noecho\.(qmd|html)$ /learncrimemapping/2026/resources/examples/quarto_hide_code.$1 [R=302,END]
+RewriteRule ^resources/example_quarto_report\.(qmd|html)$ /learncrimemapping/2026/resources/reports/medellin_homicides_table.$1 [R=302,END]
+RewriteRule ^resources/template\.R$ /learncrimemapping/2026/resources/templates/crime_mapping_script.R [R=302,END]
+RewriteRule ^resources/template\.qmd$ /learncrimemapping/2026/resources/templates/crime_mapping_report.qmd [R=302,END]
+RewriteRule ^resources/edmonton_fire_rescue_demand\.(qmd|html)$ /learncrimemapping/2026/resources/reports/edmonton_fire_rescue_demand.$1 [R=302,END]
+RewriteRule ^resources/yarra_waste_dumping\.(qmd|pdf)$ /learncrimemapping/2026/resources/reports/yarra_waste_dumping.$1 [R=302,END]
+RewriteRule ^10_place_data(?:/(.*))?$ /learncrimemapping/2026/12_place_data/$1 [R=302,END]
+RewriteRule ^11_mapping_hotspots(?:/(.*))?$ /learncrimemapping/2026/13_mapping_hotspots/$1 [R=302,END]
+RewriteRule ^12_messy_data(?:/(.*))?$ /learncrimemapping/2026/10_messy_data/$1 [R=302,END]
+RewriteRule ^13_crime_series(?:/(.*))?$ /learncrimemapping/2026/16_crime_series/$1 [R=302,END]
+RewriteRule ^14_writing_reports(?:/(.*))?$ /learncrimemapping/2026/11_writing_reports/$1 [R=302,END]
+RewriteRule ^(?:04|05)_code_with_style(?:/(?:index\.html)?)?$ /learncrimemapping/2026/code_with_style.html [R=302,END]
+RewriteRule ^04_your_second_crime_map(?:/(.*))?$ /learncrimemapping/2026/05_your_second_crime_map/$1 [R=302,END]
+RewriteRule ^06_map_context(?:/(.*))?$ /learncrimemapping/2026/07_map_context/$1 [R=302,END]
+RewriteRule ^07_handling_bugs(?:/(.*))?$ /learncrimemapping/2026/08_handling_bugs/$1 [R=302,END]
+RewriteRule ^15_no_maps(?:/(.*))?$ /learncrimemapping/2026/14_no_maps/$1 [R=302,END]
+RewriteRule ^16_mapping_time(?:/(.*))?$ /learncrimemapping/2026/15_mapping_time/$1 [R=302,END]
+RewriteRule ^00_setup(?:/(?:index\.html)?)?$ /learncrimemapping/2026/setup.html [R=302,END]
+RewriteRule ^08_projects(?:/(?:index\.html)?)?$ /learncrimemapping/2026/01_getting_started/ [R=302,END]
+RewriteRule ^(.*)$ /learncrimemapping/2026/$1 [R=302,END]

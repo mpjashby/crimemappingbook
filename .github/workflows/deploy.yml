@@ -1,0 +1,53 @@
+name: Deploy book website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '_site/**'
+      - 'publishing/deploy.lftp'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-book-website
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out committed website
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Check deployment files and credentials
+        env:
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          test -n "$FTP_USERNAME" || { echo 'Add the FTP_USERNAME repository secret before deploying.'; exit 1; }
+          test -n "$LFTP_PASSWORD" || { echo 'Add the FTP_PASSWORD repository secret before deploying.'; exit 1; }
+          test -f _site/.edition-site
+          test -f _site/.htaccess
+          test -f _site/2026/index.html
+          test -f _site/2025/index.html
+          test -f _site/2024/index.html
+
+      - name: Install FTP client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes lftp ca-certificates
+
+      - name: Upload website using explicit FTPS
+        env:
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp --norc --user "$FTP_USERNAME" --env-password -p 21 ftp://ftp.lesscrime.info < publishing/deploy.lftp
