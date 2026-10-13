@@ -50,6 +50,55 @@ Save data
 
 in the `data/processed` folder
 
+<a id="sec-load-previous-data"></a>
+<a id="loading-the-data-needed-for-this-chapter"></a>
+
+### 4.1.1 Loading the data needed for this chapter
+
+In this chapter we will learn how to use several R functions to transform data. We will do that using the same datasets about aggravated assaults in Austin and robberies in San Francisco (both in the USA) that we introduced in [Chapter 3](../03_data_wrangling/index.llms.md). Since we have started a new R session since we ran the code in [Chapter 3](../03_data_wrangling/index.llms.md), we will need to load these datasets again. We can do that by running this code in the R Console:
+
+<a id="lst-load-previous-data"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Load packages</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, readxl, tidyverse)</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="co"># AUSTIN AGGRAVATED ASSAULTS ---------------------------------------------------</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="co"># Download the data from a URL and store it in a local file</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="fu">request</span>(</span>
+<span id="cb2-9"><a href="#cb2-9"></a>  <span class="st">&quot;https://mpjashby.github.io/crimemappingdata/aggravated_assaults.xlsx&quot;</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw&quot;</span>, <span class="st">&quot;aggravated_assaults.xlsx&quot;</span>))</span>
+<span id="cb2-12"><a href="#cb2-12"></a></span>
+<span id="cb2-13"><a href="#cb2-13"></a><span class="co"># Load the Austin data from the Excel workbook</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a>agg_assault_data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(</span>
+<span id="cb2-15"><a href="#cb2-15"></a>  <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw&quot;</span>, <span class="st">&quot;aggravated_assaults.xlsx&quot;</span>),</span>
+<span id="cb2-16"><a href="#cb2-16"></a>  <span class="at">sheet =</span> <span class="st">&quot;Austin&quot;</span></span>
+<span id="cb2-17"><a href="#cb2-17"></a>)</span>
+<span id="cb2-18"><a href="#cb2-18"></a></span>
+<span id="cb2-19"><a href="#cb2-19"></a></span>
+<span id="cb2-20"><a href="#cb2-20"></a><span class="co"># SAN FRANCISCO ROBBERIES ------------------------------------------------------</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a></span>
+<span id="cb2-22"><a href="#cb2-22"></a><span class="co"># Download the data from a URL and store it in a local file</span></span>
+<span id="cb2-23"><a href="#cb2-23"></a><span class="fu">request</span>(</span>
+<span id="cb2-24"><a href="#cb2-24"></a>  <span class="st">&quot;https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv&quot;</span></span>
+<span id="cb2-25"><a href="#cb2-25"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb2-26"><a href="#cb2-26"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw&quot;</span>, <span class="st">&quot;san_francisco_robbery.csv&quot;</span>))</span>
+<span id="cb2-27"><a href="#cb2-27"></a></span>
+<span id="cb2-28"><a href="#cb2-28"></a><span class="co"># Load the local file into R</span></span>
+<span id="cb2-29"><a href="#cb2-29"></a>san_fran_rob <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw&quot;</span>, <span class="st">&quot;san_francisco_robbery.csv&quot;</span>))</span></code></pre></div>
+<figcaption>Code 4.1</figcaption>
+</figure>
+
+TipWhy are we running this code in the R Console?
+
+<a id="callout-2"></a>
+
+You might be wondering why we are running this code in the R Console rather than in an R script. The reason is that for the first part of this chapter we will keep reusing the same code to learn about several different functions, rather than constructing a complete script. We will then use those functions to create two complete scripts in [Section 4.7](#sec-complete-wrangling-scripts).
+
 <a id="sec-mutate"></a>
 <a id="transforming-values"></a>
 
@@ -68,7 +117,7 @@ For example, say we wanted to create a new column in our aggravated-assault data
 <figure>
 <pre><code>R Console</code></pre>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">mutate</span>(agg_assault_data, <span class="at">weekday =</span> <span class="fu">wday</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>))</span></code></pre></div>
-<figcaption>Code 4.1</figcaption>
+<figcaption>Code 4.2</figcaption>
 </figure>
 
     # A tibble: 8,696 × 6
@@ -98,7 +147,7 @@ We can also change existing columns. However (as with objects) there is no way t
 <span id="cb2-3"><a href="#cb2-3"></a>  <span class="at">date =</span> <span class="fu">as_date</span>(date),</span>
 <span id="cb2-4"><a href="#cb2-4"></a>  <span class="at">weekday =</span> <span class="fu">wday</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb2-5"><a href="#cb2-5"></a>)</span></code></pre></div>
-<figcaption>Code 4.2</figcaption>
+<figcaption>Code 4.3</figcaption>
 </figure>
 
     # A tibble: 8,696 × 6
@@ -133,7 +182,7 @@ You may sometimes want to change only some values in a column. With a categorica
 <span id="cb2-9"><a href="#cb2-9"></a>    <span class="st">&quot;street&quot;</span> <span class="sc">~</span> <span class="st">&quot;street or road&quot;</span></span>
 <span id="cb2-10"><a href="#cb2-10"></a>  )</span>
 <span id="cb2-11"><a href="#cb2-11"></a>)</span></code></pre></div>
-<figcaption>Code 4.3</figcaption>
+<figcaption>Code 4.4</figcaption>
 </figure>
 
     # A tibble: 8,696 × 5
@@ -184,7 +233,7 @@ By default, `summarise()` collapses data into a single row, with each column sum
 <span id="cb2-3"><a href="#cb2-3"></a>  <span class="at">mean_lng =</span> <span class="fu">mean</span>(longitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
 <span id="cb2-4"><a href="#cb2-4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb2-5"><a href="#cb2-5"></a>)</span></code></pre></div>
-<figcaption>Code 4.4</figcaption>
+<figcaption>Code 4.5</figcaption>
 </figure>
 
     # A tibble: 1 × 2
@@ -194,7 +243,7 @@ By default, `summarise()` collapses data into a single row, with each column sum
 
 TipWhat does the argument `na.rm = TRUE` do?
 
-<a id="callout-3"></a>
+<a id="callout-4"></a>
 
 Lots of functions in R have an argument called `na.rm` that can be set to either `TRUE` or `FALSE`. Setting `na.rm = TRUE` in this case specifies that the `mean()` function should remove (`rm`) any missing (`NA`) values before calculating the mean.
 
@@ -214,7 +263,7 @@ This logic applies in lots of cases. For example, if you create an R object call
 <span id="cb2-4"><a href="#cb2-4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
 <span id="cb2-5"><a href="#cb2-5"></a>  <span class="at">.by =</span> location_category</span>
 <span id="cb2-6"><a href="#cb2-6"></a>)</span></code></pre></div>
-<figcaption>Code 4.5</figcaption>
+<figcaption>Code 4.6</figcaption>
 </figure>
 
     # A tibble: 12 × 3
@@ -245,7 +294,7 @@ You can add multiple grouping variables using the `c()` (*combine*) function if 
 <span id="cb2-4"><a href="#cb2-4"></a>  <span class="at">mean_lat =</span> <span class="fu">mean</span>(latitude, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
 <span id="cb2-5"><a href="#cb2-5"></a>  <span class="at">.by =</span> <span class="fu">c</span>(location_category, location_type)</span>
 <span id="cb2-6"><a href="#cb2-6"></a>)</span></code></pre></div>
-<figcaption>Code 4.6</figcaption>
+<figcaption>Code 4.7</figcaption>
 </figure>
 
     # A tibble: 24 × 4
@@ -275,7 +324,7 @@ One very common way of summarising data is to count the number of rows in a data
 <figure>
 <pre><code>R Console</code></pre>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">summarise</span>(agg_assault_data, <span class="at">n =</span> <span class="fu">n</span>(), <span class="at">.by =</span> <span class="fu">c</span>(location_category, location_type))</span></code></pre></div>
-<figcaption>Code 4.7</figcaption>
+<figcaption>Code 4.8</figcaption>
 </figure>
 
     # A tibble: 24 × 3
@@ -295,14 +344,14 @@ One very common way of summarising data is to count the number of rows in a data
 
 In this code, the `n()` function simply returns the number of rows of data in each group, i.e. the number of rows with each unique combination of values of `location_category` and `location_type`.
 
-Since counting the number of rows in each group in a dataset is a very common task, dplyr includes another function called `count()` that allows you to do the same thing as in [Code 4.7](#lst-transforming-data-count-rows-with-summarise), but with slightly less typing. So if you wanted to know how many aggravated assaults had occurred in each location category and type, you could use this code instead of using `summarise()`:
+Since counting the number of rows in each group in a dataset is a very common task, dplyr includes another function called `count()` that allows you to do the same thing as in [Code 4.8](#lst-transforming-data-count-rows-with-summarise), but with slightly less typing. So if you wanted to know how many aggravated assaults had occurred in each location category and type, you could use this code instead of using `summarise()`:
 
 <a id="lst-transforming-data-count-rows-with-count"></a>
 
 <figure>
 <pre><code>R Console</code></pre>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">count</span>(agg_assault_data, location_category, location_type)</span></code></pre></div>
-<figcaption>Code 4.8</figcaption>
+<figcaption>Code 4.9</figcaption>
 </figure>
 
     # A tibble: 24 × 3
@@ -342,7 +391,7 @@ It is sometimes useful to be able to place rows in a dataset into a particular o
 <figure>
 <pre><code>R Console</code></pre>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">arrange</span>(agg_assault_data, date)</span></code></pre></div>
-<figcaption>Code 4.9</figcaption>
+<figcaption>Code 4.10</figcaption>
 </figure>
 
     # A tibble: 8,696 × 5
@@ -367,7 +416,7 @@ By default, `arrange()` sorts rows in ascending order, i.e. it sorts numeric va
 <figure>
 <pre><code>R Console</code></pre>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">arrange</span>(agg_assault_data, <span class="fu">desc</span>(date))</span></code></pre></div>
-<figcaption>Code 4.10</figcaption>
+<figcaption>Code 4.11</figcaption>
 </figure>
 
     # A tibble: 8,696 × 5
@@ -392,7 +441,7 @@ We can also sort the data based on multiple columns -- the data are sorted first
 <figure>
 <pre><code>R Console</code></pre>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">arrange</span>(agg_assault_data, date, <span class="fu">desc</span>(location_type), location_category)</span></code></pre></div>
-<figcaption>Code 4.11</figcaption>
+<figcaption>Code 4.12</figcaption>
 </figure>
 
     # A tibble: 8,696 × 5
@@ -443,7 +492,7 @@ In [Section 1.5](../01_getting_started/index.llms.md#sec-create-project) we lear
 <span id="cb2-3"><a href="#cb2-3"></a>  agg_assault_counts,</span>
 <span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;processed&quot;</span>, <span class="st">&quot;aggravated_assault_counts.csv&quot;</span>)</span>
 <span id="cb2-5"><a href="#cb2-5"></a>)</span></code></pre></div>
-<figcaption>Code 4.12</figcaption>
+<figcaption>Code 4.13</figcaption>
 </figure>
 
 There are corresponding write functions for other types of data, but in this course we will store most non-spatial data in CSV format because it can be read by many different programs.
@@ -481,7 +530,7 @@ Data wrangling often involves multiple steps. For example, we might want to load
 <span id="cb2-9"><a href="#cb2-9"></a></span>
 <span id="cb2-10"><a href="#cb2-10"></a><span class="co"># Count how many offences occurred on each weekday</span></span>
 <span id="cb2-11"><a href="#cb2-11"></a>q1_weekday_counts <span class="ot">&lt;-</span> <span class="fu">count</span>(robbery4, weekday)</span></code></pre></div>
-<figcaption>Code 4.13</figcaption>
+<figcaption>Code 4.14</figcaption>
 </figure>
 
 This code works, but creates three intermediate objects as well as the final `q1_weekday_counts` object. Intermediate objects can be useful when debugging a complicated analysis. However, they also create the substantial risk that you will accidentally use the wrong intermediate object in a later step, which can often cause errors in your code that are hard to fix. For example, when you write the code that creates the `robbery4` object, if you accidentally use `robbery2` as the input instead of `robbery3`, the filtering step in the data-wrangling process will have no effect. For that reason, it is generally better to avoid creating intermediate objects unless you actually need them.
@@ -495,13 +544,13 @@ For example, `filter()` uses the `robbery2` object created by `select()`, but af
 
 It may be useful to read the pipe operator as 'and then', since piped code does the first thing *and then* the second thing with the result *and then* the third thing with the result of that, and so on. Piped code (sometimes called a *pipeline*) is a lot like the series of steps in a recipe.
 
-For example, instead of creating multiple objects called `robbery2`, `robbery3`, `robbery4` and `q1_weekday_counts` and so on, we can use a single code pipeline. We will add this pipeline to a script in [Section 4.7](#sec-complete-wrangling-scripts). For now, look at [Code 4.14](#lst-transforming-data-weekday-counts-pipeline) and its numbered explanations -- note that each pipe operator (`|>`) corresponds to '*and then*' in the explanations accompanying [Code 4.14](#lst-transforming-data-weekday-counts-pipeline).
+For example, instead of creating multiple objects called `robbery2`, `robbery3`, `robbery4` and `q1_weekday_counts` and so on, we can use a single code pipeline. We will add this pipeline to a script in [Section 4.7](#sec-complete-wrangling-scripts). For now, look at [Code 4.15](#lst-transforming-data-weekday-counts-pipeline) and its numbered explanations -- note that each pipe operator (`|>`) corresponds to '*and then*' in the explanations accompanying [Code 4.15](#lst-transforming-data-weekday-counts-pipeline).
 
 <a id="lst-transforming-data-weekday-counts-pipeline"></a>
 
 <figure>
 <pre><code>Code to add later</code></pre>
-<a id="annotated-cell-14"></a>
+<a id="annotated-cell-15"></a>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Produce counts of robberies each weekday</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="dv">1</span>q1_weekday_counts <span class="ot">&lt;-</span> san_fran_rob <span class="sc">|&gt;</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a>  <span class="fu">filter</span>(</span>
@@ -511,7 +560,7 @@ For example, instead of creating multiple objects called `robbery2`, `robbery3`,
 <span id="cb2-7"><a href="#cb2-7"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb2-8"><a href="#cb2-8"></a><span class="dv">3</span>  <span class="fu">mutate</span>(<span class="at">weekday =</span> <span class="fu">wday</span>(date_time, <span class="at">label =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb2-9"><a href="#cb2-9"></a><span class="dv">4</span>  <span class="fu">count</span>(weekday)</span></code></pre></div>
-<figcaption>Code 4.14</figcaption>
+<figcaption>Code 4.15</figcaption>
 </figure>
 
 1
@@ -530,7 +579,7 @@ You might not find the pipe operator completely intuitive at the moment, but it 
 
 TipWhat about the `%>%` pipe operator?
 
-<a id="callout-7"></a>
+<a id="callout-8"></a>
 
 If you have learned any R coding before, you might have learned to use the `%>%` pipe operator from the magrittr package. The `%>%` pipe operator was introduced several years ago to allow people to construct pipelines of code in R. The `%>%` operator was so widely used that the team that writes the R programming language decided to provide the `|>` pipe operator in R itself, to avoid the need to load the magrittr package. You might sometimes see the `|>` referred to as the *native* pipe operator.
 
@@ -598,7 +647,7 @@ Once you have tried this yourself, click the 'Solution' button to compare your c
 <span id="cb2-24"><a href="#cb2-24"></a>  q1_weekday_counts,</span>
 <span id="cb2-25"><a href="#cb2-25"></a>  <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;processed&quot;</span>, <span class="st">&quot;q1_weekday_counts.csv&quot;</span>)</span>
 <span id="cb2-26"><a href="#cb2-26"></a>)</span></code></pre></div>
-<figcaption>Code 4.15</figcaption>
+<figcaption>Code 4.16</figcaption>
 </figure>
 
 ------------------------------------------------------------------------
@@ -644,7 +693,7 @@ Try to complete the script before clicking the 'Solution' button.
 <span id="cb2-28"><a href="#cb2-28"></a>  agg_assault_counts,</span>
 <span id="cb2-29"><a href="#cb2-29"></a>  <span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;processed&quot;</span>, <span class="st">&quot;aggravated_assault_counts.csv&quot;</span>)</span>
 <span id="cb2-30"><a href="#cb2-30"></a>)</span></code></pre></div>
-<figcaption>Code 4.16</figcaption>
+<figcaption>Code 4.17</figcaption>
 </figure>
 
 Save both scripts by pressing .

@@ -18,6 +18,10 @@ post_render_main <- function() {
   output <- Sys.getenv("QUARTO_PROJECT_OUTPUT_DIR", unset = "_book")
   if (!nzchar(output)) output <- "_book"
   output <- post_render_output(output)
+  # Exercises are previewed separately until they are ready for publication.
+  # Remove output copied by earlier hooks so it cannot enter the edition site.
+  exercise_output <- file.path(output, "exercises")
+  if (dir.exists(exercise_output)) unlink(exercise_output, recursive = TRUE)
   # Run the generator in another R process to isolate its globals and CLI arguments.
   status <- system2(file.path(R.home("bin"), "Rscript"),
     c("generate_llms.R", "--skip-render", shQuote(paste0("--output-dir=", output))))

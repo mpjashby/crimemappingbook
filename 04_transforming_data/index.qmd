@@ -80,6 +80,55 @@ in the `data/processed` folder
 :::::
 
 
+### Loading the data needed for this chapter {#sec-load-previous-data}
+
+In this chapter we will learn how to use several R functions to transform data. We will do that using the same datasets about aggravated assaults in Austin and robberies in San Francisco (both in the USA) that we introduced in @sec-wrangling-data. Since we have started a new R session since we ran the code in @sec-wrangling-data, we will need to load these datasets again. We can do that by running this code in the R Console:
+
+
+```{r}
+#| label: load-previous-data
+#| lst-label: lst-load-previous-data
+#| lst-cap: ""
+#| filename: "R Console"
+#| output: false
+
+# Load packages
+pacman::p_load(here, httr2, readxl, tidyverse)
+
+
+# AUSTIN AGGRAVATED ASSAULTS ---------------------------------------------------
+
+# Download the data from a URL and store it in a local file
+request(
+  "https://mpjashby.github.io/crimemappingdata/aggravated_assaults.xlsx"
+) |>
+  req_perform(path = here("data", "raw", "aggravated_assaults.xlsx"))
+
+# Load the Austin data from the Excel workbook
+agg_assault_data <- read_excel(
+  here("data", "raw", "aggravated_assaults.xlsx"),
+  sheet = "Austin"
+)
+
+
+# SAN FRANCISCO ROBBERIES ------------------------------------------------------
+
+# Download the data from a URL and store it in a local file
+request(
+  "https://mpjashby.github.io/crimemappingdata/san_francisco_robbery.csv"
+) |>
+  req_perform(path = here("data", "raw", "san_francisco_robbery.csv"))
+
+# Load the local file into R
+san_fran_rob <- read_csv(here("data", "raw", "san_francisco_robbery.csv"))
+```
+
+
+::: {.callout-tip collapse="true" title="Why are we running this code in the R Console?"}
+You might be wondering why we are running this code in the R Console rather than in an R script. The reason is that for the first part of this chapter we will keep reusing the same code to learn about several different functions, rather than constructing a complete script. We will then use those functions to create two complete scripts in @sec-complete-wrangling-scripts.
+:::
+
+
 ## Transforming values {#sec-mutate}
 
 It is often useful to create new columns in our data, or change the values of existing columns. The `mutate()` function in the dplyr package gives us a way to transform existing columns in our dataset using almost any R function.
