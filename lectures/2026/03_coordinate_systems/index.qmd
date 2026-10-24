@@ -1,0 +1,840 @@
+---
+title: "Lecture 3: Coordinate reference systems"
+subtitle: "SECU0005 Crime Mapping | 2026"
+title-illustration: assets/map_context_dark.png
+title-illustration-alt: "Two students examine a crime density map with colour swatches, a north arrow and a scale bar."
+title-slide-attributes:
+  data-background-color: "#361a54"
+format:
+  revealjs:
+    embed-resources: true
+    include-after-body: ../accessibility.html
+    controls: true
+    controls-layout: edges
+    transition: none
+    background-transition: none
+    center-title-slide: false
+    code-block-height: 650px
+    template-partials:
+      - ../title-slide.html
+execute:
+  echo: true
+  cache: true
+---
+
+
+
+```{r}
+#| echo: false
+
+# Load packages
+pacman::p_load(ggspatial, gt, scales, sf, tidyverse)
+```
+
+
+--------------------------------------------------------------------------------
+
+
+## Today
+
+::: {.nonincremental}
+* Continuous Module Dialogue
+* Feedback from the Week 2 exercise
+* Quiz
+* Co-ordinate reference systems
+:::
+
+
+
+# Feedback from the Week 2 exercise
+
+
+
+--------------------------------------------------------------------------------
+
+
+## Minimal working answer
+
+::: {.scrollable}
+```{r}
+#| eval: false
+#| file: "../../../exercises/vancouver_vehicle_thefts/vancouver_vehicle_thefts.R"
+
+```
+:::
+
+
+
+--------------------------------------------------------------------------------
+
+
+## Minimal working answer
+
+```{r}
+#| fig-alt: "Map of thefts from vehicles in Vancouver in 2020, with a base map and the data layer on top."
+#| file: "../../../exercises/vancouver_vehicle_thefts/vancouver_vehicle_thefts.R"
+#| echo: false
+```
+
+
+--------------------------------------------------------------------------------
+
+
+## :warning: Read the instructions
+
+> For this week's exercise, you must submit the R code needed to make a dot map 
+> of **thefts from vehicles** in Vancouver **in 2020**.
+
+::: {.top-space .fragment}
+:no_entry_sign: No other maps
+
+:no_entry_sign: No other crime categories
+
+:no_entry_sign: No data for other years
+:::
+
+
+--------------------------------------------------------------------------------
+
+
+## :warning: Read the instructions
+
+> You should submit only the R code, not an image of the map itself. Your code 
+> should be submitted in a single file that has the .R file extension. 
+
+::: {.top-space .fragment}
+:no_entry_sign: No multiple `.R` files
+
+:no_entry_sign: No files without a file extension
+
+:no_entry_sign: No image files
+
+:no_entry_sign: No zip files
+:::
+
+
+--------------------------------------------------------------------------------
+
+
+## :angry: Not acting on last week's feedback
+
+::: {.nobullets}
+* Temporary code like `head()` or `learncrimemapping::check_code()` in script file
+* Loading packages part-way through a script
+* `read.csv()` etc. instead of `read_csv()`
+* Lines (including comments) over 80 characters long
+* Not using blank lines to separate chunks of code
+* Comments that don't start with `#` _and a space_, e.g. `# This is a comment`
+:::
+
+
+--------------------------------------------------------------------------------
+
+
+## :warning: Don't use `ggplot()` (yet) to make maps
+
+Instead of this: 
+
+```{r}
+#| eval: false
+
+ggplot() +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
+  geom_sf(data = thefts_vehicles_sf, colour = "#FF0000", alpha = 0.1) +
+  labs(caption = "Map tiles ©️ CARTO; data ©️ OpenStreetMap contributors") +
+  theme_void() +
+  theme(plot.caption = element_text(hjust = 0))
+```
+
+::: {.fragment}
+You can just use this:
+
+```{r}
+#| eval: false
+
+hotspot_map(thefts_vehicles_sf, basemap_type = "cartolight", alpha = 0.1)
+```
+:::
+
+
+--------------------------------------------------------------------------------
+
+
+## The base map should not distract from the data
+
+
+#### `basemap_type = `
+
+:::: {.columns}
+
+::: {.column width="33%"}
+#### `"opencycle"` :no_entry_sign:
+
+```{r}
+#| echo: false
+#| fig-asp: 1
+
+ggplot(thefts_from_vehicles) +
+  annotation_map_tile(type = "opencycle", zoomin = 0, progress = "none") +
+  geom_sf(alpha = 0.2, colour = "darkblue", size = 0.75) +
+  fixed_plot_aspect(ratio = 1) +
+  theme_void()
+```
+:::
+
+::: {.column width="33%"}
+#### `"osm"` :thinking:
+
+```{r}
+#| echo: false
+#| fig-asp: 1
+
+ggplot(thefts_from_vehicles) +
+  annotation_map_tile(type = "osm", zoomin = 0, progress = "none") +
+  geom_sf(alpha = 0.2, colour = "darkblue", size = 0.75) +
+  fixed_plot_aspect(ratio = 1) +
+  theme_void()
+```
+:::
+
+::: {.column width="33%"}
+#### `"cartolight"` :sunglasses:
+
+```{r}
+#| echo: false
+#| fig-asp: 1
+
+ggplot(thefts_from_vehicles) +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
+  geom_sf(alpha = 0.2, colour = "darkblue", size = 0.75) +
+  fixed_plot_aspect(ratio = 1) +
+  theme_void()
+```
+:::
+
+::::
+
+
+--------------------------------------------------------------------------------
+
+
+## :warning: Be careful with file names (`_` != `-`)
+
+```{r}
+#| eval: false
+#| code-line-numbers: "5,8"
+
+# Download the theft data and saving it in local file
+request(
+  "https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"
+) |>
+  req_perform(path = here("data", "raw", "vancouver_thefts.csv.gz"))
+
+# Read the downloaded data and clean the column names
+thefts <- read_csv(here("data", "raw", "vancouver-thefts.csv.gz")) |>
+  janitor::clean_names()
+```
+
+```{r}
+#| echo: false
+#| error: true
+thefts <- read_csv(here("data", "raw", "vancouver-thefts.csv.gz")) |>
+  janitor::clean_names()
+```
+
+
+--------------------------------------------------------------------------------
+
+
+## :warning: Be careful with file types (`.csv` != `.csv.gz`)
+
+```{r}
+#| eval: false
+#| code-line-numbers: "4,8"
+
+# Download the theft data and saving it in local file
+request(
+  "https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"
+) |>
+  req_perform(path = here("data", "raw", "vancouver_thefts.csv.gz"))
+
+# Read the downloaded data and clean the column names
+thefts <- read_csv(here("data", "raw", "vancouver_thefts.csv")) |>
+  janitor::clean_names()
+```
+
+```{r}
+#| echo: false
+#| error: true
+thefts <- read_csv(here("data", "raw", "vancouver_thefts.csv")) |>
+  janitor::clean_names()
+```
+
+
+--------------------------------------------------------------------------------
+
+
+## :warning: Be careful copying and pasting code from previous exercises
+
+
+```{r}
+#| error: true
+#| code-line-numbers: "3"
+
+# Create a basic crime map
+hotspot_map(
+  bike_thefts,
+  basemap_type = "cartolight",
+  colour = "red",
+  size = 0.7,
+  alpha = 0.1
+)
+```
+
+
+# 
+
+::: {.center}
+![](assets/quiz.jpeg){fig-alt="" role="presentation"}
+:::
+
+
+
+# Co-ordinate reference systems
+
+
+
+--------------------------------------------------------------------------------
+
+
+## Numbers on their own could mean anything
+
+```{r}
+#| echo: false
+
+birkbeck <- tidygeocoder::geo(
+  "Chandler House, Wakefield Street, London WC1N 1BL"
+) |>
+  st_as_sf(coords = c("long", "lat"), crs = "EPSG:4326") |>
+  select(geometry)
+
+bbk1 <- birkbeck |>
+  df_spatial() |>
+  select(x, y) |>
+  gt() |>
+  fmt_number(decimals = 4) |>
+  cols_width(x ~ pct(50), y ~ pct(50)) |>
+  tab_options(table.width = pct(100)) |>
+  opt_table_font(size = "36px")
+
+bbk1_text <- birkbeck |>
+  df_spatial() |>
+  select(x, y) |>
+  mutate(
+    text = str_glue(
+      "{number(x, accuracy = 0.0001)}, {number(y, accuracy = 0.0001)}"
+    )
+  ) |>
+  pull("text", 1)
+
+bbk2 <- birkbeck |>
+  st_transform("EPSG:27700") |>
+  df_spatial() |>
+  select(x, y) |>
+  gt() |>
+  fmt_number(decimals = 0) |>
+  cols_width(x ~ pct(50), y ~ pct(50)) |>
+  tab_options(table.width = pct(100)) |>
+  opt_table_font(size = "36px")
+
+bbk2_text <- birkbeck |>
+  st_transform("EPSG:27700") |>
+  df_spatial() |>
+  select(x, y) |>
+  mutate(
+    text = str_glue(
+      "{number(x, accuracy = 1, big.mark = '')}, ",
+      "{number(y, accuracy = 1, big.mark = '')}"
+    )
+  ) |>
+  pull("text", 1)
+
+bbk3 <- tibble(x = 174.2, y = 86.8) |>
+  gt() |>
+  fmt_number(decimals = 1) |>
+  cols_width(x ~ pct(50), y ~ pct(50)) |>
+  tab_options(table.width = pct(100)) |>
+  opt_table_font(size = "36px")
+```
+
+
+:::: {.columns .top-space .bigish-text}
+
+::: {.column width="40%"}
+`r bbk1`
+:::
+
+::: {.column width="60%" .fragment}
+Location of this building
+:::
+
+::::
+
+
+:::: {.columns .top-space .bigish-text}
+
+::: {.column width="40%"}
+`r bbk2`
+:::
+
+::: {.column width="60%" .fragment}
+Also location of this building
+:::
+
+::::
+
+
+:::: {.columns .top-space .bigish-text}
+
+::: {.column width="40%"}
+`r bbk3`
+:::
+
+::: {.column width="60%" .fragment}
+Someone's height and weight
+:::
+
+::::
+
+
+--------------------------------------------------------------------------------
+
+
+## Co-ordinates are only meaningful if we know what they represent
+
+
+::: {.bigish-text .fragment .center}
+numeric co-ordinates + co-ordinate reference system
+:::
+
+
+:::: {.fragment .bigish-text .top-space}
+e.g.
+
+::: {.center}
+[`r bbk1_text`]{.inline-box} + [EPSG:4326]{.inline-box}
+:::
+
+or
+
+::: {.top-space .center}
+[`r bbk2_text`]{.inline-box} + [EPSG:27700]{.inline-box}
+:::
+
+::::
+
+--------------------------------------------------------------------------------
+
+
+## Co-ordinate reference systems specify …
+
+
+:::: {.columns}
+
+::: {.column width="25%}
+… an origin point
+:::
+
+::: {.column width="75%}
+e.g. in the British National Grid (EPSG:27700):
+
+```{r}
+#| echo: false
+#| fig-asp: 0.8
+
+osgb_grid <- read_sf(
+  "OS-British-National-Grids/os_bng_grids.gpkg",
+  layer = "20km_grid"
+)
+
+bounding_box <- birkbeck |>
+  st_transform("EPSG:27700") |>
+  add_row(geometry = st_sfc(st_point(c(0, 0)), crs = "EPSG:27700")) |>
+  st_bbox()
+
+ggplot() +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
+  geom_sf(data = st_sfc(st_point(c(0, 0)), crs = "EPSG:27700"), size = 5) +
+  geom_sf(data = birkbeck, colour = "blue3", size = 5) +
+  scale_x_continuous(
+    limits = c(bounding_box$xmin, bounding_box$xmax),
+    expand = expansion(add = 50000)
+  ) +
+  scale_y_continuous(
+    limits = c(bounding_box$ymin, bounding_box$ymax),
+    expand = expansion(add = c(100000, 150000))
+  ) +
+  coord_sf(crs = "EPSG:27700") +
+  theme_void()
+```
+:::
+
+::::
+
+
+--------------------------------------------------------------------------------
+
+
+## Co-ordinate reference systems specify …
+
+
+:::: {.columns}
+
+::: {.column width="25%}
+… an origin point
+
+… a unit of measurement
+:::
+
+::: {.column width="75%}
+e.g. in the British National Grid (EPSG:27700):
+
+```{r}
+#| echo: false
+#| fig-asp: 0.8
+
+ggplot() +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
+  geom_sf(data = st_sfc(st_point(c(0, 0)), crs = "EPSG:27700"), size = 5) +
+  geom_sf(data = birkbeck, colour = "blue3", size = 5) +
+  annotate(
+    "label",
+    x = bounding_box$xmax / 2,
+    y = 0,
+    label = "distances in metres",
+    fill = NA,
+    label.size = NA,
+    size = 4,
+    vjust = 1
+  ) +
+  annotate(
+    "segment",
+    x = 6000,
+    xend = bounding_box$xmax,
+    y = 0,
+    yend = 0,
+    arrow = arrow(length = unit(12, "pt"), ends = "both", type = "closed"),
+    colour = "grey25"
+  ) +
+  scale_x_continuous(
+    limits = c(bounding_box$xmin, bounding_box$xmax),
+    expand = expansion(add = 50000)
+  ) +
+  scale_y_continuous(
+    limits = c(bounding_box$ymin, bounding_box$ymax),
+    expand = expansion(add = c(100000, 150000))
+  ) +
+  coord_sf(crs = "EPSG:27700") +
+  theme_void()
+```
+:::
+
+::::
+
+
+--------------------------------------------------------------------------------
+
+
+## Co-ordinate reference systems specify …
+
+
+:::: {.columns}
+
+::: {.column width="25%}
+… an origin point
+
+… a unit of measurement
+
+… a system for representing a spherical earth on a flat map
+:::
+
+::: {.column width="75%}
+e.g. in the British National Grid (EPSG:27700):
+
+```{r}
+#| echo: false
+#| fig-asp: 0.8
+
+ggplot() +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
+  geom_sf(data = osgb_grid, fill = NA, linetype = "dotted", linewidth = 0.75) +
+  geom_sf(data = st_sfc(st_point(c(0, 0)), crs = "EPSG:27700"), size = 5) +
+  geom_sf(data = birkbeck, colour = "blue3", size = 5) +
+  annotate(
+    "label",
+    x = bounding_box$xmax / 2,
+    y = 0,
+    label = "distances in metres",
+    fill = NA,
+    label.size = NA,
+    size = 4,
+    vjust = 1
+  ) +
+  annotate(
+    "segment",
+    x = 6000,
+    xend = bounding_box$xmax,
+    y = 0,
+    yend = 0,
+    arrow = arrow(length = unit(12, "pt"), ends = "both", type = "closed"),
+    colour = "grey25"
+  ) +
+  scale_x_continuous(
+    limits = c(bounding_box$xmin, bounding_box$xmax),
+    expand = expansion(add = 50000)
+  ) +
+  scale_y_continuous(
+    limits = c(bounding_box$ymin, bounding_box$ymax),
+    expand = expansion(add = c(100000, 150000))
+  ) +
+  coord_sf(crs = "EPSG:27700") +
+  theme_void()
+```
+:::
+
+::::
+
+
+--------------------------------------------------------------------------------
+
+
+## But that (usually) only works for a part of the world
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+EPSG:27700 works for London, UK …
+
+```{r}
+#| echo: false
+#| fig-asp: 0.8
+
+ggplot() +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
+  geom_sf(
+    data = st_transform(
+      st_as_sf(
+        tidygeocoder::geo("London, United Kingdom"),
+        coords = c("long", "lat"),
+        crs = "EPSG:4326"
+      ),
+      "EPSG:27700"
+    ),
+    size = 3
+  ) +
+  scale_x_continuous(expand = expansion(add = 10000)) +
+  scale_y_continuous(expand = expansion(add = 10000)) +
+  coord_sf(crs = "EPSG:27700") +
+  theme_void()
+```
+:::
+
+::: {.column width="50%"}
+… but not for Sydney, Australia:
+
+```{r}
+#| echo: false
+#| fig-asp: 0.8
+
+ggplot() +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
+  geom_sf(
+    data = st_transform(
+      st_as_sf(
+        tidygeocoder::geo("Sydney, Australia"),
+        coords = c("long", "lat"),
+        crs = "EPSG:4326"
+      ),
+      "EPSG:27700"
+    ),
+    size = 3
+  ) +
+  scale_x_continuous(expand = expansion(add = 10000)) +
+  scale_y_continuous(expand = expansion(add = 10000)) +
+  coord_sf(crs = "EPSG:27700") +
+  theme_void()
+```
+:::
+
+::::
+
+
+--------------------------------------------------------------------------------
+
+
+## An EPSG code represents an entry in a database of co-ordinate systems
+
+For example …
+
+::: {.bigish-text}
+```{r}
+#| echo: false
+
+crsuggest::crs_sf |>
+  st_drop_geometry() |>
+  filter(
+    crs_code %in% c("2240", "3603", "6538", "26916", "26967", "27700", "32610")
+  ) |>
+  arrange(crs_name) |>
+  select(crs_code, crs_name, crs_units) |>
+  mutate(
+    covers = case_match(
+      crs_code,
+      "2240" ~ "US state of Georgia",
+      "3603" ~ "US state of Missouri",
+      "6538" ~ "New York City",
+      "26916" ~ "Mid-west of North America",
+      "26967" ~ "US state of Georgia",
+      "27700" ~ "Great Britain",
+      "32610" ~ "West coast of North America"
+    ),
+    crs_code = str_glue("EPSG:{crs_code}"),
+    crs_units = case_match(
+      crs_units,
+      "m" ~ "metres",
+      "us-ft" ~ "feet"
+    )
+  ) |>
+  select(crs_name, crs_code, crs_units, covers) |>
+  add_row(
+    crs_name = "WGS84",
+    crs_code = "EPSG:4326",
+    crs_units = "degrees",
+    covers = "whole world"
+  ) |>
+  gt() |>
+  cols_label(
+    crs_name ~ "co-ordinate reference system",
+    crs_code ~ "EPSG code",
+    crs_units ~ "units",
+    covers ~ "area covered"
+  ) |>
+  cols_align(align = "left")
+```
+:::
+
+::: {.fragment .top-space}
+EPSG:4326 can be used anywhere in the world
+
+_but_ degrees are a difficult unit to work with
+:::
+
+
+--------------------------------------------------------------------------------
+
+
+## Co-ordinates only make sense with the _right_ CRS
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+#### :sunglasses: `r bbk1_text` + "EPSG:4326"
+
+```{r}
+#| echo: false
+#| fig-asp: 1
+
+birkbeck
+```
+
+co-ordinates make sense
+:::
+
+::: {.column width="50%" .fragment}
+#### :astonished: `r bbk1_text` + "EPSG:27700"
+
+```{r}
+#| echo: false
+
+st_set_crs(birkbeck, "EPSG:27700")
+```
+no error message, but co-ordinates don't make sense
+
+:::
+
+::::
+
+
+--------------------------------------------------------------------------------
+
+
+## Which CRS should I use?
+
+:::: {.columns}
+
+::: {.column width="33%" .fragment}
+#### Spatial file formats
+
+e.g. `.gpkg`, `.geojson`, `.shp`
+
+**R will automatically extract CRS from data file**
+:::
+
+::: {.column width="33%" .fragment}
+#### Lat/long data
+
+e.g. `.csv` with columns called `latitude`/`longitude` or similar
+
+**Use EPSG:4326**
+:::
+
+::: {.column width="33%" .fragment}
+#### Other non-spatial file format
+
+e.g. `.csv` with columns called `x`/`y`, etc.
+
+**You _must_ find out which CRS to use**
+:::
+
+::::
+
+::: {.fragment .top-space}
+**Don't guess**: it will be very hard to work out if you're guess was correct or not
+:::
+
+::: {.fragment .top-space}
+Ask whoever gave you the dataset
+:::
+
+
+
+# Assessment 1
+
+
+--------------------------------------------------------------------------------
+
+
+## Assessment 1
+
+::: {.nobullets}
+* In class on Tuesday 3 November (Week 5)
+* 3 hours (+ extra time)
+* You will produce 2 maps
+* Open book
+* Individual work, not groups
+:::
+
+
+
+--------------------------------------------------------------------------------
+
+
+# This week
+
+::: {.nonincremental .nobullets}
+* :book: complete chapters 6 and 7
+* :computer: complete this week's exercise
+* :wave: ask questions at any time
+:::
