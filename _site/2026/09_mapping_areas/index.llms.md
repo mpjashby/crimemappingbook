@@ -646,7 +646,7 @@ We can create a very basic leaflet map using the `leaflet()` function to create 
 <a id="map-uttar-pradesh-districts-interactive"></a>
 
 <figure>
-<a id="htmlwidget-307b781bb3e2f8384c28"></a>
+<a id="htmlwidget-4d65ccb0995f0c11bf5c"></a>
 Interactive content: Interactive map of Uttar Pradesh district boundaries over a street base map. All districts have the same fill, so only their shapes and locations can be compared; no differences in murder counts are represented at this stage.
 <figcaption>Map 9.5</figcaption>
 </figure>
@@ -700,7 +700,7 @@ Let's see this in action: add this code to the `chapter_09b.R` script file:
 <a id="map-uttar-pradesh-murder-count-colours"></a>
 
 <figure>
-<a id="htmlwidget-3f4a6d79a43d90526315"></a>
+<a id="htmlwidget-16d6fd077f7ddb87c35d"></a>
 Interactive content: Interactive choropleth map of recorded murders in Uttar Pradesh districts in 2014. Darker red represents larger district totals, with substantial variation between districts. This version has no legend or district-value labels, so exact values cannot be read from the shading.
 <figcaption>Map 9.6</figcaption>
 </figure>
@@ -811,7 +811,7 @@ Change the existing call to `addPolygons()` to add the district labels:
 <a id="map-uttar-pradesh-murder-count-popups"></a>
 
 <figure>
-<a id="htmlwidget-402c8c896ac2064eb461"></a>
+<a id="htmlwidget-14e317705db716900ce9"></a>
 Interactive content: Interactive choropleth map of recorded murders in Uttar Pradesh districts in 2014. Darker red represents larger district totals. Higher counts are concentrated in the west, particularly around Meerut, Aligarh and Agra; much of the east is paler, although counts vary between neighbouring districts. A legend explains the count scale, an inset locates the view within the wider area, and interactive district labels give names and counts. The example demonstrates adding colour, a legend, an inset and labels to an interactive map.
 <figcaption>Map 9.7</figcaption>
 </figure>
@@ -1055,20 +1055,55 @@ Interactive content: Interactive choropleth map of recorded murder rates in Utta
 
 We now have all the code we need to load the necessary data, calculate crime rates and make an interactive map of murders in districts in Uttar Pradesh.
 
-<a id="sec-mapping-areas-publishing-crime-maps-ethically"></a>
-<a id="publishing-crime-maps-ethically"></a>
+<a id="sec-hotspot-map-mapping"></a>
+<a id="controlling-fill-colours-when-mapping-rates"></a>
 
-### 9.5.5 Publishing crime maps ethically
+### 9.5.5 Controlling fill colours when mapping rates
 
-Crime maps can help people understand patterns and make decisions, but publishing them can also cause harm. Before sharing a map, consider:
+In [Code 9.4](#lst-mapping-areas-script-09a-map) we used the code `hotspot_map(car_jacking_counts)` to make [Map 9.4](#map-mexico-city-carjacking-counts). As you can see, that the map uses colours to represent the murder rates for each district even though the code used to make the map doesn't specify how the fill aesthetic of the data layer should be controlled (if you want to refresh your memory about map aesthetics, see [Section 6.6](../06_mapping_crime_patterns/index.llms.md#sec-other-layers)). The code `hotspot_map(car_jacking_counts)` works because `hotspot_map()` can detect that the object `car_jacking_counts` was created by `hotspot_count()`, so `hotspot_map()` automatically uses the `n` column in `car_jacking_counts` to control the fill aesthetic of the data layer.
 
-- **Privacy:** could a point, label or small count allow someone to identify a victim, suspect or address? Aggregating data can reduce this risk, although very small counts may still be revealing.
-- **Stigma:** could the title, labels or accompanying text unfairly portray everyone in an area as dangerous? Describe recorded events and avoid making claims about individual residents from area-level data.
-- **Data limitations:** could patterns reflect reporting, recording, missing locations or the population measure used? State these limitations and avoid presenting uncertain differences as facts.
-- **Purpose and proportionality:** is publishing a detailed map necessary for the intended purpose, or would a less detailed map communicate the result with less risk?
-- **Accessibility:** can readers obtain the main information without relying only on colour, pointer movement or an interactive control? Provide clear legends, descriptive text and, where useful, an accompanying table.
+Unfortunately, automatic aesthetic selection by `hotspot_map()` only works when mapping objects created by other objects from the sfhotspot package (you can see another example of automatic aesthetic selection in [Code 6.3](../06_mapping_crime_patterns/index.llms.md#lst-mapping-crime-patterns-draw-vancouver-bicycle-theft-density-basic)). That means that when we create a dataset of crime rates by combining datasets using `left_join()` (as we did in [Code 9.19](#lst-mapping-areas-script-09b-rate-join)) we have to specify which column in the data should control the fill aesthetic of the data layer on the map. We can do that using the `mapping` argument of `hotspot_map()`. For example, to make a static map of the murder rates in Uttar Pradesh districts (contained in the `district_murders` object we created in [Code 9.19](#lst-mapping-areas-script-09b-rate-join)), we would use the code:
 
-An ethical map does more than avoid disclosing identities. It gives readers enough context to interpret the pattern fairly and does not imply that an area-level result describes every person or place within the area.
+<a id="lst-mapping-rate-aesthetics"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">hotspot_map</span>(district_murders, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill =</span> murder_rate)) <span class="sc">+</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&quot;murders per</span><span class="sc">\n</span><span class="st">100,000</span><span class="sc">\n</span><span class="st">residents&quot;</span>)</span></code></pre></div>
+<figcaption>Code 9.21</figcaption>
+</figure>
+
+<a id="map-mapping-rate-aesthetics"></a>
+
+<figure>
+<figure>
+<p>Figure: Choropleth map of recorded murder rates in Uttar Pradesh districts in 2014 over a light base map. Lighter blue represents more murders per hundred thousand residents. Rates are generally higher in western districts and lower in the east, with local variation; Meerut, Baghpat and Gautam Buddha Nagar are among the lightest districts. A legend gives the rate units.</p>
+</figure>
+<figcaption>Map 9.9</figcaption>
+</figure>
+
+There are a couple of things to note about this map. The first is that just as we have to specify the aesthetic mapping for this map, we must also specify the legend title for the data layer using the `fill` argument to the `labs()` function.
+
+The second notable feature of this map is that the fill scale is the wrong way around -- higher murder rates are shown with lighter colours, while lower rates are shown with darker colours. As we learned in [Section 7.6](../07_map_context/index.llms.md#sec-map-colour), when colour is used to represent data on a map, it is usually easier for readers to interpret a map if higher values are represented by darker, more-prominent colours. We also learned in [Section 7.6](../07_map_context/index.llms.md#sec-map-colour) that we can use the `scale_fill_distiller()` function to control which way around the scale appears. We can add the necessary code to the stack we have already created:
+
+<a id="lst-mapping-rate-aesthetics2"></a>
+
+<figure>
+<pre><code>R Console</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">hotspot_map</span>(district_murders, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill =</span> murder_rate)) <span class="sc">+</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">direction =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&quot;murders per</span><span class="sc">\n</span><span class="st">100,000</span><span class="sc">\n</span><span class="st">residents&quot;</span>)</span></code></pre></div>
+<figcaption>Code 9.22</figcaption>
+</figure>
+
+<a id="map-mapping-rate-aesthetics2"></a>
+
+<figure>
+<figure>
+<p>Figure: Choropleth map of recorded murder rates in Uttar Pradesh districts in 2014 over a light base map. Darker blue represents more murders per hundred thousand residents. Rates are generally higher in western districts and lower in the east, with local variation; Meerut, Baghpat and Gautam Buddha Nagar are among the darkest districts. A legend gives the rate units.</p>
+</figure>
+<figcaption>Map 9.10</figcaption>
+</figure>
 
 QuizMapping crime rates and publishing maps
 
@@ -1114,9 +1149,28 @@ QuizMapping crime rates and publishing maps
 - Explain data limitations and consider whether the map could identify or stigmatise people (Correct answer)
 - Assume an area-level rate applies equally to every resident
 
+<a id="sec-mapping-areas-publishing-crime-maps-ethically"></a>
+<a id="publishing-crime-maps-ethically"></a>
+
+## 9.6 Publishing crime maps ethically
+
+Crime maps can be used for many positive purposes. For example, they can be used to keep people safe by allowing governments to identify which areas they should focus on when trying to prevent crime by installing better street lighting or increasing police presence. Crime maps can also help citizens hold governments to account for their actions and decisions. However, as with many techniques in crime and intelligence analysis, many crime mapping techniques can also be used by totalitarian governments or other actors with malicious intent.
+
+Figure: A postcard with text written on it in German saying \'Free press! It is urgently necessary for sensible Germans to begin the fight against Hitler's menace-to-society regime! You can see what this gang is doing! "Victory at any price." That is what this Hitler gang dictates! Everyone would have to sacrifice their life. It is perfectly clear from this how this mindless rabble of exploiters whines about keeping its positions! These murderers are now pleading with us, the people. We, the German people, must have peace...\'.
+
+[A famous example of this occurred in Germany in 1942](http://qmro.qmul.ac.uk/handle/123456789/6578), when the Gestapo (the Nazi secret police) used an early form of what is now called geographic profiling to identify a couple, Elise and Otto Hampel, who were distributing postcards in their neighbourhood that encouraged people to resist the Nazi regime. The Gestapo used maps of the locations where the postcards had been found to help them identify the Hampels' home address, and they were arrested and executed.
+
+It is always important to think of how analysis that you produce could be misused or misinterpreted, either deliberately or accidentally. This is particularly true when publishing maps of crime data, which can be used to identify victims, suspects or addresses, or to unfairly stigmatise an area and its residents.
+
+Before sharing a map, consider:
+
+- **Privacy:** could a point, label or small count allow someone to identify a victim, suspect or address? Aggregating data can reduce this risk, although very small counts may still be revealing.
+- **Stigma:** could the title, labels or accompanying text encourage people to draw incorrect conclusions based on the ecological fallacy? For example, could people assume that a high crime rate in an area means that everyone in that area is a criminal or a victim? Could the map be used to unfairly stigmatise an area and its residents?
+- **Data limitations:** could patterns reflect reporting or recording errors, missing locations or the choice of population measure used? State these limitations clearly.
+
 <a id="in-summary"></a>
 
-## 9.6 In summary
+## 9.7 In summary
 
 In this chapter we practised how to calculate the number of points in different areas, join different sources of data together, and map both crime counts and crime rates using static and interactive maps. Choropleth maps can be useful, but their interpretation depends on the chosen boundaries and they only describe areas as a whole.
 
@@ -1246,7 +1300,7 @@ Your complete `chapter_09b.R` script should now look like this:
 <span id="cb2-109"><a href="#cb2-109"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb2-110"><a href="#cb2-110"></a>  <span class="co"># Add inset map</span></span>
 <span id="cb2-111"><a href="#cb2-111"></a>  <span class="fu">addMiniMap</span>(<span class="at">toggleDisplay =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<figcaption>Code 9.21</figcaption>
+<figcaption>Code 9.23</figcaption>
 </figure>
 
 Save `chapter_09b.R` by pressing .
@@ -1271,3 +1325,5 @@ Answer these questions to check you have understood the main points covered in t
 3.  How can crime rates provide more useful insights than simple crime counts when comparing crime levels across different areas?
 4.  How does choosing an appropriate population measure affect crime rate calculations?
 5.  Discuss the ethical considerations involved in publishing crime maps.
+
+[Hampel postcard image from Wikipedia](https://en.wikipedia.org/wiki/File:Hampel_postcard.jpg)
