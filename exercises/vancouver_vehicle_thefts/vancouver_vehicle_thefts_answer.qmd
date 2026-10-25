@@ -1,0 +1,47 @@
+---
+listing: false
+title: "Mapping thefts from vehicles in Vancouver: specimen answer"
+---
+
+[Return to the exercise](index.qmd).
+
+{{< include ../_specimen_header_r.qmd >}}
+
+
+## Complete script
+
+```r
+{{< include vancouver_vehicle_thefts.R >}}
+```
+
+[Download the complete R script](vancouver_vehicle_thefts.R)
+
+
+## Why this code is organised this way
+
+**Load packages first.** R can only use functions from packages that are loaded. The easiest way to load packages is to load them all at the very start of a script, so that it's easy to see at a glance all the packages that a particular script needs. That means that, for example, if you are writing a later part of a long R script and you want to use a function from a particular package, it is easy to go to the start of the code and see whether that package is already loaded or whether you need to load it.
+
+**Download, then read.** The `request()` and `req_perform()` functions from the [httr2 package](https://httr2.r-lib.org) save the original CSV file into the `data/raw` directory so that you have a local copy of the original, unwrangled data. That means that if you later make a mistake in wrangling the data, you can always go back to the original dataset. Note that `read_csv()` can handle compressed versions of CSV files, including the `.csv.gz` file downloaded here.
+
+**Filter by crime type.** The `filter()` function from the [dplyr package](https://dplyr.tidyverse.org) filters data based on the values in a specific column, in this case to include only crimes of a specific type. Note that the `filter()` function performs case-sensitive matching, so it is important to check the spelling, spacing and case of the crime type in the original dataset (in this case, `"Theft from Vehicle"`).
+
+**Describe the original coordinates.** The original dataset includes locations described using pairs of coordinates specified using UTM zone 10N coordinate reference system, which we can refer to using the code `EPSG:32610`. To tell R that the numbers in these columns represent locations on the Earth's surface, we have to specify how these numbers should be translated to locations. To do that we use the `st_as_sf()` function and the argument `crs = "EPSG:32610"`.
+
+**Finish with the map.** `hotspot_map()` converts the SF object we have stored in the `thefts_from_vehicles` object and plots it on a map with a suitable base map. The basemap helps locate the points, while the supplied colour and size make the points stand out clearly.
+
+
+## Output produced by this code
+
+The code above produces this map. Depending on the design choices you made when writing your code, your map might look slightly different. What matters is that it should be easy for readers to see where the crimes happened and that the base map should support, rather than distracting from, the data layer.
+
+```{r}
+#| echo: false
+#| file: vancouver_vehicle_thefts.R
+#| fig-alt: "Point map of thefts from vehicles in Vancouver in 2020. Small, partly transparent orange points show incident locations on a dark street base map."
+```
+
+
+## Review your own answer
+
+Your code might differ from the specimen answer in multiple ways. You might have used different object names or organised the code in a different way. As long as your code correctly and clearly shows the relevant data on a map, it is not necessary for your code to exactly match this specimen answer.
+

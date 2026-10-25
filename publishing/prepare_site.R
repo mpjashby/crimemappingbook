@@ -3,6 +3,7 @@
 # Functions can also be sourced into a private environment for checks and tests.
 
 publishing_root <- normalizePath(".", winslash = "/", mustWork = TRUE)
+source("publishing/book_navigation.R", local = TRUE)
 editions_start <- "<!-- book-editions:start -->"
 editions_end <- "<!-- book-editions:end -->"
 
@@ -255,11 +256,18 @@ archive_page <- function(text, config, year, relative) {
   text
 }
 
+required_exercise_files <- function() {
+  require_publishing_packages("yaml")
+  config <- yaml::read_yaml(file.path(publishing_root, "exercises/_quarto.yml"))
+  c("search.json", sub("\\.qmd$", ".html", config$project$render), config$project$resources)
+}
+
 required_current_files <- function() {
   lines <- readLines(file.path(publishing_root, "_quarto.yml"), warn = FALSE)
   chapters <- grep("^\\s+- [^\\s#]+\\.qmd\\s*(?:#.*)?$", lines, value = TRUE, perl = TRUE)
   chapters <- sub("^\\s+- ([^\\s#]+\\.qmd).*$", "\\1", chapters, perl = TRUE)
-  c("code_with_style.html", "search.json", "llms.txt", sub("\\.qmd$", ".html", chapters))
+  c("code_with_style.html", "search.json", "llms.txt", sub("\\.qmd$", ".html", chapters),
+    file.path("exercises", required_exercise_files()))
 }
 
 assemble_site <- function(config, current_book, output, cache, refresh_archives = FALSE) {
@@ -274,7 +282,7 @@ assemble_site <- function(config, current_book, output, cache, refresh_archives 
   }
   required <- required_current_files()
   missing <- required[!file.exists(file.path(current_book, required))]
-  if (length(missing)) publishing_fail("Current render is incomplete. Run Rscript generate_llms.R; missing: ", paste(missing, collapse = ", "))
+  if (length(missing)) publishing_fail("Current render is incomplete. Run a complete quarto render; missing: ", paste(missing, collapse = ", "))
   output <- as.character(fs::path_abs(output))
   if (file.exists(output) && !file.exists(file.path(output, ".edition-site"))) {
     publishing_fail("Refusing to replace an unmarked directory: ", output)
@@ -298,6 +306,7 @@ assemble_site <- function(config, current_book, output, cache, refresh_archives 
     destination <- file.path(staging, year)
     if (year == config$current) {
       fs::dir_copy(current_book, destination)
+      update_book_navigation(destination)
       provenance[[year]] <- list(source = "current render",
         git_commit = system2("git", c("rev-parse", "HEAD"), stdout = TRUE),
         working_tree_modified = length(system2("git", c("status", "--porcelain"), stdout = TRUE)) > 0L)

@@ -1,0 +1,44 @@
+---
+listing: false
+title: "Mapping damage to property in Montreal: specimen answer"
+---
+
+[Return to the exercise](index.qmd).
+
+{{< include ../_specimen_header_r.qmd >}}
+
+## Complete script
+
+```r
+{{< include montreal_mefait.R >}}
+```
+
+[Download the complete R script](montreal_mefait.R)
+
+## Why this code is organised this way
+
+**Load packages first.** R can only use functions from packages that are loaded. The easiest way to load packages is to load them all at the very start of a script, so that it's easy to see at a glance all the packages that a particular script needs. That means that, for example, if you are writing a later part of a long R script and you want to use a function from a particular package, it is easy to go to the start of the code and see whether that package is already loaded or whether you need to load it.
+
+**Download, then read.** The `request()` and `req_perform()` functions from the [httr2 package](https://httr2.r-lib.org) save the original CSV file into the `data/raw` directory so that you have a local copy of the original, unwrangled data. That means that if you later make a mistake in wrangling the data, you can always go back to the original dataset. Note that `read_csv()` can handle compressed versions of CSV files, including the `.csv.gz` file downloaded here.
+
+**Filter by date.** The download contains incidents from 2016 to 2025 inclusive. `read_csv()` recognises the `date` column as dates. The two conditions in `filter()` keep dates on or after 1 January 2025 and on or before 31 December 2025, therefore including every day of 2025. `ymd()` converts the text values (e.g. `"2025-12-31"`) to dates. Every row already relates to méfait, so we do not need to filter by crime type.
+
+**Describe the original coordinates.** `st_as_sf()` uses the `x` and `y` columns to locate each incident. The argument `crs = "EPSG:2950"` tells R how to interpret those coordinates. They are eastings and northings in metres, rather than longitude and latitude as in some of the other exercises. Note that assigning a coordinate reference system using `st_as_sf()` _describes_ the existing coordinates -- it does not transform the coordinates into a different system (for which we would use `st_transform()`).
+
+**Finish with the map.** `hotspot_map()` plots `mefait_2025` over a base map. Small, partly transparent blue points help show overlapping incidents against the light background. 
+
+## Output produced by this code
+
+The code above produces this map. Your map may look different if you made different design choices. What matters is that it clearly shows the relevant incidents and that the base map helps readers locate them.
+
+```{r}
+#| echo: false
+#| file: montreal_mefait.R
+#| fig-alt: "Point map of recorded damage to property in Montreal in 2025. Small blue points show approximate incident locations over a light street base map."
+```
+
+
+
+## Review your own answer
+
+Your object names and design choices may differ from this answer. Check that your code reads the local file, keeps only 2025, uses the supplied coordinate reference system and produces a clear map. You do not need to match this specimen answer exactly.

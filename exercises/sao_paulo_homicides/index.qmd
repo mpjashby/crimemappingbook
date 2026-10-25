@@ -1,0 +1,87 @@
+---
+listing: false
+title: "Mapping homicides in the São Paulo region"
+ready-after: "Chapters 1–7"
+output-type: "R script"
+---
+
+For this exercise, you should create the R code needed to make a density map of homicides in São Paulo between 2021 and 2022. 
+
+
+## Before you start
+
+Complete Chapters 1–7 of [_Learn Crime Mapping with R_](https://books.lesscrime.info/learncrimemapping/).
+
+In this exercise you will practise downloading and reading data, data wrangling, kernel density estimation, clipping datasets, adding multiple layers to a map, specifying map labels and saving a map to a file.
+
+
+### What your map should show
+
+Your map should show homicides in the immediate region (IR) of São Paulo, Brazil, **between 2021 and 2022** based on data from the Public Security Secretariat (SSP) of the State of São Paulo. You can download the data from:
+
+```
+https://mpjashby.github.io/crimemappingdata/sao_paulo_homicides.xlsx
+```
+
+The [homicide dataset documentation](https://pkgs.lesscrime.info/crimemappingdata/reference/sao_paulo_homicides.html) explains that homicides with missing coordinates have been removed. Your map therefore shows only homicides with recorded locations. The file covers 2017–2022, so filter it to keep only 2021 and 2022.
+
+The co-ordinate reference system you need to use for this dataset is EPSG:4326.
+
+Your map should include: 
+
+  1. a layer showing the density of homicides in the São Paulo region,
+  2. a suitable base map,
+  3. layers showing the boundaries of municipalities in the region,
+  4. a suitable declarative title and descriptive subtitle,
+  5. a suitable caption acknowledging the sources of the data (including the base map),
+  6. a suitable legend.
+
+You can download municipality boundaries -- provided by IPEA (the Institute for Applied Economic Research) -- from:
+
+```
+https://mpjashby.github.io/crimemappingdata/sao_paulo_muni.geojson
+```
+
+See the [municipality boundary documentation](https://pkgs.lesscrime.info/crimemappingdata/reference/sao_paulo_muni.html) for the columns and source. These boundaries are from 2010, while the homicides you are mapping are from 2021–2022.
+
+This dataset uses the SIRGAS 2000 co-ordinate reference system, EPSG:4674, which measures distances in decimal degrees.
+
+The two datasets use different co-ordinate reference systems, both of which measure distances in decimal degrees. You will need to convert both datasets to a suitable CRS that measures distances in metres. EPSG:5538 would be a suitable code for this area of Brazil.
+
+Every step of your code should be accompanied by an explanatory comment (on one or more lines starting with a `#` symbol and a space). Your code should only produce and save a map (and possibly some R messages or warnings), not output anything else (e.g. a copy of the data).
+
+The code should save the finished map as a JPEG image with a `.jpg` file extension in the `output` folder of your project. The map should be saved at A4 size.
+
+
+### Checklist for this exercise
+
+Make sure you have checked that your map and code meet all of the following requirements.
+
+#### The map
+
+* The map shows the density of crimes.
+* The density layer is clipped to the area for which you have data.
+* The cell size and bandwidth of the density layer make it easy to see concentrations of crime.
+* The map shows only homicides in 2021 and 2022.
+* The map shows the boundary of each municipality.
+* The base map does not distract from the data layer or make it harder to see the data layer.
+* There is a declarative title and a descriptive subtitle.
+* The caption acknowledges the data sources where required.
+* You have made design choices that make it as easy as possible to show where homicides are most concentrated.
+* You have made design choices that make sure the municipality boundaries do not obscure the places with the highest concentrations of crime.
+
+#### The code
+
+* There is no temporary code – e.g. `head()` or `install.packages()` – in your script file.
+* The code loads all the necessary packages _at the start of the script_.
+* The code downloads the data file from the URL to a temporary file and then loads it.
+* The code converts all the column names in the data to `snake_case` and only uses snake-case object names.
+* The code converts the data to an SF object.
+* The code transforms the data to a suitable co-ordinate reference system.
+* The code filters the data to only include the period of time you are interested in.
+* Every step of your code is accompanied by an explanatory comment.
+
+
+### Check your answer
+
+After attempting the task, read the [specimen answer and explanation](sao_paulo_homicides_answer.qmd).

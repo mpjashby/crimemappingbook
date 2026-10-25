@@ -1,0 +1,76 @@
+---
+listing: false
+title: "Mapping property crime rates in Poland"
+ready-after: "Chapters 1–9"
+output-type: "R script"
+---
+
+For this exercise, you must create a script containing the code needed to make an interactive map of property offences in counties (_powiats_) in Poland in 2023.
+
+
+## Before you start
+
+Complete Chapters 1–9 of [_Learn Crime Mapping with R_](https://books.lesscrime.info/learncrimemapping/).
+
+In this exercise you will practise downloading and reading data, data wrangling, selecting records for one year, combining datasets, calculating rates and creating an interactive choropleth map using leaflet.
+
+
+## What your map must show
+
+Your map must show the *incidence rate* of property offences per 100,000 residents in 2023 in each powiat (county) in Poland. You will need three datasets to produce this map:
+
+Property offence counts for each powiat in Excel format: `https://mpjashby.github.io/crimemappingdata/poland_property_crime_counts.xlsx`
+
+Population data for each powiat in tab-separated (TSV) format: `https://mpjashby.github.io/crimemappingdata/poland_population.tsv`
+
+Powiat boundaries in geopackage format: `https://mpjashby.github.io/crimemappingdata/poland_powiat_boundaries.gpkg`
+
+See the documentation for the [property offence counts](https://pkgs.lesscrime.info/crimemappingdata/reference/poland_property_crime_counts.html), [population](https://pkgs.lesscrime.info/crimemappingdata/reference/poland_population.html) and [powiat boundaries](https://pkgs.lesscrime.info/crimemappingdata/reference/poland_powiat_boundaries.html) for the columns and sources. The offence and population counts cover 2022–24: select only records where `rok` (year) is 2023. The offence counts relate to completed preparatory proceedings; the population is measured on 31 December 2023. The boundaries come from the 2025 archive. Acknowledge Statistics Poland (CC BY 4.0) and GUGiK/PRG as described in the documentation.
+
+Your map must include: 
+
+  1. a layer showing the incidence rate of property offences in each powiat,
+  2. a suitable base map,
+  3. the contextual information (title etc.) needed to help readers understand the map properly.
+
+Your map should use the leaflet functions introduced in Chapter 9 of the textbook, including a legend, labels showing each powiat’s name and rate, and an inset map.
+
+Every step of your code should be accompanied by an explanatory comment (on one or more lines starting with a `#` symbol and a space). Your code should only produce a map (and possibly some R messages or warnings), not output anything else (e.g. a copy of the data).
+
+
+Leave the leaflet stack unassigned so that running it in the R Console displays the map directly. Do not store the map in an object or save it as an HTML file.
+
+## Checklist for this exercise
+
+Make sure you have checked that your map and code meet all of the following requirements.
+
+
+### The map
+
+* The map shows the incidence rate of property offences in each powiat in 2023.
+* The incidence rates are shown using an appropriate sequential (not diverging or qualitative) colour scheme.
+* The most visually prominent colour indicates the highest rates of property crime.
+* The map shows the boundary of each powiat.
+* The map includes a suitable base map.
+* The base map does not distract from the data layer or make it harder to see the data layer.
+* It is possible to see the base map through the layer that shows the property crime rate.
+* The map identifies the place, year and rate units.
+* The map acknowledges Statistics Poland (CC BY 4.0) and GUGiK/PRG as the data sources.
+* You have made design choices that make it as easy as possible to show where the property crime rate is highest.
+* You have made design choices that make sure the boundaries do not obscure the places with the highest rates of crime.
+
+### The code
+
+* There is no temporary code – e.g. `head()` or `install.packages()` – in your script file.
+* The code loads all the necessary packages _at the start of the script_.
+* The code downloads the data file from the URL to a local file and then loads it.
+* The code converts all the column names in the data to `snake_case` and only uses snake-case object names.
+* The code reads the boundaries as an SF object.
+* The code selects 2023 only from both statistical datasets, joins the datasets correctly and calculates offences per 100,000 residents.
+* Every step of your code is accompanied by an explanatory comment.
+* The leaflet stack displays the map directly without storing it in an object or saving it as an HTML file.
+
+
+## Check your answer
+
+After attempting the task, you can read this [specimen answer and explanation](poland_property_crime_answer.qmd) to get an idea of what a potential solution looks like.

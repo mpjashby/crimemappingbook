@@ -1,0 +1,45 @@
+---
+listing: false
+title: "Mapping homicides in Retiro: specimen answer"
+---
+
+[Return to the exercise](index.qmd).
+
+{{< include ../_specimen_header_r.qmd >}}
+
+
+## Complete script
+
+```r
+{{< include retiro_homicides.R >}}
+```
+
+[Download the complete R script](retiro_homicides.R)
+
+## Why this code is organised this way
+
+**Load packages first.** R can only use functions from packages that are loaded. The easiest way to load packages is to load them all at the very start of a script, so that it's easy to see at a glance all the packages that a particular script needs. That means that, for example, if you are writing a later part of a long R script and you want to use a function from a particular package, it is easy to go to the start of the code and see whether that package is already loaded or whether you need to load it.
+
+**Download, then read.** The `request()` and `req_perform()` functions from the [httr2 package](https://httr2.r-lib.org) save the original CSV file into the `data/raw` directory so that you have a local copy of the original, unwrangled data. That means that if you later make a mistake in wrangling the data, you can always go back to the original dataset.
+
+**Describe the original coordinates before transforming them.** The original dataset includes locations described using pairs of latitude and longitude coordinates. To tell R that the numbers in these columns represent locations on the Earth's surface, we have to specify how these numbers should be translated to locations. To do that we use the `st_as_sf()` function and the argument `crs = "EPSG:4326"`, which specifies that the numbers represent latitudes and longitudes.
+
+Latitudes and longitudes are useful because they can be used to describe any location on the planet, but they are sometimes hard to work with because they specify distances using decimal degrees rather than common units such as metres. For that reason, it's often useful to _transform_ a spatial dataset to use a local coordinate reference system instead. In the case of locations in Argentina we can transform coordinates to use the POSGAR 2007 / Argentina 6 coordinate system, which we can do using `st_transform()` and the code `crs = "EPSG:5348"`. It's important to note the distinction here between us using `st_as_sf(homicides, coords = c("longitud", "latitud"), crs = "EPSG:4326")` to specify the coordinate system that the data _already uses_ and us using `st_transform(homicides_sf, crs = "EPSG:5348")` to transform the coordinates into a different format.
+
+
+**Finish with the map.** `hotspot_map()` converts the SF object we have stored in the `homicides_sf_trans` object and plots it on a map with a suitable base map. The basemap helps locate the points, while the supplied colour and size make the points stand out clearly.
+
+
+## Output produced by this code
+
+The code above produces this map. Depending on the design choices you made when writing your code, your map might look slightly different. What matters is that it should be easy for readers to see where the crimes happened and that the base map should support, rather than distracting from, the data layer.
+
+```{r}
+#| echo: false
+#| file: retiro_homicides.R
+#| fig-alt: "Point map of recorded homicides in the Retiro neighbourhood of Buenos Aires in 2023. Blue points mark incident locations on a light street base map."
+```
+
+## Review your own answer
+
+Your code might differ from the specimen answer in multiple ways. You might have used different object names or organised the code in a different way. As long as your code correctly and clearly shows the relevant data on a map, it is not necessary for your code to exactly match this specimen answer.

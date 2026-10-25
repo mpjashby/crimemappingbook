@@ -5,8 +5,10 @@ Run these commands from the repository root (the folder containing `_quarto.yml`
 A complete `quarto render` now prepares the publishing output automatically:
 
 - Before rendering, Quarto checks that generated edition metadata agrees with `publishing/editions.json`. For a full render, it also checks that chapter scripts match the instructions and that book labels and listing metadata are consistent. A failed check stops the render. Metadata generation remains an explicit step when the manifest changes.
-- After rendering, Quarto generates the LLM files from the fresh HTML, assembles `_site/`, and checks the editions' links, assets, notices, search indexes and canonical URLs.
+- After rendering, Quarto renders the separate exercise mini-site, copies its student-facing output into `_book/exercises/`, generates the LLM files from the fresh book HTML, assembles `_site/`, and checks the editions' links, assets, notices, search indexes and canonical URLs. The current exercises are published under `_site/2026/exercises/`; their pages and script downloads must be present for assembly to succeed. An exercise render failure stops publication preparation.
 - Partial chapter renders and preview renders skip the post-render publishing steps. Run a complete render before preparing a GitHub update.
+
+Every book render also adds **Exercises** as a normal sidebar item immediately after **Appendices**. `publishing/book_navigation.R` updates only the sidebar HTML, calculating a relative link to `exercises/index.html` from each page so the link works in local previews and under different hosting paths. Assembly applies the same step to the current edition; archived editions retain their original menus.
 
 ## Guide 1: Start a new annual edition
 
@@ -122,7 +124,7 @@ If publishing scripts changed, also run `Rscript publishing/test_prepare_site.R`
 
 ### 4. Commit and prepare the GitHub update
 
-Run `Rscript publishing/check_site.R`, then use the Positron Git panel to review, stage and commit the source changes, relevant `_freeze/` updates, rendered `_book/` and complete `_site/`, including LLM files and generated removals. Keep `publishing/cache/` ignored and avoid staging unrelated work.
+Run `Rscript publishing/check_site.R`, then use the Positron Git panel to review, stage and commit the source changes (including `exercises/`), relevant book `_freeze/` updates, rendered `_book/` and complete `_site/`, including the exercise pages, script downloads, LLM files and generated removals. Keep `publishing/cache/` and exercise downloads, caches and intermediate output ignored, and avoid staging unrelated work.
 
 Push using the Positron Git panel. Changes to `_site/` on `main` automatically upload the committed website. Do not regenerate `_site/` after committing unless you also review and commit the regenerated output. Its provenance identifies the source HEAD at assembly time, which can precede the commit containing the assembled site; `working_tree_modified` records whether there were uncommitted changes during assembly.
 
@@ -179,7 +181,7 @@ To assemble from an alternative render directory, use `--current-book DIR`. The 
 
 ## Required R packages
 
-The publishing scripts require `jsonlite`, `fs`, `httr2`, `digest` and `xml2`; the LLM generator also requires `yaml`; regression tests require `testthat`. Install missing packages once in the R Console:
+The publishing scripts require `jsonlite`, `fs`, `httr2`, `digest`, `xml2` and `yaml`; regression tests require `testthat`. Install missing packages once in the R Console:
 
 ```r
 install.packages(c("jsonlite", "fs", "httr2", "digest", "xml2", "yaml", "testthat"))

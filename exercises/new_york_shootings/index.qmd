@@ -1,0 +1,78 @@
+---
+listing: false
+title: "Mapping fatal shootings in New York City"
+ready-after: "Chapters 1–7"
+output-type: "R script"
+---
+
+
+For this exercise, you should create the R code needed to make a density map of fatal shootings in New York City saved as an image in `.png` format.
+
+## Before you start
+
+Complete Chapters 1–7 of [_Learn Crime Mapping with R_](https://books.lesscrime.info/learncrimemapping/).
+
+In this exercise you will practise downloading and reading data, data wrangling, kernel density estimation, clipping datasets, adding multiple layers to a map, specifying map labels and saving a map to a file.
+
+
+### What your map should show
+
+Your map should show *fatal* shootings in New York City in 2019. You can download the data from:
+
+```
+https://mpjashby.github.io/crimemappingdata/nyc_shootings.csv
+```
+
+The [shootings dataset documentation](https://pkgs.lesscrime.info/crimemappingdata/reference/nyc_shootings.html) describes the columns and source. The `murder` column records whether a shooting was fatal (`TRUE`) or not (`FALSE`). The coordinates are longitudes and latitudes.
+
+Use EPSG:6538 for the kernel density estimate and map.
+
+Your map should include: 
+
+  1. a layer showing the density of fatal shootings in New York City,
+  2. a suitable base map,
+  3. layers showing the boundary and number of the police precinct covering each area.
+
+You can download NYPD precinct boundaries from:
+
+```
+https://mpjashby.github.io/crimemappingdata/nyc_precincts.gpkg
+```
+
+The [precinct boundary documentation](https://pkgs.lesscrime.info/crimemappingdata/reference/nyc_precincts.html) describes boundaries from 2022, while the shootings are from 2019. Acknowledge the City of New York as the source of the boundaries under the Creative Commons Attribution licence listed in the documentation.
+
+Every step of your code should be accompanied by an explanatory comment (on one or more lines starting with a `#` symbol and a space). Your code should only produce and save a map (and possibly some R messages or warnings), not output anything else (e.g. a copy of the data).
+
+
+## Checklist for this exercise
+
+Make sure you have checked that your map and code meet all of the following requirements.
+
+
+### The map
+
+* The map shows the density of crimes.
+* The density layer is clipped to the area for which you have data.
+* The cell size and bandwidth of the density layer make it easy to see concentrations of crime.
+* The map shows only fatal shootings.
+* The map shows the boundary of each police precinct.
+* The map shows the number of each police precinct.
+* The map includes a base map.
+* The base map does not distract from the data layer or make it harder to see the data layer.
+* You have made design choices that make it as easy as possible to show where fatal shootings are most concentrated.
+* You have made design choices that make sure the precinct layers do not obscure the places with the highest concentrations of crime.
+
+### The code
+
+* There is no temporary code – e.g. `head()` or `install.packages()` – in your script file.
+* The code loads all the necessary packages _at the start of the script_.
+* The code converts all the column names in the data to `snake_case` and only uses snake-case object names.
+* The code converts the data to an SF object.
+* The code transforms the data to a suitable co-ordinate reference system.
+* The code filters the data to only include the type of crime you are interested in.
+* The code stores the created map in an object and then saves that object to a `.png` file.
+* Every step of your code is accompanied by an explanatory comment.
+
+## Check your answer
+
+After attempting the task, you can read this [specimen answer and explanation](new_york_shootings_answer.qmd) to get an idea of what a potential solution looks like.

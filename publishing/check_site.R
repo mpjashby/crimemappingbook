@@ -26,6 +26,11 @@ check_site_files <- function(output, config) {
     }
     pages <- fs::dir_ls(edition, recurse = TRUE, glob = "*.html")
     if (!length(pages)) problems <- c(problems, paste0(year, ": no HTML pages"))
+    if (year == config$current) {
+      required <- file.path("exercises", required_exercise_files())
+      missing <- required[!file.exists(file.path(edition, required))]
+      if (length(missing)) problems <- c(problems, paste0(year, ": missing ", missing))
+    }
     for (page in pages) {
       text <- read_text(page)
       if (grepl('id="quarto-header"', text, fixed = TRUE)) {
@@ -44,7 +49,12 @@ check_site_files <- function(output, config) {
       for (reference in xml2::xml_text(references)) {
         path <- sub("[?#].*$", "", reference)
         if (startsWith(reference, base)) {
-          target <- file.path(output, utils::URLdecode(substring(path, nchar(base) + 1L)))
+          relative <- utils::URLdecode(substring(path, nchar(base) + 1L))
+          target <- file.path(output, relative)
+          # Apache redirects yearless book links to the current edition.
+          if (!grepl("^[0-9]{4}(/|$)", relative) && !file.exists(target)) {
+            target <- file.path(output, config$current, relative)
+          }
         } else if (!nzchar(path) || grepl("^[A-Za-z][A-Za-z0-9+.-]*:|^//", path)) {
           next
         } else if (startsWith(path, "/")) {
@@ -69,17 +79,23 @@ check_site_files <- function(output, config) {
     if (!file.exists(home) || !grepl("Book editions", read_text(home), fixed = TRUE)) {
       problems <- c(problems, paste0(year, ": home-page edition links missing"))
     }
-    search <- file.path(edition, "search.json")
-    if (!file.exists(search)) {
-      problems <- c(problems, paste0(year, ": missing search index"))
-    } else {
-      results <- jsonlite::fromJSON(search, simplifyVector = FALSE)
-      for (result in results) {
-        href <- result$href
-        if (!is.null(href) && nzchar(href)) {
-          path <- utils::URLdecode(sub("[?#].*$", "", href))
-          if (!path_inside(file.path(edition, path), edition) || !file.exists(file.path(edition, path))) {
-            problems <- c(problems, paste0(year, ": missing search target ", href))
+    search_roots <- edition
+    if (dir.exists(file.path(edition, "exercises"))) {
+      search_roots <- c(search_roots, file.path(edition, "exercises"))
+    }
+    for (search_root in search_roots) {
+      search <- file.path(search_root, "search.json")
+      if (!file.exists(search)) {
+        problems <- c(problems, paste0(year, ": missing search index"))
+      } else {
+        results <- jsonlite::fromJSON(search, simplifyVector = FALSE)
+        for (result in results) {
+          href <- result$href
+          if (!is.null(href) && nzchar(href)) {
+            path <- utils::URLdecode(sub("[?#].*$", "", href))
+            if (!path_inside(file.path(search_root, path), search_root) || !file.exists(file.path(search_root, path))) {
+              problems <- c(problems, paste0(year, ": missing search target ", href))
+            }
           }
         }
       }
@@ -113,7 +129,12 @@ http_cases <- function(config) {
   cases <- data.frame(path = paths, status = c(rep(302L, 12L), rep(404L, 4L), rep(200L, 5L)),
                       redirect = redirects)
   rbind(cases, data.frame(path = paste0(names(config$editions), "/"), status = 200L, redirect = NA_character_),
-        data.frame(path = paste0(names(config$editions), "/search.json"), status = 200L, redirect = NA_character_))
+        data.frame(path = paste0(names(config$editions), "/search.json"), status = 200L, redirect = NA_character_),
+        data.frame(path = c("exercises/", paste0(current, "/exercises/"),
+                            paste0(current, "/exercises/search.json"),
+                            paste0(current, "/exercises/new_york_shootings/new_york_shootings.R")),
+                   status = c(302L, 200L, 200L, 200L),
+                   redirect = c(paste0(current, "/exercises/"), rep(NA_character_, 3L))))
 }
 
 check_site_http <- function(base, config) {

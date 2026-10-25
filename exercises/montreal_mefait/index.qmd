@@ -1,0 +1,70 @@
+---
+listing: false
+title: "Mapping damage to property in Montreal"
+ready-after: "Chapters 1–5"
+output-type: "R script"
+---
+
+
+
+For this exercise, you should create the R code needed to make a dot map of damage to property in Montreal in 2025. 
+
+## Before you start
+
+Complete Chapters 1–5 of [_Learn Crime Mapping with R_](https://books.lesscrime.info/learncrimemapping/).
+
+In this exercise you will practise downloading and reading data, filtering rows, converting coordinates into a spatial object, and creating a point map. The coordinate-system code needed for this dataset is supplied below.
+
+
+### What your map should show
+
+Your map should show recorded incidents of damage to property (known in French as *méfait*) in Montreal, Canada, in 2025. You can download the data from:
+
+```
+https://mpjashby.github.io/crimemappingdata/montreal_mefait.csv.gz
+```
+
+The file contains incidents from 2016 to 2025 inclusive, so you must filter the `date` column to keep only dates in 2025. All rows relate to méfait, so no crime-type filter is needed. `read_csv()` reads the `date` column as dates.
+
+The `x` and `y` columns contain easting and northing coordinates in metres in the coordinate reference system `EPSG:2950`. Use these columns and this code when converting the data to an SF object; these are not longitude and latitude.
+
+The [dataset documentation](https://pkgs.lesscrime.info/crimemappingdata/reference/montreal_mefait.html) explains that the source data have been displaced in space and time to protect privacy. Your map therefore shows approximate recorded locations, not exact addresses. The data were supplied by the Service de police de la Ville de Montréal under a CC BY 4.0 licence.
+
+Save your script in the Positron workspace you set up for the book. Store the original download in `data/raw` within that workspace, creating the folders if necessary, and leave that file unchanged.
+
+Your map should include: 
+
+  1. a layer showing (as points) the locations of individual recorded incidents of damage to property,
+  2. a suitable base map.
+
+Every step of your code should be accompanied by an explanatory comment (on one or more lines starting with a `#` symbol and a space). Your code should only produce a map (and possibly some R messages or warnings), not output anything else (e.g. a copy of the data).
+
+
+### Checklist for this exercise
+
+Use this checklist to make sure you have done everything required for this exercise.
+
+
+#### The map
+
+- The map shows the locations of individual crimes.
+- The points use a colour that stands out from the background.
+- You have made design choices that make it as easy as possible to show where recorded damage to property is most concentrated.
+
+
+#### The code
+
+- There is no temporary code – e.g. `head()` – in your script file.
+- The code loads the necessary packages _at the start of the script_ in a single call to the `pacman::p_load()` function.
+- The code uses `request()` and `req_perform()` to download the data to a local file in the `data/raw` folder.
+- The code uses `here()` to specify file paths within your workspace.
+- The code loads the downloaded local file into R.
+- The code converts all the column names in the data to `snake_case` and only uses snake-case object names.
+- The code converts the data to an SF object.
+- The code filters the data to only include incidents recorded in 2025.
+- The code uses the pipe operator `|>` to link together functions into a data-wrangling pipeline.
+
+
+### Check your answer
+
+After attempting the task, you can read this [specimen answer and explanation](montreal_mefait_answer.qmd) to get an idea of what a potential solution looks like.
