@@ -637,7 +637,7 @@ We can create a very basic leaflet map using the `leaflet()` function to create 
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Create interactive map</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="fu">leaflet</span>(district_murders) <span class="sc">|&gt;</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a>  <span class="co"># Add base map</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">addProviderTiles</span>(<span class="st">&quot;Stadia.AlidadeSmooth&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">addProviderTiles</span>(<span class="st">&quot;OpenStreetMap.Mapnik&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb2-5"><a href="#cb2-5"></a>  <span class="co"># Add district polygons</span></span>
 <span id="cb2-6"><a href="#cb2-6"></a>  <span class="fu">addPolygons</span>(<span class="at">fillOpacity =</span> <span class="fl">0.75</span>)</span></code></pre></div>
 <figcaption>Code 9.11</figcaption>
@@ -646,14 +646,14 @@ We can create a very basic leaflet map using the `leaflet()` function to create 
 <a id="map-uttar-pradesh-districts-interactive"></a>
 
 <figure>
-<a id="htmlwidget-4d65ccb0995f0c11bf5c"></a>
+<a id="htmlwidget-464539e3478c2d5e7570"></a>
 Interactive content: Interactive map of Uttar Pradesh district boundaries over a street base map. All districts have the same fill, so only their shapes and locations can be compared; no differences in murder counts are represented at this stage.
 <figcaption>Map 9.5</figcaption>
 </figure>
 
 You can interact with this map by clicking the buttons to zoom in and out, and by moving around the map area. For example, you can zoom out to see where Uttar Pradesh is relative to other places, or zoom in to see where particular cities are within Uttar Pradesh. This could be very useful in helping people understand the context of crime data.
 
-In this map we use the 'Stadia.AlidadeSmooth' style of base map, but leaflet can use a large number of different base maps that you can [view in this online gallery](https://leaflet-extras.github.io/leaflet-providers/preview/).
+In this map we use the 'OpenStreetMap.Mapnik' style of base map, but leaflet can use a large number of different base maps that you can [view in this online gallery](https://leaflet-extras.github.io/leaflet-providers/preview/).
 
 However, this map isn't very useful for understanding murders in Uttar Pradesh because it doesn't show how many murders there were in each district. To do that, we need to specify that each district should be coloured according to the values in the `murder` column of the `district_murders` object. With a map created by combining ggplot2 functions with `hotspot_map()`, we would do this with a function such as `scale_fill_distiller()` (see [Section 7.6](../07_map_context/index.llms.md#sec-map-colour)), but with a leaflet map the code we need is slightly more complicated and has two separate stages.
 
@@ -686,7 +686,7 @@ Let's see this in action: add this code to the `chapter_09b.R` script file:
 <span id="cb2-9"><a href="#cb2-9"></a><span class="co"># Create interactive map</span></span>
 <span id="cb2-10"><a href="#cb2-10"></a><span class="fu">leaflet</span>(district_murders) <span class="sc">|&gt;</span></span>
 <span id="cb2-11"><a href="#cb2-11"></a>  <span class="co"># Add base map</span></span>
-<span id="cb2-12"><a href="#cb2-12"></a>  <span class="fu">addProviderTiles</span>(<span class="st">&quot;Stadia.AlidadeSmooth&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a>  <span class="fu">addProviderTiles</span>(<span class="st">&quot;OpenStreetMap.Mapnik&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb2-13"><a href="#cb2-13"></a>  <span class="co"># Add district polygons coloured by number of murders</span></span>
 <span id="cb2-14"><a href="#cb2-14"></a>  <span class="fu">addPolygons</span>(</span>
 <span id="cb2-15"><a href="#cb2-15"></a>    <span class="at">fillColor =</span> <span class="sc">~</span> <span class="fu">murder_colours</span>(murder),</span>
@@ -700,7 +700,7 @@ Let's see this in action: add this code to the `chapter_09b.R` script file:
 <a id="map-uttar-pradesh-murder-count-colours"></a>
 
 <figure>
-<a id="htmlwidget-16d6fd077f7ddb87c35d"></a>
+<a id="htmlwidget-b49978954343e7ff7c9b"></a>
 Interactive content: Interactive choropleth map of recorded murders in Uttar Pradesh districts in 2014. Darker red represents larger district totals, with substantial variation between districts. This version has no legend or district-value labels, so exact values cannot be read from the shading.
 <figcaption>Map 9.6</figcaption>
 </figure>
@@ -728,7 +728,7 @@ Change the code in your script file to add the `addLegend()` function to the end
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Create interactive map</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="fu">leaflet</span>(district_murders) <span class="sc">|&gt;</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a>  <span class="co"># Add base map</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">addProviderTiles</span>(<span class="st">&quot;Stadia.AlidadeSmooth&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">addProviderTiles</span>(<span class="st">&quot;OpenStreetMap.Mapnik&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb2-5"><a href="#cb2-5"></a>  <span class="co"># Add district polygons coloured by number of murders</span></span>
 <span id="cb2-6"><a href="#cb2-6"></a>  <span class="fu">addPolygons</span>(</span>
 <span id="cb2-7"><a href="#cb2-7"></a>    <span class="at">fillColor =</span> <span class="sc">~</span> <span class="fu">murder_colours</span>(murder),</span>
@@ -758,7 +758,7 @@ Update the leaflet stack in `chapter_09b.R` again to add the call to `addMiniMap
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Create interactive map</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="fu">leaflet</span>(district_murders) <span class="sc">|&gt;</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a>  <span class="co"># Add base map</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">addProviderTiles</span>(<span class="st">&quot;Stadia.AlidadeSmooth&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">addProviderTiles</span>(<span class="st">&quot;OpenStreetMap.Mapnik&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb2-5"><a href="#cb2-5"></a>  <span class="co"># Add district polygons coloured by number of murders</span></span>
 <span id="cb2-6"><a href="#cb2-6"></a>  <span class="fu">addPolygons</span>(</span>
 <span id="cb2-7"><a href="#cb2-7"></a>    <span class="at">fillColor =</span> <span class="sc">~</span> <span class="fu">murder_colours</span>(murder),</span>
@@ -788,7 +788,7 @@ Change the existing call to `addPolygons()` to add the district labels:
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Create an interactive map of murder counts</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="fu">leaflet</span>(district_murders) <span class="sc">|&gt;</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a>  <span class="co"># Add base map</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">addProviderTiles</span>(<span class="st">&quot;Stadia.AlidadeSmooth&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">addProviderTiles</span>(<span class="st">&quot;OpenStreetMap.Mapnik&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb2-5"><a href="#cb2-5"></a>  <span class="co"># Add district polygons coloured by number of murders</span></span>
 <span id="cb2-6"><a href="#cb2-6"></a>  <span class="fu">addPolygons</span>(</span>
 <span id="cb2-7"><a href="#cb2-7"></a>    <span class="at">fillColor =</span> <span class="sc">~</span> <span class="fu">murder_colours</span>(murder),</span>
@@ -811,7 +811,7 @@ Change the existing call to `addPolygons()` to add the district labels:
 <a id="map-uttar-pradesh-murder-count-popups"></a>
 
 <figure>
-<a id="htmlwidget-14e317705db716900ce9"></a>
+<a id="htmlwidget-3bf10ae7e588d2c5bc65"></a>
 Interactive content: Interactive choropleth map of recorded murders in Uttar Pradesh districts in 2014. Darker red represents larger district totals. Higher counts are concentrated in the west, particularly around Meerut, Aligarh and Agra; much of the east is paler, although counts vary between neighbouring districts. A legend explains the count scale, an inset locates the view within the wider area, and interactive district labels give names and counts. The example demonstrates adding colour, a legend, an inset and labels to an interactive map.
 <figcaption>Map 9.7</figcaption>
 </figure>
@@ -1248,7 +1248,7 @@ Your complete `chapter_09b.R` script should now look like this:
 <span id="cb2-57"><a href="#cb2-57"></a><span class="co"># Create an interactive map of murder counts</span></span>
 <span id="cb2-58"><a href="#cb2-58"></a><span class="fu">leaflet</span>(district_murders) <span class="sc">|&gt;</span></span>
 <span id="cb2-59"><a href="#cb2-59"></a>  <span class="co"># Add base map</span></span>
-<span id="cb2-60"><a href="#cb2-60"></a>  <span class="fu">addProviderTiles</span>(<span class="st">&quot;Stadia.AlidadeSmooth&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-60"><a href="#cb2-60"></a>  <span class="fu">addProviderTiles</span>(<span class="st">&quot;OpenStreetMap.Mapnik&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb2-61"><a href="#cb2-61"></a>  <span class="co"># Add district polygons coloured by number of murders</span></span>
 <span id="cb2-62"><a href="#cb2-62"></a>  <span class="fu">addPolygons</span>(</span>
 <span id="cb2-63"><a href="#cb2-63"></a>    <span class="at">fillColor =</span> <span class="sc">~</span> <span class="fu">murder_colours</span>(murder),</span>

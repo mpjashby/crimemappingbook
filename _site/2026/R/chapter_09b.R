@@ -57,7 +57,7 @@ murder_colours <- colorNumeric(
 # Create an interactive map of murder counts
 leaflet(district_murders) |>
   # Add base map
-  addProviderTiles("Stadia.AlidadeSmooth") |>
+  addProviderTiles("OpenStreetMap.Mapnik") |>
   # Add district polygons coloured by number of murders
   addPolygons(
     fillColor = ~ murder_colours(murder),
