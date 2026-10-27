@@ -1,0 +1,866 @@
+---
+title: "Lecture 4: Reproducible examples"
+subtitle: "SECU0005 Crime Mapping | 2026"
+title-illustration: assets/08_handling_bugs_dark.svg
+title-illustration-alt: "Two students inspect and repair a disconnected link in an analytical workflow."
+title-slide-attributes:
+  data-background-color: "#361a54"
+format:
+  revealjs:
+    embed-resources: true
+    include-after-body: ../accessibility.html
+    controls: true
+    controls-layout: edges
+    transition: none
+    background-transition: none
+    center-title-slide: false
+    code-block-height: 700px
+    include-in-header:
+      text: |
+        <style>
+        .reveal #misleading-density-layers img,
+        .reveal #cell-size-too-big img {
+          max-height: 500px;
+          width: auto;
+          object-fit: contain;
+        }
+        .reveal #labels-that-dont-obscure-the-data-layer-1 pre {
+          max-height: 550px !important;
+        }
+        </style>
+    template-partials:
+      - ../title-slide.html
+execute:
+  echo: true
+  freeze: auto
+---
+
+```{r}
+#| label: week04-setup-shootings-and-density-layers
+#| include: false
+
+# Load packages
+pacman::p_load(ggspatial, gt, scales, sf, sfhotspot, tidyverse)
+
+
+# Load data --------------------------------------------------------------------
+
+# Load shootings data
+shootings <- crimemappingdata::nyc_shootings |>
+  janitor::clean_names() |>
+  st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326") |>
+  # Filter just those shootings that were fatal
+  filter(murder == TRUE) |>
+  st_transform("EPSG:6538")
+
+# Load NYC police precincts data
+precincts <- crimemappingdata::nyc_precincts |>
+  janitor::clean_names() |>
+  st_transform("EPSG:6538")
+
+## Wrangle data ----------------------------------------------------------------
+
+# Calculate KDE
+shootings_kde_nogrid <- shootings |>
+  hotspot_kde(cell_size = 400, bandwidth_adjust = 0.33, quiet = TRUE) |>
+  hotspot_clip(precincts)
+
+shootings_kde_unclipped <- shootings |>
+  hotspot_kde(
+    grid = hotspot_grid(precincts, cell_size = 400),
+    bandwidth_adjust = 0.33,
+    quiet = TRUE
+  )
+
+shootings_kde <- shootings_kde_unclipped |>
+  hotspot_clip(precincts)
+```
+
+
+--------------------------------------------------------------------------------
+
+
+## Today
+
+::: {.nonincremental}
+* Feedback from the Week 3 exercise
+* Quiz
+* Reproducible examples
+:::
+
+
+
+# Feedback from the Week 3 exercise
+
+
+
+--------------------------------------------------------------------------------
+
+
+## Minimal working answer
+
+::: {.scrollable}
+```{r}
+#| label: week04-exercise-solution-code
+#| eval: false
+#| file: "../../../exercises/new_york_shootings/new_york_shootings.R"
+```
+:::
+
+
+
+--------------------------------------------------------------------------------
+
+
+## Minimal working answer
+
+![](../../../exercises/output/nyc_fatal_shootings_2019.png){fig-alt="Density map of fatal shootings in NYC in 2020, with a base map and police precinct boundaries."}
+
+
+--------------------------------------------------------------------------------
+
+
+## :warning: Read the instructions
+
+> For this exercise, you should create the R code needed to make a density map 
+> of fatal shootings in New York City saved as an image in .png format.
+
+::: {.nobullets}
+* Map showing only the Bronx
+* Map showing all shootings (fatal and non-fatal)
+* Map saved as a .pdf or other file type
+:::
+
+
+--------------------------------------------------------------------------------
+
+
+## :angry: Not acting on last week's feedback
+
+::: {.nobullets}
+* Lines (**including comments**) over 80 characters long
+* Comments that don't start with `#` _and a space_, e.g. `# This is a comment`
+* Typos in file paths when saving/loading datasets (e.g. `bronx_shootings.csv`, `yc_shootings.csv`, `nyc.precincts.gpkg`)
+* Cut-and-paste errors, e.g. using column names from the previous week's data
+* Temporary code (e.g. `shootings_map`) included in script rather than run in 
+  the R Console
+:::
+
+
+--------------------------------------------------------------------------------
+
+
+## :no_entry_sign: Misleading density layers
+
+:::: {.columns}
+
+::: {.column width="50%"}
+#### No density estimates for cells we _do_ have data for -- not great
+
+```{r}
+#| label: week04-map-density-missing-coverage
+#| echo: false
+#| fig-asp: 1
+
+ggplot() +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
+  annotation_spatial(
+    aes(fill = kde),
+    data = shootings_kde_nogrid,
+    alpha = 0.75,
+    colour = NA
+  ) +
+  geom_sf(
+    data = filter(precincts, precinct >= 120),
+    colour = "grey33",
+    fill = NA
+  ) +
+  scale_fill_distiller(palette = "Reds", direction = 1) +
+  fixed_plot_aspect(ratio = 1) +
+  theme_void() +
+  theme(legend.position = "none")
+```
+:::
+
+
+::: {.column width="50%" .fragment}
+#### Density estimates for cells we _don't_ have data for -- much worse
+
+```{r}
+#| label: week04-map-density-outside-coverage
+#| echo: false
+#| fig-asp: 1
+
+ggplot() +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
+  annotation_spatial(
+    aes(fill = kde),
+    data = shootings_kde_unclipped,
+    alpha = 0.75,
+    colour = NA
+  ) +
+  geom_sf(
+    data = filter(precincts, precinct >= 120),
+    colour = "grey33",
+    fill = NA
+  ) +
+  scale_fill_distiller(palette = "Reds", direction = 1) +
+  fixed_plot_aspect(ratio = 1) +
+  theme_void() +
+  theme(legend.position = "none")
+```
+:::
+
+::::
+
+
+--------------------------------------------------------------------------------
+
+
+## :sunglasses: Non-misleading density estimates
+
+```{r}
+#| label: week04-density-clipping-code
+#| eval: false
+#| code-line-numbers: "3,7"
+
+shootings_kde <- shootings |>
+  hotspot_kde(
+    grid = hotspot_grid(precincts, cell_size = 400), #<1>
+    bandwidth_adjust = 0.33,
+    quiet = TRUE
+  ) |>
+  hotspot_clip(precincts) #<2>
+```
+1. Provide a grid that covers the whole area you have data for
+2. Clip the result to the area for which you have data
+
+
+--------------------------------------------------------------------------------
+
+
+## :no_entry_sign: Labels that obscure the data layer
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{r}
+#| label: week04-obscuring-labels-code
+#| eval: false
+
+hotspot_map(shootings_kde) +
+  geom_sf(
+    data = precincts,
+    colour = "grey33",
+    fill = NA
+  ) +
+  geom_sf_label(
+    aes(label = scales::ordinal(precinct)),
+    data = precincts
+  )
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| label: week04-obscuring-labels-map
+#| echo: false
+#| fig-asp: 1
+
+hotspot_map(shootings_kde) +
+  geom_sf(data = precincts, colour = "grey33", fill = NA) +
+  geom_sf_label(aes(label = scales::ordinal(precinct)), data = precincts)
+```
+:::
+
+::::
+
+
+--------------------------------------------------------------------------------
+
+
+## :sunglasses: Labels that don't obscure the data layer
+
+
+#### Option 1: smaller, semi-transparent labels
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{r}
+#| label: week04-transparent-labels-code
+#| eval: false
+#| code-line-numbers: "3-11"
+
+hotspot_map(shootings_kde) +
+  geom_sf(data = precincts, colour = "grey33", fill = NA) +
+  geom_sf_label(
+    aes(label = scales::ordinal(precinct)),
+    data = precincts,
+    alpha = 0.5,
+    colour = "grey33",
+    fill = "white",
+    size = 2.5,
+    label.size = NA
+  )
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| label: week04-transparent-labels-map
+#| echo: false
+#| fig-asp: 1
+
+hotspot_map(shootings_kde) +
+  geom_sf(data = precincts, colour = "grey33", fill = NA) +
+  geom_sf_label(
+    aes(label = scales::ordinal(precinct)),
+    data = precincts,
+    alpha = 0.5,
+    colour = "grey33",
+    fill = "white",
+    size = 2.5,
+    label.size = NA
+  )
+```
+:::
+
+::::
+
+
+--------------------------------------------------------------------------------
+
+
+## :sunglasses: Labels that don't obscure the data layer
+
+
+#### Option 2: repel labels (advanced)
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{r}
+#| label: week04-repelled-labels-code
+#| eval: false
+#| code-line-numbers: "3-10"
+
+hotspot_map(shootings_kde) +
+  geom_sf(data = precincts, colour = "grey33", fill = NA) +
+  ggrepel::geom_label_repel(
+    aes(label = scales::ordinal(precinct), geometry = geom),
+    data = precincts,
+    stat = "sf_coordinates",
+    alpha = 0.5,
+    colour = "grey33",
+    label.size = NA
+  )
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| label: week04-repelled-labels-map
+#| echo: false
+#| fig-asp: 1
+
+hotspot_map(shootings_kde) +
+  geom_sf(data = precincts, colour = "grey33", fill = NA) +
+  ggrepel::geom_label_repel(
+    aes(label = scales::ordinal(precinct), geometry = geom),
+    data = precincts,
+    stat = "sf_coordinates",
+    alpha = 0.5,
+    colour = "grey33",
+    label.size = NA
+  )
+```
+:::
+
+::::
+
+
+--------------------------------------------------------------------------------
+
+
+## :sunglasses: Labels that don't obscure the data layer
+
+
+#### Option 3: only show some labels (advanced)
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{r}
+#| label: week04-high-density-precinct-labels-code
+#| eval: false
+#| code-line-numbers: "1-12,18"
+
+# Identify precincts with highest density of fatal shootings
+high_density_precincts <- shootings_kde |>
+  # Join precinct names to KDE grid cells based on location
+  st_join(precincts) |>
+  # Convert from SF object to tibble to make `count()` faster
+  st_drop_geometry() |>
+  # Count total density of fatal shootings in each precinct
+  count(precinct, wt = kde) |>
+  # Keep precincts with highest density of fatal shootings
+  slice_max(order_by = n, n = 10) |>
+  # Join precinct names back to boundaries of precincts for mapping
+  left_join(precincts, by = join_by("precinct")) |>
+  st_as_sf()
+
+hotspot_map(shootings_kde) +
+  geom_sf(data = precincts, colour = "grey33", fill = NA) +
+  geom_sf_label(
+    aes(label = scales::ordinal(precinct)),
+    data = high_density_precincts,
+    alpha = 0.5,
+    colour = "grey33",
+    fill = "white",
+    label.size = NA
+  )
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| label: week04-high-density-precinct-labels-map
+#| echo: false
+#| fig-asp: 1
+
+# Identify precincts with highest density of fatal shootings
+high_density_precincts <- shootings_kde |>
+  st_join(precincts) |>
+  st_drop_geometry() |>
+  count(precinct, wt = kde) |>
+  slice_max(order_by = n, n = 10) |>
+  left_join(precincts, by = join_by("precinct")) |>
+  st_as_sf()
+
+hotspot_map(shootings_kde) +
+  geom_sf(data = precincts, colour = "grey33", fill = NA) +
+  geom_sf_label(
+    aes(label = scales::ordinal(precinct)),
+    data = high_density_precincts,
+    alpha = 0.5,
+    colour = "grey33",
+    fill = "white",
+    label.size = NA
+  )
+```
+:::
+
+::::
+
+
+--------------------------------------------------------------------------------
+
+
+## :no_entry_sign: Cell size too big
+
+::::: {.columns}
+
+:::: {.column width="50%"}
+```{r}
+#| label: week04-large-cell-size-calculation
+#| echo: false
+#| include: false
+#| cache: true
+
+shootings_kde_big_cellsize <- shootings |>
+  hotspot_kde(
+    grid = hotspot_grid(precincts, cell_size = 2500),
+    bandwidth_adjust = 0.33,
+    quiet = TRUE
+  ) |>
+  st_intersection(precincts)
+
+cellsize_map <- ggplot() +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
+  annotation_spatial(
+    data = shootings_kde_big_cellsize,
+    mapping = aes(fill = kde),
+    alpha = 0.75,
+    colour = NA
+  ) +
+  geom_sf(
+    data = filter(precincts, precinct <= 119),
+    colour = "grey33",
+    fill = NA
+  ) +
+  scale_fill_distiller(
+    palette = "Reds",
+    breaks = range(pull(shootings_kde_big_cellsize, "kde")),
+    labels = c("lower", "higher"),
+    direction = 1
+  ) +
+  fixed_plot_aspect(ratio = 1) +
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+```{r}
+#| label: week04-large-cell-size-map
+#| echo: false
+#| fig-asp: 1
+
+cellsize_map
+```
+::::
+
+
+:::: {.column width="50%" .fragment}
+::: {.fragment}
+For city-level maps, `cell_size = 200` generally works well
+:::
+
+::: {.fragment}
+New York City is big, so try `cell_size = 400`
+:::
+
+::::
+
+:::::
+
+
+--------------------------------------------------------------------------------
+
+
+## :no_entry_sign: Bandwidth too big
+
+:::: {.columns}
+
+::: {.column width="67%"}
+```{r}
+#| label: week04-large-bandwidth-calculation
+#| echo: false
+#| include: false
+#| cache: true
+
+shootings_kde_big_bandwidth <- shootings |>
+  hotspot_kde(
+    grid = hotspot_grid(precincts, cell_size = 400),
+    bandwidth_adjust = 1,
+    quiet = TRUE
+  ) |>
+  st_intersection(precincts)
+
+map_bw <- ggplot() +
+  annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
+  annotation_spatial(
+    data = shootings_kde_big_bandwidth,
+    mapping = aes(fill = kde),
+    alpha = 0.75,
+    colour = NA
+  ) +
+  geom_sf(
+    data = filter(precincts, precinct <= 119),
+    colour = "grey33",
+    fill = NA
+  ) +
+  scale_fill_distiller(
+    palette = "Reds",
+    breaks = range(pull(shootings_kde_big_bandwidth, "kde")),
+    labels = c("lower", "higher"),
+    direction = 1
+  ) +
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+```{r}
+#| label: week04-large-bandwidth-map
+#| echo: false
+
+map_bw
+```
+:::
+
+::: {.column width="33%"}
+`bandwidth_adjust = 1` (the default) _is usually too big_
+:::
+
+::::
+
+--------------------------------------------------------------------------------
+
+
+## :no_entry_sign: Bandwidth too big
+
+```{r}
+#| label: week04-bandwidth-comparison-calculations
+#| echo: false
+#| include: false
+
+bw_maps <- c(0.1, 0.33, 0.5, 1) |>
+  map(function(bw) {
+    shootings_kde_bw <- shootings |>
+      hotspot_kde(
+        grid = hotspot_grid(precincts, cell_size = 400),
+        bandwidth_adjust = bw,
+        quiet = TRUE
+      ) |>
+      st_intersection(precincts)
+
+    ggplot() +
+      annotation_map_tile(type = "cartolight", zoomin = 0, progress = "none") +
+      annotation_spatial(
+        data = shootings_kde_bw,
+        mapping = aes(fill = kde),
+        alpha = 0.75,
+        colour = NA
+      ) +
+      geom_sf(
+        data = filter(precincts, precinct <= 119),
+        colour = "grey33",
+        fill = NA
+      ) +
+      scale_fill_distiller(
+        palette = "Reds",
+        breaks = range(pull(shootings_kde_bw, "kde")),
+        labels = c("lower", "higher"),
+        direction = 1
+      ) +
+      labs(subtitle = str_glue("bandwidth_adjust = {bw}")) +
+      theme_void() +
+      theme(
+        legend.position = "none",
+        plot.margin = margin(0, 6, 0, 0),
+        plot.subtitle = ggtext::element_textbox_simple(family = "mono")
+      )
+  }) |>
+  patchwork::wrap_plots(ncol = 4)
+```
+
+```{r}
+#| label: week04-bandwidth-comparison-maps
+#| echo: false
+#| fig-asp: 0.4
+
+bw_maps
+```
+
+
+--------------------------------------------------------------------------------
+
+
+## :no_entry_sign: Code that creates/overwrites unnecessary objects
+
+
+```{r}
+#| label: week04-unnecessary-objects-code
+#| eval: false
+#| code-line-numbers: "2,5,9,12"
+
+# Load and wrangle fatal shootings in New York data
+nyc_shootings <- read_csv(here::here("data", "raw", "nyc_shootings.csv"))
+
+# Clean column names and convert to spatial data
+nyc_shootings <- janitor::clean_names(nyc_shootings) |>
+  st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326")
+
+# Transform fatal shootings data to a projected CRS (EPSG:6538)
+nyc_shootings_projected <- st_transform(nyc_shootings, crs = "EPSG:6538")
+
+# Filter only fatal shootings
+fatal_shootings <- nyc_shootings_projected |>
+  filter(murder == TRUE)
+```
+
+
+--------------------------------------------------------------------------------
+
+
+## :sunglasses: Use the pipe to avoid creating/overwriting objects unnecessarily
+
+
+```{r}
+#| label: week04-single-pipeline-code
+#| eval: false
+
+# Load and wrangle fatal shootings in New York data
+nyc_shootings <- here::here("data", "raw", "nyc_shootings.csv") |>
+  # Load data from file
+  read_csv() |>
+  # Clean column names
+  janitor::clean_names() |>
+  # Convert to spatial data
+  st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326") |>
+  # Transform fatal shootings data to a projected CRS (EPSG:6538)
+  st_transform(crs = "EPSG:6538") |>
+  # Filter only fatal shootings
+  filter(murder == TRUE)
+```
+
+
+--------------------------------------------------------------------------------
+
+
+## :no_entry_sign: Blank lines inside pipelines
+
+```{r}
+#| label: week04-blank-lines-inside-pipelines-code
+#| eval: false
+# Load and wrangle fatal shootings in New York data
+nyc_shootings <- here::here("data", "raw", "nyc_shootings.csv") |>
+
+  # Load data from file
+  read_csv() |>
+
+  # Clean column names
+  janitor::clean_names() |>
+
+  # Convert to spatial data
+  st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326") |>
+
+  # Transform fatal shootings data to a projected CRS (EPSG:6538)
+  st_transform(crs = "EPSG:6538")
+
+# Filter only fatal shootings
+nyc_shootings_fatal <- filter(nyc_shootings, murder == TRUE)
+```
+
+--------------------------------------------------------------------------------
+
+
+## :sunglasses: Blank lines only _between_ pipelines
+
+```{r}
+#| label: week04-blank-lines-between-pipelines-code
+#| eval: false
+# Load and wrangle fatal shootings in New York data
+nyc_shootings <- here::here("data", "raw", "nyc_shootings.csv") |>
+  # Load data from file
+  read_csv() |>
+  # Clean column names
+  janitor::clean_names() |>
+  # Convert to spatial data
+  st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326") |>
+  # Transform fatal shootings data to a projected CRS (EPSG:6538)
+  st_transform(crs = "EPSG:6538")
+
+# Filter only fatal shootings
+nyc_shootings_fatal <- filter(nyc_shootings, murder == TRUE)
+```
+
+
+--------------------------------------------------------------------------------
+
+
+## :no_entry_sign: Comments after code on the same line
+
+```{r}
+#| label: week04-inline-comments-code
+#| eval: false
+hotspot_kde(
+  # Start kernel density estimation function, which produces a KDE
+  grid = hotspot_grid(cell_size = 400), # Set grid size to be 400 metres square
+  bandwidth_adjust = 0.3, # Set bandwidth to be 30% of the default bandwidth
+  quiet = TRUE # Prevent `hotspot_kde()` from producing messages as it goes along
+) # End kernel density estimation function -- the results will be printed
+```
+
+
+--------------------------------------------------------------------------------
+
+
+## :sunglasses: Comments on the line _above_ the code it refers to
+
+```{r}
+#| label: week04-comments-above-code
+#| eval: false
+hotspot_kde(
+  # Set grid size to be 400 metres square
+  grid = hotspot_grid(cell_size = 400),
+  # Set bandwidth to be 30% of the default bandwidth
+  bandwidth_adjust = 0.3,
+  # Prevent `hotspot_kde()` from producing messages as it goes along
+  quiet = TRUE
+)
+```
+
+
+# 
+
+::: {.center}
+![](assets/quiz.jpeg){fig-alt="quiz"}
+:::
+
+
+
+# Reproducible examples
+
+
+--------------------------------------------------------------------------------
+
+
+## How to fix errors in your R code
+
+[Checklist for handling code errors](https://books.lesscrime.info/learncrimemapping/appendices/handling_errors.html)
+
+
+--------------------------------------------------------------------------------
+
+
+::: {.scrollable}
+```{r}
+#| label: week04-shootings-error-reprex-code
+#| eval: false
+
+# Load packages
+pacman::p_load(ggspatial, here, httr2, sf, sfhotspot, tidyverse)
+
+
+# Load data --------------------------------------------------------------------
+
+# Download data from the web and save to local file
+request("https://mpjashby.github.io/crimemappingdata/nyc_shootings.csv") |>
+  req_perform(path = here("data", "raw", "nyc_shootings.csv"))
+request("https://mpjashby.github.io/crimemappingdata/nyc_precincts.gpkg") |>
+  req_perform(path = here("data", "raw", "nyc_precincts.gpkg"))
+
+# Load shootings data
+shootings <- here("data", "raw", "nyc_shootings.csv") |>
+  read_csv() |>
+  janitor::clean_names() |>
+  st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:3246") |>
+  filter(murder == TRUE) |>
+  st_transform("EPSG:6538")
+
+# Load NYC police precincts data
+precincts <- here("data", "raw", "nyc_precincts.gpkg") |>
+  read_sf() |>
+  janitor::clean_names() |>
+  filter(precinct < 120) |>
+  st_transform("EPSG:6538")
+
+
+## Wrangle data ----------------------------------------------------------------
+
+# Calculate KDE
+shootings_kde <- shootings |>
+  hotspot_kde(
+    grid = hotspot_grid(precincts, cell_size = 400),
+    bandwidth_adjust = 0.33,
+    quiet = TRUE
+  ) |>
+  hotspot_clip(precincts)
+
+
+## Make map --------------------------------------------------------------------
+
+hotspot_map(shootings_kde, basemap_type = "cartolight") +
+  geom_sf(data = precincts, colour = "grey33", fill = NA) +
+  geom_sf_label(
+    aes(label = scales::ordinal(precinct)),
+    data = precincts,
+    alpha = 0.5,
+    colour = "grey33",
+    size = 2.25,
+    label.size = NA
+  ) +
+  fixed_plot_aspect(ratio = 1)
+```
+:::
