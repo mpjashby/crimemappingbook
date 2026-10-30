@@ -7,29 +7,7 @@ title: "Mapping damage to property in Montreal: specimen answer"
 
 {{< include ../_specimen_header_r.qmd >}}
 
-## Complete script
-
-```r
-{{< include montreal_mefait.R >}}
-```
-
-[Download the complete R script](montreal_mefait.R)
-
-## Why this code is organised this way
-
-**Load packages first.** R can only use functions from packages that are loaded. The easiest way to load packages is to load them all at the very start of a script, so that it's easy to see at a glance all the packages that a particular script needs. That means that, for example, if you are writing a later part of a long R script and you want to use a function from a particular package, it is easy to go to the start of the code and see whether that package is already loaded or whether you need to load it.
-
-**Download, then read.** The `request()` and `req_perform()` functions from the [httr2 package](https://httr2.r-lib.org) save the original CSV file into the `data/raw` directory so that you have a local copy of the original, unwrangled data. That means that if you later make a mistake in wrangling the data, you can always go back to the original dataset. Note that `read_csv()` can handle compressed versions of CSV files, including the `.csv.gz` file downloaded here.
-
-**Filter by date.** The download contains incidents from 2016 to 2025 inclusive. `read_csv()` recognises the `date` column as dates. The two conditions in `filter()` keep dates on or after 1 January 2025 and on or before 31 December 2025, therefore including every day of 2025. `ymd()` converts the text values (e.g. `"2025-12-31"`) to dates. Every row already relates to méfait, so we do not need to filter by crime type.
-
-**Describe the original coordinates.** `st_as_sf()` uses the `x` and `y` columns to locate each incident. The argument `crs = "EPSG:2950"` tells R how to interpret those coordinates. They are eastings and northings in metres, rather than longitude and latitude as in some of the other exercises. Note that assigning a coordinate reference system using `st_as_sf()` _describes_ the existing coordinates -- it does not transform the coordinates into a different system (for which we would use `st_transform()`).
-
-**Finish with the map.** `hotspot_map()` plots `mefait_2025` over a base map. Small, partly transparent blue points help show overlapping incidents against the light background. 
-
-## Output produced by this code
-
-The code above produces this map. Your map may look different if you made different design choices. What matters is that it clearly shows the relevant incidents and that the base map helps readers locate them.
+## The finished map
 
 ```{r}
 #| echo: false
@@ -37,8 +15,83 @@ The code above produces this map. Your map may look different if you made differ
 #| fig-alt: "Point map of recorded damage to property in Montreal in 2025. Small blue points show approximate incident locations over a light street base map."
 ```
 
+::: {.callout-note collapse="true" title="View the complete R script"}
+
+```r
+{{< include montreal_mefait.R >}}
+```
+
+[Download the complete R script](montreal_mefait.R).
+
+:::
+
+## Step 1: Explain the script
+
+```{.r code-line-numbers="false"}
+# Map recorded damage to property (méfait) in Montreal in 2025. # <1>
+```
+
+1. Explain that the script maps recorded damage to property, known as méfait in the source data, in Montreal in 2025. This identifies the task without requiring us to read the rest of the script. See [Organising code with comments](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments).
+
+## Step 2: Load packages
+
+```{.r code-line-numbers="false"}
+# Load the packages needed for downloading, preparing and mapping the data
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse) # <2>
+```
+
+2. `pacman::p_load()` loads the packages needed for this analysis, listed in alphabetical order with the tidyverse package last. **[here](https://here.r-lib.org/)** allows us to specify where to find files in the workspace; **[httr2](https://httr2.r-lib.org)** downloads data from the internet; **[sf](https://r-spatial.github.io/sf/)** handles spatial objects; **[sfhotspot](https://pkgs.lesscrime.info/sfhotspot/)** creates crime maps and estimates density; **[tidyverse](https://tidyverse.tidyverse.org)** provides tools for reading, wrangling and plotting data. Loading packages at the start makes it easy to check which tools the script needs. See [Loading packages](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages).
+
+## Step 3: Download the original data
+
+```{.r code-line-numbers="false"}
+# Download the original compressed CSV file and keep a local copy
+request("https://mpjashby.github.io/crimemappingdata/montreal_mefait.csv.gz") |> # <3>
+  # Save the file in the workspace's data/raw folder
+  req_perform(path = here("data", "raw", "montreal_mefait.csv.gz")) # <4>
+```
+
+3. `request()` specifies the URL of the file to download. The pipe operator (`|>`) passes that request to the next function. The downloaded file is a compressed CSV (`.csv.gz`). We can read this format directly with `read_csv()`, so there is no need to extract it first. See [Downloading and loading data](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-load-data); [Stringing functions together](https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator).
+4. `req_perform()` performs the download that was set up by `request()`. `here()` specifies where the original file should be saved, relative to the `crime_mapping` workspace. Keeping the original data in `data/raw` means we can return to it if we make a mistake while wrangling the data. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project).
+
+## Step 4: Load and prepare the incidents
+
+```{.r code-line-numbers="false"}
+# Locate the downloaded file within the workspace
+mefait_2025 <- here("data", "raw", "montreal_mefait.csv.gz") |> # <5>
+  # Read the compressed CSV file, including its date column
+  read_csv() |> # <6>
+  # Convert column names to snake_case
+  janitor::clean_names() |> # <7>
+  # Keep dates from 1 January to 31 December 2025 inclusive
+  filter(date >= ymd("2025-01-01"), date <= ymd("2025-12-31")) |> # <8>
+  # Interpret x and y as projected coordinates in metres using EPSG:2950
+  st_as_sf(coords = c("x", "y"), crs = "EPSG:2950") # <9>
+```
+
+5. `here()` specifies the location of the downloaded file. `<-` stores the result of the whole pipeline as `mefait_2025`, so the name reminds us which year the object contains. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project); [Naming objects](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-naming-objects); [Stringing functions together](https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator).
+6. `read_csv()` from [readr](https://readr.tidyverse.org) reads the compressed CSV file and recognises its `date` column as dates. See [Loading CSV data](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-data-wrangling-loading-csv-data).
+7. `janitor::clean_names()` from [janitor](https://sfirke.github.io/janitor/) converts column names to `snake_case`. Using `::` allows us to use this function without loading the whole package. See [Cleaning column names](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-cleaning-column-names); [Loading packages](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages).
+8. `filter()` from [dplyr](https://dplyr.tidyverse.org) keeps dates on or after 1 January 2025 and on or before 31 December 2025. Both conditions must be satisfied. `ymd()` from [lubridate](https://lubridate.tidyverse.org) converts the text into dates. The file covers several years, but every row already relates to méfait, so only the year needs filtering. See [Filtering rows](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-filter-data).
+9. `st_as_sf()` converts an ordinary object into a spatial object which specifies how the coordinates in the data correspond to locations of the earth. The argument `coords = c("x", "y")` specifies that the numeric coordinates describing each location are stored in the columns `x` and `y`. The argument `crs = "EPSG:2950"` describes how those coordaintes relate to places on the Earth's surface. Note that we know which code to use for the `crs` argument because that was specified in the exercise instructions. See [Converting data to an SF object](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-converting-our-data-to-an-sf-object).
 
 
-## Review your own answer
+## Step 5: Draw the map
 
-Your object names and design choices may differ from this answer. Check that your code reads the local file, keeps only 2025, uses the supplied coordinate reference system and produces a clear map. You do not need to match this specimen answer exactly.
+```{.r code-line-numbers="false"}
+# Draw a point map over a base map, with small, partly transparent points
+hotspot_map( # <10>
+  mefait_2025, # <11>
+  basemap_type = "cartolight", # <12>
+  alpha = 0.25, # <13>
+  colour = "blue2", # <14>
+  size = 0.5 # <15>
+)
+```
+
+10. `hotspot_map()` draws the spatial points over a base map. The arguments below then control how the points appear. Note that the result of this function is not stored in an object using `<-`, so running it causes the result (in this case, the map) to be displayed directly on the screen. See [Drawing the map](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-drawing-first-map).
+11. Base the map on the 2025 data object created in the previous step.
+12. Choose the light `cartolight` style of base map to provide local context without visually competing with the points showing damage to property. See [Base maps](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-base-maps).
+13. There are many crimes to show, so points may overlap. `alpha = 0.25` makes them partly transparent so that areas containing more overlapping points appear more prominent (although we will several better ways to solve this problem). See [Controlling aesthetics](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-aesthetics).
+14. Blue points contrast with the light background. The incidents should stand out more than the features shown on the base map. See [Visual hierarchy](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy).
+15. Use small points with `size = 0.5` so that nearby incidents do not obscure one another as much.

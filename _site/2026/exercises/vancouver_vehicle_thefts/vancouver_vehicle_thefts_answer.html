@@ -155,10 +155,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#complete-script" id="toc-complete-script" class="nav-link active" data-scroll-target="#complete-script">Complete script</a></li>
-  <li><a href="#why-this-code-is-organised-this-way" id="toc-why-this-code-is-organised-this-way" class="nav-link" data-scroll-target="#why-this-code-is-organised-this-way">Why this code is organised this way</a></li>
-  <li><a href="#output-produced-by-this-code" id="toc-output-produced-by-this-code" class="nav-link" data-scroll-target="#output-produced-by-this-code">Output produced by this code</a></li>
-  <li><a href="#review-your-own-answer" id="toc-review-your-own-answer" class="nav-link" data-scroll-target="#review-your-own-answer">Review your own answer</a></li>
+  <li><a href="#the-finished-map" id="toc-the-finished-map" class="nav-link active" data-scroll-target="#the-finished-map">The finished map</a></li>
+  <li><a href="#step-1-explain-the-script" id="toc-step-1-explain-the-script" class="nav-link" data-scroll-target="#step-1-explain-the-script">Step 1: Explain the script</a></li>
+  <li><a href="#step-2-load-packages" id="toc-step-2-load-packages" class="nav-link" data-scroll-target="#step-2-load-packages">Step 2: Load packages</a></li>
+  <li><a href="#step-3-download-the-original-data" id="toc-step-3-download-the-original-data" class="nav-link" data-scroll-target="#step-3-download-the-original-data">Step 3: Download the original data</a></li>
+  <li><a href="#step-4-load-and-prepare-the-theft-data" id="toc-step-4-load-and-prepare-the-theft-data" class="nav-link" data-scroll-target="#step-4-load-and-prepare-the-theft-data">Step 4: Load and prepare the theft data</a></li>
+  <li><a href="#step-5-draw-the-map" id="toc-step-5-draw-the-map" class="nav-link" data-scroll-target="#step-5-draw-the-map">Step 5: Draw the map</a></li>
   </ul>
 </nav>
     </div>
@@ -185,6 +187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p><a href="../vancouver_vehicle_thefts/index.html">Return to the exercise</a>.</p>
+<p>This document walks through a specimen answer to this exercise. Read each code section and its numbered explanations below. Select the number at the start of each explanation to highlight the line of code that explanation relates to.</p>
 <p>In R, like in many programming languages, there is usually more than one way to complete a task. This code shows one way to complete this exercise. There are other ways to organise this code that are equally good and achieve the same result, but the code below tries to balance making the code efficient with making it easy to read. If your code is different from the code here, read through the notes below the answer and use those to decide whether you prefer your own approach or the specimen answer below. You can also use the notes to improve your own code.</p>
 <div class="callout callout-style-default callout-warning callout-titled" title="The specimen answer expects your computer to be set up as outlined in the book.">
 <div class="callout-header d-flex align-content-center">
@@ -199,51 +202,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The online textbook sets out how to <a href="https://books.lesscrime.info/learncrimemapping/setup.html">install the software you need for crime mapping with R</a> and <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/">set up your computer to store files in particular places</a>. The specimen answer below assumes that you have followed those instructions and that your computer is set up as described in the book. If you have not done so, the code in the specimen answer may not run correctly.</p>
 </div>
 </div>
-<section id="complete-script" class="level2">
-<h2 class="anchored" data-anchor-id="complete-script">Complete script</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="co"># This script produces a dot map of thefts from vehicles in Vancouver in 2020</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a><span class="co"># Load packages</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, sf, sfhotspot, tidyverse)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-label="6"></a><span class="co"># Download the original data and keep a local copy</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-label="7"></a><span class="fu">request</span>(</span>
-<span id="cb1-8"><a href="#cb1-8" aria-label="8"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-label="9"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-label="10"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_thefts.csv.gz"</span>))</span>
-<span id="cb1-11"><a href="#cb1-11" aria-label="11"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-label="12"></a><span class="co"># Read and wrangle data</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-label="13"></a>thefts_from_vehicles <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_thefts.csv.gz"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-label="14"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-label="15"></a>  <span class="co"># Convert column names to snake-case</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-label="16"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-label="17"></a>  <span class="co"># Convert object to an object that understands each row represents a location</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-label="18"></a>  <span class="co"># on the Earth's surface</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-label="19"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="at">crs =</span> <span class="st">"EPSG:32610"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-label="20"></a>  <span class="co"># Keep only the rows in the dataset relating to thefts from vehicles</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-label="21"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"Theft from Vehicle"</span>)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-label="22"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-label="23"></a><span class="co"># Create a dot map of thefts from vehicles</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-label="24"></a><span class="fu">hotspot_map</span>(</span>
-<span id="cb1-25"><a href="#cb1-25" aria-label="25"></a>  thefts_from_vehicles,</span>
-<span id="cb1-26"><a href="#cb1-26" aria-label="26"></a>  <span class="at">basemap_type =</span> <span class="st">"cartodark"</span>,</span>
-<span id="cb1-27"><a href="#cb1-27" aria-label="27"></a>  <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
-<span id="cb1-28"><a href="#cb1-28" aria-label="28"></a>  <span class="at">colour =</span> <span class="st">"orange3"</span>,</span>
-<span id="cb1-29"><a href="#cb1-29" aria-label="29"></a>  <span class="at">size =</span> <span class="fl">0.5</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-label="30"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><a href="vancouver_vehicle_thefts.R">Download the complete R script</a></p>
-</section>
-<section id="why-this-code-is-organised-this-way" class="level2">
-<h2 class="anchored" data-anchor-id="why-this-code-is-organised-this-way">Why this code is organised this way</h2>
-<p><strong>Load packages first.</strong> R can only use functions from packages that are loaded. The easiest way to load packages is to load them all at the very start of a script, so that it’s easy to see at a glance all the packages that a particular script needs. That means that, for example, if you are writing a later part of a long R script and you want to use a function from a particular package, it is easy to go to the start of the code and see whether that package is already loaded or whether you need to load it.</p>
-<p><strong>Download, then read.</strong> The <code>request()</code> and <code>req_perform()</code> functions from the <a href="https://httr2.r-lib.org">httr2 package</a> save the original CSV file into the <code>data/raw</code> directory so that you have a local copy of the original, unwrangled data. That means that if you later make a mistake in wrangling the data, you can always go back to the original dataset. Note that <code>read_csv()</code> can handle compressed versions of CSV files, including the <code>.csv.gz</code> file downloaded here.</p>
-<p><strong>Filter by crime type.</strong> The <code>filter()</code> function from the <a href="https://dplyr.tidyverse.org">dplyr package</a> filters data based on the values in a specific column, in this case to include only crimes of a specific type. Note that the <code>filter()</code> function performs case-sensitive matching, so it is important to check the spelling, spacing and case of the crime type in the original dataset (in this case, <code>"Theft from Vehicle"</code>).</p>
-<p><strong>Describe the original coordinates.</strong> The original dataset includes locations described using pairs of coordinates specified using UTM zone 10N coordinate reference system, which we can refer to using the code <code>EPSG:32610</code>. To tell R that the numbers in these columns represent locations on the Earth’s surface, we have to specify how these numbers should be translated to locations. To do that we use the <code>st_as_sf()</code> function and the argument <code>crs = "EPSG:32610"</code>.</p>
-<p><strong>Finish with the map.</strong> <code>hotspot_map()</code> converts the SF object we have stored in the <code>thefts_from_vehicles</code> object and plots it on a map with a suitable base map. The basemap helps locate the points, while the supplied colour and size make the points stand out clearly.</p>
-</section>
-<section id="output-produced-by-this-code" class="level2">
-<h2 class="anchored" data-anchor-id="output-produced-by-this-code">Output produced by this code</h2>
-<p>The code above produces this map. Depending on the design choices you made when writing your code, your map might look slightly different. What matters is that it should be easy for readers to see where the crimes happened and that the base map should support, rather than distracting from, the data layer.</p>
+<section id="the-finished-map" class="level2">
+<h2 class="anchored" data-anchor-id="the-finished-map">The finished map</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;httr2_response&gt;
@@ -270,10 +230,163 @@ dbl (7): YEAR, MONTH, DAY, HOUR, MINUTE, X, Y
 </div>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="View the complete R script">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>View the complete R script
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="co"># This script produces a dot map of thefts from vehicles in Vancouver in 2020</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-label="2"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-label="3"></a><span class="co"># Load packages</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, sf, sfhotspot, tidyverse)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-label="5"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-label="6"></a><span class="co"># Download the original data and keep a local copy</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-label="7"></a><span class="fu">request</span>(</span>
+<span id="cb3-8"><a href="#cb3-8" aria-label="8"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-label="9"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-label="10"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_thefts.csv.gz"</span>))</span>
+<span id="cb3-11"><a href="#cb3-11" aria-label="11"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-label="12"></a><span class="co"># Read and wrangle data</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-label="13"></a>thefts_from_vehicles <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_thefts.csv.gz"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-label="14"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-label="15"></a>  <span class="co"># Convert column names to snake-case</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-label="16"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-label="17"></a>  <span class="co"># Convert object to an object that understands each row represents a location</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-label="18"></a>  <span class="co"># on the Earth's surface</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-label="19"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="at">crs =</span> <span class="st">"EPSG:32610"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-label="20"></a>  <span class="co"># Keep only the rows in the dataset relating to thefts from vehicles</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-label="21"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"Theft from Vehicle"</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-label="22"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-label="23"></a><span class="co"># Create a dot map of thefts from vehicles</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-label="24"></a><span class="fu">hotspot_map</span>(</span>
+<span id="cb3-25"><a href="#cb3-25" aria-label="25"></a>  thefts_from_vehicles,</span>
+<span id="cb3-26"><a href="#cb3-26" aria-label="26"></a>  <span class="at">basemap_type =</span> <span class="st">"cartodark"</span>,</span>
+<span id="cb3-27"><a href="#cb3-27" aria-label="27"></a>  <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-label="28"></a>  <span class="at">colour =</span> <span class="st">"orange3"</span>,</span>
+<span id="cb3-29"><a href="#cb3-29" aria-label="29"></a>  <span class="at">size =</span> <span class="fl">0.33</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-label="30"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><a href="vancouver_vehicle_thefts.R">Download the complete R script</a>.</p>
+</div>
+</div>
+</div>
 </section>
-<section id="review-your-own-answer" class="level2">
-<h2 class="anchored" data-anchor-id="review-your-own-answer">Review your own answer</h2>
-<p>Your code might differ from the specimen answer in multiple ways. You might have used different object names or organised the code in a different way. As long as your code correctly and clearly shows the relevant data on a map, it is not necessary for your code to exactly match this specimen answer.</p>
+<section id="step-1-explain-the-script" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-explain-the-script">Step 1: Explain the script</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-1"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-1" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-1-1" class="code-annotation-target"><a href="#annotated-cell-1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This script produces a dot map of thefts from vehicles in Vancouver in 2020</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-1" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-1" data-code-lines="1" data-code-annotation="1">Start with a short comment explaining what the script does. Including the crime type, place and year helps us recognise the script when we return to it later. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments">Organising code with comments</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-2-load-packages" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-load-packages">Step 2: Load packages</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-2"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-2-1"><a href="#annotated-cell-2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load packages</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-2-2" class="code-annotation-target"><a href="#annotated-cell-2-2" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, sf, sfhotspot, tidyverse)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-2" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-2" data-code-lines="2" data-code-annotation="2"><code>pacman::p_load()</code> loads the packages needed for this analysis, listed in alphabetical order with the tidyverse package last. <strong><a href="https://here.r-lib.org/">here</a></strong> allows us to specify where to find files in the workspace; <strong><a href="https://httr2.r-lib.org">httr2</a></strong> downloads data from the internet; <strong><a href="https://r-spatial.github.io/sf/">sf</a></strong> handles spatial objects; <strong><a href="https://pkgs.lesscrime.info/sfhotspot/">sfhotspot</a></strong> make it easy to make crime maps; <strong><a href="https://tidyverse.tidyverse.org">tidyverse</a></strong> provides tools for reading, wrangling and plotting data. Loading packages at the start makes it easy to check which tools the script needs. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages">Loading packages</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-3-download-the-original-data" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-download-the-original-data">Step 3: Download the original data</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-3"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-3-1"><a href="#annotated-cell-3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the original data and keep a local copy</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-3-2" class="code-annotation-target"><a href="#annotated-cell-3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">request</span>(</span>
+<span id="annotated-cell-3-3"><a href="#annotated-cell-3-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"</span></span>
+<span id="annotated-cell-3-4"><a href="#annotated-cell-3-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-3-5" class="code-annotation-target"><a href="#annotated-cell-3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_thefts.csv.gz"</span>))</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-3" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-3" data-code-lines="2" data-code-annotation="3"><code>request()</code> specifies the URL of the file to download. The pipe operator (<code>|&gt;</code>) passes that request to the next function. The <code>.csv.gz</code> extension means this is a compressed CSV file. We keep the downloaded file in its original form; <code>read_csv()</code> can read it without a separate decompression step. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-load-data">Downloading and loading data</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator">Stringing functions together</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-3" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-cell="annotated-cell-3" data-code-lines="5" data-code-annotation="4"><code>req_perform()</code> performs the download that was set up by <code>request()</code>. <code>here()</code> specifies where the original file should be saved, relative to the <code>crime_mapping</code> workspace. Keeping the original data in <code>data/raw</code> means we can return to it if we make a mistake while wrangling the data. See <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project">Keeping your files organised</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-4-load-and-prepare-the-theft-data" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-load-and-prepare-the-theft-data">Step 4: Load and prepare the theft data</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-4"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-4-1"><a href="#annotated-cell-4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read and wrangle data</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-4-2" class="code-annotation-target"><a href="#annotated-cell-4-2" aria-hidden="true" tabindex="-1"></a>thefts_from_vehicles <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"vancouver_thefts.csv.gz"</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="6" onclick="event.preventDefault();">6</a><span id="annotated-cell-4-3" class="code-annotation-target"><a href="#annotated-cell-4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-4-4"><a href="#annotated-cell-4-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert column names to snake-case</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="7" onclick="event.preventDefault();">7</a><span id="annotated-cell-4-5" class="code-annotation-target"><a href="#annotated-cell-4-5" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-4-6"><a href="#annotated-cell-4-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert object to an object that understands each row represents a location</span></span>
+<span id="annotated-cell-4-7"><a href="#annotated-cell-4-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># on the Earth's surface</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="8" onclick="event.preventDefault();">8</a><span id="annotated-cell-4-8" class="code-annotation-target"><a href="#annotated-cell-4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="at">crs =</span> <span class="st">"EPSG:32610"</span>) <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-4-9"><a href="#annotated-cell-4-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Keep only the rows in the dataset relating to thefts from vehicles</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="9" onclick="event.preventDefault();">9</a><span id="annotated-cell-4-10" class="code-annotation-target"><a href="#annotated-cell-4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"Theft from Vehicle"</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-4" data-target-annotation="5">5</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="2" data-code-annotation="5"><code>here()</code> specifies which file we are going to read. The pipe operator (<code>|&gt;</code>) passes the result to the function on the next line. <code>&lt;-</code> stores the result <em>of the whole pipeline</em> in the object <code>thefts_from_vehicles</code>. See <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project">Keeping your files organised</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator">Stringing functions together</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-naming-objects">Naming objects</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="6">6</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="3" data-code-annotation="6"><code>read_csv()</code> from <a href="https://readr.tidyverse.org">readr</a> reads the compressed CSV. See <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-data-wrangling-loading-csv-data">Loading CSV data</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="7">7</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="5" data-code-annotation="7"><code>janitor::clean_names()</code> from <a href="https://sfirke.github.io/janitor/">janitor</a> gives the columns consistent names in <code>snake_case</code>. This makes it easier to write the rest of the code without worrying about capital letters or spaces in column names. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-cleaning-column-names">Cleaning column names</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="8">8</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="8" data-code-annotation="8"><code>st_as_sf()</code> converts an ordinary object into a spatial object which specifies how the coordinates in the data correspond to locations of the earth. The argument <code>coords = c("x", "y")</code> specifies that the numeric coordinates describing each location are stored in the columns <code>x</code> and <code>y</code>. The argument <code>crs = "EPSG:32610"</code> describes how those coordaintes relate to places on the Earth’s surface. Note that we know which code to use for the <code>crs</code> argument because that was specified in the exercise instructions. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-converting-our-data-to-an-sf-object">Converting data to an SF object</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="9">9</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="10" data-code-annotation="9"><code>filter()</code> from <a href="https://dplyr.tidyverse.org">dplyr</a> keeps only records whose <code>type</code> is exactly <code>"Theft from Vehicle"</code>. Matching is case-sensitive, so the spelling, spacing and capital letters must match the data. This line does not end in <code>|&gt;</code> because it finishes the pipeline. R stores the finished result in the <code>thefts_from_vehicles</code> object named at the start of the pipeline. See <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-filter-data">Filtering rows</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-5-draw-the-map" class="level2">
+<h2 class="anchored" data-anchor-id="step-5-draw-the-map">Step 5: Draw the map</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-5"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-5-1"><a href="#annotated-cell-5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dot map of thefts from vehicles</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="10" onclick="event.preventDefault();">10</a><span id="annotated-cell-5-2" class="code-annotation-target"><a href="#annotated-cell-5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hotspot_map</span>(</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="11" onclick="event.preventDefault();">11</a><span id="annotated-cell-5-3" class="code-annotation-target"><a href="#annotated-cell-5-3" aria-hidden="true" tabindex="-1"></a>  thefts_from_vehicles,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="12" onclick="event.preventDefault();">12</a><span id="annotated-cell-5-4" class="code-annotation-target"><a href="#annotated-cell-5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">basemap_type =</span> <span class="st">"cartodark"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="13" onclick="event.preventDefault();">13</a><span id="annotated-cell-5-5" class="code-annotation-target"><a href="#annotated-cell-5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="14" onclick="event.preventDefault();">14</a><span id="annotated-cell-5-6" class="code-annotation-target"><a href="#annotated-cell-5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">colour =</span> <span class="st">"orange3"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="15" onclick="event.preventDefault();">15</a><span id="annotated-cell-5-7" class="code-annotation-target"><a href="#annotated-cell-5-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">size =</span> <span class="fl">0.33</span></span>
+<span id="annotated-cell-5-8"><a href="#annotated-cell-5-8" aria-hidden="true" tabindex="-1"></a>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-5" data-target-annotation="10">10</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="2" data-code-annotation="10"><code>hotspot_map()</code> draws the theft locations over a base map. The arguments below then control how the points appear. Note that the result of this function is not stored in an object using <code>&lt;-</code>, so running it causes the result (in this case, the map) to be displayed directly on the screen. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-drawing-first-map">Drawing the map</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="11">11</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="3" data-code-annotation="11">Use the prepared theft records as the basis for the map.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="12">12</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="4" data-code-annotation="12">Choose a dark <code>cartodark</code> base map. This is a design choice to show you the range of base maps available – using an alternative such as <code>cartolight</code> would have been acceptable, too. The street pattern provides geographic context, while the bright points will stand out against it. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-base-maps">Base maps</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="13">13</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="5" data-code-annotation="13">There are many thefts to show, so points may overlap. <code>alpha = 0.25</code> makes them partly transparent so that areas containing more overlapping points appear more prominent (although we will several better ways to solve this problem). See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-aesthetics">Controlling aesthetics</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="14">14</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="6" data-code-annotation="14">Use orange points to contrast with the dark base map. The crime data should be the most visually prominent layer. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy">Visual hierarchy</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="15">15</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="7" data-code-annotation="15">Make the points small with <code>size = 0.33</code>, so that they do not merge into a single solid area. We could experiment with both size and transparency to find a combination that shows the concentrations clearly.</span>
+</dd>
+</dl>
 
 
 </section>

@@ -26,5 +26,5 @@ hotspot_map(
   basemap_type = "cartodark",
   alpha = 0.25,
   colour = "orange3",
-  size = 0.5
+  size = 0.33
 )

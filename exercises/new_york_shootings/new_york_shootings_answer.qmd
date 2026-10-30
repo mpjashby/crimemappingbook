@@ -7,8 +7,16 @@ title: "Mapping fatal shootings in New York City: specimen answer"
 
 {{< include ../_specimen_header_r.qmd >}}
 
+## The finished map
 
-## Complete script
+```{r}
+#| echo: false
+#| file: new_york_shootings.R
+```
+
+![Density map of recorded fatal shootings in New York City in 2019, excluding Staten Island. Darker blue indicates higher density. Police precinct boundaries and numbers are overlaid.](../output/nyc_fatal_shootings_2019.png)
+
+::: {.callout-note collapse="true" title="View the complete R script"}
 
 ```r
 {{< include new_york_shootings.R >}}
@@ -16,23 +24,226 @@ title: "Mapping fatal shootings in New York City: specimen answer"
 
 [Download the complete R script](new_york_shootings.R).
 
-## Output produced by this code
+:::
 
-```{r}
-#| echo: false
-#| file: new_york_shootings.R
+
+
+## Step 1: Explain the script
+
+```{.r code-line-numbers="false"}
+# Map the density of recorded fatal shootings in NYC in 2019, # <1>
+# excluding Staten Island.
+
+# Note: both datasets will be harmonised to use EPSG:6538 for use with # <2>
+# `hotspot_kde()`
+```
+1. It's useful to start each script by explaining what it does. This makes it easier to find the right script if you need to revisit it later, for example to find a script that you can use as the basis for another script. In the case of data-analysis scripts, it's useful to specify what the script is designed to produce, e.g. a map of a particular type (KDE) showing a particular crime type (fatal shootings) in a particular place (New York City) at a particular time (2019). See [Organising code with comments](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments).
+2. To make it easier to combine the datasets later, we have decided to transform both spatial datasets to use the same co-ordinate reference system (CRS). Noting this policy decision here makes it easier to remember which CRS we are using when we are writing later parts of the script. See [Transforming the coordinate reference system](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-your-first-crime-map-transforming-the-coordinate-reference-system).
+
+
+## Step 2: Load packages
+
+```{.r code-line-numbers="false"}
+## Load packages and data ------------------------------------------------------ # <3>
+
+# Load packages
+pacman::p_load(ggspatial, here, httr2, sf, sfhotspot, tidyverse) # <4>
+```
+3. Header comments divide the script into stages. These headings make it easier to find the part of a script you need once your scripts begin to get longer. See [Organising code with comments](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments).
+4. `pacman::p_load()` loads the packages needed for this analysis, listed in alphabetical order with the tidyverse package last. **[ggspatial](https://paleolimbot.github.io/ggspatial/)** adds map elements such as scale bars; **[here](https://here.r-lib.org/)** allows us to specify where to find specific files; **[httr2](https://httr2.r-lib.org)** downloads data from the internet; **[sf](https://r-spatial.github.io/sf/)** handles spatial objects; **[sfhotspot](https://pkgs.lesscrime.info/sfhotspot/)** calculates and maps density; and **[tidyverse](https://tidyverse.tidyverse.org)** provides tools for reading, selecting and plotting data. See [Loading packages](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages).
+
+
+## Step 3: Download the original data
+
+```{.r code-line-numbers="false"}
+# Download the original data into the workspace
+request("https://mpjashby.github.io/crimemappingdata/nyc_shootings.csv") |> # <5>
+  req_perform(path = here("data", "raw", "nyc_shootings.csv")) # <6>
+request("https://mpjashby.github.io/crimemappingdata/nyc_precincts.gpkg") |> # <5>
+  req_perform(path = here("data", "raw", "nyc_precincts.gpkg")) # <6>
 ```
 
-![](../output/nyc_fatal_shootings_2019.png){fig-alt="Density map of recorded fatal shootings in New York City in 2019, excluding Staten Island. Darker blue indicates higher density. Police precinct boundaries and numbers are overlaid."}
+5. `request()` specifies the URL of the file to download. The pipe operator (`|>`) passes that request to the next function. See [Downloading and loading data](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-load-data); [Stringing functions together](https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator).
+6. `req_perform()` performs the download of the requested file. `here()` constructs a path to the `data/raw` folder in the workspace. The two downloads save the shootings CSV and precinct geopackage separately. This code assumes the workspace and folders have been set up as described in the book. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project).
 
 
-## Why the code is organised this way
+## Step 4: Load and prepare the shootings data
 
-There are two points about this script that are worth noting. The first is that the map does not show all of New York City. The code deliberately filters out Staten Island, which has very few fatal shootings but would otherwise occupy a large proportion of the map because it is so geographically large. Staten Island is excluded to make the map easier to read, particularly since readers of crime analysis products such as crime maps are usually (although not always) interested in the areas with _most_ crime.
+```{.r code-line-numbers="false"}
+# Read local shootings data and select fatal shootings in 2019
+shootings <- here("data", "raw", "nyc_shootings.csv") |> #<7>
+  read_csv() |> # <8>
+  janitor::clean_names() |> # <9>
+  filter(murder == TRUE) |> # <10>
+  st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326") |> # <11>
+  st_transform("EPSG:6538") # <12>
+```
+7. `here()` specifies which file we are going to load data from. `<-` stores the result of this whole pipeline as `shootings`, so later code can refer to it by name. 
+8. `read_csv()`, from [readr](https://readr.tidyverse.org), reads the local CSV file. See [Loading CSV data](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-data-wrangling-loading-csv-data); [Naming objects](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-naming-objects).
+9. `janitor::clean_names()`, from [janitor](https://sfirke.github.io/janitor/), gives columns consistent names in `snake_case`. Naming the package before `::` lets us use this function without loading the whole package. See [Cleaning column names](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-cleaning-column-names); [Loading packages](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages).
+10. `filter()`, from [dplyr](https://dplyr.tidyverse.org), keeps rows that correspond to fatal shootings (`murder == TRUE`). `TRUE` is a logical value, which we denote by writing it in capitals without quotation marks. See [Filtering rows](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-filter-data); [Map choices](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#map-choices).
+11. `st_as_sf()` tells R that the numbers in the `longitude` and `latitude` columns in the data represent points on the Earth's surface. `coords` specifies which columns contain the x and y coordinates, in that order. `crs = "EPSG:4326"` identifies which coordinate reference system R should use to translate the numbers in those columns into geographic locations. See [Converting data to an SF object](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-converting-our-data-to-an-sf-object).
+12. `st_transform()` changes the coordinates to the projected CRS specified for this exercise. This prepares the points for density estimation and makes their CRS match the precinct boundaries. See [Transforming the coordinate reference system](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-your-first-crime-map-transforming-the-coordinate-reference-system).
 
-The second feature is that the map legend has been moved inside the map area using various arguments to the `theme()` function. This means the legend doesn't take up space on the page/screen that can usefully be used to show the data. Look through the comments in the code to understand how this was done. The `theme()` function is very flexible and allows you to change the position of the legend, the size of the text, the background colour and many other features. You can also use `theme()` to change the appearance of other map elements such as the title, subtitle and caption.
+
+## Step 5: Load and prepare the precinct boundaries
+
+```{.r code-line-numbers="false"}
+# Load NYC police precincts data
+precincts <- here("data", "raw", "nyc_precincts.gpkg") |> # <13>
+  read_sf() |> # <14>
+  janitor::clean_names() |> # <15>
+  # Filter out precincts in Staten Island, since there are very few fatal #<16>
+  # shootings there and it takes up a lot of space due to the position of Staten
+  # Island relative to the rest of NYC
+  filter(precinct <= 119) |> # <17>
+  st_transform("EPSG:6538") # <18>
+```
+13. `here()` again specifies which file we are going to load data from. The result of this whole pipeline will be stored as `precincts`. 
+14. `read_sf()` reads the spatial file containing the precinct boundaries. Since this file is in a spatial data format (in this case, a geopackage), it includes the information R needs about the geometry and CRS, so we do not need to then use `st_as_sf()`. See [Reading spatial data](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-reading-spatial-data).
+15. Clean the column names using the same convention as before.
+16. At this point the code makes an important decision, to exclude Staten Island from the analysis. This is a judgement call on the part of the person who wrote this code -- including Staten Island in the map would also have been a reasonable choice. The reason that this code excludes Staten Island is that has very few fatal shootings but is geographically large, so it would occupy a large proportion of the map if left included. Readers of crime analysis products such as crime maps are usually (although not always) interested in the areas with most crime, so excluding Staten Island allows for a more focused analysis of the areas with the highest crime rates. However, this depends very much on the intended audience of the map -- if the intended audience was residents of Staten Island, for example, it would be more appropriate to include it. In any case, this is an important design choice so the comment explains the rationale behind it. [Map choices](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#map-choices).
+17. `filter(precinct <= 119)` keeps only those precincts outside Staten Island, since the Staten Island precincts all have numbers 120 and above (we could find this out by mapping all the precinct numbers). See [Filtering rows](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-filter-data).
+18. Transform the precinct boundaries to the same CRS as the shootings. Matching CRSs is often useful when using multiple spatial layers together.
 
 
-## Review your answer
+## Step 6: Calculate and clip the density layer
 
-The object names and organisation of your code may differ. Check that your code selects the same records, interprets their coordinates correctly and runs from a fresh session. Explain one choice you made differently from this specimen.
+```{.r code-line-numbers="false"}
+## Wrangle data ----------------------------------------------------------------
+
+# Calculate KDE
+shootings_kde <- shootings |> # <19>
+  hotspot_kde( # <20>
+    grid = hotspot_grid(precincts, cell_size = 400), # <21>
+    bandwidth_adjust = 0.33, # <22>
+    quiet = TRUE # <23>
+  ) |>
+  hotspot_clip(precincts, quiet = TRUE) # <24>
+```
+
+19. Start with the `shootings` object we created and specify that we will store the finished density layer as `shootings_kde`.
+20. `hotspot_kde()` estimates the density of crimes in each cell in a grid. The arguments on the following lines control how it does this. See [Mapping crime density](https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-kde).
+21. `hotspot_grid()` uses the precinct boundaries to define the grid that will be used to estimate the density of shootings. `cell_size = 400` sets the cells to 400 metres across.  That's larger than we would usually use for a city map, but New York City is very large so a KDE layer with a smaller cell size would take a very long time to estimate. See [Specifying a grid for kernel density estimation](https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#specifying-a-grid-for-kernel-density-estimation); [Fine-tuning cell size and bandwidth](https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-mapping-crime-patterns-fine-tuning-cell-size-and-bandwidth).
+22. `bandwidth_adjust = 0.33` reduces the default smoothing bandwidth, relative to the default bandwidth value. Setting a value of `bandwidth_adjust` below 1.0 reveals more local detail, but more detail is not automatically a better representation: bandwidth changes the patterns a reader sees.
+23. `quiet = TRUE` suppresses the progress display that is produced by `hotspot_kde()`. That reduces the amount of text output in the R Console, but means you might miss important messages. If you are running a long-running analysis, you might want to set `quiet = FALSE` to see the progress.
+24. `hotspot_clip()` clips the density layer to the area covered by the `precincts` layer. That makes sure we don't inadvertently show incorrect density estimates for grid cells that are outside the area that we have crime data for. See [Clipping map layers](https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-clipping-map-layers).
+
+## Step 7: Start the map and identify its sources
+
+Create the base map and density layer, then record where the data came from.
+
+```{.r code-line-numbers="false"}
+## Make map --------------------------------------------------------------------
+
+shootings_map <- hotspot_map( # <25>
+  shootings_kde, # <26>
+  basemap_type = "cartolight", # <27>
+  caption = str_glue( # <28>
+    "Author: Joe Bloggs, Date produced: {today()}\n",
+    "Shootings: New York City Police Department\n",
+    "Boundaries: City of New York (CC BY 3.0 AU)"
+  )
+) + #<29>
+```
+25. Save the map as `shootings_map`. Keeping the map in an object lets us save the finished result in a subsequent step. See [Creating and storing a map](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-creating-storing-map).
+26. `hotspot_map()` uses the calculated density layer to start the map. See [Mapping crime density](https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-kde).
+27. The `cartolight` base map supplies geographic context with a relatively restrained appearance, helping the density layer remain prominent. See [Base maps](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-base-maps).
+28. `str_glue()` from [stringr](https://stringr.tidyverse.org) allows us to combine multiple text values and R code into a single text value. The braces (`{}`) tell R to evaluate the code inside (`today()`) as R code rather than text, to insert the current date, while `\n` starts a new line. The caption credits the author and data providers, based on the information provided in the exercise instructions. Replace the example author name Joe Bloggs when producing your own map. See [Using captions to add author and other information](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-captions).
+29. Note that this function finishes with a `+` operator because the same stack of functions continues in the next section. In the actual code this is a continuous stack of functions that make the map -- they are just broken up here to explain each step.
+
+## Step 8: Add precinct boundaries and labels
+
+```{.r code-line-numbers="false"}
+  geom_sf(data = precincts, colour = "grey33", fill = NA) + # <30>
+  geom_sf_label( # <31>
+    aes(label = scales::ordinal(precinct)), # <32>
+    data = precincts, # <33>
+    alpha = 0.5, # <34>
+    colour = "grey33", # <35>
+    fill = "white", # <36>
+    size = 2.5, # <37>
+    linewidth = NA # <38>
+  ) +
+```
+
+30. `geom_sf()` overlays precinct boundaries on top of the density layer. The density layer should always be the most visually prominent layer on a density map, so it is important we display the precinct boundaries in a way that doesn't obscure the density information. `colour = "grey33"` sets the outlines and `fill = NA` leaves the interiors unfilled so the density remains visible. See [Adding more layers](https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-other-layers); [Controlling aesthetics](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-aesthetics).
+31. `geom_sf_label()` adds a label for each precinct. Again, it's important that we don't obscure the density layer when we do this, so several arguments are needed on subsequent lines to fine-tune the appearance of the labels.
+32. `aes()` specifies which column in the `precincts` dataset to use for the label text. `scales::ordinal()`, from [scales](https://scales.r-lib.org), converts numbers into forms such as “1st” and “2nd”, since that is how police precincts in New York City are typically referred to. See [Formatting numbers using the scales package](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-formatting-numbers-using-the-scales-package).
+33. Specify which dataset to use for the precinct boundaries.
+34. `alpha = 0.5` makes the labels partly transparent, so they compete less with the density surface. See [Visual hierarchy](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy).
+35. Use grey text (rather than the default black) to move the labels down the visual hierarchy.
+36. A white background helps distinguish the label from the map beneath it, which improves readbility without moving the labels too far up the visual hierarchy since the backgrounds are semi-transparent.
+37. Set a modest label-text size.
+38. `linewidth = NA` removes the label border, reducing visual clutter.
+
+
+## Step 9: Add a scale bar and meaningful titles
+
+```{.r code-line-numbers="false"}
+  annotation_scale(width_hint = 1 / 5, style = "ticks", location = "br") + # <39>
+  labs( # <40>
+    title = "Density of recorded fatal shootings in New York City", # <41>
+    subtitle = "Fatal shootings recorded by NYC Police, 2019, excluding Staten Island", # <42>
+    fill = "density of\nshootings" # <43>
+  ) +
+```
+39. `annotation_scale()` from the ggspatial package adds a scale bar. `width_hint = 1 / 5` suggests its width relative to the map, `style = "ticks"` chooses its appearance, and `location = "br"` places it at the bottom right. All these choices are made to make sure the scale bar appears at the bottom of the visual hierarchy. See [Scale bars](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-scale-bars).
+40. `labs()` supplies the map title, subtitle and fill-legend title. Note that we've already specified the map caption when we called `hotspot_map()`. See [Supporting maps with words](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-titles).
+41. The title describes what is mapped. See [Titles and subtitles](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-titles).
+42. The subtitle specifies the data provider, year and exclusion of Staten Island. Readers need this context to interpret the map correctly.
+43. This line specifies the title for the map legend, which we can use to specify what the fill colours represent. Note that this title avoids any jargon like 'kernel density' or 'KDE' that might be unfamiliar to non-specialist readers. `\n` breaks the legend title over two lines. See [Changing the legend title](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-changing-the-legend-title).
+
+
+## Step 10. Control the map layout
+
+```{.r code-line-numbers="false"}
+  theme( # <44>
+    # We're going to overlay the legend on the map, so we should give the
+    # legend a solid background
+    legend.background = element_rect(colour = NA, fill = "#F2F2F2"), # <45>
+    # Use the top-right corner of the legend as the anchor point for determining
+    # its position
+    legend.justification = c(1, 1), # <46>
+    # Create a margin around the legend, since it has a solid background
+    legend.margin = margin(6, 6, 6, 6), # <47>
+    # Move the top-right corner of the legend to be very near the top-right
+    # corner of the map
+    legend.position = "inside", # <48>
+    legend.position.inside = c(0.98, 0.98), # <49>
+    # Make the legend and title smaller to reduce their visual prominence
+    legend.text = element_text(size = rel(0.7)), # <50>
+    legend.title = element_text(size = rel(0.8)),
+    plot.subtitle = element_text(size = rel(0.8), margin = margin(3, 0, 6, 0)), # <51>
+    plot.caption = element_text(colour = "grey45", size = rel(0.7), hjust = 0) # <52>
+  )
+```
+44. `theme()`, from [ggplot2](https://ggplot2.tidyverse.org), controls the aspects of the plot that are _not_ controlled by the data. It can change the position of the legend, text sizes, background colours and the appearance of other map elements. In this case we will use this to move the legend onto a part of the map area that is not covered by the date. Doing that means the map area can expand to fill the space that would otherwise be occupied by the legend, giving the map area slightly more space. See [Changing the appearance of titles and captions](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-changing-the-appearance-of-titles-and-captions); [Visual hierarchy](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy).
+45. Give the legend a solid background so it can be seen on top of the base map.
+46. Use the top-right corner of the legend as the anchor for positioning it.
+47. Add some space between the legend contents and the edge of the solid background we've just created.
+48. Place the legend inside the map to leave more room for the geographic information.
+49. Position the legend near the top right. The values run from 0 to 1 across and up the map area, so c(0.98, 0.98) represents a location almost at the top-right corner of the map.
+50. `rel()` sets text size relative to the theme’s base text size. Reduce legend text and its title so they support the map without dominating it.
+51. Adjust the subtitle size and the spacing around it.
+52. Make the caption smaller and grey. `hjust = 0` aligns it to the left. The closing brackets complete `theme()` and the map expression. See [Using captions to add author and other information](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-captions).
+
+
+## Step 11: Save the finished map
+
+```{.r code-line-numbers="false"}
+# Save the finished map in the workspace output folder
+ggsave( # <53>
+  here("output", "nyc_fatal_shootings_2019.png"), # <54>
+  plot = shootings_map, # <55>
+  width = 210, # <56>
+  height = 210, # <57>
+  units = "mm" # <58>
+)
+```
+53. `ggsave()` writes the map to a file on your computer, using the settings specified on the following lines. See [Saving maps](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-saving-maps).
+54. Specify where on your computer the map should be saved, relative to the `crime_mapping` workspace folder. The `.png` extension specifies that the file should be saved in PNG format. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project).
+55. Specify the object containing the map to save. See [Creating and storing a map](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-creating-storing-map).
+56. Set the output width to 210 mm.
+57. Set the height to 210 mm as well, making the overall image square.
+58. Specify that the dimensions are in millimetres. The finished image is 210 × 210 mm.

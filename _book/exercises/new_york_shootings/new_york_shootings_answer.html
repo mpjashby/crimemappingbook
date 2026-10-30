@@ -154,10 +154,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#complete-script" id="toc-complete-script" class="nav-link active" data-scroll-target="#complete-script">Complete script</a></li>
-  <li><a href="#output-produced-by-this-code" id="toc-output-produced-by-this-code" class="nav-link" data-scroll-target="#output-produced-by-this-code">Output produced by this code</a></li>
-  <li><a href="#why-the-code-is-organised-this-way" id="toc-why-the-code-is-organised-this-way" class="nav-link" data-scroll-target="#why-the-code-is-organised-this-way">Why the code is organised this way</a></li>
-  <li><a href="#review-your-answer" id="toc-review-your-answer" class="nav-link" data-scroll-target="#review-your-answer">Review your answer</a></li>
+  <li><a href="#the-finished-map" id="toc-the-finished-map" class="nav-link active" data-scroll-target="#the-finished-map">The finished map</a></li>
+  <li><a href="#step-1-explain-the-script" id="toc-step-1-explain-the-script" class="nav-link" data-scroll-target="#step-1-explain-the-script">Step 1: Explain the script</a></li>
+  <li><a href="#step-2-load-packages" id="toc-step-2-load-packages" class="nav-link" data-scroll-target="#step-2-load-packages">Step 2: Load packages</a></li>
+  <li><a href="#step-3-download-the-original-data" id="toc-step-3-download-the-original-data" class="nav-link" data-scroll-target="#step-3-download-the-original-data">Step 3: Download the original data</a></li>
+  <li><a href="#step-4-load-and-prepare-the-shootings-data" id="toc-step-4-load-and-prepare-the-shootings-data" class="nav-link" data-scroll-target="#step-4-load-and-prepare-the-shootings-data">Step 4: Load and prepare the shootings data</a></li>
+  <li><a href="#step-5-load-and-prepare-the-precinct-boundaries" id="toc-step-5-load-and-prepare-the-precinct-boundaries" class="nav-link" data-scroll-target="#step-5-load-and-prepare-the-precinct-boundaries">Step 5: Load and prepare the precinct boundaries</a></li>
+  <li><a href="#step-6-calculate-and-clip-the-density-layer" id="toc-step-6-calculate-and-clip-the-density-layer" class="nav-link" data-scroll-target="#step-6-calculate-and-clip-the-density-layer">Step 6: Calculate and clip the density layer</a></li>
+  <li><a href="#step-7-start-the-map-and-identify-its-sources" id="toc-step-7-start-the-map-and-identify-its-sources" class="nav-link" data-scroll-target="#step-7-start-the-map-and-identify-its-sources">Step 7: Start the map and identify its sources</a></li>
+  <li><a href="#step-8-add-precinct-boundaries-and-labels" id="toc-step-8-add-precinct-boundaries-and-labels" class="nav-link" data-scroll-target="#step-8-add-precinct-boundaries-and-labels">Step 8: Add precinct boundaries and labels</a></li>
+  <li><a href="#step-9-add-a-scale-bar-and-meaningful-titles" id="toc-step-9-add-a-scale-bar-and-meaningful-titles" class="nav-link" data-scroll-target="#step-9-add-a-scale-bar-and-meaningful-titles">Step 9: Add a scale bar and meaningful titles</a></li>
+  <li><a href="#step-10.-control-the-map-layout" id="toc-step-10.-control-the-map-layout" class="nav-link" data-scroll-target="#step-10.-control-the-map-layout">Step 10. Control the map layout</a></li>
+  <li><a href="#step-11-save-the-finished-map" id="toc-step-11-save-the-finished-map" class="nav-link" data-scroll-target="#step-11-save-the-finished-map">Step 11: Save the finished map</a></li>
   </ul>
 </nav>
     </div>
@@ -184,6 +192,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p><a href="../new_york_shootings/index.html">Return to the exercise</a>.</p>
+<p>This document walks through a specimen answer to this exercise. Read each code section and its numbered explanations below. Select the number at the start of each explanation to highlight the line of code that explanation relates to.</p>
 <p>In R, like in many programming languages, there is usually more than one way to complete a task. This code shows one way to complete this exercise. There are other ways to organise this code that are equally good and achieve the same result, but the code below tries to balance making the code efficient with making it easy to read. If your code is different from the code here, read through the notes below the answer and use those to decide whether you prefer your own approach or the specimen answer below. You can also use the notes to improve your own code.</p>
 <div class="callout callout-style-default callout-warning callout-titled" title="The specimen answer expects your computer to be set up as outlined in the book.">
 <div class="callout-header d-flex align-content-center">
@@ -198,125 +207,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The online textbook sets out how to <a href="https://books.lesscrime.info/learncrimemapping/setup.html">install the software you need for crime mapping with R</a> and <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/">set up your computer to store files in particular places</a>. The specimen answer below assumes that you have followed those instructions and that your computer is set up as described in the book. If you have not done so, the code in the specimen answer may not run correctly.</p>
 </div>
 </div>
-<section id="complete-script" class="level2">
-<h2 class="anchored" data-anchor-id="complete-script">Complete script</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="co"># Map the density of recorded fatal shootings in NYC in 2019,</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a><span class="co"># excluding Staten Island. Run in the crime_mapping workspace.</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a><span class="do">## Load packages and data ------------------------------------------------------</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-label="6"></a><span class="co"># Note: both datasets will be harmonised to use EPSG:6538 for use with</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-label="7"></a><span class="co"># `hotspot_kde()`</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-label="8"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-label="9"></a><span class="co"># Load packages</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-label="10"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, here, httr2, sf, sfhotspot, tidyverse)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-label="11"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-label="12"></a><span class="co"># Download the original data into the workspace</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-label="13"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/nyc_shootings.csv"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-label="14"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_shootings.csv"</span>))</span>
-<span id="cb1-15"><a href="#cb1-15" aria-label="15"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/nyc_precincts.gpkg"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-label="16"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_precincts.gpkg"</span>))</span>
-<span id="cb1-17"><a href="#cb1-17" aria-label="17"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-label="18"></a><span class="co"># Read local shootings data and select fatal shootings in 2019</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-label="19"></a>shootings <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_shootings.csv"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-label="20"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-label="21"></a>  <span class="fu">filter</span>(murder <span class="sc">==</span> <span class="cn">TRUE</span>, boro <span class="sc">!=</span> <span class="st">"STATEN ISLAND"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-label="22"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-label="23"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:6538"</span>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-label="24"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-label="25"></a><span class="co"># Load NYC police precincts data</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-label="26"></a>precincts <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_precincts.gpkg"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-label="27"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-label="28"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-label="29"></a>  <span class="co"># Filter out precincts in Staten Island, since there are very few fatal</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-label="30"></a>  <span class="co"># shootings there and it takes up a lot of space due to the position of Staten</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-label="31"></a>  <span class="co"># Island relative to the rest of NYC</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-label="32"></a>  <span class="fu">filter</span>(precinct <span class="sc">&lt;=</span> <span class="dv">119</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-label="33"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:6538"</span>)</span>
-<span id="cb1-34"><a href="#cb1-34" aria-label="34"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-label="35"></a></span>
-<span id="cb1-36"><a href="#cb1-36" aria-label="36"></a><span class="do">## Wrangle data ----------------------------------------------------------------</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-label="37"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-label="38"></a><span class="co"># Calculate KDE</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-label="39"></a>shootings_kde <span class="ot">&lt;-</span> shootings <span class="sc">|&gt;</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-label="40"></a>  <span class="fu">hotspot_kde</span>(</span>
-<span id="cb1-41"><a href="#cb1-41" aria-label="41"></a>    <span class="at">grid =</span> <span class="fu">hotspot_grid</span>(precincts, <span class="at">cell_size =</span> <span class="dv">250</span>),</span>
-<span id="cb1-42"><a href="#cb1-42" aria-label="42"></a>    <span class="at">bandwidth_adjust =</span> <span class="fl">0.33</span>,</span>
-<span id="cb1-43"><a href="#cb1-43" aria-label="43"></a>    <span class="at">quiet =</span> <span class="cn">TRUE</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-label="44"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb1-45"><a href="#cb1-45" aria-label="45"></a>  <span class="fu">hotspot_clip</span>(precincts, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-46"><a href="#cb1-46" aria-label="46"></a></span>
-<span id="cb1-47"><a href="#cb1-47" aria-label="47"></a></span>
-<span id="cb1-48"><a href="#cb1-48" aria-label="48"></a><span class="do">## Make map --------------------------------------------------------------------</span></span>
-<span id="cb1-49"><a href="#cb1-49" aria-label="49"></a></span>
-<span id="cb1-50"><a href="#cb1-50" aria-label="50"></a>shootings_map <span class="ot">&lt;-</span> <span class="fu">hotspot_map</span>(</span>
-<span id="cb1-51"><a href="#cb1-51" aria-label="51"></a>  shootings_kde,</span>
-<span id="cb1-52"><a href="#cb1-52" aria-label="52"></a>  <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>,</span>
-<span id="cb1-53"><a href="#cb1-53" aria-label="53"></a>  <span class="at">caption =</span> <span class="fu">str_glue</span>(</span>
-<span id="cb1-54"><a href="#cb1-54" aria-label="54"></a>    <span class="st">"Author: Joe Bloggs, Date produced: {lubridate::today()}</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb1-55"><a href="#cb1-55" aria-label="55"></a>    <span class="st">"Shootings: New York City Police Department</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb1-56"><a href="#cb1-56" aria-label="56"></a>    <span class="st">"Boundaries: City of New York (CC BY 3.0 AU)"</span></span>
-<span id="cb1-57"><a href="#cb1-57" aria-label="57"></a>  )</span>
-<span id="cb1-58"><a href="#cb1-58" aria-label="58"></a>) <span class="sc">+</span></span>
-<span id="cb1-59"><a href="#cb1-59" aria-label="59"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> precincts, <span class="at">colour =</span> <span class="st">"grey33"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb1-60"><a href="#cb1-60" aria-label="60"></a>  <span class="fu">geom_sf_label</span>(</span>
-<span id="cb1-61"><a href="#cb1-61" aria-label="61"></a>    <span class="fu">aes</span>(<span class="at">label =</span> scales<span class="sc">::</span><span class="fu">ordinal</span>(precinct)),</span>
-<span id="cb1-62"><a href="#cb1-62" aria-label="62"></a>    <span class="at">data =</span> precincts,</span>
-<span id="cb1-63"><a href="#cb1-63" aria-label="63"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
-<span id="cb1-64"><a href="#cb1-64" aria-label="64"></a>    <span class="at">colour =</span> <span class="st">"grey33"</span>,</span>
-<span id="cb1-65"><a href="#cb1-65" aria-label="65"></a>    <span class="at">fill =</span> <span class="st">"white"</span>,</span>
-<span id="cb1-66"><a href="#cb1-66" aria-label="66"></a>    <span class="at">size =</span> <span class="fl">2.5</span>,</span>
-<span id="cb1-67"><a href="#cb1-67" aria-label="67"></a>    <span class="at">linewidth =</span> <span class="cn">NA</span></span>
-<span id="cb1-68"><a href="#cb1-68" aria-label="68"></a>  ) <span class="sc">+</span></span>
-<span id="cb1-69"><a href="#cb1-69" aria-label="69"></a>  <span class="fu">annotation_scale</span>(<span class="at">width_hint =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">5</span>, <span class="at">style =</span> <span class="st">"ticks"</span>, <span class="at">location =</span> <span class="st">"br"</span>) <span class="sc">+</span></span>
-<span id="cb1-70"><a href="#cb1-70" aria-label="70"></a>  <span class="fu">labs</span>(</span>
-<span id="cb1-71"><a href="#cb1-71" aria-label="71"></a>    <span class="at">title =</span> <span class="fu">str_glue</span>(</span>
-<span id="cb1-72"><a href="#cb1-72" aria-label="72"></a>      <span class="st">"Density of recorded fatal shootings in New York City"</span></span>
-<span id="cb1-73"><a href="#cb1-73" aria-label="73"></a>    ),</span>
-<span id="cb1-74"><a href="#cb1-74" aria-label="74"></a>    <span class="at">subtitle =</span> <span class="fu">str_glue</span>(</span>
-<span id="cb1-75"><a href="#cb1-75" aria-label="75"></a>      <span class="st">"Fatal shootings recorded by NYC Police, 2019, excluding Staten Island"</span></span>
-<span id="cb1-76"><a href="#cb1-76" aria-label="76"></a>    ),</span>
-<span id="cb1-77"><a href="#cb1-77" aria-label="77"></a>    <span class="at">fill =</span> <span class="st">"density of</span><span class="sc">\n</span><span class="st">shootings"</span></span>
-<span id="cb1-78"><a href="#cb1-78" aria-label="78"></a>  ) <span class="sc">+</span></span>
-<span id="cb1-79"><a href="#cb1-79" aria-label="79"></a>  <span class="co"># Make the map square (i.e. have an aspect or height/width ratio of 1) to</span></span>
-<span id="cb1-80"><a href="#cb1-80" aria-label="80"></a>  <span class="co"># expand the area covered by the map without reducing the size of the area</span></span>
-<span id="cb1-81"><a href="#cb1-81" aria-label="81"></a>  <span class="co"># covered by the data layer</span></span>
-<span id="cb1-82"><a href="#cb1-82" aria-label="82"></a>  <span class="fu">fixed_plot_aspect</span>(<span class="at">ratio =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb1-83"><a href="#cb1-83" aria-label="83"></a>  <span class="fu">theme</span>(</span>
-<span id="cb1-84"><a href="#cb1-84" aria-label="84"></a>    <span class="co"># We're going to overlay the legend on the map, so we should give the</span></span>
-<span id="cb1-85"><a href="#cb1-85" aria-label="85"></a>    <span class="co"># legend a solid background</span></span>
-<span id="cb1-86"><a href="#cb1-86" aria-label="86"></a>    <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="cn">NA</span>, <span class="at">fill =</span> <span class="st">"#F2F2F2"</span>),</span>
-<span id="cb1-87"><a href="#cb1-87" aria-label="87"></a>    <span class="co"># Use the top-right corner of the legend as the anchor point for determining</span></span>
-<span id="cb1-88"><a href="#cb1-88" aria-label="88"></a>    <span class="co"># its position</span></span>
-<span id="cb1-89"><a href="#cb1-89" aria-label="89"></a>    <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
-<span id="cb1-90"><a href="#cb1-90" aria-label="90"></a>    <span class="co"># Make the legend colour bar smaller</span></span>
-<span id="cb1-91"><a href="#cb1-91" aria-label="91"></a>    <span class="at">legend.key.width =</span> <span class="fu">unit</span>(<span class="fl">0.8</span>, <span class="st">"lines"</span>),</span>
-<span id="cb1-92"><a href="#cb1-92" aria-label="92"></a>    <span class="co"># Create a margin around the legend, since it has a solid background</span></span>
-<span id="cb1-93"><a href="#cb1-93" aria-label="93"></a>    <span class="at">legend.margin =</span> <span class="fu">margin</span>(<span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">6</span>),</span>
-<span id="cb1-94"><a href="#cb1-94" aria-label="94"></a>    <span class="co"># Move the top-right corner of the legend to be very near the top-right</span></span>
-<span id="cb1-95"><a href="#cb1-95" aria-label="95"></a>    <span class="co"># corner of the map</span></span>
-<span id="cb1-96"><a href="#cb1-96" aria-label="96"></a>    <span class="at">legend.position =</span> <span class="st">"inside"</span>,</span>
-<span id="cb1-97"><a href="#cb1-97" aria-label="97"></a>    <span class="at">legend.position.inside =</span> <span class="fu">c</span>(<span class="fl">0.98</span>, <span class="fl">0.98</span>),</span>
-<span id="cb1-98"><a href="#cb1-98" aria-label="98"></a>    <span class="co"># Make the legend and title smaller to reduce their visual prominence</span></span>
-<span id="cb1-99"><a href="#cb1-99" aria-label="99"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.7</span>)),</span>
-<span id="cb1-100"><a href="#cb1-100" aria-label="100"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.8</span>)),</span>
-<span id="cb1-101"><a href="#cb1-101" aria-label="101"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.8</span>), <span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">6</span>, <span class="dv">0</span>)),</span>
-<span id="cb1-102"><a href="#cb1-102" aria-label="102"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey45"</span>, <span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.7</span>), <span class="at">hjust =</span> <span class="dv">0</span>)</span>
-<span id="cb1-103"><a href="#cb1-103" aria-label="103"></a>  )</span>
-<span id="cb1-104"><a href="#cb1-104" aria-label="104"></a></span>
-<span id="cb1-105"><a href="#cb1-105" aria-label="105"></a></span>
-<span id="cb1-106"><a href="#cb1-106" aria-label="106"></a><span class="co"># Save the finished map in the workspace output folder</span></span>
-<span id="cb1-107"><a href="#cb1-107" aria-label="107"></a><span class="fu">ggsave</span>(</span>
-<span id="cb1-108"><a href="#cb1-108" aria-label="108"></a>  <span class="fu">here</span>(<span class="st">"output"</span>, <span class="st">"nyc_fatal_shootings_2019.png"</span>),</span>
-<span id="cb1-109"><a href="#cb1-109" aria-label="109"></a>  <span class="at">plot =</span> shootings_map,</span>
-<span id="cb1-110"><a href="#cb1-110" aria-label="110"></a>  <span class="at">width =</span> <span class="dv">210</span>,</span>
-<span id="cb1-111"><a href="#cb1-111" aria-label="111"></a>  <span class="at">height =</span> <span class="dv">210</span>,</span>
-<span id="cb1-112"><a href="#cb1-112" aria-label="112"></a>  <span class="at">units =</span> <span class="st">"mm"</span></span>
-<span id="cb1-113"><a href="#cb1-113" aria-label="113"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><a href="new_york_shootings.R">Download the complete R script</a>.</p>
-</section>
-<section id="output-produced-by-this-code" class="level2">
-<h2 class="anchored" data-anchor-id="output-produced-by-this-code">Output produced by this code</h2>
+<section id="the-finished-map" class="level2">
+<h2 class="anchored" data-anchor-id="the-finished-map">The finished map</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;httr2_response&gt;
@@ -345,16 +237,513 @@ date (1): occur_date
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
 </div>
-<p><img src="../output/nyc_fatal_shootings_2019.png" class="img-fluid" alt="Density map of recorded fatal shootings in New York City in 2019, excluding Staten Island. Darker blue indicates higher density. Police precinct boundaries and numbers are overlaid."></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../output/nyc_fatal_shootings_2019.png" class="img-fluid figure-img"></p>
+<figcaption>Density map of recorded fatal shootings in New York City in 2019, excluding Staten Island. Darker blue indicates higher density. Police precinct boundaries and numbers are overlaid.</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="View the complete R script">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>View the complete R script
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a><span class="co"># Map the density of recorded fatal shootings in NYC in 2019,</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-label="2"></a><span class="co"># excluding Staten Island.</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-label="3"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-label="4"></a><span class="co"># Note: both datasets will be harmonised to use EPSG:6538 for use with</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-label="5"></a><span class="co"># `hotspot_kde()`</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-label="6"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-label="7"></a><span class="do">## Load packages and data ------------------------------------------------------</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-label="8"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-label="9"></a><span class="co"># Load packages</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-label="10"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, here, httr2, sf, sfhotspot, tidyverse)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-label="11"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-label="12"></a><span class="co"># Download the original data into the workspace</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-label="13"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/nyc_shootings.csv"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-label="14"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_shootings.csv"</span>))</span>
+<span id="cb4-15"><a href="#cb4-15" aria-label="15"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/nyc_precincts.gpkg"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-label="16"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_precincts.gpkg"</span>))</span>
+<span id="cb4-17"><a href="#cb4-17" aria-label="17"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-label="18"></a><span class="co"># Read local shootings data and select fatal shootings in 2019</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-label="19"></a>shootings <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_shootings.csv"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-label="20"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-label="21"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-label="22"></a>  <span class="fu">filter</span>(murder <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-label="23"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-label="24"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:6538"</span>)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-label="25"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-label="26"></a><span class="co"># Load NYC police precincts data</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-label="27"></a>precincts <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_precincts.gpkg"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-label="28"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-label="29"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-label="30"></a>  <span class="co"># Filter out precincts in Staten Island, since there are very few fatal</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-label="31"></a>  <span class="co"># shootings there and it takes up a lot of space due to the position of Staten</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-label="32"></a>  <span class="co"># Island relative to the rest of NYC</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-label="33"></a>  <span class="fu">filter</span>(precinct <span class="sc">&lt;=</span> <span class="dv">119</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-label="34"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:6538"</span>)</span>
+<span id="cb4-35"><a href="#cb4-35" aria-label="35"></a></span>
+<span id="cb4-36"><a href="#cb4-36" aria-label="36"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-label="37"></a><span class="do">## Wrangle data ----------------------------------------------------------------</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-label="38"></a></span>
+<span id="cb4-39"><a href="#cb4-39" aria-label="39"></a><span class="co"># Calculate KDE</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-label="40"></a>shootings_kde <span class="ot">&lt;-</span> shootings <span class="sc">|&gt;</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-label="41"></a>  <span class="fu">hotspot_kde</span>(</span>
+<span id="cb4-42"><a href="#cb4-42" aria-label="42"></a>    <span class="at">grid =</span> <span class="fu">hotspot_grid</span>(precincts, <span class="at">cell_size =</span> <span class="dv">400</span>),</span>
+<span id="cb4-43"><a href="#cb4-43" aria-label="43"></a>    <span class="at">bandwidth_adjust =</span> <span class="fl">0.33</span>,</span>
+<span id="cb4-44"><a href="#cb4-44" aria-label="44"></a>    <span class="at">quiet =</span> <span class="cn">TRUE</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-label="45"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-label="46"></a>  <span class="fu">hotspot_clip</span>(precincts, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-47"><a href="#cb4-47" aria-label="47"></a></span>
+<span id="cb4-48"><a href="#cb4-48" aria-label="48"></a></span>
+<span id="cb4-49"><a href="#cb4-49" aria-label="49"></a><span class="do">## Make map --------------------------------------------------------------------</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-label="50"></a></span>
+<span id="cb4-51"><a href="#cb4-51" aria-label="51"></a>shootings_map <span class="ot">&lt;-</span> <span class="fu">hotspot_map</span>(</span>
+<span id="cb4-52"><a href="#cb4-52" aria-label="52"></a>  shootings_kde,</span>
+<span id="cb4-53"><a href="#cb4-53" aria-label="53"></a>  <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>,</span>
+<span id="cb4-54"><a href="#cb4-54" aria-label="54"></a>  <span class="at">caption =</span> <span class="fu">str_glue</span>(</span>
+<span id="cb4-55"><a href="#cb4-55" aria-label="55"></a>    <span class="st">"Author: Joe Bloggs, Date produced: {today()}</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb4-56"><a href="#cb4-56" aria-label="56"></a>    <span class="st">"Shootings: New York City Police Department</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb4-57"><a href="#cb4-57" aria-label="57"></a>    <span class="st">"Boundaries: City of New York (CC BY 3.0 AU)"</span></span>
+<span id="cb4-58"><a href="#cb4-58" aria-label="58"></a>  )</span>
+<span id="cb4-59"><a href="#cb4-59" aria-label="59"></a>) <span class="sc">+</span></span>
+<span id="cb4-60"><a href="#cb4-60" aria-label="60"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> precincts, <span class="at">colour =</span> <span class="st">"grey33"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-label="61"></a>  <span class="fu">geom_sf_label</span>(</span>
+<span id="cb4-62"><a href="#cb4-62" aria-label="62"></a>    <span class="fu">aes</span>(<span class="at">label =</span> scales<span class="sc">::</span><span class="fu">ordinal</span>(precinct)),</span>
+<span id="cb4-63"><a href="#cb4-63" aria-label="63"></a>    <span class="at">data =</span> precincts,</span>
+<span id="cb4-64"><a href="#cb4-64" aria-label="64"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<span id="cb4-65"><a href="#cb4-65" aria-label="65"></a>    <span class="at">colour =</span> <span class="st">"grey33"</span>,</span>
+<span id="cb4-66"><a href="#cb4-66" aria-label="66"></a>    <span class="at">fill =</span> <span class="st">"white"</span>,</span>
+<span id="cb4-67"><a href="#cb4-67" aria-label="67"></a>    <span class="at">size =</span> <span class="fl">2.5</span>,</span>
+<span id="cb4-68"><a href="#cb4-68" aria-label="68"></a>    <span class="at">linewidth =</span> <span class="cn">NA</span></span>
+<span id="cb4-69"><a href="#cb4-69" aria-label="69"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-70"><a href="#cb4-70" aria-label="70"></a>  <span class="fu">annotation_scale</span>(<span class="at">width_hint =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">5</span>, <span class="at">style =</span> <span class="st">"ticks"</span>, <span class="at">location =</span> <span class="st">"br"</span>) <span class="sc">+</span></span>
+<span id="cb4-71"><a href="#cb4-71" aria-label="71"></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-72"><a href="#cb4-72" aria-label="72"></a>    <span class="at">title =</span> <span class="st">"Density of recorded fatal shootings in New York City"</span>,</span>
+<span id="cb4-73"><a href="#cb4-73" aria-label="73"></a>    <span class="at">subtitle =</span> <span class="st">"Fatal shootings recorded by NYC Police, 2019, excluding Staten Island"</span>,</span>
+<span id="cb4-74"><a href="#cb4-74" aria-label="74"></a>    <span class="at">fill =</span> <span class="st">"density of</span><span class="sc">\n</span><span class="st">shootings"</span></span>
+<span id="cb4-75"><a href="#cb4-75" aria-label="75"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-76"><a href="#cb4-76" aria-label="76"></a>  <span class="fu">theme</span>(</span>
+<span id="cb4-77"><a href="#cb4-77" aria-label="77"></a>    <span class="co"># We're going to overlay the legend on the map, so we should give the</span></span>
+<span id="cb4-78"><a href="#cb4-78" aria-label="78"></a>    <span class="co"># legend a solid background</span></span>
+<span id="cb4-79"><a href="#cb4-79" aria-label="79"></a>    <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="cn">NA</span>, <span class="at">fill =</span> <span class="st">"#F2F2F2"</span>),</span>
+<span id="cb4-80"><a href="#cb4-80" aria-label="80"></a>    <span class="co"># Use the top-right corner of the legend as the anchor point for determining</span></span>
+<span id="cb4-81"><a href="#cb4-81" aria-label="81"></a>    <span class="co"># its position</span></span>
+<span id="cb4-82"><a href="#cb4-82" aria-label="82"></a>    <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb4-83"><a href="#cb4-83" aria-label="83"></a>    <span class="co"># Create a margin around the legend, since it has a solid background</span></span>
+<span id="cb4-84"><a href="#cb4-84" aria-label="84"></a>    <span class="at">legend.margin =</span> <span class="fu">margin</span>(<span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">6</span>),</span>
+<span id="cb4-85"><a href="#cb4-85" aria-label="85"></a>    <span class="co"># Move the top-right corner of the legend to be very near the top-right</span></span>
+<span id="cb4-86"><a href="#cb4-86" aria-label="86"></a>    <span class="co"># corner of the map</span></span>
+<span id="cb4-87"><a href="#cb4-87" aria-label="87"></a>    <span class="at">legend.position =</span> <span class="st">"inside"</span>,</span>
+<span id="cb4-88"><a href="#cb4-88" aria-label="88"></a>    <span class="at">legend.position.inside =</span> <span class="fu">c</span>(<span class="fl">0.98</span>, <span class="fl">0.98</span>),</span>
+<span id="cb4-89"><a href="#cb4-89" aria-label="89"></a>    <span class="co"># Make the legend and title smaller to reduce their visual prominence</span></span>
+<span id="cb4-90"><a href="#cb4-90" aria-label="90"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.7</span>)),</span>
+<span id="cb4-91"><a href="#cb4-91" aria-label="91"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.8</span>)),</span>
+<span id="cb4-92"><a href="#cb4-92" aria-label="92"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.8</span>), <span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">6</span>, <span class="dv">0</span>)),</span>
+<span id="cb4-93"><a href="#cb4-93" aria-label="93"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey45"</span>, <span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.7</span>), <span class="at">hjust =</span> <span class="dv">0</span>)</span>
+<span id="cb4-94"><a href="#cb4-94" aria-label="94"></a>  )</span>
+<span id="cb4-95"><a href="#cb4-95" aria-label="95"></a></span>
+<span id="cb4-96"><a href="#cb4-96" aria-label="96"></a><span class="co"># Save the finished map in the workspace output folder</span></span>
+<span id="cb4-97"><a href="#cb4-97" aria-label="97"></a><span class="fu">ggsave</span>(</span>
+<span id="cb4-98"><a href="#cb4-98" aria-label="98"></a>  <span class="fu">here</span>(<span class="st">"output"</span>, <span class="st">"nyc_fatal_shootings_2019.png"</span>),</span>
+<span id="cb4-99"><a href="#cb4-99" aria-label="99"></a>  <span class="at">plot =</span> shootings_map,</span>
+<span id="cb4-100"><a href="#cb4-100" aria-label="100"></a>  <span class="at">width =</span> <span class="dv">210</span>,</span>
+<span id="cb4-101"><a href="#cb4-101" aria-label="101"></a>  <span class="at">height =</span> <span class="dv">210</span>,</span>
+<span id="cb4-102"><a href="#cb4-102" aria-label="102"></a>  <span class="at">units =</span> <span class="st">"mm"</span></span>
+<span id="cb4-103"><a href="#cb4-103" aria-label="103"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><a href="new_york_shootings.R">Download the complete R script</a>.</p>
+</div>
+</div>
+</div>
 </section>
-<section id="why-the-code-is-organised-this-way" class="level2">
-<h2 class="anchored" data-anchor-id="why-the-code-is-organised-this-way">Why the code is organised this way</h2>
-<p>There are two points about this script that are worth noting. The first is that the map does not show all of New York City. The code deliberately filters out Staten Island, which has very few fatal shootings but would otherwise occupy a large proportion of the map because it is so geographically large. Staten Island is excluded to make the map easier to read, particularly since readers of crime analysis products such as crime maps are usually (although not always) interested in the areas with <em>most</em> crime.</p>
-<p>The second feature is that the map legend has been moved inside the map area using various arguments to the <code>theme()</code> function. This means the legend doesn’t take up space on the page/screen that can usefully be used to show the data. Look through the comments in the code to understand how this was done. The <code>theme()</code> function is very flexible and allows you to change the position of the legend, the size of the text, the background colour and many other features. You can also use <code>theme()</code> to change the appearance of other map elements such as the title, subtitle and caption.</p>
+<section id="step-1-explain-the-script" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-explain-the-script">Step 1: Explain the script</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-1"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-1" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-1-1" class="code-annotation-target"><a href="#annotated-cell-1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Map the density of recorded fatal shootings in NYC in 2019,</span></span>
+<span id="annotated-cell-1-2"><a href="#annotated-cell-1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># excluding Staten Island.</span></span>
+<span id="annotated-cell-1-3"><a href="#annotated-cell-1-3" aria-hidden="true" tabindex="-1"></a></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-1" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-1-4" class="code-annotation-target"><a href="#annotated-cell-1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: both datasets will be harmonised to use EPSG:6538 for use with</span></span>
+<span id="annotated-cell-1-5"><a href="#annotated-cell-1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># `hotspot_kde()`</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-1" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-1" data-code-lines="1" data-code-annotation="1">It’s useful to start each script by explaining what it does. This makes it easier to find the right script if you need to revisit it later, for example to find a script that you can use as the basis for another script. In the case of data-analysis scripts, it’s useful to specify what the script is designed to produce, e.g.&nbsp;a map of a particular type (KDE) showing a particular crime type (fatal shootings) in a particular place (New York City) at a particular time (2019). See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments">Organising code with comments</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-1" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-1" data-code-lines="4" data-code-annotation="2">To make it easier to combine the datasets later, we have decided to transform both spatial datasets to use the same co-ordinate reference system (CRS). Noting this policy decision here makes it easier to remember which CRS we are using when we are writing later parts of the script. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-your-first-crime-map-transforming-the-coordinate-reference-system">Transforming the coordinate reference system</a>.</span>
+</dd>
+</dl>
 </section>
-<section id="review-your-answer" class="level2">
-<h2 class="anchored" data-anchor-id="review-your-answer">Review your answer</h2>
-<p>The object names and organisation of your code may differ. Check that your code selects the same records, interprets their coordinates correctly and runs from a fresh session. Explain one choice you made differently from this specimen.</p>
+<section id="step-2-load-packages" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-load-packages">Step 2: Load packages</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-2"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-2-1" class="code-annotation-target"><a href="#annotated-cell-2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Load packages and data ------------------------------------------------------</span></span>
+<span id="annotated-cell-2-2"><a href="#annotated-cell-2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-2-3"><a href="#annotated-cell-2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load packages</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-2-4" class="code-annotation-target"><a href="#annotated-cell-2-4" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggspatial, here, httr2, sf, sfhotspot, tidyverse)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-2" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-2" data-code-lines="1" data-code-annotation="3">Header comments divide the script into stages. These headings make it easier to find the part of a script you need once your scripts begin to get longer. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments">Organising code with comments</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-2" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-cell="annotated-cell-2" data-code-lines="4" data-code-annotation="4"><code>pacman::p_load()</code> loads the packages needed for this analysis, listed in alphabetical order with the tidyverse package last. <strong><a href="https://paleolimbot.github.io/ggspatial/">ggspatial</a></strong> adds map elements such as scale bars; <strong><a href="https://here.r-lib.org/">here</a></strong> allows us to specify where to find specific files; <strong><a href="https://httr2.r-lib.org">httr2</a></strong> downloads data from the internet; <strong><a href="https://r-spatial.github.io/sf/">sf</a></strong> handles spatial objects; <strong><a href="https://pkgs.lesscrime.info/sfhotspot/">sfhotspot</a></strong> calculates and maps density; and <strong><a href="https://tidyverse.tidyverse.org">tidyverse</a></strong> provides tools for reading, selecting and plotting data. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages">Loading packages</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-3-download-the-original-data" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-download-the-original-data">Step 3: Download the original data</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-3"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-3-1"><a href="#annotated-cell-3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the original data into the workspace</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-3-2" class="code-annotation-target"><a href="#annotated-cell-3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/nyc_shootings.csv"</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="6" onclick="event.preventDefault();">6</a><span id="annotated-cell-3-3" class="code-annotation-target"><a href="#annotated-cell-3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_shootings.csv"</span>))</span>
+<span id="annotated-cell-3-4"><a href="#annotated-cell-3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/nyc_precincts.gpkg"</span>) <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-3-5"><a href="#annotated-cell-3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_precincts.gpkg"</span>))</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-3" data-target-annotation="5">5</dt>
+<dd>
+<span data-code-cell="annotated-cell-3" data-code-lines="2,4" data-code-annotation="5"><code>request()</code> specifies the URL of the file to download. The pipe operator (<code>|&gt;</code>) passes that request to the next function. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-load-data">Downloading and loading data</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator">Stringing functions together</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-3" data-target-annotation="6">6</dt>
+<dd>
+<span data-code-cell="annotated-cell-3" data-code-lines="3,5" data-code-annotation="6"><code>req_perform()</code> performs the download of the requested file. <code>here()</code> constructs a path to the <code>data/raw</code> folder in the workspace. The two downloads save the shootings CSV and precinct geopackage separately. This code assumes the workspace and folders have been set up as described in the book. See <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project">Keeping your files organised</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-4-load-and-prepare-the-shootings-data" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-load-and-prepare-the-shootings-data">Step 4: Load and prepare the shootings data</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-4"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-4-1"><a href="#annotated-cell-4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read local shootings data and select fatal shootings in 2019</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="7" onclick="event.preventDefault();">7</a><span id="annotated-cell-4-2" class="code-annotation-target"><a href="#annotated-cell-4-2" aria-hidden="true" tabindex="-1"></a>shootings <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_shootings.csv"</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="8" onclick="event.preventDefault();">8</a><span id="annotated-cell-4-3" class="code-annotation-target"><a href="#annotated-cell-4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="9" onclick="event.preventDefault();">9</a><span id="annotated-cell-4-4" class="code-annotation-target"><a href="#annotated-cell-4-4" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="10" onclick="event.preventDefault();">10</a><span id="annotated-cell-4-5" class="code-annotation-target"><a href="#annotated-cell-4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(murder <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="11" onclick="event.preventDefault();">11</a><span id="annotated-cell-4-6" class="code-annotation-target"><a href="#annotated-cell-4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>), <span class="at">crs =</span> <span class="st">"EPSG:4326"</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="12" onclick="event.preventDefault();">12</a><span id="annotated-cell-4-7" class="code-annotation-target"><a href="#annotated-cell-4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:6538"</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-4" data-target-annotation="7">7</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="2" data-code-annotation="7"><code>here()</code> specifies which file we are going to load data from. <code>&lt;-</code> stores the result of this whole pipeline as <code>shootings</code>, so later code can refer to it by name.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="8">8</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="3" data-code-annotation="8"><code>read_csv()</code>, from <a href="https://readr.tidyverse.org">readr</a>, reads the local CSV file. See <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-data-wrangling-loading-csv-data">Loading CSV data</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-naming-objects">Naming objects</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="9">9</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="4" data-code-annotation="9"><code>janitor::clean_names()</code>, from <a href="https://sfirke.github.io/janitor/">janitor</a>, gives columns consistent names in <code>snake_case</code>. Naming the package before <code>::</code> lets us use this function without loading the whole package. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-cleaning-column-names">Cleaning column names</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages">Loading packages</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="10">10</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="5" data-code-annotation="10"><code>filter()</code>, from <a href="https://dplyr.tidyverse.org">dplyr</a>, keeps rows that correspond to fatal shootings (<code>murder == TRUE</code>). <code>TRUE</code> is a logical value, which we denote by writing it in capitals without quotation marks. See <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-filter-data">Filtering rows</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#map-choices">Map choices</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="11">11</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="6" data-code-annotation="11"><code>st_as_sf()</code> tells R that the numbers in the <code>longitude</code> and <code>latitude</code> columns in the data represent points on the Earth’s surface. <code>coords</code> specifies which columns contain the x and y coordinates, in that order. <code>crs = "EPSG:4326"</code> identifies which coordinate reference system R should use to translate the numbers in those columns into geographic locations. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-converting-our-data-to-an-sf-object">Converting data to an SF object</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="12">12</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="7" data-code-annotation="12"><code>st_transform()</code> changes the coordinates to the projected CRS specified for this exercise. This prepares the points for density estimation and makes their CRS match the precinct boundaries. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-your-first-crime-map-transforming-the-coordinate-reference-system">Transforming the coordinate reference system</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-5-load-and-prepare-the-precinct-boundaries" class="level2">
+<h2 class="anchored" data-anchor-id="step-5-load-and-prepare-the-precinct-boundaries">Step 5: Load and prepare the precinct boundaries</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-5"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-5-1"><a href="#annotated-cell-5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load NYC police precincts data</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="13" onclick="event.preventDefault();">13</a><span id="annotated-cell-5-2" class="code-annotation-target"><a href="#annotated-cell-5-2" aria-hidden="true" tabindex="-1"></a>precincts <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"nyc_precincts.gpkg"</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="14" onclick="event.preventDefault();">14</a><span id="annotated-cell-5-3" class="code-annotation-target"><a href="#annotated-cell-5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_sf</span>() <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="15" onclick="event.preventDefault();">15</a><span id="annotated-cell-5-4" class="code-annotation-target"><a href="#annotated-cell-5-4" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="16" onclick="event.preventDefault();">16</a><span id="annotated-cell-5-5" class="code-annotation-target"><a href="#annotated-cell-5-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter out precincts in Staten Island, since there are very few fatal</span></span>
+<span id="annotated-cell-5-6"><a href="#annotated-cell-5-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># shootings there and it takes up a lot of space due to the position of Staten</span></span>
+<span id="annotated-cell-5-7"><a href="#annotated-cell-5-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Island relative to the rest of NYC</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="17" onclick="event.preventDefault();">17</a><span id="annotated-cell-5-8" class="code-annotation-target"><a href="#annotated-cell-5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(precinct <span class="sc">&lt;=</span> <span class="dv">119</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="18" onclick="event.preventDefault();">18</a><span id="annotated-cell-5-9" class="code-annotation-target"><a href="#annotated-cell-5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="st">"EPSG:6538"</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-5" data-target-annotation="13">13</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="2" data-code-annotation="13"><code>here()</code> again specifies which file we are going to load data from. The result of this whole pipeline will be stored as <code>precincts</code>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="14">14</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="3" data-code-annotation="14"><code>read_sf()</code> reads the spatial file containing the precinct boundaries. Since this file is in a spatial data format (in this case, a geopackage), it includes the information R needs about the geometry and CRS, so we do not need to then use <code>st_as_sf()</code>. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-reading-spatial-data">Reading spatial data</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="15">15</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="4" data-code-annotation="15">Clean the column names using the same convention as before.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="16">16</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="5" data-code-annotation="16">At this point the code makes an important decision, to exclude Staten Island from the analysis. This is a judgement call on the part of the person who wrote this code – including Staten Island in the map would also have been a reasonable choice. The reason that this code excludes Staten Island is that has very few fatal shootings but is geographically large, so it would occupy a large proportion of the map if left included. Readers of crime analysis products such as crime maps are usually (although not always) interested in the areas with most crime, so excluding Staten Island allows for a more focused analysis of the areas with the highest crime rates. However, this depends very much on the intended audience of the map – if the intended audience was residents of Staten Island, for example, it would be more appropriate to include it. In any case, this is an important design choice so the comment explains the rationale behind it. <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#map-choices">Map choices</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="17">17</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="8" data-code-annotation="17"><code>filter(precinct &lt;= 119)</code> keeps only those precincts outside Staten Island, since the Staten Island precincts all have numbers 120 and above (we could find this out by mapping all the precinct numbers). See <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-filter-data">Filtering rows</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="18">18</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="9" data-code-annotation="18">Transform the precinct boundaries to the same CRS as the shootings. Matching CRSs is often useful when using multiple spatial layers together.</span>
+</dd>
+</dl>
+</section>
+<section id="step-6-calculate-and-clip-the-density-layer" class="level2">
+<h2 class="anchored" data-anchor-id="step-6-calculate-and-clip-the-density-layer">Step 6: Calculate and clip the density layer</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-6"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-6-1"><a href="#annotated-cell-6-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Wrangle data ----------------------------------------------------------------</span></span>
+<span id="annotated-cell-6-2"><a href="#annotated-cell-6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-6-3"><a href="#annotated-cell-6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate KDE</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="19" onclick="event.preventDefault();">19</a><span id="annotated-cell-6-4" class="code-annotation-target"><a href="#annotated-cell-6-4" aria-hidden="true" tabindex="-1"></a>shootings_kde <span class="ot">&lt;-</span> shootings <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="20" onclick="event.preventDefault();">20</a><span id="annotated-cell-6-5" class="code-annotation-target"><a href="#annotated-cell-6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hotspot_kde</span>(</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="21" onclick="event.preventDefault();">21</a><span id="annotated-cell-6-6" class="code-annotation-target"><a href="#annotated-cell-6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">grid =</span> <span class="fu">hotspot_grid</span>(precincts, <span class="at">cell_size =</span> <span class="dv">400</span>),</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="22" onclick="event.preventDefault();">22</a><span id="annotated-cell-6-7" class="code-annotation-target"><a href="#annotated-cell-6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">bandwidth_adjust =</span> <span class="fl">0.33</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="23" onclick="event.preventDefault();">23</a><span id="annotated-cell-6-8" class="code-annotation-target"><a href="#annotated-cell-6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">quiet =</span> <span class="cn">TRUE</span></span>
+<span id="annotated-cell-6-9"><a href="#annotated-cell-6-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="24" onclick="event.preventDefault();">24</a><span id="annotated-cell-6-10" class="code-annotation-target"><a href="#annotated-cell-6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hotspot_clip</span>(precincts, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-6" data-target-annotation="19">19</dt>
+<dd>
+<span data-code-cell="annotated-cell-6" data-code-lines="4" data-code-annotation="19">Start with the <code>shootings</code> object we created and specify that we will store the finished density layer as <code>shootings_kde</code>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="20">20</dt>
+<dd>
+<span data-code-cell="annotated-cell-6" data-code-lines="5" data-code-annotation="20"><code>hotspot_kde()</code> estimates the density of crimes in each cell in a grid. The arguments on the following lines control how it does this. See <a href="https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-kde">Mapping crime density</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="21">21</dt>
+<dd>
+<span data-code-cell="annotated-cell-6" data-code-lines="6" data-code-annotation="21"><code>hotspot_grid()</code> uses the precinct boundaries to define the grid that will be used to estimate the density of shootings. <code>cell_size = 400</code> sets the cells to 400 metres across. That’s larger than we would usually use for a city map, but New York City is very large so a KDE layer with a smaller cell size would take a very long time to estimate. See <a href="https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#specifying-a-grid-for-kernel-density-estimation">Specifying a grid for kernel density estimation</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-mapping-crime-patterns-fine-tuning-cell-size-and-bandwidth">Fine-tuning cell size and bandwidth</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="22">22</dt>
+<dd>
+<span data-code-cell="annotated-cell-6" data-code-lines="7" data-code-annotation="22"><code>bandwidth_adjust = 0.33</code> reduces the default smoothing bandwidth, relative to the default bandwidth value. Setting a value of <code>bandwidth_adjust</code> below 1.0 reveals more local detail, but more detail is not automatically a better representation: bandwidth changes the patterns a reader sees.</span>
+</dd>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="23">23</dt>
+<dd>
+<span data-code-cell="annotated-cell-6" data-code-lines="8" data-code-annotation="23"><code>quiet = TRUE</code> suppresses the progress display that is produced by <code>hotspot_kde()</code>. That reduces the amount of text output in the R Console, but means you might miss important messages. If you are running a long-running analysis, you might want to set <code>quiet = FALSE</code> to see the progress.</span>
+</dd>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="24">24</dt>
+<dd>
+<span data-code-cell="annotated-cell-6" data-code-lines="10" data-code-annotation="24"><code>hotspot_clip()</code> clips the density layer to the area covered by the <code>precincts</code> layer. That makes sure we don’t inadvertently show incorrect density estimates for grid cells that are outside the area that we have crime data for. See <a href="https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-clipping-map-layers">Clipping map layers</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-7-start-the-map-and-identify-its-sources" class="level2">
+<h2 class="anchored" data-anchor-id="step-7-start-the-map-and-identify-its-sources">Step 7: Start the map and identify its sources</h2>
+<p>Create the base map and density layer, then record where the data came from.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-7"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-7-1"><a href="#annotated-cell-7-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Make map --------------------------------------------------------------------</span></span>
+<span id="annotated-cell-7-2"><a href="#annotated-cell-7-2" aria-hidden="true" tabindex="-1"></a></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="25" onclick="event.preventDefault();">25</a><span id="annotated-cell-7-3" class="code-annotation-target"><a href="#annotated-cell-7-3" aria-hidden="true" tabindex="-1"></a>shootings_map <span class="ot">&lt;-</span> <span class="fu">hotspot_map</span>(</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="26" onclick="event.preventDefault();">26</a><span id="annotated-cell-7-4" class="code-annotation-target"><a href="#annotated-cell-7-4" aria-hidden="true" tabindex="-1"></a>  shootings_kde,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="27" onclick="event.preventDefault();">27</a><span id="annotated-cell-7-5" class="code-annotation-target"><a href="#annotated-cell-7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="28" onclick="event.preventDefault();">28</a><span id="annotated-cell-7-6" class="code-annotation-target"><a href="#annotated-cell-7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="fu">str_glue</span>(</span>
+<span id="annotated-cell-7-7"><a href="#annotated-cell-7-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Author: Joe Bloggs, Date produced: {today()}</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="annotated-cell-7-8"><a href="#annotated-cell-7-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Shootings: New York City Police Department</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="annotated-cell-7-9"><a href="#annotated-cell-7-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Boundaries: City of New York (CC BY 3.0 AU)"</span></span>
+<span id="annotated-cell-7-10"><a href="#annotated-cell-7-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="29" onclick="event.preventDefault();">29</a><span id="annotated-cell-7-11" class="code-annotation-target"><a href="#annotated-cell-7-11" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-7" data-target-annotation="25">25</dt>
+<dd>
+<span data-code-cell="annotated-cell-7" data-code-lines="3" data-code-annotation="25">Save the map as <code>shootings_map</code>. Keeping the map in an object lets us save the finished result in a subsequent step. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-creating-storing-map">Creating and storing a map</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-7" data-target-annotation="26">26</dt>
+<dd>
+<span data-code-cell="annotated-cell-7" data-code-lines="4" data-code-annotation="26"><code>hotspot_map()</code> uses the calculated density layer to start the map. See <a href="https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-kde">Mapping crime density</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-7" data-target-annotation="27">27</dt>
+<dd>
+<span data-code-cell="annotated-cell-7" data-code-lines="5" data-code-annotation="27">The <code>cartolight</code> base map supplies geographic context with a relatively restrained appearance, helping the density layer remain prominent. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-base-maps">Base maps</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-7" data-target-annotation="28">28</dt>
+<dd>
+<span data-code-cell="annotated-cell-7" data-code-lines="6" data-code-annotation="28"><code>str_glue()</code> from <a href="https://stringr.tidyverse.org">stringr</a> allows us to combine multiple text values and R code into a single text value. The braces (<code>{}</code>) tell R to evaluate the code inside (<code>today()</code>) as R code rather than text, to insert the current date, while <code>\n</code> starts a new line. The caption credits the author and data providers, based on the information provided in the exercise instructions. Replace the example author name Joe Bloggs when producing your own map. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-captions">Using captions to add author and other information</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-7" data-target-annotation="29">29</dt>
+<dd>
+<span data-code-cell="annotated-cell-7" data-code-lines="11" data-code-annotation="29">Note that this function finishes with a <code>+</code> operator because the same stack of functions continues in the next section. In the actual code this is a continuous stack of functions that make the map – they are just broken up here to explain each step.</span>
+</dd>
+</dl>
+</section>
+<section id="step-8-add-precinct-boundaries-and-labels" class="level2">
+<h2 class="anchored" data-anchor-id="step-8-add-precinct-boundaries-and-labels">Step 8: Add precinct boundaries and labels</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-8"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="30" onclick="event.preventDefault();">30</a><span id="annotated-cell-8-1" class="code-annotation-target"><a href="#annotated-cell-8-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> precincts, <span class="at">colour =</span> <span class="st">"grey33"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="31" onclick="event.preventDefault();">31</a><span id="annotated-cell-8-2" class="code-annotation-target"><a href="#annotated-cell-8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf_label</span>(</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="32" onclick="event.preventDefault();">32</a><span id="annotated-cell-8-3" class="code-annotation-target"><a href="#annotated-cell-8-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">label =</span> scales<span class="sc">::</span><span class="fu">ordinal</span>(precinct)),</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="33" onclick="event.preventDefault();">33</a><span id="annotated-cell-8-4" class="code-annotation-target"><a href="#annotated-cell-8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> precincts,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="34" onclick="event.preventDefault();">34</a><span id="annotated-cell-8-5" class="code-annotation-target"><a href="#annotated-cell-8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="35" onclick="event.preventDefault();">35</a><span id="annotated-cell-8-6" class="code-annotation-target"><a href="#annotated-cell-8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"grey33"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="36" onclick="event.preventDefault();">36</a><span id="annotated-cell-8-7" class="code-annotation-target"><a href="#annotated-cell-8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"white"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="37" onclick="event.preventDefault();">37</a><span id="annotated-cell-8-8" class="code-annotation-target"><a href="#annotated-cell-8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">2.5</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="38" onclick="event.preventDefault();">38</a><span id="annotated-cell-8-9" class="code-annotation-target"><a href="#annotated-cell-8-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="cn">NA</span></span>
+<span id="annotated-cell-8-10"><a href="#annotated-cell-8-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-8" data-target-annotation="30">30</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="1" data-code-annotation="30"><code>geom_sf()</code> overlays precinct boundaries on top of the density layer. The density layer should always be the most visually prominent layer on a density map, so it is important we display the precinct boundaries in a way that doesn’t obscure the density information. <code>colour = "grey33"</code> sets the outlines and <code>fill = NA</code> leaves the interiors unfilled so the density remains visible. See <a href="https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-other-layers">Adding more layers</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-aesthetics">Controlling aesthetics</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="31">31</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="2" data-code-annotation="31"><code>geom_sf_label()</code> adds a label for each precinct. Again, it’s important that we don’t obscure the density layer when we do this, so several arguments are needed on subsequent lines to fine-tune the appearance of the labels.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="32">32</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="3" data-code-annotation="32"><code>aes()</code> specifies which column in the <code>precincts</code> dataset to use for the label text. <code>scales::ordinal()</code>, from <a href="https://scales.r-lib.org">scales</a>, converts numbers into forms such as “1st” and “2nd”, since that is how police precincts in New York City are typically referred to. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-formatting-numbers-using-the-scales-package">Formatting numbers using the scales package</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="33">33</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="4" data-code-annotation="33">Specify which dataset to use for the precinct boundaries.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="34">34</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="5" data-code-annotation="34"><code>alpha = 0.5</code> makes the labels partly transparent, so they compete less with the density surface. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy">Visual hierarchy</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="35">35</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="6" data-code-annotation="35">Use grey text (rather than the default black) to move the labels down the visual hierarchy.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="36">36</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="7" data-code-annotation="36">A white background helps distinguish the label from the map beneath it, which improves readbility without moving the labels too far up the visual hierarchy since the backgrounds are semi-transparent.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="37">37</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="8" data-code-annotation="37">Set a modest label-text size.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="38">38</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="9" data-code-annotation="38"><code>linewidth = NA</code> removes the label border, reducing visual clutter.</span>
+</dd>
+</dl>
+</section>
+<section id="step-9-add-a-scale-bar-and-meaningful-titles" class="level2">
+<h2 class="anchored" data-anchor-id="step-9-add-a-scale-bar-and-meaningful-titles">Step 9: Add a scale bar and meaningful titles</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-9"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="39" onclick="event.preventDefault();">39</a><span id="annotated-cell-9-1" class="code-annotation-target"><a href="#annotated-cell-9-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotation_scale</span>(<span class="at">width_hint =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">5</span>, <span class="at">style =</span> <span class="st">"ticks"</span>, <span class="at">location =</span> <span class="st">"br"</span>) <span class="sc">+</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="40" onclick="event.preventDefault();">40</a><span id="annotated-cell-9-2" class="code-annotation-target"><a href="#annotated-cell-9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="41" onclick="event.preventDefault();">41</a><span id="annotated-cell-9-3" class="code-annotation-target"><a href="#annotated-cell-9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Density of recorded fatal shootings in New York City"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="42" onclick="event.preventDefault();">42</a><span id="annotated-cell-9-4" class="code-annotation-target"><a href="#annotated-cell-9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Fatal shootings recorded by NYC Police, 2019, excluding Staten Island"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="43" onclick="event.preventDefault();">43</a><span id="annotated-cell-9-5" class="code-annotation-target"><a href="#annotated-cell-9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"density of</span><span class="sc">\n</span><span class="st">shootings"</span></span>
+<span id="annotated-cell-9-6"><a href="#annotated-cell-9-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-9" data-target-annotation="39">39</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="1" data-code-annotation="39"><code>annotation_scale()</code> from the ggspatial package adds a scale bar. <code>width_hint = 1 / 5</code> suggests its width relative to the map, <code>style = "ticks"</code> chooses its appearance, and <code>location = "br"</code> places it at the bottom right. All these choices are made to make sure the scale bar appears at the bottom of the visual hierarchy. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-scale-bars">Scale bars</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-9" data-target-annotation="40">40</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="2" data-code-annotation="40"><code>labs()</code> supplies the map title, subtitle and fill-legend title. Note that we’ve already specified the map caption when we called <code>hotspot_map()</code>. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-titles">Supporting maps with words</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-9" data-target-annotation="41">41</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="3" data-code-annotation="41">The title describes what is mapped. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-titles">Titles and subtitles</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-9" data-target-annotation="42">42</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="4" data-code-annotation="42">The subtitle specifies the data provider, year and exclusion of Staten Island. Readers need this context to interpret the map correctly.</span>
+</dd>
+<dt data-target-cell="annotated-cell-9" data-target-annotation="43">43</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="5" data-code-annotation="43">This line specifies the title for the map legend, which we can use to specify what the fill colours represent. Note that this title avoids any jargon like ‘kernel density’ or ‘KDE’ that might be unfamiliar to non-specialist readers. <code>\n</code> breaks the legend title over two lines. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-changing-the-legend-title">Changing the legend title</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-10.-control-the-map-layout" class="level2">
+<h2 class="anchored" data-anchor-id="step-10.-control-the-map-layout">Step 10. Control the map layout</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-10"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="44" onclick="event.preventDefault();">44</a><span id="annotated-cell-10-1" class="code-annotation-target"><a href="#annotated-cell-10-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="annotated-cell-10-2"><a href="#annotated-cell-10-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># We're going to overlay the legend on the map, so we should give the</span></span>
+<span id="annotated-cell-10-3"><a href="#annotated-cell-10-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># legend a solid background</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="45" onclick="event.preventDefault();">45</a><span id="annotated-cell-10-4" class="code-annotation-target"><a href="#annotated-cell-10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="cn">NA</span>, <span class="at">fill =</span> <span class="st">"#F2F2F2"</span>),</span>
+<span id="annotated-cell-10-5"><a href="#annotated-cell-10-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Use the top-right corner of the legend as the anchor point for determining</span></span>
+<span id="annotated-cell-10-6"><a href="#annotated-cell-10-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># its position</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="46" onclick="event.preventDefault();">46</a><span id="annotated-cell-10-7" class="code-annotation-target"><a href="#annotated-cell-10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="annotated-cell-10-8"><a href="#annotated-cell-10-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create a margin around the legend, since it has a solid background</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="47" onclick="event.preventDefault();">47</a><span id="annotated-cell-10-9" class="code-annotation-target"><a href="#annotated-cell-10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.margin =</span> <span class="fu">margin</span>(<span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">6</span>),</span>
+<span id="annotated-cell-10-10"><a href="#annotated-cell-10-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Move the top-right corner of the legend to be very near the top-right</span></span>
+<span id="annotated-cell-10-11"><a href="#annotated-cell-10-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># corner of the map</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="48" onclick="event.preventDefault();">48</a><span id="annotated-cell-10-12" class="code-annotation-target"><a href="#annotated-cell-10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"inside"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="49" onclick="event.preventDefault();">49</a><span id="annotated-cell-10-13" class="code-annotation-target"><a href="#annotated-cell-10-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position.inside =</span> <span class="fu">c</span>(<span class="fl">0.98</span>, <span class="fl">0.98</span>),</span>
+<span id="annotated-cell-10-14"><a href="#annotated-cell-10-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make the legend and title smaller to reduce their visual prominence</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="50" onclick="event.preventDefault();">50</a><span id="annotated-cell-10-15" class="code-annotation-target"><a href="#annotated-cell-10-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.7</span>)),</span>
+<span id="annotated-cell-10-16"><a href="#annotated-cell-10-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.8</span>)),</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="51" onclick="event.preventDefault();">51</a><span id="annotated-cell-10-17" class="code-annotation-target"><a href="#annotated-cell-10-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.8</span>), <span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">6</span>, <span class="dv">0</span>)),</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="52" onclick="event.preventDefault();">52</a><span id="annotated-cell-10-18" class="code-annotation-target"><a href="#annotated-cell-10-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey45"</span>, <span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">0.7</span>), <span class="at">hjust =</span> <span class="dv">0</span>)</span>
+<span id="annotated-cell-10-19"><a href="#annotated-cell-10-19" aria-hidden="true" tabindex="-1"></a>  )</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-10" data-target-annotation="44">44</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="1" data-code-annotation="44"><code>theme()</code>, from <a href="https://ggplot2.tidyverse.org">ggplot2</a>, controls the aspects of the plot that are <em>not</em> controlled by the data. It can change the position of the legend, text sizes, background colours and the appearance of other map elements. In this case we will use this to move the legend onto a part of the map area that is not covered by the date. Doing that means the map area can expand to fill the space that would otherwise be occupied by the legend, giving the map area slightly more space. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-changing-the-appearance-of-titles-and-captions">Changing the appearance of titles and captions</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy">Visual hierarchy</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="45">45</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="4" data-code-annotation="45">Give the legend a solid background so it can be seen on top of the base map.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="46">46</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="7" data-code-annotation="46">Use the top-right corner of the legend as the anchor for positioning it.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="47">47</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="9" data-code-annotation="47">Add some space between the legend contents and the edge of the solid background we’ve just created.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="48">48</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="12" data-code-annotation="48">Place the legend inside the map to leave more room for the geographic information.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="49">49</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="13" data-code-annotation="49">Position the legend near the top right. The values run from 0 to 1 across and up the map area, so c(0.98, 0.98) represents a location almost at the top-right corner of the map.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="50">50</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="15" data-code-annotation="50"><code>rel()</code> sets text size relative to the theme’s base text size. Reduce legend text and its title so they support the map without dominating it.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="51">51</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="17" data-code-annotation="51">Adjust the subtitle size and the spacing around it.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="52">52</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="18" data-code-annotation="52">Make the caption smaller and grey. <code>hjust = 0</code> aligns it to the left. The closing brackets complete <code>theme()</code> and the map expression. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-captions">Using captions to add author and other information</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-11-save-the-finished-map" class="level2">
+<h2 class="anchored" data-anchor-id="step-11-save-the-finished-map">Step 11: Save the finished map</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-11"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-11-1"><a href="#annotated-cell-11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the finished map in the workspace output folder</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="53" onclick="event.preventDefault();">53</a><span id="annotated-cell-11-2" class="code-annotation-target"><a href="#annotated-cell-11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="54" onclick="event.preventDefault();">54</a><span id="annotated-cell-11-3" class="code-annotation-target"><a href="#annotated-cell-11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"output"</span>, <span class="st">"nyc_fatal_shootings_2019.png"</span>),</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="55" onclick="event.preventDefault();">55</a><span id="annotated-cell-11-4" class="code-annotation-target"><a href="#annotated-cell-11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot =</span> shootings_map,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="56" onclick="event.preventDefault();">56</a><span id="annotated-cell-11-5" class="code-annotation-target"><a href="#annotated-cell-11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">210</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="57" onclick="event.preventDefault();">57</a><span id="annotated-cell-11-6" class="code-annotation-target"><a href="#annotated-cell-11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">210</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="58" onclick="event.preventDefault();">58</a><span id="annotated-cell-11-7" class="code-annotation-target"><a href="#annotated-cell-11-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">units =</span> <span class="st">"mm"</span></span>
+<span id="annotated-cell-11-8"><a href="#annotated-cell-11-8" aria-hidden="true" tabindex="-1"></a>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-11" data-target-annotation="53">53</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="2" data-code-annotation="53"><code>ggsave()</code> writes the map to a file on your computer, using the settings specified on the following lines. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-saving-maps">Saving maps</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-11" data-target-annotation="54">54</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="3" data-code-annotation="54">Specify where on your computer the map should be saved, relative to the <code>crime_mapping</code> workspace folder. The <code>.png</code> extension specifies that the file should be saved in PNG format. See <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project">Keeping your files organised</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-11" data-target-annotation="55">55</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="4" data-code-annotation="55">Specify the object containing the map to save. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-creating-storing-map">Creating and storing a map</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-11" data-target-annotation="56">56</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="5" data-code-annotation="56">Set the output width to 210 mm.</span>
+</dd>
+<dt data-target-cell="annotated-cell-11" data-target-annotation="57">57</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="6" data-code-annotation="57">Set the height to 210 mm as well, making the overall image square.</span>
+</dd>
+<dt data-target-cell="annotated-cell-11" data-target-annotation="58">58</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="7" data-code-annotation="58">Specify that the dimensions are in millimetres. The finished image is 210 × 210 mm.</span>
+</dd>
+</dl>
 
 
 </section>

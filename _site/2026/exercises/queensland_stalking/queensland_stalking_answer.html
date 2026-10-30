@@ -155,9 +155,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#complete-script" id="toc-complete-script" class="nav-link active" data-scroll-target="#complete-script">Complete script</a></li>
-  <li><a href="#output-produced-by-this-code" id="toc-output-produced-by-this-code" class="nav-link" data-scroll-target="#output-produced-by-this-code">Output produced by this code</a></li>
-  <li><a href="#review-your-answer" id="toc-review-your-answer" class="nav-link" data-scroll-target="#review-your-answer">Review your answer</a></li>
+  <li><a href="#the-finished-map" id="toc-the-finished-map" class="nav-link active" data-scroll-target="#the-finished-map">The finished map</a></li>
+  <li><a href="#step-1-explain-the-script" id="toc-step-1-explain-the-script" class="nav-link" data-scroll-target="#step-1-explain-the-script">Step 1: Explain the script</a></li>
+  <li><a href="#step-2-load-packages" id="toc-step-2-load-packages" class="nav-link" data-scroll-target="#step-2-load-packages">Step 2: Load packages</a></li>
+  <li><a href="#step-3-download-the-original-data" id="toc-step-3-download-the-original-data" class="nav-link" data-scroll-target="#step-3-download-the-original-data">Step 3: Download the original data</a></li>
+  <li><a href="#step-4-read-the-three-datasets" id="toc-step-4-read-the-three-datasets" class="nav-link" data-scroll-target="#step-4-read-the-three-datasets">Step 4: Read the three datasets</a></li>
+  <li><a href="#step-5-join-the-datasets-and-calculate-rates" id="toc-step-5-join-the-datasets-and-calculate-rates" class="nav-link" data-scroll-target="#step-5-join-the-datasets-and-calculate-rates">Step 5: Join the datasets and calculate rates</a></li>
+  <li><a href="#step-6-find-the-ten-highest-rates" id="toc-step-6-find-the-ten-highest-rates" class="nav-link" data-scroll-target="#step-6-find-the-ten-highest-rates">Step 6: Find the ten highest rates</a></li>
+  <li><a href="#step-7-start-the-map-and-identify-its-sources" id="toc-step-7-start-the-map-and-identify-its-sources" class="nav-link" data-scroll-target="#step-7-start-the-map-and-identify-its-sources">Step 7: Start the map and identify its sources</a></li>
+  <li><a href="#step-8-highlight-the-ten-selected-divisions" id="toc-step-8-highlight-the-ten-selected-divisions" class="nav-link" data-scroll-target="#step-8-highlight-the-ten-selected-divisions">Step 8: Highlight the ten selected divisions</a></li>
+  <li><a href="#step-9-specify-the-colours-and-map-text" id="toc-step-9-specify-the-colours-and-map-text" class="nav-link" data-scroll-target="#step-9-specify-the-colours-and-map-text">Step 9: Specify the colours and map text</a></li>
+  <li><a href="#step-10-control-the-map-layout" id="toc-step-10-control-the-map-layout" class="nav-link" data-scroll-target="#step-10-control-the-map-layout">Step 10: Control the map layout</a></li>
+  <li><a href="#step-11-save-the-finished-map" id="toc-step-11-save-the-finished-map" class="nav-link" data-scroll-target="#step-11-save-the-finished-map">Step 11: Save the finished map</a></li>
   </ul>
 </nav>
     </div>
@@ -184,6 +193,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p><a href="../queensland_stalking/index.html">Return to the exercise</a>.</p>
+<p>This document walks through a specimen answer to this exercise. Read each code section and its numbered explanations below. Select the number at the start of each explanation to highlight the line of code that explanation relates to.</p>
 <p>In R, like in many programming languages, there is usually more than one way to complete a task. This code shows one way to complete this exercise. There are other ways to organise this code that are equally good and achieve the same result, but the code below tries to balance making the code efficient with making it easy to read. If your code is different from the code here, read through the notes below the answer and use those to decide whether you prefer your own approach or the specimen answer below. You can also use the notes to improve your own code.</p>
 <div class="callout callout-style-default callout-warning callout-titled" title="The specimen answer expects your computer to be set up as outlined in the book.">
 <div class="callout-header d-flex align-content-center">
@@ -198,132 +208,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The online textbook sets out how to <a href="https://books.lesscrime.info/learncrimemapping/setup.html">install the software you need for crime mapping with R</a> and <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/">set up your computer to store files in particular places</a>. The specimen answer below assumes that you have followed those instructions and that your computer is set up as described in the book. If you have not done so, the code in the specimen answer may not run correctly.</p>
 </div>
 </div>
-<section id="complete-script" class="level2">
-<h2 class="anchored" data-anchor-id="complete-script">Complete script</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="co"># Map recorded stalking incidents per 100,000 residents in Queensland in 2018.</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a><span class="co"># Load packages</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, sf, sfhotspot, tidyverse)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-label="6"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-label="7"></a><span class="co"># Load data --------------------------------------------------------------------</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-label="8"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-label="9"></a><span class="co"># Download the original data into the workspace</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-label="10"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/qld_stalking.xlsx"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-label="11"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_stalking.xlsx"</span>))</span>
-<span id="cb1-12"><a href="#cb1-12" aria-label="12"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/qld_population.csv.gz"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-label="13"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_population.csv.gz"</span>))</span>
-<span id="cb1-14"><a href="#cb1-14" aria-label="14"></a><span class="fu">request</span>(</span>
-<span id="cb1-15"><a href="#cb1-15" aria-label="15"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/qld_police_divisions.gpkg"</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-label="16"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-label="17"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_police_divisions.gpkg"</span>))</span>
-<span id="cb1-18"><a href="#cb1-18" aria-label="18"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-label="19"></a><span class="co"># Read local data and select stalking counts for 2018</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-label="20"></a><span class="co"># No need to specify the `sheet` argument in `read_excel()` because the Excel</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-label="21"></a><span class="co"># file only has one sheet</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-label="22"></a>stalking <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_stalking.xlsx"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-label="23"></a>  readxl<span class="sc">::</span><span class="fu">read_excel</span>() <span class="sc">|&gt;</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-label="24"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2018</span>)</span>
-<span id="cb1-25"><a href="#cb1-25" aria-label="25"></a>population <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_population.csv.gz"</span>))</span>
-<span id="cb1-26"><a href="#cb1-26" aria-label="26"></a>divisions <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_police_divisions.gpkg"</span>))</span>
-<span id="cb1-27"><a href="#cb1-27" aria-label="27"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-label="28"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-label="29"></a><span class="co"># Wrangle data -----------------------------------------------------------------</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-label="30"></a></span>
-<span id="cb1-31"><a href="#cb1-31" aria-label="31"></a><span class="co"># Join data and calculate rate</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-label="32"></a>stalking_rate <span class="ot">&lt;-</span> divisions <span class="sc">|&gt;</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-label="33"></a>  <span class="fu">left_join</span>(population, <span class="at">by =</span> <span class="fu">join_by</span>(division <span class="sc">==</span> police_division)) <span class="sc">|&gt;</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-label="34"></a>  <span class="fu">left_join</span>(stalking, <span class="at">by =</span> <span class="fu">join_by</span>(division)) <span class="sc">|&gt;</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-label="35"></a>  <span class="fu">mutate</span>(<span class="at">rate =</span> stalking <span class="sc">/</span> population <span class="sc">*</span> <span class="dv">100000</span>)</span>
-<span id="cb1-36"><a href="#cb1-36" aria-label="36"></a></span>
-<span id="cb1-37"><a href="#cb1-37" aria-label="37"></a><span class="co"># Pimpama has no matching population, so its rate remains NA.</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-label="38"></a><span class="co"># Keep it on the map in grey rather than treating missing data as zero.</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-label="39"></a></span>
-<span id="cb1-40"><a href="#cb1-40" aria-label="40"></a><span class="co"># Find divisions with highest stalking rate and label them in order</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-label="41"></a>stalking_rate_highest <span class="ot">&lt;-</span> stalking_rate <span class="sc">|&gt;</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-label="42"></a>  <span class="fu">slice_max</span>(rate, <span class="at">n =</span> <span class="dv">10</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-43"><a href="#cb1-43" aria-label="43"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(rate)) <span class="sc">|&gt;</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-label="44"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">str_glue</span>(<span class="st">"{division} ({scales::ordinal(row_number())})"</span>))</span>
-<span id="cb1-45"><a href="#cb1-45" aria-label="45"></a></span>
-<span id="cb1-46"><a href="#cb1-46" aria-label="46"></a></span>
-<span id="cb1-47"><a href="#cb1-47" aria-label="47"></a><span class="co"># Create map -------------------------------------------------------------------</span></span>
-<span id="cb1-48"><a href="#cb1-48" aria-label="48"></a></span>
-<span id="cb1-49"><a href="#cb1-49" aria-label="49"></a>stalking_map <span class="ot">&lt;-</span> <span class="fu">hotspot_map</span>(</span>
-<span id="cb1-50"><a href="#cb1-50" aria-label="50"></a>  stalking_rate,</span>
-<span id="cb1-51"><a href="#cb1-51" aria-label="51"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill =</span> rate),</span>
-<span id="cb1-52"><a href="#cb1-52" aria-label="52"></a>  <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>,</span>
-<span id="cb1-53"><a href="#cb1-53" aria-label="53"></a>  <span class="at">caption =</span> <span class="fu">str_glue</span>(</span>
-<span id="cb1-54"><a href="#cb1-54" aria-label="54"></a>    <span class="st">"Map produced by Joe Bloggs on {lubridate::today()}</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb1-55"><a href="#cb1-55" aria-label="55"></a>    <span class="st">"Offences: Queensland Police Service (CC BY 4.0)</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb1-56"><a href="#cb1-56" aria-label="56"></a>    <span class="st">"Population and boundaries: Queensland Government</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb1-57"><a href="#cb1-57" aria-label="57"></a>    <span class="st">"Grey: rate cannot be calculated because population data unavailable"</span></span>
-<span id="cb1-58"><a href="#cb1-58" aria-label="58"></a>  ),</span>
-<span id="cb1-59"><a href="#cb1-59" aria-label="59"></a>  <span class="at">alpha =</span> <span class="fl">0.75</span>,</span>
-<span id="cb1-60"><a href="#cb1-60" aria-label="60"></a>  <span class="at">linewidth =</span> <span class="fl">0.25</span></span>
-<span id="cb1-61"><a href="#cb1-61" aria-label="61"></a>) <span class="sc">+</span></span>
-<span id="cb1-62"><a href="#cb1-62" aria-label="62"></a>  <span class="co"># Add thicker boundaries for 10 divisions with highest rates</span></span>
-<span id="cb1-63"><a href="#cb1-63" aria-label="63"></a>  <span class="fu">geom_sf</span>(</span>
-<span id="cb1-64"><a href="#cb1-64" aria-label="64"></a>    <span class="at">data =</span> stalking_rate_highest,</span>
-<span id="cb1-65"><a href="#cb1-65" aria-label="65"></a>    <span class="at">colour =</span> <span class="st">"black"</span>,</span>
-<span id="cb1-66"><a href="#cb1-66" aria-label="66"></a>    <span class="at">fill =</span> <span class="cn">NA</span>,</span>
-<span id="cb1-67"><a href="#cb1-67" aria-label="67"></a>    <span class="at">linewidth =</span> <span class="fl">0.75</span></span>
-<span id="cb1-68"><a href="#cb1-68" aria-label="68"></a>  ) <span class="sc">+</span></span>
-<span id="cb1-69"><a href="#cb1-69" aria-label="69"></a>  <span class="co"># Add labels for 10 divisions with highest rates</span></span>
-<span id="cb1-70"><a href="#cb1-70" aria-label="70"></a>  <span class="fu">geom_sf_label</span>(</span>
-<span id="cb1-71"><a href="#cb1-71" aria-label="71"></a>    <span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">str_wrap</span>(label, <span class="at">width =</span> <span class="dv">12</span>)),</span>
-<span id="cb1-72"><a href="#cb1-72" aria-label="72"></a>    <span class="at">data =</span> stalking_rate_highest,</span>
-<span id="cb1-73"><a href="#cb1-73" aria-label="73"></a>    <span class="at">alpha =</span> <span class="fl">0.75</span>,</span>
-<span id="cb1-74"><a href="#cb1-74" aria-label="74"></a>    <span class="at">fill =</span> <span class="st">"white"</span>,</span>
-<span id="cb1-75"><a href="#cb1-75" aria-label="75"></a>    <span class="at">size =</span> <span class="fl">2.5</span>,</span>
-<span id="cb1-76"><a href="#cb1-76" aria-label="76"></a>    <span class="at">lineheight =</span> <span class="fl">0.95</span>,</span>
-<span id="cb1-77"><a href="#cb1-77" aria-label="77"></a>    <span class="at">linewidth =</span> <span class="dv">0</span></span>
-<span id="cb1-78"><a href="#cb1-78" aria-label="78"></a>  ) <span class="sc">+</span></span>
-<span id="cb1-79"><a href="#cb1-79" aria-label="79"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">direction =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb1-80"><a href="#cb1-80" aria-label="80"></a>  <span class="fu">labs</span>(</span>
-<span id="cb1-81"><a href="#cb1-81" aria-label="81"></a>    <span class="at">title =</span> <span class="st">"Recorded stalking rates in Queensland"</span>,</span>
-<span id="cb1-82"><a href="#cb1-82" aria-label="82"></a>    <span class="at">subtitle =</span> <span class="fu">str_glue</span>(</span>
-<span id="cb1-83"><a href="#cb1-83" aria-label="83"></a>      <span class="st">"Ten police divisions with the highest rates are highlighted"</span></span>
-<span id="cb1-84"><a href="#cb1-84" aria-label="84"></a>    ),</span>
-<span id="cb1-85"><a href="#cb1-85" aria-label="85"></a>    <span class="at">fill =</span> <span class="st">"stalking incidents</span><span class="sc">\n</span><span class="st">per 100,000 people</span><span class="sc">\n</span><span class="st">in 2018"</span></span>
-<span id="cb1-86"><a href="#cb1-86" aria-label="86"></a>  ) <span class="sc">+</span></span>
-<span id="cb1-87"><a href="#cb1-87" aria-label="87"></a>  <span class="fu">theme</span>(</span>
-<span id="cb1-88"><a href="#cb1-88" aria-label="88"></a>    <span class="co"># Slightly lower the legend in the visual hierarchy by giving it a</span></span>
-<span id="cb1-89"><a href="#cb1-89" aria-label="89"></a>    <span class="co"># background that is white and semi-transparent</span></span>
-<span id="cb1-90"><a href="#cb1-90" aria-label="90"></a>    <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="cn">NA</span>, <span class="at">fill =</span> <span class="fu">rgb</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="fl">0.75</span>)),</span>
-<span id="cb1-91"><a href="#cb1-91" aria-label="91"></a>    <span class="co"># Base legend position on the top-right corner of the legend, which makes</span></span>
-<span id="cb1-92"><a href="#cb1-92" aria-label="92"></a>    <span class="co"># moving the legend to the top-right corner easier</span></span>
-<span id="cb1-93"><a href="#cb1-93" aria-label="93"></a>    <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
-<span id="cb1-94"><a href="#cb1-94" aria-label="94"></a>    <span class="co"># Add some padding around the legend</span></span>
-<span id="cb1-95"><a href="#cb1-95" aria-label="95"></a>    <span class="at">legend.margin =</span> <span class="fu">margin</span>(<span class="dv">6</span>, <span class="dv">9</span>, <span class="dv">9</span>, <span class="dv">9</span>),</span>
-<span id="cb1-96"><a href="#cb1-96" aria-label="96"></a>    <span class="co"># Move the legend almost to the top-right corner of the map, since this is</span></span>
-<span id="cb1-97"><a href="#cb1-97" aria-label="97"></a>    <span class="co"># the area of the map with no content in it</span></span>
-<span id="cb1-98"><a href="#cb1-98" aria-label="98"></a>    <span class="at">legend.position =</span> <span class="st">"inside"</span>,</span>
-<span id="cb1-99"><a href="#cb1-99" aria-label="99"></a>    <span class="at">legend.position.inside =</span> <span class="fu">c</span>(<span class="fl">0.95</span>, <span class="fl">0.98</span>),</span>
-<span id="cb1-100"><a href="#cb1-100" aria-label="100"></a>    <span class="co"># Make the legend title slightly smaller, again reducing its prominence</span></span>
-<span id="cb1-101"><a href="#cb1-101" aria-label="101"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
-<span id="cb1-102"><a href="#cb1-102" aria-label="102"></a>    <span class="co"># Left-align the caption</span></span>
-<span id="cb1-103"><a href="#cb1-103" aria-label="103"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">0</span>),</span>
-<span id="cb1-104"><a href="#cb1-104" aria-label="104"></a>    <span class="co"># Add some space above and below the plot subtitle</span></span>
-<span id="cb1-105"><a href="#cb1-105" aria-label="105"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">6</span>, <span class="dv">0</span>, <span class="dv">6</span>, <span class="dv">0</span>)),</span>
-<span id="cb1-106"><a href="#cb1-106" aria-label="106"></a>    <span class="co"># Make the plot title larger and bold to move it up the visual hierarchy</span></span>
-<span id="cb1-107"><a href="#cb1-107" aria-label="107"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>)</span>
-<span id="cb1-108"><a href="#cb1-108" aria-label="108"></a>  )</span>
-<span id="cb1-109"><a href="#cb1-109" aria-label="109"></a></span>
-<span id="cb1-110"><a href="#cb1-110" aria-label="110"></a></span>
-<span id="cb1-111"><a href="#cb1-111" aria-label="111"></a><span class="co"># Save map ---------------------------------------------------------------------</span></span>
-<span id="cb1-112"><a href="#cb1-112" aria-label="112"></a></span>
-<span id="cb1-113"><a href="#cb1-113" aria-label="113"></a><span class="co"># Create map that is 2000px x 2000px</span></span>
-<span id="cb1-114"><a href="#cb1-114" aria-label="114"></a><span class="fu">ggsave</span>(</span>
-<span id="cb1-115"><a href="#cb1-115" aria-label="115"></a>  <span class="at">filename =</span> <span class="fu">here</span>(<span class="st">"output"</span>, <span class="st">"queensland_stalking_rate_map_2018.jpg"</span>),</span>
-<span id="cb1-116"><a href="#cb1-116" aria-label="116"></a>  <span class="at">plot =</span> stalking_map,</span>
-<span id="cb1-117"><a href="#cb1-117" aria-label="117"></a>  <span class="at">width =</span> <span class="dv">2000</span>,</span>
-<span id="cb1-118"><a href="#cb1-118" aria-label="118"></a>  <span class="at">height =</span> <span class="dv">2000</span>,</span>
-<span id="cb1-119"><a href="#cb1-119" aria-label="119"></a>  <span class="at">units =</span> <span class="st">"px"</span></span>
-<span id="cb1-120"><a href="#cb1-120" aria-label="120"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><a href="queensland_stalking.R">Download the complete R script</a>.</p>
-</section>
-<section id="output-produced-by-this-code" class="level2">
-<h2 class="anchored" data-anchor-id="output-produced-by-this-code">Output produced by this code</h2>
+<section id="the-finished-map" class="level2">
+<h2 class="anchored" data-anchor-id="the-finished-map">The finished map</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;httr2_response&gt;
@@ -357,11 +243,500 @@ dbl (1): population
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
 </div>
-<p><img src="../output/queensland_stalking_rate_map_2018.jpg" class="img-fluid" alt="Choropleth map of recorded stalking incidents per 100,000 residents in Queensland police divisions in 2018. Darker blue indicates higher rates. The ten divisions with the highest rates are outlined and labelled; grey indicates a missing rate."></p>
+<p><img src="../output/queensland_stalking_rate_map_2018.jpg" class="img-fluid" alt="Choropleth map of recorded stalking incidents per 100,000 residents in Queensland police divisions in 2018. Darker blue indicates higher rates. The ten divisions with the highest rates are outlined; grey indicates a missing rate."></p>
+<div class="callout callout-style-default callout-note callout-titled" title="View the complete R script">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>View the complete R script
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a><span class="co"># Map recorded stalking incidents per 100,000 residents in Queensland in 2018.</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-label="2"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-label="3"></a><span class="co"># Load packages</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, sf, sfhotspot, tidyverse)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-label="5"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-label="6"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-label="7"></a><span class="co"># Load data --------------------------------------------------------------------</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-label="8"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-label="9"></a><span class="co"># Download the original data into the workspace</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-label="10"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/qld_stalking.xlsx"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-label="11"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_stalking.xlsx"</span>))</span>
+<span id="cb5-12"><a href="#cb5-12" aria-label="12"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/qld_population.csv.gz"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-label="13"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_population.csv.gz"</span>))</span>
+<span id="cb5-14"><a href="#cb5-14" aria-label="14"></a><span class="fu">request</span>(</span>
+<span id="cb5-15"><a href="#cb5-15" aria-label="15"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/qld_police_divisions.gpkg"</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-label="16"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-label="17"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_police_divisions.gpkg"</span>))</span>
+<span id="cb5-18"><a href="#cb5-18" aria-label="18"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-label="19"></a><span class="co"># Read local data and select stalking counts for 2018</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-label="20"></a><span class="co"># No need to specify the `sheet` argument in `read_excel()` because the Excel</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-label="21"></a><span class="co"># file only has one sheet</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-label="22"></a>stalking <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_stalking.xlsx"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-label="23"></a>  readxl<span class="sc">::</span><span class="fu">read_excel</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-label="24"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2018</span>)</span>
+<span id="cb5-25"><a href="#cb5-25" aria-label="25"></a>population <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_population.csv.gz"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-label="26"></a>  <span class="fu">read_csv</span>()</span>
+<span id="cb5-27"><a href="#cb5-27" aria-label="27"></a>divisions <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_police_divisions.gpkg"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-label="28"></a>  <span class="fu">read_sf</span>()</span>
+<span id="cb5-29"><a href="#cb5-29" aria-label="29"></a></span>
+<span id="cb5-30"><a href="#cb5-30" aria-label="30"></a></span>
+<span id="cb5-31"><a href="#cb5-31" aria-label="31"></a><span class="co"># Wrangle data -----------------------------------------------------------------</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-label="32"></a></span>
+<span id="cb5-33"><a href="#cb5-33" aria-label="33"></a><span class="co"># Join data and calculate rate</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-label="34"></a>stalking_rate <span class="ot">&lt;-</span> divisions <span class="sc">|&gt;</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-label="35"></a>  <span class="fu">left_join</span>(population, <span class="at">by =</span> <span class="fu">join_by</span>(division <span class="sc">==</span> police_division)) <span class="sc">|&gt;</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-label="36"></a>  <span class="fu">left_join</span>(stalking, <span class="at">by =</span> <span class="fu">join_by</span>(division)) <span class="sc">|&gt;</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-label="37"></a>  <span class="fu">mutate</span>(<span class="at">rate =</span> stalking <span class="sc">/</span> population <span class="sc">*</span> <span class="dv">100000</span>)</span>
+<span id="cb5-38"><a href="#cb5-38" aria-label="38"></a></span>
+<span id="cb5-39"><a href="#cb5-39" aria-label="39"></a><span class="co"># Pimpama has no matching population, so its rate remains NA.</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-label="40"></a><span class="co"># Keep it on the map in grey rather than treating missing data as zero.</span></span>
+<span id="cb5-41"><a href="#cb5-41" aria-label="41"></a></span>
+<span id="cb5-42"><a href="#cb5-42" aria-label="42"></a><span class="co"># Find divisions with highest stalking rate</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-label="43"></a>stalking_rate_highest <span class="ot">&lt;-</span> <span class="fu">slice_max</span>(</span>
+<span id="cb5-44"><a href="#cb5-44" aria-label="44"></a>  stalking_rate,</span>
+<span id="cb5-45"><a href="#cb5-45" aria-label="45"></a>  rate,</span>
+<span id="cb5-46"><a href="#cb5-46" aria-label="46"></a>  <span class="at">n =</span> <span class="dv">10</span>,</span>
+<span id="cb5-47"><a href="#cb5-47" aria-label="47"></a>  <span class="at">with_ties =</span> <span class="cn">FALSE</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-label="48"></a>)</span>
+<span id="cb5-49"><a href="#cb5-49" aria-label="49"></a></span>
+<span id="cb5-50"><a href="#cb5-50" aria-label="50"></a></span>
+<span id="cb5-51"><a href="#cb5-51" aria-label="51"></a><span class="co"># Create map -------------------------------------------------------------------</span></span>
+<span id="cb5-52"><a href="#cb5-52" aria-label="52"></a></span>
+<span id="cb5-53"><a href="#cb5-53" aria-label="53"></a>stalking_map <span class="ot">&lt;-</span> <span class="fu">hotspot_map</span>(</span>
+<span id="cb5-54"><a href="#cb5-54" aria-label="54"></a>  stalking_rate,</span>
+<span id="cb5-55"><a href="#cb5-55" aria-label="55"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill =</span> rate),</span>
+<span id="cb5-56"><a href="#cb5-56" aria-label="56"></a>  <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>,</span>
+<span id="cb5-57"><a href="#cb5-57" aria-label="57"></a>  <span class="at">caption =</span> <span class="fu">str_glue</span>(</span>
+<span id="cb5-58"><a href="#cb5-58" aria-label="58"></a>    <span class="st">"Map produced by Joe Bloggs on {today()}</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb5-59"><a href="#cb5-59" aria-label="59"></a>    <span class="st">"Offences: Queensland Police Service (CC BY 4.0)</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb5-60"><a href="#cb5-60" aria-label="60"></a>    <span class="st">"Population and boundaries: Queensland Government</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb5-61"><a href="#cb5-61" aria-label="61"></a>    <span class="st">"Grey: rate cannot be calculated because population data unavailable"</span></span>
+<span id="cb5-62"><a href="#cb5-62" aria-label="62"></a>  ),</span>
+<span id="cb5-63"><a href="#cb5-63" aria-label="63"></a>  <span class="at">alpha =</span> <span class="fl">0.75</span>,</span>
+<span id="cb5-64"><a href="#cb5-64" aria-label="64"></a>  <span class="at">linewidth =</span> <span class="fl">0.25</span></span>
+<span id="cb5-65"><a href="#cb5-65" aria-label="65"></a>) <span class="sc">+</span></span>
+<span id="cb5-66"><a href="#cb5-66" aria-label="66"></a>  <span class="co"># Add thicker boundaries for 10 divisions with highest rates</span></span>
+<span id="cb5-67"><a href="#cb5-67" aria-label="67"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb5-68"><a href="#cb5-68" aria-label="68"></a>    <span class="at">data =</span> stalking_rate_highest,</span>
+<span id="cb5-69"><a href="#cb5-69" aria-label="69"></a>    <span class="at">colour =</span> <span class="st">"black"</span>,</span>
+<span id="cb5-70"><a href="#cb5-70" aria-label="70"></a>    <span class="at">fill =</span> <span class="cn">NA</span>,</span>
+<span id="cb5-71"><a href="#cb5-71" aria-label="71"></a>    <span class="at">linewidth =</span> <span class="fl">0.75</span></span>
+<span id="cb5-72"><a href="#cb5-72" aria-label="72"></a>  ) <span class="sc">+</span></span>
+<span id="cb5-73"><a href="#cb5-73" aria-label="73"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">direction =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb5-74"><a href="#cb5-74" aria-label="74"></a>  <span class="fu">labs</span>(</span>
+<span id="cb5-75"><a href="#cb5-75" aria-label="75"></a>    <span class="at">title =</span> <span class="st">"Recorded stalking rates in Queensland"</span>,</span>
+<span id="cb5-76"><a href="#cb5-76" aria-label="76"></a>    <span class="at">subtitle =</span> <span class="fu">str_glue</span>(</span>
+<span id="cb5-77"><a href="#cb5-77" aria-label="77"></a>      <span class="st">"Ten police divisions with the highest rates are highlighted"</span></span>
+<span id="cb5-78"><a href="#cb5-78" aria-label="78"></a>    ),</span>
+<span id="cb5-79"><a href="#cb5-79" aria-label="79"></a>    <span class="at">fill =</span> <span class="st">"stalking incidents</span><span class="sc">\n</span><span class="st">per 100,000 people</span><span class="sc">\n</span><span class="st">in 2018"</span></span>
+<span id="cb5-80"><a href="#cb5-80" aria-label="80"></a>  ) <span class="sc">+</span></span>
+<span id="cb5-81"><a href="#cb5-81" aria-label="81"></a>  <span class="fu">theme</span>(</span>
+<span id="cb5-82"><a href="#cb5-82" aria-label="82"></a>    <span class="co"># Slightly lower the legend in the visual hierarchy by giving it a</span></span>
+<span id="cb5-83"><a href="#cb5-83" aria-label="83"></a>    <span class="co"># background that is white and semi-transparent</span></span>
+<span id="cb5-84"><a href="#cb5-84" aria-label="84"></a>    <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="cn">NA</span>, <span class="at">fill =</span> <span class="fu">rgb</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="fl">0.75</span>)),</span>
+<span id="cb5-85"><a href="#cb5-85" aria-label="85"></a>    <span class="co"># Base legend position on the top-right corner of the legend, which makes</span></span>
+<span id="cb5-86"><a href="#cb5-86" aria-label="86"></a>    <span class="co"># moving the legend to the top-right corner easier</span></span>
+<span id="cb5-87"><a href="#cb5-87" aria-label="87"></a>    <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb5-88"><a href="#cb5-88" aria-label="88"></a>    <span class="co"># Add some padding around the legend</span></span>
+<span id="cb5-89"><a href="#cb5-89" aria-label="89"></a>    <span class="at">legend.margin =</span> <span class="fu">margin</span>(<span class="dv">6</span>, <span class="dv">9</span>, <span class="dv">9</span>, <span class="dv">9</span>),</span>
+<span id="cb5-90"><a href="#cb5-90" aria-label="90"></a>    <span class="co"># Move the legend almost to the top-right corner of the map, since this is</span></span>
+<span id="cb5-91"><a href="#cb5-91" aria-label="91"></a>    <span class="co"># the area of the map with no content in it</span></span>
+<span id="cb5-92"><a href="#cb5-92" aria-label="92"></a>    <span class="at">legend.position =</span> <span class="st">"inside"</span>,</span>
+<span id="cb5-93"><a href="#cb5-93" aria-label="93"></a>    <span class="at">legend.position.inside =</span> <span class="fu">c</span>(<span class="fl">0.95</span>, <span class="fl">0.98</span>),</span>
+<span id="cb5-94"><a href="#cb5-94" aria-label="94"></a>    <span class="co"># Make the legend title slightly smaller, again reducing its prominence</span></span>
+<span id="cb5-95"><a href="#cb5-95" aria-label="95"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb5-96"><a href="#cb5-96" aria-label="96"></a>    <span class="co"># Left-align the caption</span></span>
+<span id="cb5-97"><a href="#cb5-97" aria-label="97"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">0</span>),</span>
+<span id="cb5-98"><a href="#cb5-98" aria-label="98"></a>    <span class="co"># Add some space above and below the plot subtitle</span></span>
+<span id="cb5-99"><a href="#cb5-99" aria-label="99"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">6</span>, <span class="dv">0</span>, <span class="dv">6</span>, <span class="dv">0</span>)),</span>
+<span id="cb5-100"><a href="#cb5-100" aria-label="100"></a>    <span class="co"># Make the plot title larger and bold to move it up the visual hierarchy</span></span>
+<span id="cb5-101"><a href="#cb5-101" aria-label="101"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>)</span>
+<span id="cb5-102"><a href="#cb5-102" aria-label="102"></a>  )</span>
+<span id="cb5-103"><a href="#cb5-103" aria-label="103"></a></span>
+<span id="cb5-104"><a href="#cb5-104" aria-label="104"></a></span>
+<span id="cb5-105"><a href="#cb5-105" aria-label="105"></a><span class="co"># Save map ---------------------------------------------------------------------</span></span>
+<span id="cb5-106"><a href="#cb5-106" aria-label="106"></a></span>
+<span id="cb5-107"><a href="#cb5-107" aria-label="107"></a><span class="co"># Create map that is 2000px x 2000px</span></span>
+<span id="cb5-108"><a href="#cb5-108" aria-label="108"></a><span class="fu">ggsave</span>(</span>
+<span id="cb5-109"><a href="#cb5-109" aria-label="109"></a>  <span class="at">filename =</span> <span class="fu">here</span>(<span class="st">"output"</span>, <span class="st">"queensland_stalking_rate_map_2018.jpg"</span>),</span>
+<span id="cb5-110"><a href="#cb5-110" aria-label="110"></a>  <span class="at">plot =</span> stalking_map,</span>
+<span id="cb5-111"><a href="#cb5-111" aria-label="111"></a>  <span class="at">width =</span> <span class="dv">2000</span>,</span>
+<span id="cb5-112"><a href="#cb5-112" aria-label="112"></a>  <span class="at">height =</span> <span class="dv">2000</span>,</span>
+<span id="cb5-113"><a href="#cb5-113" aria-label="113"></a>  <span class="at">units =</span> <span class="st">"px"</span></span>
+<span id="cb5-114"><a href="#cb5-114" aria-label="114"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><a href="queensland_stalking.R">Download the complete R script</a>.</p>
+</div>
+</div>
+</div>
 </section>
-<section id="review-your-answer" class="level2">
-<h2 class="anchored" data-anchor-id="review-your-answer">Review your answer</h2>
-<p>The object names and organisation of your code may differ. Check that your code selects the same records, interprets their coordinates correctly and runs from a fresh session. Explain one choice you made differently from this specimen.</p>
+<section id="step-1-explain-the-script" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-explain-the-script">Step 1: Explain the script</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-1"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-1" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-1-1" class="code-annotation-target"><a href="#annotated-cell-1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Map recorded stalking incidents per 100,000 residents in Queensland in 2018.</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-1" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-1" data-code-lines="1" data-code-annotation="1">Explain that the script maps recorded stalking incidents per 100,000 residents in Queensland in 2018. It is important to note that this map shows a <em>rate</em>, not a count. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments">Organising code with comments</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-2-load-packages" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-load-packages">Step 2: Load packages</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-2"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-2-1"><a href="#annotated-cell-2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load packages</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-2-2" class="code-annotation-target"><a href="#annotated-cell-2-2" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, sf, sfhotspot, tidyverse)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-2" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-2" data-code-lines="2" data-code-annotation="2"><code>pacman::p_load()</code> loads the packages needed for this analysis, listed in alphabetical order with the tidyverse package last. <strong><a href="https://here.r-lib.org/">here</a></strong> allows us to specify where to find files in the workspace; <strong><a href="https://httr2.r-lib.org">httr2</a></strong> downloads data from the internet; <strong><a href="https://r-spatial.github.io/sf/">sf</a></strong> handles spatial objects; <strong><a href="https://pkgs.lesscrime.info/sfhotspot/">sfhotspot</a></strong> creates crime maps and estimates density; <strong><a href="https://tidyverse.tidyverse.org">tidyverse</a></strong> provides tools for reading, wrangling and plotting data. Loading packages at the start makes it easy to check which tools the script needs. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages">Loading packages</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-3-download-the-original-data" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-download-the-original-data">Step 3: Download the original data</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-3"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-3-1"><a href="#annotated-cell-3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data --------------------------------------------------------------------</span></span>
+<span id="annotated-cell-3-2"><a href="#annotated-cell-3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-3-3"><a href="#annotated-cell-3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the original data into the workspace</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-3-4" class="code-annotation-target"><a href="#annotated-cell-3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/qld_stalking.xlsx"</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-3-5" class="code-annotation-target"><a href="#annotated-cell-3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_stalking.xlsx"</span>))</span>
+<span id="annotated-cell-3-6"><a href="#annotated-cell-3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/qld_population.csv.gz"</span>) <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-3-7"><a href="#annotated-cell-3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_population.csv.gz"</span>))</span>
+<span id="annotated-cell-3-8"><a href="#annotated-cell-3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">request</span>(</span>
+<span id="annotated-cell-3-9"><a href="#annotated-cell-3-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"https://mpjashby.github.io/crimemappingdata/qld_police_divisions.gpkg"</span></span>
+<span id="annotated-cell-3-10"><a href="#annotated-cell-3-10" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-3-11"><a href="#annotated-cell-3-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_police_divisions.gpkg"</span>))</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-3" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-3" data-code-lines="4,6,8" data-code-annotation="3"><code>request()</code> specifies the URL of the file to download. The pipe operator (<code>|&gt;</code>) passes that request to the next function. Download the stalking counts, population counts and police division boundaries separately. All three are needed: the boundaries identify the areas, and the two sets of counts provide the numerator and denominator of the rate. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-load-data">Downloading and loading data</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator">Stringing functions together</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-3" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-cell="annotated-cell-3" data-code-lines="5,7,11" data-code-annotation="4"><code>req_perform()</code> performs the download set up by the corresponding call to <code>request()</code>. <code>here()</code> specifies where the original file should be saved, relative to the <code>crime_mapping</code> workspace. Keeping an unchanged copy of the original data in <code>data/raw</code> means we can return to it if we make a mistake while wrangling the data. See <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project">Keeping your files organised</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-4-read-the-three-datasets" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-read-the-three-datasets">Step 4: Read the three datasets</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-4"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-4-1"><a href="#annotated-cell-4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read local data and select stalking counts for 2018</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-4-2" class="code-annotation-target"><a href="#annotated-cell-4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># No need to specify the `sheet` argument in `read_excel()` because the Excel</span></span>
+<span id="annotated-cell-4-3"><a href="#annotated-cell-4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># file only has one sheet</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="6" onclick="event.preventDefault();">6</a><span id="annotated-cell-4-4" class="code-annotation-target"><a href="#annotated-cell-4-4" aria-hidden="true" tabindex="-1"></a>stalking <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_stalking.xlsx"</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="7" onclick="event.preventDefault();">7</a><span id="annotated-cell-4-5" class="code-annotation-target"><a href="#annotated-cell-4-5" aria-hidden="true" tabindex="-1"></a>  readxl<span class="sc">::</span><span class="fu">read_excel</span>() <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="8" onclick="event.preventDefault();">8</a><span id="annotated-cell-4-6" class="code-annotation-target"><a href="#annotated-cell-4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2018</span>)</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="9" onclick="event.preventDefault();">9</a><span id="annotated-cell-4-7" class="code-annotation-target"><a href="#annotated-cell-4-7" aria-hidden="true" tabindex="-1"></a>population <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_population.csv.gz"</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="10" onclick="event.preventDefault();">10</a><span id="annotated-cell-4-8" class="code-annotation-target"><a href="#annotated-cell-4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_csv</span>()</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="11" onclick="event.preventDefault();">11</a><span id="annotated-cell-4-9" class="code-annotation-target"><a href="#annotated-cell-4-9" aria-hidden="true" tabindex="-1"></a>divisions <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"qld_police_divisions.gpkg"</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="12" onclick="event.preventDefault();">12</a><span id="annotated-cell-4-10" class="code-annotation-target"><a href="#annotated-cell-4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_sf</span>()</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-4" data-target-annotation="5">5</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="2" data-code-annotation="5">The comment explains why the Excel-reading function below has no <code>sheet</code> argument: the supplied file has only one sheet. Comments can record decisions as well as describe actions. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments">Organising code with comments</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="6">6</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="4" data-code-annotation="6">Locate the Excel workbook with <code>here()</code> and store the finished pipeline as <code>stalking</code>. See <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project">Keeping your files organised</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="7">7</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="5" data-code-annotation="7"><code>read_excel()</code> from <a href="https://readxl.tidyverse.org">readxl</a> reads the workbook. Using <code>::</code> lets us use this function without loading the whole package. See <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-data-wrangling-loading-excel-data">Loading Excel data</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="8">8</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="6" data-code-annotation="8"><code>filter()</code> from <a href="https://dplyr.tidyverse.org">dplyr</a> keeps only rows where <code>year</code> equals 2018. This prevents counts from different years being joined to the same division later. See <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-filter-data">Filtering rows</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="9">9</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="7" data-code-annotation="9"><code>here()</code> locates the downloaded population file within the workspace. The pipe passes this path to <code>read_csv()</code>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="10">10</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="8" data-code-annotation="10"><code>read_csv()</code> from <a href="https://readr.tidyverse.org">readr</a> reads the compressed population CSV without a separate decompression step. These population counts are from 2016, so the rate will use an earlier population than the 2018 offences. See <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-data-wrangling-loading-csv-data">Loading CSV data</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-mapping-areas-choosing-a-population-measure">Choosing a population measure</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="11">11</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="9" data-code-annotation="11"><code>here()</code> locates the downloaded police division boundaries within the workspace. The pipe passes this path to <code>read_sf()</code>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="12">12</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="10" data-code-annotation="12"><code>read_sf()</code> reads the geopackage as a spatial object. Its geometry and CRS information are already in the file. These boundaries are from 2022; reading them does not make them the boundaries that existed in 2018. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-reading-spatial-data">Reading spatial data</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-5-join-the-datasets-and-calculate-rates" class="level2">
+<h2 class="anchored" data-anchor-id="step-5-join-the-datasets-and-calculate-rates">Step 5: Join the datasets and calculate rates</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-5"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-5-1"><a href="#annotated-cell-5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Wrangle data -----------------------------------------------------------------</span></span>
+<span id="annotated-cell-5-2"><a href="#annotated-cell-5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-5-3"><a href="#annotated-cell-5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Join data and calculate rate</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="13" onclick="event.preventDefault();">13</a><span id="annotated-cell-5-4" class="code-annotation-target"><a href="#annotated-cell-5-4" aria-hidden="true" tabindex="-1"></a>stalking_rate <span class="ot">&lt;-</span> divisions <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="14" onclick="event.preventDefault();">14</a><span id="annotated-cell-5-5" class="code-annotation-target"><a href="#annotated-cell-5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(population, <span class="at">by =</span> <span class="fu">join_by</span>(division <span class="sc">==</span> police_division)) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="15" onclick="event.preventDefault();">15</a><span id="annotated-cell-5-6" class="code-annotation-target"><a href="#annotated-cell-5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(stalking, <span class="at">by =</span> <span class="fu">join_by</span>(division)) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="16" onclick="event.preventDefault();">16</a><span id="annotated-cell-5-7" class="code-annotation-target"><a href="#annotated-cell-5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rate =</span> stalking <span class="sc">/</span> population <span class="sc">*</span> <span class="dv">100000</span>)</span>
+<span id="annotated-cell-5-8"><a href="#annotated-cell-5-8" aria-hidden="true" tabindex="-1"></a></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="17" onclick="event.preventDefault();">17</a><span id="annotated-cell-5-9" class="code-annotation-target"><a href="#annotated-cell-5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Pimpama has no matching population, so its rate remains NA.</span></span>
+<span id="annotated-cell-5-10"><a href="#annotated-cell-5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep it on the map in grey rather than treating missing data as zero.</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-5" data-target-annotation="13">13</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="4" data-code-annotation="13">Start with <code>divisions</code> and store the finished result as <code>stalking_rate</code>. Keeping the boundaries on the left of the joins means that divisions can remain on the map even when a count is missing. See <a href="https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-mapping-areas-combining-datasets">Combining datasets</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="14">14</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="5" data-code-annotation="14">Join each division to its population using <code>division</code> in the boundary data and <code>police_division</code> in the population data. <code>join_by()</code> specifies which values must match; the two columns do not have to share a name.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="15">15</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="6" data-code-annotation="15">Join the 2018 stalking counts using the <code>division</code> column, which has the same name in both datasets.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="16">16</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="7" data-code-annotation="16"><code>mutate()</code> calculates a new column called <code>rate</code>: divide stalking incidents by the population and multiply by 100,000. This lets us compare areas with different population sizes. See <a href="https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-calculating-rates">Calculating crime rates</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-mutate">Transforming values</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="17">17</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="9" data-code-annotation="17">The Pimpama division has no matching population figure, so the value for the <code>rate</code> column is <code>NA</code> (the way R represents missing values) because it’s not possible to calculate a rate without both stalking incidents and population data. We keep that division on the map, show the missing data using a grey fill and explain the grey fill in the caption. See <a href="https://books.lesscrime.info/learncrimemapping/2026/10_messy_data/index.html#sec-messy-data-missing-values">Missing values</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-6-find-the-ten-highest-rates" class="level2">
+<h2 class="anchored" data-anchor-id="step-6-find-the-ten-highest-rates">Step 6: Find the ten highest rates</h2>
+<p>This step implements the optional challenge in the exercise. It is useful to keep these selected divisions in a separate object, so that they can be added as extra map layers.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-6"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-6-1"><a href="#annotated-cell-6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find divisions with highest stalking rate</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="18" onclick="event.preventDefault();">18</a><span id="annotated-cell-6-2" class="code-annotation-target"><a href="#annotated-cell-6-2" aria-hidden="true" tabindex="-1"></a>stalking_rate_highest <span class="ot">&lt;-</span> <span class="fu">slice_max</span>(</span>
+<span id="annotated-cell-6-3"><a href="#annotated-cell-6-3" aria-hidden="true" tabindex="-1"></a>  stalking_rate, </span>
+<span id="annotated-cell-6-4"><a href="#annotated-cell-6-4" aria-hidden="true" tabindex="-1"></a>  rate, </span>
+<span id="annotated-cell-6-5"><a href="#annotated-cell-6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">10</span>, </span>
+<span id="annotated-cell-6-6"><a href="#annotated-cell-6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">with_ties =</span> <span class="cn">FALSE</span></span>
+<span id="annotated-cell-6-7"><a href="#annotated-cell-6-7" aria-hidden="true" tabindex="-1"></a>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-6" data-target-annotation="18">18</dt>
+<dd>
+<span data-code-cell="annotated-cell-6" data-code-lines="2" data-code-annotation="18">Use <code>slice_max()</code> to keep only the ten divisions with the highest stalking rates. <code>with_ties = FALSE</code> limits the result to ten even if rates are tied. Store the result in a new object called <code>stalking_rate_highest</code>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-7-start-the-map-and-identify-its-sources" class="level2">
+<h2 class="anchored" data-anchor-id="step-7-start-the-map-and-identify-its-sources">Step 7: Start the map and identify its sources</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-7"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-7-1"><a href="#annotated-cell-7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create map -------------------------------------------------------------------</span></span>
+<span id="annotated-cell-7-2"><a href="#annotated-cell-7-2" aria-hidden="true" tabindex="-1"></a></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="19" onclick="event.preventDefault();">19</a><span id="annotated-cell-7-3" class="code-annotation-target"><a href="#annotated-cell-7-3" aria-hidden="true" tabindex="-1"></a>stalking_map <span class="ot">&lt;-</span> <span class="fu">hotspot_map</span>(</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="20" onclick="event.preventDefault();">20</a><span id="annotated-cell-7-4" class="code-annotation-target"><a href="#annotated-cell-7-4" aria-hidden="true" tabindex="-1"></a>  stalking_rate,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="21" onclick="event.preventDefault();">21</a><span id="annotated-cell-7-5" class="code-annotation-target"><a href="#annotated-cell-7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill =</span> rate),</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="22" onclick="event.preventDefault();">22</a><span id="annotated-cell-7-6" class="code-annotation-target"><a href="#annotated-cell-7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="23" onclick="event.preventDefault();">23</a><span id="annotated-cell-7-7" class="code-annotation-target"><a href="#annotated-cell-7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="fu">str_glue</span>(</span>
+<span id="annotated-cell-7-8"><a href="#annotated-cell-7-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Map produced by Joe Bloggs on {lubridate::today()}</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="annotated-cell-7-9"><a href="#annotated-cell-7-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Offences: Queensland Police Service (CC BY 4.0)</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="annotated-cell-7-10"><a href="#annotated-cell-7-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Population and boundaries: Queensland Government</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="annotated-cell-7-11"><a href="#annotated-cell-7-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Grey: rate cannot be calculated because population data unavailable"</span></span>
+<span id="annotated-cell-7-12"><a href="#annotated-cell-7-12" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="24" onclick="event.preventDefault();">24</a><span id="annotated-cell-7-13" class="code-annotation-target"><a href="#annotated-cell-7-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="fl">0.75</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="25" onclick="event.preventDefault();">25</a><span id="annotated-cell-7-14" class="code-annotation-target"><a href="#annotated-cell-7-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">linewidth =</span> <span class="fl">0.25</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="26" onclick="event.preventDefault();">26</a><span id="annotated-cell-7-15" class="code-annotation-target"><a href="#annotated-cell-7-15" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-7" data-target-annotation="19">19</dt>
+<dd>
+<span data-code-cell="annotated-cell-7" data-code-lines="3" data-code-annotation="19">Store the finished map as <code>stalking_map</code>, so it can be saved to a file in the final step. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-creating-storing-map">Creating and storing a map</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-7" data-target-annotation="20">20</dt>
+<dd>
+<span data-code-cell="annotated-cell-7" data-code-lines="4" data-code-annotation="20">Use all divisions with their calculated rates as the basis of <code>hotspot_map()</code>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-7" data-target-annotation="21">21</dt>
+<dd>
+<span data-code-cell="annotated-cell-7" data-code-lines="5" data-code-annotation="21"><code>aes(fill = rate)</code> tells <code>hotspot_map()</code> to fill each division according to its rate. We need to specify this relationship ourselves because <code>stalking_rate</code> was not an object created by one of the <code>hotspot_*()</code> family of functions. See <a href="https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-hotspot-map-mapping">Controlling fill colours when mapping rates</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-7" data-target-annotation="22">22</dt>
+<dd>
+<span data-code-cell="annotated-cell-7" data-code-lines="6" data-code-annotation="22">Use a light <code>cartolight</code> base map to provide geographic context while not overwhelming the map with too much detail or distracting from the data layer. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-base-maps">Base maps</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-7" data-target-annotation="23">23</dt>
+<dd>
+<span data-code-cell="annotated-cell-7" data-code-lines="7" data-code-annotation="23"><code>str_glue()</code> combines the author, date and data sources into the caption. <code>today()</code> from the <a href="https://lubridate.tidyverse.org">lubridate</a> package inserts the date the script runs. The final line explains that grey means the population needed for a rate is unavailable. Replace Joe Bloggs with your own name. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-captions">Using captions to add author and other information</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-7" data-target-annotation="24">24</dt>
+<dd>
+<span data-code-cell="annotated-cell-7" data-code-lines="13" data-code-annotation="24">Make the division fills partly transparent so that readers can still see the base map beneath them. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-aesthetics">Controlling aesthetics</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-7" data-target-annotation="25">25</dt>
+<dd>
+<span data-code-cell="annotated-cell-7" data-code-lines="14" data-code-annotation="25">Use thin outlines for the main divisions. The highlighted divisions added next will have thicker outlines, so they stand out without the whole map becoming a mass of boundary lines. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy">Visual hierarchy</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-7" data-target-annotation="26">26</dt>
+<dd>
+<span data-code-cell="annotated-cell-7" data-code-lines="15" data-code-annotation="26">The <code>+</code> operator continues the same map expression in the following section. In the complete script these layers form one continuous stack.</span>
+</dd>
+</dl>
+</section>
+<section id="step-8-highlight-the-ten-selected-divisions" class="level2">
+<h2 class="anchored" data-anchor-id="step-8-highlight-the-ten-selected-divisions">Step 8: Highlight the ten selected divisions</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-8"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-8-1"><a href="#annotated-cell-8-1" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add thicker boundaries for 10 divisions with highest rates</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="27" onclick="event.preventDefault();">27</a><span id="annotated-cell-8-2" class="code-annotation-target"><a href="#annotated-cell-8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="28" onclick="event.preventDefault();">28</a><span id="annotated-cell-8-3" class="code-annotation-target"><a href="#annotated-cell-8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> stalking_rate_highest,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="29" onclick="event.preventDefault();">29</a><span id="annotated-cell-8-4" class="code-annotation-target"><a href="#annotated-cell-8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"black"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="30" onclick="event.preventDefault();">30</a><span id="annotated-cell-8-5" class="code-annotation-target"><a href="#annotated-cell-8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="cn">NA</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="31" onclick="event.preventDefault();">31</a><span id="annotated-cell-8-6" class="code-annotation-target"><a href="#annotated-cell-8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="fl">0.75</span></span>
+<span id="annotated-cell-8-7"><a href="#annotated-cell-8-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-8" data-target-annotation="27">27</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="2" data-code-annotation="27"><code>geom_sf()</code> adds an extra boundary layer over the rate map. See <a href="https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-other-layers">Adding more layers</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="28">28</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="3" data-code-annotation="28">Use only <code>stalking_rate_highest</code> for this layer, rather than outlining every division again.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="29">29</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="4" data-code-annotation="29">Use black outlines so the selected divisions stand out from the other boundaries. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy">Visual hierarchy</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="30">30</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="5" data-code-annotation="30">Leave the interiors unfilled with <code>fill = NA</code>, preserving the rate colours beneath them.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="31">31</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="6" data-code-annotation="31">Use a width of 0.75, compared with 0.25 for the main layer, to make the selected outlines more prominent.</span>
+</dd>
+</dl>
+</section>
+<section id="step-9-specify-the-colours-and-map-text" class="level2">
+<h2 class="anchored" data-anchor-id="step-9-specify-the-colours-and-map-text">Step 9: Specify the colours and map text</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-9"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="32" onclick="event.preventDefault();">32</a><span id="annotated-cell-9-1" class="code-annotation-target"><a href="#annotated-cell-9-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">direction =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="33" onclick="event.preventDefault();">33</a><span id="annotated-cell-9-2" class="code-annotation-target"><a href="#annotated-cell-9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="34" onclick="event.preventDefault();">34</a><span id="annotated-cell-9-3" class="code-annotation-target"><a href="#annotated-cell-9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Recorded stalking rates in Queensland"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="35" onclick="event.preventDefault();">35</a><span id="annotated-cell-9-4" class="code-annotation-target"><a href="#annotated-cell-9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">str_glue</span>(</span>
+<span id="annotated-cell-9-5"><a href="#annotated-cell-9-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Ten police divisions with the highest rates are highlighted"</span></span>
+<span id="annotated-cell-9-6"><a href="#annotated-cell-9-6" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="36" onclick="event.preventDefault();">36</a><span id="annotated-cell-9-7" class="code-annotation-target"><a href="#annotated-cell-9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"stalking incidents</span><span class="sc">\n</span><span class="st">per 100,000 people</span><span class="sc">\n</span><span class="st">in 2018"</span></span>
+<span id="annotated-cell-9-8"><a href="#annotated-cell-9-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-9" data-target-annotation="32">32</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="1" data-code-annotation="32"><code>scale_fill_distiller(direction = 1)</code> uses the default sequential palette with higher rates shown in darker colours. This makes the highest rates more visually prominent. See <a href="https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-hotspot-map-mapping">Controlling fill colours when mapping rates</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-9" data-target-annotation="33">33</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="2" data-code-annotation="33"><code>labs()</code> supplies the title, subtitle and legend title. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-titles">Titles and subtitles</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-9" data-target-annotation="34">34</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="3" data-code-annotation="34">Identify the subject and place: recorded stalking rates in Queensland.</span>
+</dd>
+<dt data-target-cell="annotated-cell-9" data-target-annotation="35">35</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="4" data-code-annotation="35">Explain why ten divisions have been highlighted. <code>str_glue()</code> is retained here, although a plain text string would also work because this subtitle contains no inserted values.</span>
+</dd>
+<dt data-target-cell="annotated-cell-9" data-target-annotation="36">36</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="7" data-code-annotation="36">State the rate units and year in the legend title. Whenever you map a rate, it is important to specify how the rate was calculated. In this case, the rate is the number of stalking incidents per 100,000 people in 2018. Stating that makes for a much more informative legend title than one that said simply “stalking rate” or similar. The line breaks (<code>\n</code>) keep the title narrow enough to fit beside the colour bar. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-changing-the-legend-title">Changing the legend title</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-10-control-the-map-layout" class="level2">
+<h2 class="anchored" data-anchor-id="step-10-control-the-map-layout">Step 10: Control the map layout</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-10"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="37" onclick="event.preventDefault();">37</a><span id="annotated-cell-10-1" class="code-annotation-target"><a href="#annotated-cell-10-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="annotated-cell-10-2"><a href="#annotated-cell-10-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Slightly lower the legend in the visual hierarchy by giving it a</span></span>
+<span id="annotated-cell-10-3"><a href="#annotated-cell-10-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># background that is white and semi-transparent</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="38" onclick="event.preventDefault();">38</a><span id="annotated-cell-10-4" class="code-annotation-target"><a href="#annotated-cell-10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="cn">NA</span>, <span class="at">fill =</span> <span class="fu">rgb</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="fl">0.75</span>)),</span>
+<span id="annotated-cell-10-5"><a href="#annotated-cell-10-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Base legend position on the top-right corner of the legend, which makes</span></span>
+<span id="annotated-cell-10-6"><a href="#annotated-cell-10-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># moving the legend to the top-right corner easier</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="39" onclick="event.preventDefault();">39</a><span id="annotated-cell-10-7" class="code-annotation-target"><a href="#annotated-cell-10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="annotated-cell-10-8"><a href="#annotated-cell-10-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add some padding around the legend</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="40" onclick="event.preventDefault();">40</a><span id="annotated-cell-10-9" class="code-annotation-target"><a href="#annotated-cell-10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.margin =</span> <span class="fu">margin</span>(<span class="dv">6</span>, <span class="dv">9</span>, <span class="dv">9</span>, <span class="dv">9</span>),</span>
+<span id="annotated-cell-10-10"><a href="#annotated-cell-10-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Move the legend almost to the top-right corner of the map, since this is</span></span>
+<span id="annotated-cell-10-11"><a href="#annotated-cell-10-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># the area of the map with no content in it</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="41" onclick="event.preventDefault();">41</a><span id="annotated-cell-10-12" class="code-annotation-target"><a href="#annotated-cell-10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"inside"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="42" onclick="event.preventDefault();">42</a><span id="annotated-cell-10-13" class="code-annotation-target"><a href="#annotated-cell-10-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position.inside =</span> <span class="fu">c</span>(<span class="fl">0.95</span>, <span class="fl">0.98</span>),</span>
+<span id="annotated-cell-10-14"><a href="#annotated-cell-10-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make the legend title slightly smaller, again reducing its prominence</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="43" onclick="event.preventDefault();">43</a><span id="annotated-cell-10-15" class="code-annotation-target"><a href="#annotated-cell-10-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="annotated-cell-10-16"><a href="#annotated-cell-10-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Left-align the caption</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="44" onclick="event.preventDefault();">44</a><span id="annotated-cell-10-17" class="code-annotation-target"><a href="#annotated-cell-10-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">0</span>),</span>
+<span id="annotated-cell-10-18"><a href="#annotated-cell-10-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add some space above and below the plot subtitle</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="45" onclick="event.preventDefault();">45</a><span id="annotated-cell-10-19" class="code-annotation-target"><a href="#annotated-cell-10-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">6</span>, <span class="dv">0</span>, <span class="dv">6</span>, <span class="dv">0</span>)),</span>
+<span id="annotated-cell-10-20"><a href="#annotated-cell-10-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make the plot title larger and bold to move it up the visual hierarchy</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="46" onclick="event.preventDefault();">46</a><span id="annotated-cell-10-21" class="code-annotation-target"><a href="#annotated-cell-10-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>)</span>
+<span id="annotated-cell-10-22"><a href="#annotated-cell-10-22" aria-hidden="true" tabindex="-1"></a>  )</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-10" data-target-annotation="37">37</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="1" data-code-annotation="37"><code>theme()</code> from <a href="https://ggplot2.tidyverse.org">ggplot2</a> adjusts supporting elements of the map. The following choices make the legend readable while leaving more space for the geography. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-changing-the-appearance-of-titles-and-captions">Changing the appearance of titles and captions</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy">Visual hierarchy</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="38">38</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="4" data-code-annotation="38"><code>element_rect()</code> gives the legend no border and a partly transparent white background. <code>rgb(1, 1, 1, 0.75)</code> specifies white with opacity 0.75.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="39">39</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="7" data-code-annotation="39">Use the top-right corner of the legend as the anchor when positioning it.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="40">40</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="9" data-code-annotation="40">Add padding around the legend contents to separate them from the map beneath.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="41">41</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="12" data-code-annotation="41">Place the legend inside the map area.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="42">42</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="13" data-code-annotation="42">Position it near the top right. Values close to 1 mean close to the right and top edges; this uses an area with little map content.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="43">43</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="15" data-code-annotation="43">Use a slightly smaller legend title to reduce its prominence.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="44">44</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="17" data-code-annotation="44">Left-align the caption using <code>hjust = 0</code>. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-captions">Using captions to add author and other information</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="45">45</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="19" data-code-annotation="45">Add some space above and below the subtitle.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="46">46</dt>
+<dd>
+<span data-code-cell="annotated-cell-10" data-code-lines="21" data-code-annotation="46">Make the title larger and bold so that it appears higher in the visual hierarchy. The closing brackets finish the map expression.</span>
+</dd>
+</dl>
+</section>
+<section id="step-11-save-the-finished-map" class="level2">
+<h2 class="anchored" data-anchor-id="step-11-save-the-finished-map">Step 11: Save the finished map</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-11"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-11-1"><a href="#annotated-cell-11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save map ---------------------------------------------------------------------</span></span>
+<span id="annotated-cell-11-2"><a href="#annotated-cell-11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-11-3"><a href="#annotated-cell-11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create map that is 2000px x 2000px</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="47" onclick="event.preventDefault();">47</a><span id="annotated-cell-11-4" class="code-annotation-target"><a href="#annotated-cell-11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="48" onclick="event.preventDefault();">48</a><span id="annotated-cell-11-5" class="code-annotation-target"><a href="#annotated-cell-11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename =</span> <span class="fu">here</span>(<span class="st">"output"</span>, <span class="st">"queensland_stalking_rate_map_2018.jpg"</span>),</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="49" onclick="event.preventDefault();">49</a><span id="annotated-cell-11-6" class="code-annotation-target"><a href="#annotated-cell-11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot =</span> stalking_map,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="50" onclick="event.preventDefault();">50</a><span id="annotated-cell-11-7" class="code-annotation-target"><a href="#annotated-cell-11-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">2000</span>,</span>
+<span id="annotated-cell-11-8"><a href="#annotated-cell-11-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">2000</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-11" data-target-annotation="51" onclick="event.preventDefault();">51</a><span id="annotated-cell-11-9" class="code-annotation-target"><a href="#annotated-cell-11-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">units =</span> <span class="st">"px"</span></span>
+<span id="annotated-cell-11-10"><a href="#annotated-cell-11-10" aria-hidden="true" tabindex="-1"></a>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-11" data-target-annotation="47">47</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="4" data-code-annotation="47"><code>ggsave()</code> from ggplot2 writes the map to a file on your computer, using the settings on the following lines. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-saving-maps">Saving maps</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-11" data-target-annotation="48">48</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="5" data-code-annotation="48">Specify where the map should be saved, relative to the workspace. The file name <code>queensland_stalking_rate_map_2018.jpg</code> also specifies the image format. See <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project">Keeping your files organised</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-11" data-target-annotation="49">49</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="6" data-code-annotation="49">Specify the map object to save, in this case <code>stalking_map</code>. This avoids relying on whichever plot was displayed most recently. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-creating-storing-map">Creating and storing a map</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-11" data-target-annotation="50">50</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="7" data-code-annotation="50">Set the width and height to 2000 pixels.</span>
+</dd>
+<dt data-target-cell="annotated-cell-11" data-target-annotation="51">51</dt>
+<dd>
+<span data-code-cell="annotated-cell-11" data-code-lines="9" data-code-annotation="51">Specify that the dimensions are measured in pixels (<code>px</code>).</span>
+</dd>
+</dl>
 
 
 </section>

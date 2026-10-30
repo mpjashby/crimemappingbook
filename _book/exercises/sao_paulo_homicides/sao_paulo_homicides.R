@@ -57,7 +57,7 @@ homicides_kde <- homicides |>
 homicide_map <- hotspot_map(
   homicides_kde,
   basemap_type = "cartolight",
-  caption = paste0(
+  caption = str_glue(
     "Homicides: State of São Paulo Public Security Secretariat\n",
     "Boundaries: Institute for Applied Economic Research"
   )

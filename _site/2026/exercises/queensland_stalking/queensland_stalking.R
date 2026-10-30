@@ -22,8 +22,10 @@ request(
 stalking <- here("data", "raw", "qld_stalking.xlsx") |>
   readxl::read_excel() |>
   filter(year == 2018)
-population <- read_csv(here("data", "raw", "qld_population.csv.gz"))
-divisions <- read_sf(here("data", "raw", "qld_police_divisions.gpkg"))
+population <- here("data", "raw", "qld_population.csv.gz") |>
+  read_csv()
+divisions <- here("data", "raw", "qld_police_divisions.gpkg") |>
+  read_sf()
 
 
 # Wrangle data -----------------------------------------------------------------
@@ -37,11 +39,13 @@ stalking_rate <- divisions |>
 # Pimpama has no matching population, so its rate remains NA.
 # Keep it on the map in grey rather than treating missing data as zero.
 
-# Find divisions with highest stalking rate and label them in order
-stalking_rate_highest <- stalking_rate |>
-  slice_max(rate, n = 10, with_ties = FALSE) |>
-  arrange(desc(rate)) |>
-  mutate(label = str_glue("{division} ({scales::ordinal(row_number())})"))
+# Find divisions with highest stalking rate
+stalking_rate_highest <- slice_max(
+  stalking_rate,
+  rate,
+  n = 10,
+  with_ties = FALSE
+)
 
 
 # Create map -------------------------------------------------------------------
@@ -51,7 +55,7 @@ stalking_map <- hotspot_map(
   mapping = aes(fill = rate),
   basemap_type = "cartolight",
   caption = str_glue(
-    "Map produced by Joe Bloggs on {lubridate::today()}\n",
+    "Map produced by Joe Bloggs on {today()}\n",
     "Offences: Queensland Police Service (CC BY 4.0)\n",
     "Population and boundaries: Queensland Government\n",
     "Grey: rate cannot be calculated because population data unavailable"
@@ -65,16 +69,6 @@ stalking_map <- hotspot_map(
     colour = "black",
     fill = NA,
     linewidth = 0.75
-  ) +
-  # Add labels for 10 divisions with highest rates
-  geom_sf_label(
-    aes(label = str_wrap(label, width = 12)),
-    data = stalking_rate_highest,
-    alpha = 0.75,
-    fill = "white",
-    size = 2.5,
-    lineheight = 0.95,
-    linewidth = 0
   ) +
   scale_fill_distiller(direction = 1) +
   labs(

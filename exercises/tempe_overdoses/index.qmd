@@ -1,0 +1,76 @@
+---
+listing: false
+title: "Mapping opioid overdose calls in Tempe"
+ready-after: "Chapters 1–7"
+output-type: "R script"
+---
+
+For this exercise, you should create the R code needed to make a density map of calls to emergency medical services for suspected opioid overdoses in Tempe, Arizona. Save your map as a JPEG image 2000 pixels wide and 2000 pixels high.
+
+## Before you start
+
+Complete Chapters 1–7 of [_Learn Crime Mapping with R_](https://books.lesscrime.info/learncrimemapping/2026/).
+
+In this exercise you will practise downloading and reading data, filtering dates, converting coordinates into a spatial object, kernel density estimation, clipping datasets, adding context to a map and saving a map to a file.
+
+### What your map should show
+
+Imagine that the City of Tempe wants to train first responders in the most-affected parts of the city to revive people suffering from opioid overdoses. To help the city decide where to prioritise training, create a map showing where calls for suspected opioid overdoses have been most concentrated since 1 January 2020.
+
+You can download the calls data from:
+
+```
+https://mpjashby.github.io/crimemappingdata/tempe_opioid_calls.csv
+```
+
+The [calls dataset documentation](https://pkgs.lesscrime.info/crimemappingdata/reference/tempe_opioid_calls.html) describes the columns and source. Filter the `incident_date` column to keep calls on or after 1 January 2020. These are calls for suspected overdoses, not confirmed deaths. The original coordinates were rounded to protect privacy and are approximate, so do not interpret them as exact addresses.
+
+Unlike many cities, Tempe doesn't have local council wards or other subdivisions. Instead, the city is divided into _character areas_, clusters of similar neighbourhoods. You can download the boundaries of the character areas from:
+
+```
+https://mpjashby.github.io/crimemappingdata/tempe_character_areas.gml
+```
+
+More details about the character areas data are available in the [boundary dataset documentation](https://pkgs.lesscrime.info/crimemappingdata/reference/tempe_character_areas.html).
+
+Both datasets use EPSG:4326. Transform both layers to EPSG:6404, which uses metres and is suitable for analysing this part of Arizona. Acknowledge the City of Tempe as the source of both datasets under a Creative Commons Attribution licence.
+
+Save your script in the Positron workspace you set up for the book. Store the original downloads in `data/raw` and the finished map in `output`, creating the folders if necessary. Leave the original downloaded files unchanged.
+
+Your map should include:
+
+1. a density layer showing concentrations of calls since 1 January 2020, clipped to the city boundary,
+2. a suitable base map and the character areas to help readers locate the concentrations,
+3. a title, legend and supporting information explaining what the map shows, the period covered and the data sources.
+
+Every step of your code should be accompanied by an explanatory comment (on one or more lines starting with a `#` symbol and a space). Your script should only produce and save one map (and possibly some R messages or warnings), not output anything else (e.g. a copy of the data).
+
+## Checklist for this exercise
+
+Use this checklist to make sure you have done everything required for this exercise.
+
+### The map
+
+- The density layer includes only calls on or after 1 January 2020.
+- The density layer is clipped to the City of Tempe boundary.
+- The cell size and bandwidth make it easy to see concentrations of calls.
+- The base map and boundaries help readers identify places without distracting from the density layer.
+- The title and legend explain what is being mapped, and the map states the period covered.
+- The caption acknowledges the incident data, boundary data and base map sources.
+- The map is saved as a JPEG image 2,000 pixels wide and 2,000 pixels high.
+
+### The code
+
+- The necessary packages are loaded at the start of the script in a single call to `pacman::p_load()`.
+- The code uses `request()` and `req_perform()` to download the data to local files in `data/raw`.
+- The code uses `here()` for paths within the workspace and reads the local downloads.
+- Column names and object names use `snake_case`.
+- The calls are converted to an SF object using their longitude and latitude coordinates.
+- Both spatial layers are transformed to EPSG:6404 before calculating and clipping the density layer.
+- The code filters the calls by date and uses `|>` to link data-wrangling steps.
+- The map is stored in an object and saved in `output` using `ggsave()`.
+- Every step has an explanatory comment, and the script contains no temporary code such as `head()` or `install.packages()`.
+
+## Check your answer
+
+After attempting the task, read the [specimen answer and explanation](tempe_overdoses_answer.qmd) to see one possible solution.

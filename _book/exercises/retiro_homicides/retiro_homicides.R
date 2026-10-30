@@ -8,7 +8,8 @@ request("https://mpjashby.github.io/crimemappingdata/retiro_homicides.csv") |>
   req_perform(path = here("data", "raw", "retiro_homicides.csv"))
 
 # Read data
-homicides <- read_csv(here("data", "raw", "retiro_homicides.csv"))
+homicides <- here("data", "raw", "retiro_homicides.csv") |>
+  read_csv()
 
 # Convert longitude and latitude to a spatial object
 homicides_sf <- st_as_sf(

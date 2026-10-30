@@ -155,10 +155,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#complete-script" id="toc-complete-script" class="nav-link active" data-scroll-target="#complete-script">Complete script</a></li>
-  <li><a href="#why-this-code-is-organised-this-way" id="toc-why-this-code-is-organised-this-way" class="nav-link" data-scroll-target="#why-this-code-is-organised-this-way">Why this code is organised this way</a></li>
-  <li><a href="#output-produced-by-this-code" id="toc-output-produced-by-this-code" class="nav-link" data-scroll-target="#output-produced-by-this-code">Output produced by this code</a></li>
-  <li><a href="#review-your-own-answer" id="toc-review-your-own-answer" class="nav-link" data-scroll-target="#review-your-own-answer">Review your own answer</a></li>
+  <li><a href="#the-finished-map" id="toc-the-finished-map" class="nav-link active" data-scroll-target="#the-finished-map">The finished map</a></li>
+  <li><a href="#step-1-explain-the-script" id="toc-step-1-explain-the-script" class="nav-link" data-scroll-target="#step-1-explain-the-script">Step 1: Explain the script</a></li>
+  <li><a href="#step-2-load-packages" id="toc-step-2-load-packages" class="nav-link" data-scroll-target="#step-2-load-packages">Step 2: Load packages</a></li>
+  <li><a href="#step-3-download-the-original-data" id="toc-step-3-download-the-original-data" class="nav-link" data-scroll-target="#step-3-download-the-original-data">Step 3: Download the original data</a></li>
+  <li><a href="#step-4-read-the-downloaded-data" id="toc-step-4-read-the-downloaded-data" class="nav-link" data-scroll-target="#step-4-read-the-downloaded-data">Step 4: Read the downloaded data</a></li>
+  <li><a href="#step-5-select-the-requested-dates" id="toc-step-5-select-the-requested-dates" class="nav-link" data-scroll-target="#step-5-select-the-requested-dates">Step 5: Select the requested dates</a></li>
+  <li><a href="#step-6-describe-the-original-coordinates" id="toc-step-6-describe-the-original-coordinates" class="nav-link" data-scroll-target="#step-6-describe-the-original-coordinates">Step 6: Describe the original coordinates</a></li>
+  <li><a href="#step-7-transform-the-coordinates" id="toc-step-7-transform-the-coordinates" class="nav-link" data-scroll-target="#step-7-transform-the-coordinates">Step 7: Transform the coordinates</a></li>
+  <li><a href="#step-8-draw-the-map" id="toc-step-8-draw-the-map" class="nav-link" data-scroll-target="#step-8-draw-the-map">Step 8: Draw the map</a></li>
   </ul>
 </nav>
     </div>
@@ -185,6 +190,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p><a href="../london_terrorist_attacks/index.html">Return to the exercise</a>.</p>
+<p>This document walks through a specimen answer to this exercise. Read each code section and its numbered explanations below. Select the number at the start of each explanation to highlight the line of code that explanation relates to.</p>
 <p>In R, like in many programming languages, there is usually more than one way to complete a task. This code shows one way to complete this exercise. There are other ways to organise this code that are equally good and achieve the same result, but the code below tries to balance making the code efficient with making it easy to read. If your code is different from the code here, read through the notes below the answer and use those to decide whether you prefer your own approach or the specimen answer below. You can also use the notes to improve your own code.</p>
 <div class="callout callout-style-default callout-warning callout-titled" title="The specimen answer expects your computer to be set up as outlined in the book.">
 <div class="callout-header d-flex align-content-center">
@@ -199,54 +205,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The online textbook sets out how to <a href="https://books.lesscrime.info/learncrimemapping/setup.html">install the software you need for crime mapping with R</a> and <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/">set up your computer to store files in particular places</a>. The specimen answer below assumes that you have followed those instructions and that your computer is set up as described in the book. If you have not done so, the code in the specimen answer may not run correctly.</p>
 </div>
 </div>
-<section id="complete-script" class="level2">
-<h2 class="anchored" data-anchor-id="complete-script">Complete script</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="co"># Map recorded fatal terrorist attacks in London from 2010 to 2018.</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a><span class="co"># Load packages</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, sf, sfhotspot, tidyverse)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-label="6"></a><span class="co"># Download the original data and keep a local copy</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-label="7"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/london_attacks.csv"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-label="8"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"london_attacks.csv"</span>))</span>
-<span id="cb1-9"><a href="#cb1-9" aria-label="9"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-label="10"></a><span class="co"># Read data</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-label="11"></a>attacks <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"london_attacks.csv"</span>))</span>
-<span id="cb1-12"><a href="#cb1-12" aria-label="12"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-label="13"></a><span class="co"># Keep only records within the requested date range, including both ends</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-label="14"></a>attacks_filtered <span class="ot">&lt;-</span> <span class="fu">filter</span>(attacks, date <span class="sc">&gt;=</span> <span class="st">"2010-01-01"</span>, date <span class="sc">&lt;=</span> <span class="st">"2018-12-31"</span>)</span>
-<span id="cb1-15"><a href="#cb1-15" aria-label="15"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-label="16"></a><span class="co"># Convert longitude and latitude to a spatial object</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-label="17"></a>attacks_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
-<span id="cb1-18"><a href="#cb1-18" aria-label="18"></a>  attacks_filtered,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-label="19"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
-<span id="cb1-20"><a href="#cb1-20" aria-label="20"></a>  <span class="at">crs =</span> <span class="st">"EPSG:4326"</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-label="21"></a>)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-label="22"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-label="23"></a><span class="co"># Transform to a projected coordinate reference system suitable for London</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-label="24"></a>attacks_sf_trans <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(attacks_sf, <span class="at">crs =</span> <span class="st">"EPSG:27700"</span>)</span>
-<span id="cb1-25"><a href="#cb1-25" aria-label="25"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-label="26"></a><span class="co"># Display the map</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-label="27"></a><span class="fu">hotspot_map</span>(</span>
-<span id="cb1-28"><a href="#cb1-28" aria-label="28"></a>  attacks_sf_trans,</span>
-<span id="cb1-29"><a href="#cb1-29" aria-label="29"></a>  <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>,</span>
-<span id="cb1-30"><a href="#cb1-30" aria-label="30"></a>  <span class="at">colour =</span> <span class="st">"red2"</span>,</span>
-<span id="cb1-31"><a href="#cb1-31" aria-label="31"></a>  <span class="at">size =</span> <span class="dv">5</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-label="32"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><a href="london_terrorist_attacks.R">Download the complete R script</a></p>
-</section>
-<section id="why-this-code-is-organised-this-way" class="level2">
-<h2 class="anchored" data-anchor-id="why-this-code-is-organised-this-way">Why this code is organised this way</h2>
-<p><strong>Load packages first.</strong> R can only use functions from packages that are loaded. The easiest way to load packages is to load them all at the very start of a script, so that it’s easy to see at a glance all the packages that a particular script needs. That means that, for example, if you are writing a later part of a long R script and you want to use a function from a particular package, it is easy to go to the start of the code and see whether that package is already loaded or whether you need to load it.</p>
-<p><strong>Download, then read.</strong> The <code>request()</code> and <code>req_perform()</code> functions from the <a href="https://httr2.r-lib.org">httr2 package</a> save the original CSV file into the <code>data/raw</code> directory so that you have a local copy of the original, unwrangled data. That means that if you later make a mistake in wrangling the data, you can always go back to the original dataset.</p>
-<p><strong>Filter by date.</strong> <code>filter()</code> here has two conditions – <code>&gt;=</code> and <code>&lt;=</code> – which must both be satisfied, meaning only rows that fall within the specified date range will be included.</p>
-<p><strong>Describe the original coordinates before transforming them.</strong> The original dataset includes locations described using pairs of latitude and longitude coordinates. To tell R that the numbers in these columns represent locations on the Earth’s surface, we have to specify how these numbers should be translated to locations. To do that we use the <code>st_as_sf()</code> function and the argument <code>crs = "EPSG:4326"</code>, which specifies that the numbers represent latitudes and longitudes.</p>
-<p>Latitudes and longitudes are useful because they can be used to describe any location on the planet, but they are sometimes hard to work with because they specify distances using decimal degrees rather than common units such as metres. For that reason, it’s often useful to <em>transform</em> a spatial dataset to use a local coordinate reference system instead. In the case of locations in the United Kingdom it’s common to transform coordinates to use the British National Grid, which we can do using <code>st_transform()</code> and the code <code>crs = "EPSG:27700"</code>. It’s important to note the distinction here between us using <code>st_as_sf(attacks_filtered, coords = c("longitude", "latitude"), crs = "EPSG:4326")</code> to specify the coordinate system that the data <em>already uses</em> and us using <code>st_transform(attacks_sf, crs = "EPSG:27700")</code> to transform the coordinates into a different format.</p>
-<p><strong>Finish with the map.</strong> <code>hotspot_map()</code> converts the SF object we have stored in the <code>attacks_sf_trans</code> object and plots it on a map with a suitable base map. The basemap helps locate the points, while the supplied colour and size make the points stand out clearly.</p>
-</section>
-<section id="output-produced-by-this-code" class="level2">
-<h2 class="anchored" data-anchor-id="output-produced-by-this-code">Output produced by this code</h2>
-<p>The code above produces this map. Depending on the design choices you made when writing your code, your map might look slightly different. What matters is that it should be easy for readers to see where the crimes happened and that the base map should support, rather than distracting from, the data layer.</p>
+<section id="the-finished-map" class="level2">
+<h2 class="anchored" data-anchor-id="the-finished-map">The finished map</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;httr2_response&gt;
@@ -274,10 +234,189 @@ date (1): date
 </div>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="View the complete R script">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>View the complete R script
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="co"># Map recorded fatal terrorist attacks in London from 2010 to 2018.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-label="2"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-label="3"></a><span class="co"># Load packages</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, sf, sfhotspot, tidyverse)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-label="5"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-label="6"></a><span class="co"># Download the original data and keep a local copy</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-label="7"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/london_attacks.csv"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-label="8"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"london_attacks.csv"</span>))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-label="9"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-label="10"></a><span class="co"># Read data</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-label="11"></a>attacks <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"london_attacks.csv"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-label="12"></a>  <span class="fu">read_csv</span>()</span>
+<span id="cb3-13"><a href="#cb3-13" aria-label="13"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-label="14"></a><span class="co"># Keep only records within the requested date range, including both ends</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-label="15"></a>attacks_filtered <span class="ot">&lt;-</span> <span class="fu">filter</span>(attacks, date <span class="sc">&gt;=</span> <span class="st">"2010-01-01"</span>, date <span class="sc">&lt;=</span> <span class="st">"2018-12-31"</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-label="16"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-label="17"></a><span class="co"># Convert longitude and latitude to a spatial object</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-label="18"></a>attacks_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb3-19"><a href="#cb3-19" aria-label="19"></a>  attacks_filtered,</span>
+<span id="cb3-20"><a href="#cb3-20" aria-label="20"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
+<span id="cb3-21"><a href="#cb3-21" aria-label="21"></a>  <span class="at">crs =</span> <span class="st">"EPSG:4326"</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-label="22"></a>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-label="23"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-label="24"></a><span class="co"># Transform to a projected coordinate reference system suitable for London</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-label="25"></a>attacks_sf_trans <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(attacks_sf, <span class="at">crs =</span> <span class="st">"EPSG:27700"</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-label="26"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-label="27"></a><span class="co"># Display the map</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-label="28"></a><span class="fu">hotspot_map</span>(</span>
+<span id="cb3-29"><a href="#cb3-29" aria-label="29"></a>  attacks_sf_trans,</span>
+<span id="cb3-30"><a href="#cb3-30" aria-label="30"></a>  <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>,</span>
+<span id="cb3-31"><a href="#cb3-31" aria-label="31"></a>  <span class="at">colour =</span> <span class="st">"red2"</span>,</span>
+<span id="cb3-32"><a href="#cb3-32" aria-label="32"></a>  <span class="at">size =</span> <span class="dv">5</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-label="33"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><a href="london_terrorist_attacks.R">Download the complete R script</a>.</p>
+</div>
+</div>
+</div>
 </section>
-<section id="review-your-own-answer" class="level2">
-<h2 class="anchored" data-anchor-id="review-your-own-answer">Review your own answer</h2>
-<p>Your code might differ from the specimen answer in multiple ways. You might have used different object names or organised the code in a different way. As long as your code correctly and clearly shows the relevant data on a map, it is not necessary for your code to exactly match this specimen answer.</p>
+<section id="step-1-explain-the-script" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-explain-the-script">Step 1: Explain the script</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-1"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-1" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-1-1" class="code-annotation-target"><a href="#annotated-cell-1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Map recorded fatal terrorist attacks in London from 2010 to 2018.</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-1" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-1" data-code-lines="1" data-code-annotation="1">Start by explaining what the script does. In this case the comment identifies the type of crime, the place and the date range, so that it will be easier to find the script if we want to use it again later. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments">Organising code with comments</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-2-load-packages" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-load-packages">Step 2: Load packages</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-2"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-2-1"><a href="#annotated-cell-2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load packages</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-2-2" class="code-annotation-target"><a href="#annotated-cell-2-2" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, sf, sfhotspot, tidyverse)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-2" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-2" data-code-lines="2" data-code-annotation="2"><code>pacman::p_load()</code> loads the packages needed for this analysis, listed in alphabetical order with the tidyverse package last. <strong><a href="https://here.r-lib.org/">here</a></strong> allows us to specify where to find files in the workspace; <strong><a href="https://httr2.r-lib.org">httr2</a></strong> downloads data from the internet; <strong><a href="https://r-spatial.github.io/sf/">sf</a></strong> handles spatial objects; <strong><a href="https://pkgs.lesscrime.info/sfhotspot/">sfhotspot</a></strong> creates crime maps and estimates density; <strong><a href="https://tidyverse.tidyverse.org">tidyverse</a></strong> provides tools for reading, wrangling and plotting data. Loading packages at the start makes it easy to check which tools the script needs. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages">Loading packages</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-3-download-the-original-data" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-download-the-original-data">Step 3: Download the original data</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-3"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-3-1"><a href="#annotated-cell-3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the original data and keep a local copy</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-3-2" class="code-annotation-target"><a href="#annotated-cell-3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/london_attacks.csv"</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-3-3" class="code-annotation-target"><a href="#annotated-cell-3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"london_attacks.csv"</span>))</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-3" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-3" data-code-lines="2" data-code-annotation="3"><code>request()</code> specifies the URL of the file to download. The pipe operator (<code>|&gt;</code>) passes that request to the next function. This exercise uses one CSV file containing the locations of fatal terrorist attacks in London. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-load-data">Downloading and loading data</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator">Stringing functions together</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-3" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-cell="annotated-cell-3" data-code-lines="3" data-code-annotation="4"><code>req_perform()</code> performs the download. <code>here()</code> specifies where the original file should be saved, relative to the <code>crime_mapping</code> workspace. Keeping the original data in <code>data/raw</code> means we can return to it if we make a mistake while wrangling the data. See <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project">Keeping your files organised</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-4-read-the-downloaded-data" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-read-the-downloaded-data">Step 4: Read the downloaded data</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-4"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-4-1"><a href="#annotated-cell-4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read data</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-4-2" class="code-annotation-target"><a href="#annotated-cell-4-2" aria-hidden="true" tabindex="-1"></a>attacks <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"london_attacks.csv"</span>) <span class="sc">|&gt;</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="6" onclick="event.preventDefault();">6</a><span id="annotated-cell-4-3" class="code-annotation-target"><a href="#annotated-cell-4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_csv</span>()</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-4" data-target-annotation="5">5</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="2" data-code-annotation="5"><code>here()</code> specifies the path to the downloaded CSV file within the workspace. The pipe (<code>|&gt;</code>) passes this path to <code>read_csv()</code>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="6">6</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="3" data-code-annotation="6"><code>read_csv()</code> from <a href="https://readr.tidyverse.org">readr</a> reads the local CSV file. <code>here()</code> specifies which file to read, while <code>&lt;-</code> stores the result as <code>attacks</code>. Keeping this step separate from filtering makes it easy to inspect the original data if we need to check it. See <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-data-wrangling-loading-csv-data">Loading CSV data</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-naming-objects">Naming objects</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-5-select-the-requested-dates" class="level2">
+<h2 class="anchored" data-anchor-id="step-5-select-the-requested-dates">Step 5: Select the requested dates</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-5"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-5-1"><a href="#annotated-cell-5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep only records within the requested date range, including both ends</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="7" onclick="event.preventDefault();">7</a><span id="annotated-cell-5-2" class="code-annotation-target"><a href="#annotated-cell-5-2" aria-hidden="true" tabindex="-1"></a>attacks_filtered <span class="ot">&lt;-</span> <span class="fu">filter</span>(attacks, date <span class="sc">&gt;=</span> <span class="st">"2010-01-01"</span>, date <span class="sc">&lt;=</span> <span class="st">"2018-12-31"</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-5" data-target-annotation="7">7</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="2" data-code-annotation="7"><code>filter()</code> from <a href="https://dplyr.tidyverse.org">dplyr</a> keeps rows from <code>attacks</code> that satisfy both conditions. <code>&gt;=</code> includes 1 January 2010 and later dates, while <code>&lt;=</code> includes 31 December 2018 and earlier dates. The result is stored as <code>attacks_filtered</code>. We filter by date because the exercise asks for 2010–2018; we do not need a second filter for fatalities because the supplied file already contains fatal attacks. See <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-filter-data">Filtering rows</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-6-describe-the-original-coordinates" class="level2">
+<h2 class="anchored" data-anchor-id="step-6-describe-the-original-coordinates">Step 6: Describe the original coordinates</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-6"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-6-1"><a href="#annotated-cell-6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert longitude and latitude to a spatial object</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="8" onclick="event.preventDefault();">8</a><span id="annotated-cell-6-2" class="code-annotation-target"><a href="#annotated-cell-6-2" aria-hidden="true" tabindex="-1"></a>attacks_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="9" onclick="event.preventDefault();">9</a><span id="annotated-cell-6-3" class="code-annotation-target"><a href="#annotated-cell-6-3" aria-hidden="true" tabindex="-1"></a>  attacks_filtered,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="10" onclick="event.preventDefault();">10</a><span id="annotated-cell-6-4" class="code-annotation-target"><a href="#annotated-cell-6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="11" onclick="event.preventDefault();">11</a><span id="annotated-cell-6-5" class="code-annotation-target"><a href="#annotated-cell-6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">crs =</span> <span class="st">"EPSG:4326"</span></span>
+<span id="annotated-cell-6-6"><a href="#annotated-cell-6-6" aria-hidden="true" tabindex="-1"></a>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-6" data-target-annotation="8">8</dt>
+<dd>
+<span data-code-cell="annotated-cell-6" data-code-lines="2" data-code-annotation="8"><code>st_as_sf()</code> creates a spatial object and stores it as <code>attacks_sf</code>. This tells R that the coordinate columns describe locations on the Earth’s surface. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-converting-our-data-to-an-sf-object">Converting data to an SF object</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="9">9</dt>
+<dd>
+<span data-code-cell="annotated-cell-6" data-code-lines="3" data-code-annotation="9">Use the filtered records, rather than the original data, so that only attacks within the requested period are mapped.</span>
+</dd>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="10">10</dt>
+<dd>
+<span data-code-cell="annotated-cell-6" data-code-lines="4" data-code-annotation="10"><code>coords</code> names the columns containing the x and y coordinates, in that order. Here the x coordinate is longitude and the y coordinate is latitude.</span>
+</dd>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="11">11</dt>
+<dd>
+<span data-code-cell="annotated-cell-6" data-code-lines="5" data-code-annotation="11"><code>crs = "EPSG:4326"</code> specifies how R should interpret the existing longitude and latitude values. It does not transform those coordinates into a different system.</span>
+</dd>
+</dl>
+</section>
+<section id="step-7-transform-the-coordinates" class="level2">
+<h2 class="anchored" data-anchor-id="step-7-transform-the-coordinates">Step 7: Transform the coordinates</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-7"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-7-1"><a href="#annotated-cell-7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform to a projected coordinate reference system suitable for London</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="12" onclick="event.preventDefault();">12</a><span id="annotated-cell-7-2" class="code-annotation-target"><a href="#annotated-cell-7-2" aria-hidden="true" tabindex="-1"></a>attacks_sf_trans <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(attacks_sf, <span class="at">crs =</span> <span class="st">"EPSG:27700"</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-7" data-target-annotation="12">12</dt>
+<dd>
+<span data-code-cell="annotated-cell-7" data-code-lines="2" data-code-annotation="12"><code>st_transform()</code> converts the coordinates in <code>attacks_sf</code> to the British National Grid, a projected CRS suitable for London. Unlike the previous step, this changes the coordinates themselves. The result is stored as <code>attacks_sf_trans</code>. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-your-first-crime-map-transforming-the-coordinate-reference-system">Transforming the coordinate reference system</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-8-draw-the-map" class="level2">
+<h2 class="anchored" data-anchor-id="step-8-draw-the-map">Step 8: Draw the map</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-8"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-8-1"><a href="#annotated-cell-8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the map</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="13" onclick="event.preventDefault();">13</a><span id="annotated-cell-8-2" class="code-annotation-target"><a href="#annotated-cell-8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hotspot_map</span>(</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="14" onclick="event.preventDefault();">14</a><span id="annotated-cell-8-3" class="code-annotation-target"><a href="#annotated-cell-8-3" aria-hidden="true" tabindex="-1"></a>  attacks_sf_trans,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="15" onclick="event.preventDefault();">15</a><span id="annotated-cell-8-4" class="code-annotation-target"><a href="#annotated-cell-8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="16" onclick="event.preventDefault();">16</a><span id="annotated-cell-8-5" class="code-annotation-target"><a href="#annotated-cell-8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">colour =</span> <span class="st">"red2"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="17" onclick="event.preventDefault();">17</a><span id="annotated-cell-8-6" class="code-annotation-target"><a href="#annotated-cell-8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">size =</span> <span class="dv">5</span></span>
+<span id="annotated-cell-8-7"><a href="#annotated-cell-8-7" aria-hidden="true" tabindex="-1"></a>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-8" data-target-annotation="13">13</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="2" data-code-annotation="13"><code>hotspot_map()</code> plots the spatial data over a base map. Leaving the result unassigned means running this final expression displays the map. Different choices of colour and point size could also produce a good answer. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-drawing-first-map">Drawing the map</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="14">14</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="3" data-code-annotation="14">Use the transformed spatial object, which contains only the records selected earlier.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="15">15</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="4" data-code-annotation="15">A light <code>cartolight</code> base map helps readers locate the attacks without distracting from the points. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-base-maps">Base maps</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="16">16</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="5" data-code-annotation="16">Use red points to give the attacks a strong contrast with the light base map. The points should be more prominent than the streets beneath them. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy">Visual hierarchy</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="17">17</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="6" data-code-annotation="17">Set the point size to 5 so that these relatively few incidents can be seen clearly. A size that works for this map might obscure the pattern in a dataset containing thousands of incidents. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-aesthetics">Controlling aesthetics</a>.</span>
+</dd>
+</dl>
 
 
 </section>

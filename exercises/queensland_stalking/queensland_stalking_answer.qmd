@@ -7,8 +7,16 @@ title: "Mapping stalking rates in Queensland: specimen answer"
 
 {{< include ../_specimen_header_r.qmd >}}
 
+## The finished map
 
-## Complete script
+```{r}
+#| echo: false
+#| file: queensland_stalking.R
+```
+
+![](../output/queensland_stalking_rate_map_2018.jpg){fig-alt="Choropleth map of recorded stalking incidents per 100,000 residents in Queensland police divisions in 2018. Darker blue indicates higher rates. The ten divisions with the highest rates are outlined; grey indicates a missing rate."}
+
+::: {.callout-note collapse="true" title="View the complete R script"}
 
 ```r
 {{< include queensland_stalking.R >}}
@@ -16,18 +24,229 @@ title: "Mapping stalking rates in Queensland: specimen answer"
 
 [Download the complete R script](queensland_stalking.R).
 
-## Output produced by this code
+:::
 
-```{r}
-#| echo: false
-#| file: queensland_stalking.R
+## Step 1: Explain the script
+
+```{.r code-line-numbers="false"}
+# Map recorded stalking incidents per 100,000 residents in Queensland in 2018. # <1>
 ```
 
-![](../output/queensland_stalking_rate_map_2018.jpg){fig-alt="Choropleth map of recorded stalking incidents per 100,000 residents in Queensland police divisions in 2018. Darker blue indicates higher rates. The ten divisions with the highest rates are outlined and labelled; grey indicates a missing rate."}
+1. Explain that the script maps recorded stalking incidents per 100,000 residents in Queensland in 2018. It is important to note that this map shows a _rate_, not a count. See [Organising code with comments](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments).
+
+## Step 2: Load packages
+
+```{.r code-line-numbers="false"}
+# Load packages
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse) # <2>
+```
+
+2. `pacman::p_load()` loads the packages needed for this analysis, listed in alphabetical order with the tidyverse package last. **[here](https://here.r-lib.org/)** allows us to specify where to find files in the workspace; **[httr2](https://httr2.r-lib.org)** downloads data from the internet; **[sf](https://r-spatial.github.io/sf/)** handles spatial objects; **[sfhotspot](https://pkgs.lesscrime.info/sfhotspot/)** creates crime maps and estimates density; **[tidyverse](https://tidyverse.tidyverse.org)** provides tools for reading, wrangling and plotting data. Loading packages at the start makes it easy to check which tools the script needs. See [Loading packages](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages).
+
+## Step 3: Download the original data
+
+```{.r code-line-numbers="false"}
+# Load data --------------------------------------------------------------------
+
+# Download the original data into the workspace
+request("https://mpjashby.github.io/crimemappingdata/qld_stalking.xlsx") |> # <3>
+  req_perform(path = here("data", "raw", "qld_stalking.xlsx")) # <4>
+request("https://mpjashby.github.io/crimemappingdata/qld_population.csv.gz") |> # <3>
+  req_perform(path = here("data", "raw", "qld_population.csv.gz")) # <4>
+request( # <3>
+  "https://mpjashby.github.io/crimemappingdata/qld_police_divisions.gpkg"
+) |>
+  req_perform(path = here("data", "raw", "qld_police_divisions.gpkg")) # <4>
+```
+
+3. `request()` specifies the URL of the file to download. The pipe operator (`|>`) passes that request to the next function. Download the stalking counts, population counts and police division boundaries separately. All three are needed: the boundaries identify the areas, and the two sets of counts provide the numerator and denominator of the rate. See [Downloading and loading data](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-load-data); [Stringing functions together](https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator).
+4. `req_perform()` performs the download set up by the corresponding call to `request()`. `here()` specifies where the original file should be saved, relative to the `crime_mapping` workspace. Keeping an unchanged copy of the original data in `data/raw` means we can return to it if we make a mistake while wrangling the data. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project).
+
+## Step 4: Read the three datasets
+
+```{.r code-line-numbers="false"}
+# Read local data and select stalking counts for 2018
+# No need to specify the `sheet` argument in `read_excel()` because the Excel # <5>
+# file only has one sheet
+stalking <- here("data", "raw", "qld_stalking.xlsx") |> # <6>
+  readxl::read_excel() |> # <7>
+  filter(year == 2018) # <8>
+population <- here("data", "raw", "qld_population.csv.gz") |> # <9>
+  read_csv() # <10>
+divisions <- here("data", "raw", "qld_police_divisions.gpkg") |> # <11>
+  read_sf() # <12>
+```
+
+5. The comment explains why the Excel-reading function below has no `sheet` argument: the supplied file has only one sheet. Comments can record decisions as well as describe actions. See [Organising code with comments](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments).
+6. Locate the Excel workbook with `here()` and store the finished pipeline as `stalking`. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project).
+7. `read_excel()` from [readxl](https://readxl.tidyverse.org) reads the workbook. Using `::` lets us use this function without loading the whole package. See [Loading Excel data](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-data-wrangling-loading-excel-data).
+8. `filter()` from [dplyr](https://dplyr.tidyverse.org) keeps only rows where `year` equals 2018. This prevents counts from different years being joined to the same division later. See [Filtering rows](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-filter-data).
+9. `here()` locates the downloaded population file within the workspace. The pipe passes this path to `read_csv()`.
+10. `read_csv()` from [readr](https://readr.tidyverse.org) reads the compressed population CSV without a separate decompression step. These population counts are from 2016, so the rate will use an earlier population than the 2018 offences. See [Loading CSV data](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-data-wrangling-loading-csv-data); [Choosing a population measure](https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-mapping-areas-choosing-a-population-measure).
+11. `here()` locates the downloaded police division boundaries within the workspace. The pipe passes this path to `read_sf()`.
+12. `read_sf()` reads the geopackage as a spatial object. Its geometry and CRS information are already in the file. These boundaries are from 2022; reading them does not make them the boundaries that existed in 2018. See [Reading spatial data](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-reading-spatial-data).
+
+## Step 5: Join the datasets and calculate rates
+
+```{.r code-line-numbers="false"}
+# Wrangle data -----------------------------------------------------------------
+
+# Join data and calculate rate
+stalking_rate <- divisions |> # <13>
+  left_join(population, by = join_by(division == police_division)) |> # <14>
+  left_join(stalking, by = join_by(division)) |> # <15>
+  mutate(rate = stalking / population * 100000) # <16>
+
+# Pimpama has no matching population, so its rate remains NA. # <17>
+# Keep it on the map in grey rather than treating missing data as zero.
+```
+
+13. Start with `divisions` and store the finished result as `stalking_rate`. Keeping the boundaries on the left of the joins means that divisions can remain on the map even when a count is missing. See [Combining datasets](https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-mapping-areas-combining-datasets).
+14. Join each division to its population using `division` in the boundary data and `police_division` in the population data. `join_by()` specifies which values must match; the two columns do not have to share a name.
+15. Join the 2018 stalking counts using the `division` column, which has the same name in both datasets.
+16. `mutate()` calculates a new column called `rate`: divide stalking incidents by the population and multiply by 100,000. This lets us compare areas with different population sizes. See [Calculating crime rates](https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-calculating-rates); [Transforming values](https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-mutate).
+17. The Pimpama division has no matching population figure, so the value for the `rate` column is `NA` (the way R represents missing values) because it's not possible to calculate a rate without both stalking incidents and population data. We keep that division on the map, show the missing data using a grey fill and explain the grey fill in the caption. See [Missing values](https://books.lesscrime.info/learncrimemapping/2026/10_messy_data/index.html#sec-messy-data-missing-values).
+
+## Step 6: Find the ten highest rates
+
+This step implements the optional challenge in the exercise. It is useful to keep these selected divisions in a separate object, so that they can be added as extra map layers.
+
+```{.r code-line-numbers="false"}
+# Find divisions with highest stalking rate
+stalking_rate_highest <- slice_max(  # <18>
+  stalking_rate, 
+  rate, 
+  n = 10, 
+  with_ties = FALSE
+)
+```
+
+18. Use `slice_max()` to keep only the ten divisions with the highest stalking rates. `with_ties = FALSE` limits the result to ten even if rates are tied. Store the result in a new object called `stalking_rate_highest`.
 
 
+## Step 7: Start the map and identify its sources
 
-## Review your answer
+```{.r code-line-numbers="false"}
+# Create map -------------------------------------------------------------------
 
-The object names and organisation of your code may differ. Check that your code selects the same records, interprets their coordinates correctly and runs from a fresh session. Explain one choice you made differently from this specimen.
+stalking_map <- hotspot_map( # <19>
+  stalking_rate, # <20>
+  mapping = aes(fill = rate), # <21>
+  basemap_type = "cartolight", # <22>
+  caption = str_glue( # <23>
+    "Map produced by Joe Bloggs on {lubridate::today()}\n",
+    "Offences: Queensland Police Service (CC BY 4.0)\n",
+    "Population and boundaries: Queensland Government\n",
+    "Grey: rate cannot be calculated because population data unavailable"
+  ),
+  alpha = 0.75, # <24>
+  linewidth = 0.25 # <25>
+) + # <26>
+```
 
+19. Store the finished map as `stalking_map`, so it can be saved to a file in the final step. See [Creating and storing a map](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-creating-storing-map).
+20. Use all divisions with their calculated rates as the basis of `hotspot_map()`.
+21. `aes(fill = rate)` tells `hotspot_map()` to fill each division according to its rate. We need to specify this relationship ourselves because `stalking_rate` was not an object created by one of the `hotspot_*()` family of functions. See [Controlling fill colours when mapping rates](https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-hotspot-map-mapping).
+22. Use a light `cartolight` base map to provide geographic context while not overwhelming the map with too much detail or distracting from the data layer. See [Base maps](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-base-maps).
+23. `str_glue()` combines the author, date and data sources into the caption. `today()` from the [lubridate](https://lubridate.tidyverse.org) package inserts the date the script runs. The final line explains that grey means the population needed for a rate is unavailable. Replace Joe Bloggs with your own name. See [Using captions to add author and other information](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-captions).
+24. Make the division fills partly transparent so that readers can still see the base map beneath them. See [Controlling aesthetics](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-aesthetics).
+25. Use thin outlines for the main divisions. The highlighted divisions added next will have thicker outlines, so they stand out without the whole map becoming a mass of boundary lines. See [Visual hierarchy](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy).
+26. The `+` operator continues the same map expression in the following section. In the complete script these layers form one continuous stack.
+
+
+## Step 8: Highlight the ten selected divisions
+
+```{.r code-line-numbers="false"}
+  # Add thicker boundaries for 10 divisions with highest rates
+  geom_sf( # <27>
+    data = stalking_rate_highest, # <28>
+    colour = "black", # <29>
+    fill = NA, # <30>
+    linewidth = 0.75 # <31>
+  ) +
+```
+
+27. `geom_sf()` adds an extra boundary layer over the rate map. See [Adding more layers](https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-other-layers).
+28. Use only `stalking_rate_highest` for this layer, rather than outlining every division again.
+29. Use black outlines so the selected divisions stand out from the other boundaries. See [Visual hierarchy](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy).
+30. Leave the interiors unfilled with `fill = NA`, preserving the rate colours beneath them.
+31. Use a width of 0.75, compared with 0.25 for the main layer, to make the selected outlines more prominent.
+
+
+## Step 9: Specify the colours and map text
+
+```{.r code-line-numbers="false"}
+  scale_fill_distiller(direction = 1) + # <32>
+  labs( # <33>
+    title = "Recorded stalking rates in Queensland", # <34>
+    subtitle = str_glue( # <35>
+      "Ten police divisions with the highest rates are highlighted"
+    ),
+    fill = "stalking incidents\nper 100,000 people\nin 2018" # <36>
+  ) +
+```
+
+32. `scale_fill_distiller(direction = 1)` uses the default sequential palette with higher rates shown in darker colours. This makes the highest rates more visually prominent. See [Controlling fill colours when mapping rates](https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-hotspot-map-mapping).
+33. `labs()` supplies the title, subtitle and legend title. See [Titles and subtitles](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-titles).
+34. Identify the subject and place: recorded stalking rates in Queensland.
+35. Explain why ten divisions have been highlighted. `str_glue()` is retained here, although a plain text string would also work because this subtitle contains no inserted values.
+36. State the rate units and year in the legend title. Whenever you map a rate, it is important to specify how the rate was calculated. In this case, the rate is the number of stalking incidents per 100,000 people in 2018. Stating that makes for a much more informative legend title than one that said simply "stalking rate" or similar. The line breaks (`\n`) keep the title narrow enough to fit beside the colour bar. See [Changing the legend title](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-changing-the-legend-title).
+
+## Step 10: Control the map layout
+
+```{.r code-line-numbers="false"}
+  theme( # <37>
+    # Slightly lower the legend in the visual hierarchy by giving it a
+    # background that is white and semi-transparent
+    legend.background = element_rect(colour = NA, fill = rgb(1, 1, 1, 0.75)), # <38>
+    # Base legend position on the top-right corner of the legend, which makes
+    # moving the legend to the top-right corner easier
+    legend.justification = c(1, 1), # <39>
+    # Add some padding around the legend
+    legend.margin = margin(6, 9, 9, 9), # <40>
+    # Move the legend almost to the top-right corner of the map, since this is
+    # the area of the map with no content in it
+    legend.position = "inside", # <41>
+    legend.position.inside = c(0.95, 0.98), # <42>
+    # Make the legend title slightly smaller, again reducing its prominence
+    legend.title = element_text(size = 10), # <43>
+    # Left-align the caption
+    plot.caption = element_text(hjust = 0), # <44>
+    # Add some space above and below the plot subtitle
+    plot.subtitle = element_text(margin = margin(6, 0, 6, 0)), # <45>
+    # Make the plot title larger and bold to move it up the visual hierarchy
+    plot.title = element_text(face = "bold", size = 16) # <46>
+  )
+```
+
+37. `theme()` from [ggplot2](https://ggplot2.tidyverse.org) adjusts supporting elements of the map. The following choices make the legend readable while leaving more space for the geography. See [Changing the appearance of titles and captions](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-changing-the-appearance-of-titles-and-captions); [Visual hierarchy](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy).
+38. `element_rect()` gives the legend no border and a partly transparent white background. `rgb(1, 1, 1, 0.75)` specifies white with opacity 0.75.
+39. Use the top-right corner of the legend as the anchor when positioning it.
+40. Add padding around the legend contents to separate them from the map beneath.
+41. Place the legend inside the map area.
+42. Position it near the top right. Values close to 1 mean close to the right and top edges; this uses an area with little map content.
+43. Use a slightly smaller legend title to reduce its prominence.
+44. Left-align the caption using `hjust = 0`. See [Using captions to add author and other information](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-captions).
+45. Add some space above and below the subtitle.
+46. Make the title larger and bold so that it appears higher in the visual hierarchy. The closing brackets finish the map expression.
+
+## Step 11: Save the finished map
+
+```{.r code-line-numbers="false"}
+# Save map ---------------------------------------------------------------------
+
+# Create map that is 2000px x 2000px
+ggsave( # <47>
+  filename = here("output", "queensland_stalking_rate_map_2018.jpg"), # <48>
+  plot = stalking_map, # <49>
+  width = 2000, # <50>
+  height = 2000,
+  units = "px" # <51>
+)
+```
+
+47. `ggsave()` from ggplot2 writes the map to a file on your computer, using the settings on the following lines. See [Saving maps](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-saving-maps).
+48. Specify where the map should be saved, relative to the workspace. The file name `queensland_stalking_rate_map_2018.jpg` also specifies the image format. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project).
+49. Specify the map object to save, in this case `stalking_map`. This avoids relying on whichever plot was displayed most recently. See [Creating and storing a map](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-creating-storing-map).
+50. Set the width and height to 2000 pixels.
+51. Specify that the dimensions are measured in pixels (`px`).

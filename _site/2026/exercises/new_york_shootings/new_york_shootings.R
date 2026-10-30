@@ -1,10 +1,10 @@
 # Map the density of recorded fatal shootings in NYC in 2019,
-# excluding Staten Island. Run in the crime_mapping workspace.
-
-## Load packages and data ------------------------------------------------------
+# excluding Staten Island.
 
 # Note: both datasets will be harmonised to use EPSG:6538 for use with
 # `hotspot_kde()`
+
+## Load packages and data ------------------------------------------------------
 
 # Load packages
 pacman::p_load(ggspatial, here, httr2, sf, sfhotspot, tidyverse)
@@ -16,9 +16,10 @@ request("https://mpjashby.github.io/crimemappingdata/nyc_precincts.gpkg") |>
   req_perform(path = here("data", "raw", "nyc_precincts.gpkg"))
 
 # Read local shootings data and select fatal shootings in 2019
-shootings <- read_csv(here("data", "raw", "nyc_shootings.csv")) |>
+shootings <- here("data", "raw", "nyc_shootings.csv") |>
+  read_csv() |>
   janitor::clean_names() |>
-  filter(murder == TRUE, boro != "STATEN ISLAND") |>
+  filter(murder == TRUE) |>
   st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326") |>
   st_transform("EPSG:6538")
 
@@ -38,7 +39,7 @@ precincts <- here("data", "raw", "nyc_precincts.gpkg") |>
 # Calculate KDE
 shootings_kde <- shootings |>
   hotspot_kde(
-    grid = hotspot_grid(precincts, cell_size = 250),
+    grid = hotspot_grid(precincts, cell_size = 400),
     bandwidth_adjust = 0.33,
     quiet = TRUE
   ) |>
@@ -51,7 +52,7 @@ shootings_map <- hotspot_map(
   shootings_kde,
   basemap_type = "cartolight",
   caption = str_glue(
-    "Author: Joe Bloggs, Date produced: {lubridate::today()}\n",
+    "Author: Joe Bloggs, Date produced: {today()}\n",
     "Shootings: New York City Police Department\n",
     "Boundaries: City of New York (CC BY 3.0 AU)"
   )
@@ -68,18 +69,10 @@ shootings_map <- hotspot_map(
   ) +
   annotation_scale(width_hint = 1 / 5, style = "ticks", location = "br") +
   labs(
-    title = str_glue(
-      "Density of recorded fatal shootings in New York City"
-    ),
-    subtitle = str_glue(
-      "Fatal shootings recorded by NYC Police, 2019, excluding Staten Island"
-    ),
+    title = "Density of recorded fatal shootings in New York City",
+    subtitle = "Fatal shootings recorded by NYC Police, 2019, excluding Staten Island",
     fill = "density of\nshootings"
   ) +
-  # Make the map square (i.e. have an aspect or height/width ratio of 1) to
-  # expand the area covered by the map without reducing the size of the area
-  # covered by the data layer
-  fixed_plot_aspect(ratio = 1) +
   theme(
     # We're going to overlay the legend on the map, so we should give the
     # legend a solid background
@@ -87,8 +80,6 @@ shootings_map <- hotspot_map(
     # Use the top-right corner of the legend as the anchor point for determining
     # its position
     legend.justification = c(1, 1),
-    # Make the legend colour bar smaller
-    legend.key.width = unit(0.8, "lines"),
     # Create a margin around the legend, since it has a solid background
     legend.margin = margin(6, 6, 6, 6),
     # Move the top-right corner of the legend to be very near the top-right
@@ -101,7 +92,6 @@ shootings_map <- hotspot_map(
     plot.subtitle = element_text(size = rel(0.8), margin = margin(3, 0, 6, 0)),
     plot.caption = element_text(colour = "grey45", size = rel(0.7), hjust = 0)
   )
-
 
 # Save the finished map in the workspace output folder
 ggsave(

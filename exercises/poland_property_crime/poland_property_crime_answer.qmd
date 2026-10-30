@@ -7,16 +7,7 @@ title: "Mapping property crime rates in Poland: specimen answer"
 
 {{< include ../_specimen_header_r.qmd >}}
 
-
-## Complete script
-
-```r
-{{< include poland_property_crime.R >}}
-```
-
-[Download the complete R script](poland_property_crime.R).
-
-## Output produced by this code 
+## The finished map
 
 ::: {role="group" aria-label="Interactive map of property offences per 100,000 residents in Polish counties in 2023. Darker red indicates higher rates. Labels give each powiat’s name and rate; a legend and inset map provide context."}
 
@@ -27,7 +18,216 @@ title: "Mapping property crime rates in Poland: specimen answer"
 
 :::
 
+::: {.callout-note collapse="true" title="View the complete R script"}
 
-## Review your answer
+```r
+{{< include poland_property_crime.R >}}
+```
 
-The object names and organisation of your code may differ. Check that your code selects 2023 only from both statistical datasets, joins the same records, calculates rates correctly and runs from a fresh session.
+[Download the complete R script](poland_property_crime.R).
+
+:::
+
+## Step 1: Explain the script
+
+```{.r code-line-numbers="false"}
+# Map recorded property offences per 100,000 residents in Polish counties in 2023. # <1>
+```
+
+1. Explain that the script maps recorded property offences per 100,000 residents in Polish counties in 2023. This makes it clear that the map shows rates, rather than simply the number of offences. See [Organising code with comments](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments).
+
+## Step 2: Load packages
+
+```{.r code-line-numbers="false"}
+# Load packages
+pacman::p_load(here, httr2, leaflet, readxl, sf, tidyverse) # <2>
+```
+
+2. `pacman::p_load()` loads the packages needed for this analysis, listed in alphabetical order with the tidyverse package last. **[here](https://here.r-lib.org/)** allows us to specify where to find files in the workspace; **[httr2](https://httr2.r-lib.org)** downloads data from the internet; **[leaflet](https://rstudio.github.io/leaflet/)** creates interactive maps; **[readxl](https://readxl.tidyverse.org)** reads Excel files; **[sf](https://r-spatial.github.io/sf/)** handles spatial objects; **[tidyverse](https://tidyverse.tidyverse.org)** provides tools for reading, wrangling and plotting data. Loading packages at the start makes it easy to check which tools the script needs. Note that because this script will create an interactive choropleth map using the leaflet packagae, we don't need to load the sfhotspot package as we have done for most of the other exercises. Loading only the packages you need for a script stops the list of packages from becoming too long. See [Loading packages](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages).
+
+## Step 3: Download the original data
+
+```{.r code-line-numbers="false"}
+# Load data --------------------------------------------------------------------
+
+# Download property offence counts into the workspace
+request( # <3>
+  "https://mpjashby.github.io/crimemappingdata/poland_property_crime_counts.xlsx"
+) |>
+  req_perform(path = here("data", "raw", "poland_property_crime_counts.xlsx")) # <4>
+
+# Download population counts into the workspace
+request("https://mpjashby.github.io/crimemappingdata/poland_population.tsv") |> # <3>
+  req_perform(path = here("data", "raw", "poland_population.tsv")) # <4>
+
+# Download powiat boundaries into the workspace
+request( # <3>
+  "https://mpjashby.github.io/crimemappingdata/poland_powiat_boundaries.gpkg"
+) |>
+  req_perform(path = here("data", "raw", "poland_powiat_boundaries.gpkg")) # <4>
+```
+
+3. `request()` specifies the URL of the file to download. The pipe operator (`|>`) passes that request to the next function. The three downloads contain property offence counts, population counts and county boundaries. The counts are in an Excel workbook, the population is in a tab-separated text file and the boundaries are in a geopackage. See [Downloading and loading data](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-load-data); [Stringing functions together](https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator).
+4. `req_perform()` performs the download. `here()` specifies where the original file should be saved, relative to the `crime_mapping` workspace. Keeping the original data in `data/raw` means we can return to it if we make a mistake while wrangling the data. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project).
+
+## Step 4: Read and select the offence counts
+
+```{.r code-line-numbers="false"}
+# Read property offence counts, keeping geographic codes as text
+property_crime <- here("data", "raw", "poland_property_crime_counts.xlsx") |> # <5>
+  read_excel() |> # <6>
+  # Select counts for 2023 only
+  filter(rok == 2023) # <7>
+```
+
+5. Locate the downloaded workbook using `here()` and store the finished pipeline as `property_crime`. The territorial codes identify counties; they are identifiers rather than quantities to add or average. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project); [Naming objects](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-naming-objects).
+6. `read_excel()` reads the workbook. Keep the geographic codes as supplied, including any leading zeros, so they can match the boundary codes later. See [Loading Excel data](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-data-wrangling-loading-excel-data).
+7. `filter()` from [dplyr](https://dplyr.tidyverse.org) keeps rows where `rok` ('year' in Polish) equals 2023. Selecting one year before joining avoids matching several years of counts to each county. See [Filtering rows](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-filter-data).
+
+## Step 5: Read and select the population counts
+
+```{.r code-line-numbers="false"}
+# Read population counts, keeping geographic codes as text
+population <- here("data", "raw", "poland_population.tsv") |> # <8>
+  read_tsv() |> # <9>
+  # Select population counts for 2023 only
+  filter(rok == 2023) # <10>
+```
+
+8. Locate the downloaded population file and store the finished pipeline as `population`.
+9. `read_tsv()` from [readr](https://readr.tidyverse.org) reads a text file in which tabs separate the columns. It is similar to `read_csv()`, but the separator is different. See [Loading CSV data](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-data-wrangling-loading-csv-data).
+10. Keep only the population records for 2023, matching the year selected for the offence counts. The supplied population is measured on 31 December 2023. Selecting the correct denominator is part of calculating a meaningful rate. See [Filtering rows](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-filter-data); [Choosing a population measure](https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-mapping-areas-choosing-a-population-measure).
+
+## Step 6: Read the county boundaries
+
+```{.r code-line-numbers="false"}
+# Read powiat boundaries as an SF object
+powiats <- here("data", "raw", "poland_powiat_boundaries.gpkg") |> # <11>
+  read_sf() # <12>
+```
+
+11. Locate the geopackage and store the finished pipeline as `powiats`. A powiat is a Polish county.
+12. `read_sf()` reads the geometry and CRS from the file, so we do not need to convert coordinate columns using `st_as_sf()`. See [Reading spatial data](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-reading-spatial-data).
+
+## Step 7: Join the data and calculate rates
+
+```{.r code-line-numbers="false"}
+# Wrangle data -----------------------------------------------------------------
+
+# Join 2023 counts to county boundaries and calculate incidence rates
+property_crime_rate <- powiats |> # <13>
+  # Join property offence counts using the common territorial code
+  left_join(property_crime, by = join_by(jpt_kod_je == kod_teryt)) |> # <14>
+  # Join population counts using the same territorial code
+  left_join( # <15>
+    select(population, kod_teryt, ludnosc), # <16>
+    by = join_by(jpt_kod_je == kod_teryt) # <17>
+  ) |>
+  # Calculate property offences per 100,000 residents
+  mutate(rate = przestepstwa_przeciwko_mieniu / ludnosc * 100000) |> # <18>
+  # Transform coordinates for the interactive map
+  st_transform("EPSG:4326") # <19>
+```
+
+13. Start with the county boundaries and store the result as `property_crime_rate`. Keeping the spatial object on the left preserves its geometry throughout the joins. See [Combining datasets](https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-mapping-areas-combining-datasets).
+14. Join the selected offence counts to the boundaries. `join_by(jpt_kod_je == kod_teryt)` matches the territorial code in the boundaries to the corresponding code in the statistics. Using the territorial code avoids depending on county names being written identically.
+15. Join the selected population counts to the same counties.
+16. `select()` keeps only the population code and population count (`ludnosc`). This avoids adding another year column that is no longer needed. See [Selecting columns](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#selecting-columns).
+17. Use the same territorial-code match for the population join. Keeping the boundary dataset on the left of `left_join()` keeps the boundaries of all the counties, whether or not they have matching rows in the population  dataset.
+18. `mutate()` creates `rate` by dividing the property offence count by the population and multiplying by 100,000. See [Calculating crime rates](https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-calculating-rates); [Transforming values](https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-mutate).
+19. Transform the joined spatial data to longitude and latitude using EPSG:4326 for the interactive map, since that is required to create interactive maps with leaflet. See [Transforming the coordinate reference system](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-your-first-crime-map-transforming-the-coordinate-reference-system).
+
+## Step 8: Create a colour palette
+
+```{.r code-line-numbers="false"}
+# Create map -------------------------------------------------------------------
+
+# Create a sequential colour palette for property crime rates
+property_crime_colours <- colorNumeric( # <20>
+  palette = "Reds", # <21>
+  domain = pull(property_crime_rate, "rate") # <22>
+)
+```
+
+20. `colorNumeric()` from leaflet creates a function that converts numeric rate values into colours (yes, this code uses one function to create another, which we will then use later). Store that function as `property_crime_colours` so the polygons and legend can use the same mapping. See [Interactive choropleth maps](https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-mapping-areas-interactive-choropleth-maps).
+21. Use the sequential `Reds` palette. Higher rates receive darker colours, making them more prominent than lower rates. See [Visual hierarchy](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy).
+22. `pull()` extracts the `rate` column from the `property_crime_rate` object. Providing the rates from the data as the domain for `colorNumeric()` tells the colour function which range of values it must represent. Use the rate rather than the offence count, because the map is intended to compare rates.
+
+## Step 9: Start the interactive map
+
+The following sections are parts of one continuous leaflet pipeline. They are separated here to explain each step; run the complete pipeline together when creating the map.
+
+```{.r code-line-numbers="false"}
+# Create an interactive map of property crime rates
+leaflet(property_crime_rate) |> # <23>
+  # Add a light base map
+  addProviderTiles("OpenStreetMap.Mapnik") |> # <24>
+```
+
+23. `leaflet()` starts an interactive map using the joined county data. The pipe (`|>`) passes this map to each subsequent function. Leave the finished stack unassigned, as the exercise requests, so that running it displays the map directly. See [Interactive choropleth maps](https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-mapping-areas-interactive-choropleth-maps); [Stringing functions together](https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator).
+24. Add OpenStreetMap tiles to give the counties geographic context. The data layer added next should remain more prominent than the base map. See [Base maps](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-base-maps).
+
+## Step 10: Colour and label the counties
+
+```{.r code-line-numbers="false"}
+  # Colour powiats by rate and label them with their names and rates
+  addPolygons( # <25>
+    fillColor = ~ property_crime_colours(rate), # <26>
+    fillOpacity = 0.75, # <27>
+    label = ~ paste0( # <28>
+      jpt_nazwa,
+      ": ",
+      round(rate, 1), # <29>
+      " property offences per 100,000 residents in 2023"
+    ),
+    weight = 1, # <30>
+    color = "black" # <31>
+  ) |>
+```
+
+25. `addPolygons()` adds the county boundaries as filled polygons. The arguments below control their appearance and labels. See [Interactive choropleth maps](https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-mapping-areas-interactive-choropleth-maps).
+26. Use the colour function created earlier to convert each county’s rate into its fill colour. The `~` tells leaflet to evaluate `rate` using the map’s data.
+27. Make the fills partly transparent with opacity 0.75, so that the base map remains visible beneath them. See [Visual hierarchy](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy).
+28. `paste0()` combines the county name (`jpt_nazwa`), a separator, the rounded rate and its units into the label. The `~` again refers to columns in the map’s data.
+29. Round the rate to one decimal place for the label. This makes the text easier to read without changing the rate used to colour the map.
+30. Set the county-boundary width to 1 so the outlines remain relatively thin.
+31. Draw the outlines in black to distinguish adjacent counties. This argument uses leaflet’s spelling `color`, rather than ggplot2’s usual `colour`.
+
+## Step 11: Add the legend
+
+```{.r code-line-numbers="false"}
+  # Add a legend identifying the place, year and rate units
+  addLegend( # <32>
+    pal = property_crime_colours, # <33>
+    values = ~rate, # <34>
+    title = htmltools::HTML( # <35>
+      "Property crimes per<br>100,000 residents<br>in Poland, 2023"
+    )
+  ) |>
+```
+
+32. Add a legend explaining how the fill colours relate to the rates. See [Interactive choropleth maps](https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-mapping-areas-interactive-choropleth-maps).
+33. Use the same colour function as the county polygons, so that the legend agrees with the map.
+34. Base the legend’s values on the `rate` column of the map data.
+35. `HTML()` from [htmltools](https://rstudio.github.io/htmltools/) allows the legend title to contain HTML line breaks (`<br>`). The title identifies the offence type, rate units, place and year, so readers can interpret the map. See [Changing the legend title](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-changing-the-legend-title).
+
+## Step 12: Add an inset map and source credits
+
+```{.r code-line-numbers="false"}
+  # Add an inset map that readers can minimise
+  addMiniMap(toggleDisplay = TRUE) |> # <36>
+  # Credit the providers of the statistical data and processed boundaries
+  addControl( # <37>
+    html = paste0( # <38>
+      "Statistics: Statistics Poland (CC BY 4.0).<br>",
+      "Boundaries: Head Office of Geodesy and Cartography (GUGiK),<br>",
+      "National Register of Boundaries (PRG)."
+    ),
+    position = "bottomleft" # <39>
+  )
+```
+
+36. Add an inset map showing wider geographic context. `toggleDisplay = TRUE` allows readers to minimise it if they want more room for the main map. See [Interactive choropleth maps](https://books.lesscrime.info/learncrimemapping/2026/09_mapping_areas/index.html#sec-mapping-areas-interactive-choropleth-maps).
+37. Add a control containing text over the map. Here we use it to acknowledge the sources of the statistics and boundaries. See [Using captions to add author and other information](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-captions).
+38. `paste0()` joins the source-credit strings. The `<br>` tags split the credits across lines; Statistics Poland supplied the statistics, while GUGiK/PRG supplied the processed boundaries.
+39. Place the credits at the bottom left. The closing bracket finishes the map pipeline.

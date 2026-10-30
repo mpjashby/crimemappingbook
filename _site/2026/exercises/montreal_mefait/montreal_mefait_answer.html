@@ -155,10 +155,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#complete-script" id="toc-complete-script" class="nav-link active" data-scroll-target="#complete-script">Complete script</a></li>
-  <li><a href="#why-this-code-is-organised-this-way" id="toc-why-this-code-is-organised-this-way" class="nav-link" data-scroll-target="#why-this-code-is-organised-this-way">Why this code is organised this way</a></li>
-  <li><a href="#output-produced-by-this-code" id="toc-output-produced-by-this-code" class="nav-link" data-scroll-target="#output-produced-by-this-code">Output produced by this code</a></li>
-  <li><a href="#review-your-own-answer" id="toc-review-your-own-answer" class="nav-link" data-scroll-target="#review-your-own-answer">Review your own answer</a></li>
+  <li><a href="#the-finished-map" id="toc-the-finished-map" class="nav-link active" data-scroll-target="#the-finished-map">The finished map</a></li>
+  <li><a href="#step-1-explain-the-script" id="toc-step-1-explain-the-script" class="nav-link" data-scroll-target="#step-1-explain-the-script">Step 1: Explain the script</a></li>
+  <li><a href="#step-2-load-packages" id="toc-step-2-load-packages" class="nav-link" data-scroll-target="#step-2-load-packages">Step 2: Load packages</a></li>
+  <li><a href="#step-3-download-the-original-data" id="toc-step-3-download-the-original-data" class="nav-link" data-scroll-target="#step-3-download-the-original-data">Step 3: Download the original data</a></li>
+  <li><a href="#step-4-load-and-prepare-the-incidents" id="toc-step-4-load-and-prepare-the-incidents" class="nav-link" data-scroll-target="#step-4-load-and-prepare-the-incidents">Step 4: Load and prepare the incidents</a></li>
+  <li><a href="#step-5-draw-the-map" id="toc-step-5-draw-the-map" class="nav-link" data-scroll-target="#step-5-draw-the-map">Step 5: Draw the map</a></li>
   </ul>
 </nav>
     </div>
@@ -185,6 +187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p><a href="../montreal_mefait/index.html">Return to the exercise</a>.</p>
+<p>This document walks through a specimen answer to this exercise. Read each code section and its numbered explanations below. Select the number at the start of each explanation to highlight the line of code that explanation relates to.</p>
 <p>In R, like in many programming languages, there is usually more than one way to complete a task. This code shows one way to complete this exercise. There are other ways to organise this code that are equally good and achieve the same result, but the code below tries to balance making the code efficient with making it easy to read. If your code is different from the code here, read through the notes below the answer and use those to decide whether you prefer your own approach or the specimen answer below. You can also use the notes to improve your own code.</p>
 <div class="callout callout-style-default callout-warning callout-titled" title="The specimen answer expects your computer to be set up as outlined in the book.">
 <div class="callout-header d-flex align-content-center">
@@ -199,50 +202,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The online textbook sets out how to <a href="https://books.lesscrime.info/learncrimemapping/setup.html">install the software you need for crime mapping with R</a> and <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/">set up your computer to store files in particular places</a>. The specimen answer below assumes that you have followed those instructions and that your computer is set up as described in the book. If you have not done so, the code in the specimen answer may not run correctly.</p>
 </div>
 </div>
-<section id="complete-script" class="level2">
-<h2 class="anchored" data-anchor-id="complete-script">Complete script</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="co"># Map recorded damage to property (méfait) in Montreal in 2025.</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a><span class="co"># Load the packages needed for downloading, preparing and mapping the data</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, sf, sfhotspot, tidyverse)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-label="6"></a><span class="co"># Download the original compressed CSV file and keep a local copy</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-label="7"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/montreal_mefait.csv.gz"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-label="8"></a>  <span class="co"># Save the file in the workspace's data/raw folder</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-label="9"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"montreal_mefait.csv.gz"</span>))</span>
-<span id="cb1-10"><a href="#cb1-10" aria-label="10"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-label="11"></a><span class="co"># Locate the downloaded file within the workspace</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-label="12"></a>mefait_2025 <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"montreal_mefait.csv.gz"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-label="13"></a>  <span class="co"># Read the compressed CSV file, including its date column</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-label="14"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-label="15"></a>  <span class="co"># Convert column names to snake_case</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-label="16"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-label="17"></a>  <span class="co"># Keep dates from 1 January to 31 December 2025 inclusive</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-label="18"></a>  <span class="fu">filter</span>(date <span class="sc">&gt;=</span> <span class="fu">ymd</span>(<span class="st">"2025-01-01"</span>), date <span class="sc">&lt;=</span> <span class="fu">ymd</span>(<span class="st">"2025-12-31"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-label="19"></a>  <span class="co"># Interpret x and y as projected coordinates in metres using EPSG:2950</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-label="20"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="at">crs =</span> <span class="st">"EPSG:2950"</span>)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-label="21"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-label="22"></a><span class="co"># Draw a point map over a base map, with small, partly transparent points</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-label="23"></a><span class="fu">hotspot_map</span>(</span>
-<span id="cb1-24"><a href="#cb1-24" aria-label="24"></a>  mefait_2025,</span>
-<span id="cb1-25"><a href="#cb1-25" aria-label="25"></a>  <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>,</span>
-<span id="cb1-26"><a href="#cb1-26" aria-label="26"></a>  <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
-<span id="cb1-27"><a href="#cb1-27" aria-label="27"></a>  <span class="at">colour =</span> <span class="st">"blue2"</span>,</span>
-<span id="cb1-28"><a href="#cb1-28" aria-label="28"></a>  <span class="at">size =</span> <span class="fl">0.5</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-label="29"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><a href="montreal_mefait.R">Download the complete R script</a></p>
-</section>
-<section id="why-this-code-is-organised-this-way" class="level2">
-<h2 class="anchored" data-anchor-id="why-this-code-is-organised-this-way">Why this code is organised this way</h2>
-<p><strong>Load packages first.</strong> R can only use functions from packages that are loaded. The easiest way to load packages is to load them all at the very start of a script, so that it’s easy to see at a glance all the packages that a particular script needs. That means that, for example, if you are writing a later part of a long R script and you want to use a function from a particular package, it is easy to go to the start of the code and see whether that package is already loaded or whether you need to load it.</p>
-<p><strong>Download, then read.</strong> The <code>request()</code> and <code>req_perform()</code> functions from the <a href="https://httr2.r-lib.org">httr2 package</a> save the original CSV file into the <code>data/raw</code> directory so that you have a local copy of the original, unwrangled data. That means that if you later make a mistake in wrangling the data, you can always go back to the original dataset. Note that <code>read_csv()</code> can handle compressed versions of CSV files, including the <code>.csv.gz</code> file downloaded here.</p>
-<p><strong>Filter by date.</strong> The download contains incidents from 2016 to 2025 inclusive. <code>read_csv()</code> recognises the <code>date</code> column as dates. The two conditions in <code>filter()</code> keep dates on or after 1 January 2025 and on or before 31 December 2025, therefore including every day of 2025. <code>ymd()</code> converts the text values (e.g.&nbsp;<code>"2025-12-31"</code>) to dates. Every row already relates to méfait, so we do not need to filter by crime type.</p>
-<p><strong>Describe the original coordinates.</strong> <code>st_as_sf()</code> uses the <code>x</code> and <code>y</code> columns to locate each incident. The argument <code>crs = "EPSG:2950"</code> tells R how to interpret those coordinates. They are eastings and northings in metres, rather than longitude and latitude as in some of the other exercises. Note that assigning a coordinate reference system using <code>st_as_sf()</code> <em>describes</em> the existing coordinates – it does not transform the coordinates into a different system (for which we would use <code>st_transform()</code>).</p>
-<p><strong>Finish with the map.</strong> <code>hotspot_map()</code> plots <code>mefait_2025</code> over a base map. Small, partly transparent blue points help show overlapping incidents against the light background.</p>
-</section>
-<section id="output-produced-by-this-code" class="level2">
-<h2 class="anchored" data-anchor-id="output-produced-by-this-code">Output produced by this code</h2>
-<p>The code above produces this map. Your map may look different if you made different design choices. What matters is that it clearly shows the relevant incidents and that the base map helps readers locate them.</p>
+<section id="the-finished-map" class="level2">
+<h2 class="anchored" data-anchor-id="the-finished-map">The finished map</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;httr2_response&gt;
@@ -270,10 +231,161 @@ date (1): date
 </div>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="View the complete R script">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>View the complete R script
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="co"># Map recorded damage to property (méfait) in Montreal in 2025.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-label="2"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-label="3"></a><span class="co"># Load the packages needed for downloading, preparing and mapping the data</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-label="4"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, sf, sfhotspot, tidyverse)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-label="5"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-label="6"></a><span class="co"># Download the original compressed CSV file and keep a local copy</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-label="7"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/montreal_mefait.csv.gz"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-label="8"></a>  <span class="co"># Save the file in the workspace's data/raw folder</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-label="9"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"montreal_mefait.csv.gz"</span>))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-label="10"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-label="11"></a><span class="co"># Locate the downloaded file within the workspace</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-label="12"></a>mefait_2025 <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"montreal_mefait.csv.gz"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-label="13"></a>  <span class="co"># Read the compressed CSV file, including its date column</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-label="14"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-label="15"></a>  <span class="co"># Convert column names to snake_case</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-label="16"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-label="17"></a>  <span class="co"># Keep dates from 1 January to 31 December 2025 inclusive</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-label="18"></a>  <span class="fu">filter</span>(date <span class="sc">&gt;=</span> <span class="fu">ymd</span>(<span class="st">"2025-01-01"</span>), date <span class="sc">&lt;=</span> <span class="fu">ymd</span>(<span class="st">"2025-12-31"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-label="19"></a>  <span class="co"># Interpret x and y as projected coordinates in metres using EPSG:2950</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-label="20"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="at">crs =</span> <span class="st">"EPSG:2950"</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-label="21"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-label="22"></a><span class="co"># Draw a point map over a base map, with small, partly transparent points</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-label="23"></a><span class="fu">hotspot_map</span>(</span>
+<span id="cb3-24"><a href="#cb3-24" aria-label="24"></a>  mefait_2025,</span>
+<span id="cb3-25"><a href="#cb3-25" aria-label="25"></a>  <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>,</span>
+<span id="cb3-26"><a href="#cb3-26" aria-label="26"></a>  <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
+<span id="cb3-27"><a href="#cb3-27" aria-label="27"></a>  <span class="at">colour =</span> <span class="st">"blue2"</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-label="28"></a>  <span class="at">size =</span> <span class="fl">0.5</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-label="29"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><a href="montreal_mefait.R">Download the complete R script</a>.</p>
+</div>
+</div>
+</div>
 </section>
-<section id="review-your-own-answer" class="level2">
-<h2 class="anchored" data-anchor-id="review-your-own-answer">Review your own answer</h2>
-<p>Your object names and design choices may differ from this answer. Check that your code reads the local file, keeps only 2025, uses the supplied coordinate reference system and produces a clear map. You do not need to match this specimen answer exactly.</p>
+<section id="step-1-explain-the-script" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-explain-the-script">Step 1: Explain the script</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-1"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-1" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-1-1" class="code-annotation-target"><a href="#annotated-cell-1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Map recorded damage to property (méfait) in Montreal in 2025.</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-1" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-1" data-code-lines="1" data-code-annotation="1">Explain that the script maps recorded damage to property, known as méfait in the source data, in Montreal in 2025. This identifies the task without requiring us to read the rest of the script. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments">Organising code with comments</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-2-load-packages" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-load-packages">Step 2: Load packages</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-2"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-2-1"><a href="#annotated-cell-2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the packages needed for downloading, preparing and mapping the data</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-2-2" class="code-annotation-target"><a href="#annotated-cell-2-2" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, sf, sfhotspot, tidyverse)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-2" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-2" data-code-lines="2" data-code-annotation="2"><code>pacman::p_load()</code> loads the packages needed for this analysis, listed in alphabetical order with the tidyverse package last. <strong><a href="https://here.r-lib.org/">here</a></strong> allows us to specify where to find files in the workspace; <strong><a href="https://httr2.r-lib.org">httr2</a></strong> downloads data from the internet; <strong><a href="https://r-spatial.github.io/sf/">sf</a></strong> handles spatial objects; <strong><a href="https://pkgs.lesscrime.info/sfhotspot/">sfhotspot</a></strong> creates crime maps and estimates density; <strong><a href="https://tidyverse.tidyverse.org">tidyverse</a></strong> provides tools for reading, wrangling and plotting data. Loading packages at the start makes it easy to check which tools the script needs. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages">Loading packages</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-3-download-the-original-data" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-download-the-original-data">Step 3: Download the original data</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-3"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-3-1"><a href="#annotated-cell-3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the original compressed CSV file and keep a local copy</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-3-2" class="code-annotation-target"><a href="#annotated-cell-3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">request</span>(<span class="st">"https://mpjashby.github.io/crimemappingdata/montreal_mefait.csv.gz"</span>) <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-3-3"><a href="#annotated-cell-3-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Save the file in the workspace's data/raw folder</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-3-4" class="code-annotation-target"><a href="#annotated-cell-3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_perform</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"montreal_mefait.csv.gz"</span>))</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-3" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-3" data-code-lines="2" data-code-annotation="3"><code>request()</code> specifies the URL of the file to download. The pipe operator (<code>|&gt;</code>) passes that request to the next function. The downloaded file is a compressed CSV (<code>.csv.gz</code>). We can read this format directly with <code>read_csv()</code>, so there is no need to extract it first. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-load-data">Downloading and loading data</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator">Stringing functions together</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-3" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-cell="annotated-cell-3" data-code-lines="4" data-code-annotation="4"><code>req_perform()</code> performs the download that was set up by <code>request()</code>. <code>here()</code> specifies where the original file should be saved, relative to the <code>crime_mapping</code> workspace. Keeping the original data in <code>data/raw</code> means we can return to it if we make a mistake while wrangling the data. See <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project">Keeping your files organised</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-4-load-and-prepare-the-incidents" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-load-and-prepare-the-incidents">Step 4: Load and prepare the incidents</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-4"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-4-1"><a href="#annotated-cell-4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Locate the downloaded file within the workspace</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-4-2" class="code-annotation-target"><a href="#annotated-cell-4-2" aria-hidden="true" tabindex="-1"></a>mefait_2025 <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"raw"</span>, <span class="st">"montreal_mefait.csv.gz"</span>) <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-4-3"><a href="#annotated-cell-4-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Read the compressed CSV file, including its date column</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="6" onclick="event.preventDefault();">6</a><span id="annotated-cell-4-4" class="code-annotation-target"><a href="#annotated-cell-4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_csv</span>() <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-4-5"><a href="#annotated-cell-4-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert column names to snake_case</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="7" onclick="event.preventDefault();">7</a><span id="annotated-cell-4-6" class="code-annotation-target"><a href="#annotated-cell-4-6" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-4-7"><a href="#annotated-cell-4-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Keep dates from 1 January to 31 December 2025 inclusive</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="8" onclick="event.preventDefault();">8</a><span id="annotated-cell-4-8" class="code-annotation-target"><a href="#annotated-cell-4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">&gt;=</span> <span class="fu">ymd</span>(<span class="st">"2025-01-01"</span>), date <span class="sc">&lt;=</span> <span class="fu">ymd</span>(<span class="st">"2025-12-31"</span>)) <span class="sc">|&gt;</span></span>
+<span id="annotated-cell-4-9"><a href="#annotated-cell-4-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Interpret x and y as projected coordinates in metres using EPSG:2950</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="9" onclick="event.preventDefault();">9</a><span id="annotated-cell-4-10" class="code-annotation-target"><a href="#annotated-cell-4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>), <span class="at">crs =</span> <span class="st">"EPSG:2950"</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-4" data-target-annotation="5">5</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="2" data-code-annotation="5"><code>here()</code> specifies the location of the downloaded file. <code>&lt;-</code> stores the result of the whole pipeline as <code>mefait_2025</code>, so the name reminds us which year the object contains. See <a href="https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project">Keeping your files organised</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-naming-objects">Naming objects</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator">Stringing functions together</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="6">6</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="4" data-code-annotation="6"><code>read_csv()</code> from <a href="https://readr.tidyverse.org">readr</a> reads the compressed CSV file and recognises its <code>date</code> column as dates. See <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-data-wrangling-loading-csv-data">Loading CSV data</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="7">7</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="6" data-code-annotation="7"><code>janitor::clean_names()</code> from <a href="https://sfirke.github.io/janitor/">janitor</a> converts column names to <code>snake_case</code>. Using <code>::</code> allows us to use this function without loading the whole package. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-cleaning-column-names">Cleaning column names</a>; <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages">Loading packages</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="8">8</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="8" data-code-annotation="8"><code>filter()</code> from <a href="https://dplyr.tidyverse.org">dplyr</a> keeps dates on or after 1 January 2025 and on or before 31 December 2025. Both conditions must be satisfied. <code>ymd()</code> from <a href="https://lubridate.tidyverse.org">lubridate</a> converts the text into dates. The file covers several years, but every row already relates to méfait, so only the year needs filtering. See <a href="https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-filter-data">Filtering rows</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="9">9</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="10" data-code-annotation="9"><code>st_as_sf()</code> converts an ordinary object into a spatial object which specifies how the coordinates in the data correspond to locations of the earth. The argument <code>coords = c("x", "y")</code> specifies that the numeric coordinates describing each location are stored in the columns <code>x</code> and <code>y</code>. The argument <code>crs = "EPSG:2950"</code> describes how those coordaintes relate to places on the Earth’s surface. Note that we know which code to use for the <code>crs</code> argument because that was specified in the exercise instructions. See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-converting-our-data-to-an-sf-object">Converting data to an SF object</a>.</span>
+</dd>
+</dl>
+</section>
+<section id="step-5-draw-the-map" class="level2">
+<h2 class="anchored" data-anchor-id="step-5-draw-the-map">Step 5: Draw the map</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-5"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-5-1"><a href="#annotated-cell-5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Draw a point map over a base map, with small, partly transparent points</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="10" onclick="event.preventDefault();">10</a><span id="annotated-cell-5-2" class="code-annotation-target"><a href="#annotated-cell-5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hotspot_map</span>(</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="11" onclick="event.preventDefault();">11</a><span id="annotated-cell-5-3" class="code-annotation-target"><a href="#annotated-cell-5-3" aria-hidden="true" tabindex="-1"></a>  mefait_2025,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="12" onclick="event.preventDefault();">12</a><span id="annotated-cell-5-4" class="code-annotation-target"><a href="#annotated-cell-5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">basemap_type =</span> <span class="st">"cartolight"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="13" onclick="event.preventDefault();">13</a><span id="annotated-cell-5-5" class="code-annotation-target"><a href="#annotated-cell-5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="fl">0.25</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="14" onclick="event.preventDefault();">14</a><span id="annotated-cell-5-6" class="code-annotation-target"><a href="#annotated-cell-5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">colour =</span> <span class="st">"blue2"</span>,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="15" onclick="event.preventDefault();">15</a><span id="annotated-cell-5-7" class="code-annotation-target"><a href="#annotated-cell-5-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">size =</span> <span class="fl">0.5</span></span>
+<span id="annotated-cell-5-8"><a href="#annotated-cell-5-8" aria-hidden="true" tabindex="-1"></a>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-5" data-target-annotation="10">10</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="2" data-code-annotation="10"><code>hotspot_map()</code> draws the spatial points over a base map. The arguments below then control how the points appear. Note that the result of this function is not stored in an object using <code>&lt;-</code>, so running it causes the result (in this case, the map) to be displayed directly on the screen. See <a href="https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-drawing-first-map">Drawing the map</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="11">11</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="3" data-code-annotation="11">Base the map on the 2025 data object created in the previous step.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="12">12</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="4" data-code-annotation="12">Choose the light <code>cartolight</code> style of base map to provide local context without visually competing with the points showing damage to property. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-base-maps">Base maps</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="13">13</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="5" data-code-annotation="13">There are many crimes to show, so points may overlap. <code>alpha = 0.25</code> makes them partly transparent so that areas containing more overlapping points appear more prominent (although we will several better ways to solve this problem). See <a href="https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-aesthetics">Controlling aesthetics</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="14">14</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="6" data-code-annotation="14">Blue points contrast with the light background. The incidents should stand out more than the features shown on the base map. See <a href="https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy">Visual hierarchy</a>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-5" data-target-annotation="15">15</dt>
+<dd>
+<span data-code-cell="annotated-cell-5" data-code-lines="7" data-code-annotation="15">Use small points with <code>size = 0.5</code> so that nearby incidents do not obscure one another as much.</span>
+</dd>
+</dl>
 
 
 </section>

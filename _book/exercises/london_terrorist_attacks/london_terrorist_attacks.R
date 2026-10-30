@@ -8,7 +8,8 @@ request("https://mpjashby.github.io/crimemappingdata/london_attacks.csv") |>
   req_perform(path = here("data", "raw", "london_attacks.csv"))
 
 # Read data
-attacks <- read_csv(here("data", "raw", "london_attacks.csv"))
+attacks <- here("data", "raw", "london_attacks.csv") |>
+  read_csv()
 
 # Keep only records within the requested date range, including both ends
 attacks_filtered <- filter(attacks, date >= "2010-01-01", date <= "2018-12-31")

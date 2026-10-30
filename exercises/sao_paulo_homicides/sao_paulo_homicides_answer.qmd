@@ -9,17 +9,7 @@ execute:
 
 {{< include ../_specimen_header_r.qmd >}}
 
-
-## Complete script
-
-```r
-{{< include sao_paulo_homicides.R >}}
-```
-
-[Download the complete R script](sao_paulo_homicides.R).
-
-
-## Output produced by this code
+## The finished map
 
 ```{r}
 #| echo: false
@@ -28,7 +18,198 @@ execute:
 
 ![](../output/sao_paulo_homicide_2021_22.jpg){fig-alt="Density map of recorded homicides in the São Paulo immediate region in 2021 and 2022. Darker blue indicates higher density, with municipality boundaries overlaid."}
 
+::: {.callout-note collapse="true" title="View the complete R script"}
 
-## Review your answer
+```r
+{{< include sao_paulo_homicides.R >}}
+```
 
-The object names and organisation of your code may differ. Check that your code selects the same records, interprets their coordinates correctly and runs from a fresh session.
+[Download the complete R script](sao_paulo_homicides.R).
+
+:::
+
+## Step 1: Explain the script
+
+```{.r code-line-numbers="false"}
+# This script creates a density map of homicides in São Paulo, Brazil, from 2021 # <1>
+# to 2022
+```
+
+1. Explain that the script creates a density map of homicides in São Paulo in 2021 and 2022. Giving the crime type, place and period makes the purpose clear when we return to the script later. See [Organising code with comments](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments).
+
+## Step 2: Load packages
+
+```{.r code-line-numbers="false"}
+# Load packages ----
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse) # <2>
+```
+
+2. `pacman::p_load()` loads the packages needed for this analysis, listed in alphabetical order with the tidyverse package last. **[here](https://here.r-lib.org/)** allows us to specify where to find files in the workspace; **[httr2](https://httr2.r-lib.org)** downloads data from the internet; **[sf](https://r-spatial.github.io/sf/)** handles spatial objects; **[sfhotspot](https://pkgs.lesscrime.info/sfhotspot/)** creates crime maps and estimates density; **[tidyverse](https://tidyverse.tidyverse.org)** provides tools for reading, wrangling and plotting data. Loading packages at the start makes it easy to check which tools the script needs. See [Loading packages](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages).
+
+## Step 3: Download the original data
+
+```{.r code-line-numbers="false"}
+# Load data ----
+
+# Download the original data into the workspace
+request( # <3>
+  "https://mpjashby.github.io/crimemappingdata/sao_paulo_homicides.xlsx"
+) |>
+  req_perform(path = here("data", "raw", "sao_paulo_homicides.xlsx")) # <4>
+request("https://mpjashby.github.io/crimemappingdata/sao_paulo_muni.geojson") |> # <3>
+  req_perform(path = here("data", "raw", "sao_paulo_muni.geojson")) # <4>
+```
+
+3. `request()` specifies the URL of the file to download. The pipe operator (`|>`) passes that request to the next function. There are two downloads: an Excel file of homicides and a GeoJSON file of municipality boundaries. We need the boundaries both to define the density grid and to show the municipalities on the finished map. See [Downloading and loading data](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-load-data); [Stringing functions together](https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator).
+4. `req_perform()` performs the download that was set up by `request()`. `here()` specifies where the original file should be saved, relative to the `crime_mapping` workspace. Keeping an unchanged version of the original data in `data/raw` means we can return to it if we make a mistake while wrangling the data. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project).
+
+## Step 4: Load and prepare the homicides
+
+```{.r code-line-numbers="false"}
+homicides <- here("data", "raw", "sao_paulo_homicides.xlsx") |> # <5>
+  # Read Excel file -- there is only one sheet so we won't need to specify
+  readxl::read_excel() |> # <6>
+  # Convert names to snake_case
+  janitor::clean_names() |> # <7>
+  # Keep only homicides in 2021 and 2022
+  filter(between(year, 2021, 2022)) |> # <8>
+  # Convert to an SF object
+  st_as_sf(coords = c("longitude", "latitude"), crs = "EPSG:4326") |> # <9>
+  # Convert to a CRS that uses metres
+  st_transform("EPSG:5538") # <10>
+```
+
+5. `here()` identifies the downloaded Excel file. `<-` stores the result of the whole pipeline as `homicides`. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project); [Stringing functions together](https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator); [Naming objects](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-naming-objects).
+6. `read_excel()` from [readxl](https://readxl.tidyverse.org) reads the workbook. It contains one sheet, so we do not need to specify a sheet name. `::` lets us use this function without loading the whole package. See [Loading Excel data](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-data-wrangling-loading-excel-data).
+7. `janitor::clean_names()` from [janitor](https://sfirke.github.io/janitor/) gives columns consistent names in `snake_case`. See [Cleaning column names](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-cleaning-column-names).
+8. `filter()` from [dplyr](https://dplyr.tidyverse.org) keeps records where `year` is between 2021 and 2022, including both ends of that range. We therefore select the two years requested in the exercise. See [Filtering rows](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-filter-data).
+9. Interpret the longitude and latitude columns as spatial locations using EPSG:4326. These are the coordinates already supplied in the homicide file. See [Converting data to an SF object](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-converting-our-data-to-an-sf-object).
+10. Transform the points to EPSG:5538, a projected CRS suitable for this part of Brazil that uses metres. Density estimation needs meaningful distance units. See [Transforming the coordinate reference system](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-your-first-crime-map-transforming-the-coordinate-reference-system); [Choosing a projected coordinate reference system](https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-choosing-projected-crs).
+
+## Step 5: Load and prepare municipality boundaries
+
+```{.r code-line-numbers="false"}
+# Load boundary data
+muni <- here("data", "raw", "sao_paulo_muni.geojson") |> # <11>
+  read_sf() |> # <12>
+  # Convert names to snake_case
+  janitor::clean_names() |> # <13>
+  # Convert to a CRS that uses metres
+  st_transform("EPSG:5538") # <14>
+```
+
+11. Locate the downloaded GeoJSON file and store the finished pipeline as `muni`.
+12. `read_sf()` reads the boundary file, including its geometry and CRS. The boundaries use a different original CRS from the homicides, but that information is supplied in the file. See [Reading spatial data](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-reading-spatial-data).
+13. Clean the column names using the same convention as before.
+14. Transform the municipality boundaries to EPSG:5538 so that both spatial layers use the same CRS. The supplied boundaries are from 2010, while the homicides are from 2021–2022. See [Transforming the coordinate reference system](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-your-first-crime-map-transforming-the-coordinate-reference-system).
+
+## Step 6: Calculate and clip the density layer
+
+```{.r code-line-numbers="false"}
+# Wrangle data ----
+
+# Create KDE layer
+homicides_kde <- homicides |> # <15>
+  # Estimate density of homicides. São Paulo is very large, so use a larger
+  # cell size than for most cities.
+  hotspot_kde( # <16>
+    grid = hotspot_grid(muni, cell_size = 1000, grid_type = "hex"), # <17>
+    bandwidth_adjust = 0.33, # <18>
+    quiet = TRUE # <19>
+  ) |>
+  # Clip the density layer to the area for which we have data
+  hotspot_clip(muni, quiet = TRUE) # <20>
+```
+
+15. Start with the prepared homicides and store the result as `homicides_kde`.
+16. `hotspot_kde()` estimates the density of homicides across a grid. See [Mapping crime density](https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-kde).
+17. Use `hotspot_grid()` to define the grid from `muni`. `cell_size = 1000` uses cells on a 1,000-metre scale, and `grid_type = "hex"` selects hexagons. São Paulo covers a large area, so a coarser grid reduces the time needed to calculate the layer, at the cost of spatial detail. See [Specifying a grid for kernel density estimation](https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#specifying-a-grid-for-kernel-density-estimation); [Fine-tuning cell size and bandwidth](https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-mapping-crime-patterns-fine-tuning-cell-size-and-bandwidth).
+18. Reduce the default smoothing bandwidth using `bandwidth_adjust = 0.33`. This reveals more local variation, but different bandwidths may show different patterns and can also be reasonable choices.
+19. use `quiet = TRUE` to suppress the progress display that would otherwise be produced by `hotspot_kde()`.
+20. Clip the density surface to the municipality boundaries so that the map does not show density values outside the selected area. See [Clipping map layers](https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-clipping-map-layers).
+
+## Step 7: Start the map and identify its sources
+
+```{.r code-line-numbers="false"}
+# Map data ----
+
+# Create map
+homicide_map <- hotspot_map( # <21>
+  homicides_kde, # <22>
+  basemap_type = "cartolight", # <23>
+  caption = str_glue( # <24>
+    "Homicides: State of São Paulo Public Security Secretariat\n",
+    "Boundaries: Institute for Applied Economic Research"
+  )
+) + # <25>
+```
+
+21. Store the finished map as `homicide_map` so that we can save it to an image file later. See [Creating and storing a map](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-creating-storing-map).
+22. `hotspot_map()` automatically identifies that `homicides_kde` was created by `hotspot_kde()` and so knows to produce a density map.
+23. Choose a light `cartolight` base map to provide geographic context without distracting from the homicides. See [Base maps](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-base-maps).
+24. `str_glue()` joins the source-credit strings. `\n` starts a new line between the homicide and boundary sources. Using the caption records where the data came from while keeping that text below the main map. See [Using captions to add author and other information](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-captions).
+25. The `+` operator continues the same map expression in the following section. Combine these sections when running the code; the full script contains one continuous stack.
+
+## Step 8: Add boundaries and map titles
+
+```{.r code-line-numbers="false"}
+  geom_sf(data = muni, colour = "grey50", fill = NA) + # <26>
+  labs( # <27>
+    title = "Density of recorded homicides in the São Paulo immediate region", # <28>
+    subtitle = "Homicides recorded by police, 2021-2022", # <29>
+    fill = "density of homicides" # <30>
+  ) +
+```
+
+26. `geom_sf()` adds municipality boundaries in grey. `fill = NA` leaves them unfilled so that the density surface remains visible. See [Adding more layers](https://books.lesscrime.info/learncrimemapping/2026/06_mapping_crime_patterns/index.html#sec-other-layers); [Visual hierarchy](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy).
+27. `labs()` supplies the title, subtitle and fill-legend title. See [Titles and subtitles](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-titles).
+28. Specify that the map covers the São Paulo immediate region, rather than implying it covers all of São Paulo state.
+29. Identify the incidents as police-recorded homicides and state the two years covered.
+30. Explain what the fill colours represent using a short legend title, without requiring readers to know the term KDE. See [Changing the legend title](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-changing-the-legend-title).
+
+## Step 9: Control the legend layout
+
+```{.r code-line-numbers="false"}
+  # Remove unnecessary map elements
+  theme( # <31>
+    # Put a box around the legend to make it easier to read
+    legend.background = element_rect(colour = NA, fill = "grey98"), # <32>
+    # Since the map is wider than it is tall, change the legend to correspond
+    legend.direction = "horizontal", # <33>
+    # Make the legend expand relative to its top-right corner
+    legend.justification = c(1, 1), # <34>
+    # Add some space around the legend to make it easier to read
+    legend.margin = margin(6, 12, 6, 6), # <35>
+    # Move the legend inside the map area
+    legend.position = "inside", # <36>
+    # Position the legend in the top-right corner of the map
+    legend.position.inside = c(0.98, 0.98) # <37>
+  )
+```
+
+31. `theme()` from [ggplot2](https://ggplot2.tidyverse.org) adjusts the aspects of the map that are not controlled by the data via aesthetics. The following arguments are designed to make the legend easier to read while moving the legend inside the map area, leaving more room for the map. See [Changing the appearance of titles and captions](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-map-context-changing-the-appearance-of-titles-and-captions); [Visual hierarchy](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy).
+32. Give the legend a very light grey background and no border so it remains legible over the base map.
+33. Make the legend horizontal. This is a design choice that fits the wider-than-tall layout.
+34. Use the top-right corner of the legend as its positioning anchor.
+35. Add space between the legend contents and its background edge.
+36. Place the legend inside the map rather than using space beside it.
+37. Position it near the top-right corner. Values close to 1 mean close to the right-hand and top edges. The closing brackets finish the map expression.
+
+## Step 10: Save the finished map
+
+```{.r code-line-numbers="false"}
+# Save map
+ggsave( # <38>
+  filename = here("output", "sao_paulo_homicide_2021_22.jpg"), # <39>
+  plot = homicide_map, # <40>
+  width = 297, # <41>
+  height = 210,
+  units = "mm" # <42>
+)
+```
+
+38. `ggsave()` from ggplot2 writes the map to a file on your computer, using the settings on the following lines. See [Saving maps](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-saving-maps).
+39. Specify where the map should be saved, relative to the workspace. The file name `sao_paulo_homicide_2021_22.jpg` also specifies the image format. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project).
+40. Specify the map object to save, in this case `homicide_map`. See [Creating and storing a map](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-creating-storing-map).
+41. Set the width to 297 millimetres and the height to 210 millimetres. These dimensions give the saved image a landscape A4 layout.
+42. Specify that the dimensions are measured in millimetres.

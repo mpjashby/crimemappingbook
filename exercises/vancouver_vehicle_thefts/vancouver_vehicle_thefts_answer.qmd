@@ -7,32 +7,7 @@ title: "Mapping thefts from vehicles in Vancouver: specimen answer"
 
 {{< include ../_specimen_header_r.qmd >}}
 
-
-## Complete script
-
-```r
-{{< include vancouver_vehicle_thefts.R >}}
-```
-
-[Download the complete R script](vancouver_vehicle_thefts.R)
-
-
-## Why this code is organised this way
-
-**Load packages first.** R can only use functions from packages that are loaded. The easiest way to load packages is to load them all at the very start of a script, so that it's easy to see at a glance all the packages that a particular script needs. That means that, for example, if you are writing a later part of a long R script and you want to use a function from a particular package, it is easy to go to the start of the code and see whether that package is already loaded or whether you need to load it.
-
-**Download, then read.** The `request()` and `req_perform()` functions from the [httr2 package](https://httr2.r-lib.org) save the original CSV file into the `data/raw` directory so that you have a local copy of the original, unwrangled data. That means that if you later make a mistake in wrangling the data, you can always go back to the original dataset. Note that `read_csv()` can handle compressed versions of CSV files, including the `.csv.gz` file downloaded here.
-
-**Filter by crime type.** The `filter()` function from the [dplyr package](https://dplyr.tidyverse.org) filters data based on the values in a specific column, in this case to include only crimes of a specific type. Note that the `filter()` function performs case-sensitive matching, so it is important to check the spelling, spacing and case of the crime type in the original dataset (in this case, `"Theft from Vehicle"`).
-
-**Describe the original coordinates.** The original dataset includes locations described using pairs of coordinates specified using UTM zone 10N coordinate reference system, which we can refer to using the code `EPSG:32610`. To tell R that the numbers in these columns represent locations on the Earth's surface, we have to specify how these numbers should be translated to locations. To do that we use the `st_as_sf()` function and the argument `crs = "EPSG:32610"`.
-
-**Finish with the map.** `hotspot_map()` converts the SF object we have stored in the `thefts_from_vehicles` object and plots it on a map with a suitable base map. The basemap helps locate the points, while the supplied colour and size make the points stand out clearly.
-
-
-## Output produced by this code
-
-The code above produces this map. Depending on the design choices you made when writing your code, your map might look slightly different. What matters is that it should be easy for readers to see where the crimes happened and that the base map should support, rather than distracting from, the data layer.
+## The finished map
 
 ```{r}
 #| echo: false
@@ -40,8 +15,83 @@ The code above produces this map. Depending on the design choices you made when 
 #| fig-alt: "Point map of thefts from vehicles in Vancouver in 2020. Small, partly transparent orange points show incident locations on a dark street base map."
 ```
 
+::: {.callout-note collapse="true" title="View the complete R script"}
 
-## Review your own answer
+```r
+{{< include vancouver_vehicle_thefts.R >}}
+```
 
-Your code might differ from the specimen answer in multiple ways. You might have used different object names or organised the code in a different way. As long as your code correctly and clearly shows the relevant data on a map, it is not necessary for your code to exactly match this specimen answer.
+[Download the complete R script](vancouver_vehicle_thefts.R).
 
+:::
+
+## Step 1: Explain the script
+
+```{.r code-line-numbers="false"}
+# This script produces a dot map of thefts from vehicles in Vancouver in 2020 # <1>
+```
+
+1. Start with a short comment explaining what the script does. Including the crime type, place and year helps us recognise the script when we return to it later. See [Organising code with comments](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-comments).
+
+## Step 2: Load packages
+
+```{.r code-line-numbers="false"}
+# Load packages
+pacman::p_load(here, httr2, sf, sfhotspot, tidyverse) # <2>
+```
+
+2. `pacman::p_load()` loads the packages needed for this analysis, listed in alphabetical order with the tidyverse package last. **[here](https://here.r-lib.org/)** allows us to specify where to find files in the workspace; **[httr2](https://httr2.r-lib.org)** downloads data from the internet; **[sf](https://r-spatial.github.io/sf/)** handles spatial objects; **[sfhotspot](https://pkgs.lesscrime.info/sfhotspot/)** make it easy to make crime maps; **[tidyverse](https://tidyverse.tidyverse.org)** provides tools for reading, wrangling and plotting data. Loading packages at the start makes it easy to check which tools the script needs. See [Loading packages](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages).
+
+## Step 3: Download the original data
+
+```{.r code-line-numbers="false"}
+# Download the original data and keep a local copy
+request( # <3>
+  "https://mpjashby.github.io/crimemappingdata/vancouver_thefts.csv.gz"
+) |>
+  req_perform(path = here("data", "raw", "vancouver_thefts.csv.gz")) # <4>
+```
+
+3. `request()` specifies the URL of the file to download. The pipe operator (`|>`) passes that request to the next function. The `.csv.gz` extension means this is a compressed CSV file. We keep the downloaded file in its original form; `read_csv()` can read it without a separate decompression step. See [Downloading and loading data](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-load-data); [Stringing functions together](https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator).
+4. `req_perform()` performs the download that was set up by `request()`. `here()` specifies where the original file should be saved, relative to the `crime_mapping` workspace. Keeping the original data in `data/raw` means we can return to it if we make a mistake while wrangling the data. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project).
+
+## Step 4: Load and prepare the theft data
+
+```{.r code-line-numbers="false"}
+# Read and wrangle data
+thefts_from_vehicles <- here("data", "raw", "vancouver_thefts.csv.gz") |> # <5>
+  read_csv() |> # <6>
+  # Convert column names to snake-case
+  janitor::clean_names() |> # <7>
+  # Convert object to an object that understands each row represents a location
+  # on the Earth's surface
+  st_as_sf(coords = c("x", "y"), crs = "EPSG:32610") |> # <8>
+  # Keep only the rows in the dataset relating to thefts from vehicles
+  filter(type == "Theft from Vehicle") # <9>
+```
+
+5. `here()` specifies which file we are going to read. The pipe operator (`|>`) passes the result to the function on the next line. `<-` stores the result _of the whole pipeline_ in the object `thefts_from_vehicles`. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project); [Stringing functions together](https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator); [Naming objects](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-naming-objects).
+6. `read_csv()` from [readr](https://readr.tidyverse.org) reads the compressed CSV. See [Loading CSV data](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-data-wrangling-loading-csv-data).
+7. `janitor::clean_names()` from [janitor](https://sfirke.github.io/janitor/) gives the columns consistent names in `snake_case`. This makes it easier to write the rest of the code without worrying about capital letters or spaces in column names. See [Cleaning column names](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-cleaning-column-names).
+8. `st_as_sf()` converts an ordinary object into a spatial object which specifies how the coordinates in the data correspond to locations of the earth. The argument `coords = c("x", "y")` specifies that the numeric coordinates describing each location are stored in the columns `x` and `y`. The argument `crs = "EPSG:32610"` describes how those coordaintes relate to places on the Earth's surface. Note that we know which code to use for the `crs` argument because that was specified in the exercise instructions. See [Converting data to an SF object](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-converting-our-data-to-an-sf-object).
+9. `filter()` from [dplyr](https://dplyr.tidyverse.org) keeps only records whose `type` is exactly `"Theft from Vehicle"`. Matching is case-sensitive, so the spelling, spacing and capital letters must match the data. This line does not end in `|>` because it finishes the pipeline. R stores the finished result in the `thefts_from_vehicles` object named at the start of the pipeline. See [Filtering rows](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-filter-data).
+
+## Step 5: Draw the map
+
+```{.r code-line-numbers="false"}
+# Create a dot map of thefts from vehicles
+hotspot_map( # <10>
+  thefts_from_vehicles, # <11>
+  basemap_type = "cartodark", # <12>
+  alpha = 0.25, # <13>
+  colour = "orange3", # <14>
+  size = 0.33 # <15>
+)
+```
+
+10. `hotspot_map()` draws the theft locations over a base map. The arguments below then control how the points appear. Note that the result of this function is not stored in an object using `<-`, so running it causes the result (in this case, the map) to be displayed directly on the screen. See [Drawing the map](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-drawing-first-map).
+11. Use the prepared theft records as the basis for the map.
+12. Choose a dark `cartodark` base map. This is a design choice to show you the range of base maps available -- using an alternative such as `cartolight` would have been acceptable, too. The street pattern provides geographic context, while the bright points will stand out against it. See [Base maps](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-base-maps).
+13. There are many thefts to show, so points may overlap. `alpha = 0.25` makes them partly transparent so that areas containing more overlapping points appear more prominent (although we will several better ways to solve this problem). See [Controlling aesthetics](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-aesthetics).
+14. Use orange points to contrast with the dark base map. The crime data should be the most visually prominent layer. See [Visual hierarchy](https://books.lesscrime.info/learncrimemapping/2026/07_map_context/index.html#sec-visual-hierarchy).
+15. Make the points small with `size = 0.33`, so that they do not merge into a single solid area. We could experiment with both size and transparency to find a combination that shows the concentrations clearly.
