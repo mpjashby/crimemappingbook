@@ -37,7 +37,11 @@ The catalogue uses `sort: false` to preserve the configured order. Include
 the inherited catalogue. Prerequisite metadata belongs on each task page.
 
 For Quarto exercises, render specimen reports separately rather than adding
-them to website navigation.
+them to website navigation. For `japan_prefecture_violence`, render the
+downloadable `.qmd` in a fresh student workspace with `data/raw` available,
+then copy the resulting `japan_prefecture_violence.html` beside the source
+specimen before rendering the microsite. Both files are website resources;
+the answer page reads excerpts directly from the downloadable source.
 
 Keep displayed R specimens included from the downloadable script. Verify each
 specimen in a fresh student workspace, including downloads and basemaps, before
