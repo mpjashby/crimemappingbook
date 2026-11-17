@@ -70,7 +70,7 @@ Let's get started by loading the packages we will need. We will mainly be workin
 
 <figure>
 <pre><code>R Console</code></pre>
-<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(httr2, janitor, readxl, tidyverse)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, httr2, janitor, readxl, tidyverse)</span></code></pre></div>
 <figcaption>Code 10.1</figcaption>
 </figure>
 
@@ -993,7 +993,7 @@ For example, we know that all the addresses of bank fraud suspects are supposed 
 <span id="cb2-15"><a href="#cb2-15"></a>  <span class="st">&quot;Farah Youssef Anwar&quot;</span>      , <span class="st">&quot;35, Al Sadat Road, Neighborhood 9, El Shorouk City, Sunrise, Cairo&quot;</span>                               , <span class="fl">31.6280994</span> , <span class="fl">30.1478049</span> ,</span>
 <span id="cb2-16"><a href="#cb2-16"></a>  <span class="st">&quot;Nour El-Seifi&quot;</span>            , <span class="st">&quot;23, Moustafa Kamel Street, Area 2, Badr, Cairo&quot;</span>                                                   ,  <span class="dv">0</span>         ,  <span class="dv">0</span></span>
 <span id="cb2-17"><a href="#cb2-17"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb2-18"><a href="#cb2-18"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;lon&quot;</span>, <span class="st">&quot;lat&quot;</span>), <span class="at">crs =</span> <span class="st">&quot;EPSG:4326&quot;</span>)</span>
+<span id="cb2-18"><a href="#cb2-18"></a>  sf<span class="sc">::</span><span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;lon&quot;</span>, <span class="st">&quot;lat&quot;</span>), <span class="at">crs =</span> <span class="st">&quot;EPSG:4326&quot;</span>)</span>
 <span id="cb2-19"><a href="#cb2-19"></a></span>
 <span id="cb2-20"><a href="#cb2-20"></a><span class="co"># By default, `ne_countries()` does not return an SF object, so we have to</span></span>
 <span id="cb2-21"><a href="#cb2-21"></a><span class="co"># specify that is what we want using the `returnclass = &quot;sf&quot;` argument</span></span>
@@ -1003,11 +1003,11 @@ For example, we know that all the addresses of bank fraud suspects are supposed 
 <span id="cb2-25"><a href="#cb2-25"></a>)</span>
 <span id="cb2-26"><a href="#cb2-26"></a></span>
 <span id="cb2-27"><a href="#cb2-27"></a><span class="co"># Clip dataset to the boundary of Egypt</span></span>
-<span id="cb2-28"><a href="#cb2-28"></a>cairo_suspects_valid <span class="ot">&lt;-</span> <span class="fu">hotspot_clip</span>(cairo_suspects, egypt_outline)</span></code></pre></div>
+<span id="cb2-28"><a href="#cb2-28"></a>cairo_suspects_valid <span class="ot">&lt;-</span> sfhotspot<span class="sc">::</span><span class="fu">hotspot_clip</span>(cairo_suspects, egypt_outline)</span></code></pre></div>
 <figcaption>Code 10.25</figcaption>
 </figure>
 
-    Warning in hotspot_clip(cairo_suspects, egypt_outline): `data` has points with the co-ordinates "0, 0".
+    Warning in sfhotspot::hotspot_clip(cairo_suspects, egypt_outline): `data` has points with the co-ordinates "0, 0".
     ℹ This usually indicates a problem with the data.
     ℹ Check co-ordinates are correct (e.g. by mapping them).
 

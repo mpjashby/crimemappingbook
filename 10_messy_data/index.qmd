@@ -122,7 +122,7 @@ Let's get started by loading the packages we will need. We will mainly be workin
 #| lst-cap: ""
 #| filename: "R Console"
 
-pacman::p_load(httr2, janitor, readxl, tidyverse)
+pacman::p_load(here, httr2, janitor, readxl, tidyverse)
 ```
 
 
@@ -1160,7 +1160,7 @@ cairo_suspects <- tibble::tribble(
   "Farah Youssef Anwar"      , "35, Al Sadat Road, Neighborhood 9, El Shorouk City, Sunrise, Cairo"                               , 31.6280994 , 30.1478049 ,
   "Nour El-Seifi"            , "23, Moustafa Kamel Street, Area 2, Badr, Cairo"                                                   ,  0         ,  0
 ) |>
-  st_as_sf(coords = c("lon", "lat"), crs = "EPSG:4326")
+  sf::st_as_sf(coords = c("lon", "lat"), crs = "EPSG:4326")
 
 # By default, `ne_countries()` does not return an SF object, so we have to
 # specify that is what we want using the `returnclass = "sf"` argument
@@ -1170,7 +1170,7 @@ egypt_outline <- rnaturalearth::ne_countries(
 )
 
 # Clip dataset to the boundary of Egypt
-cairo_suspects_valid <- hotspot_clip(cairo_suspects, egypt_outline)
+cairo_suspects_valid <- sfhotspot::hotspot_clip(cairo_suspects, egypt_outline)
 ```
 
 Now if we were to plot a map using the `cairo_suspects_valid` object, we would see the map covered only the Cairo area, as we originally wanted. Incidentally, you can see that `hotspot_clip()` knows that data with the coordinates 0,0 are usually a problem, and has warned us about this.
