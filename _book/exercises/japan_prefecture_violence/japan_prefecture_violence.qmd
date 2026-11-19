@@ -1,0 +1,333 @@
+---
+title: "Violent crime in Japanese prefectures, 2012"
+author: "Joe Bloggs"
+date: today
+date-format: "D MMMM YYYY"
+format:
+  html:
+    embed-resources: true
+execute:
+  echo: false
+---
+
+```{r}
+#| label: setup
+#| output: false
+
+# Load packages
+pacman::p_load(here, httr2, leaflet, sf, scales, tidyverse)
+```
+
+```{r}
+#| label: download-data
+#| output: false
+
+# Download original crime and population data into the workspace
+request(
+  "https://mpjashby.github.io/crimemappingdata/japan_violence_counts.rds"
+) |>
+  req_perform(path = here("data", "raw", "japan_violence_counts.rds"))
+
+# Download original prefecture boundaries into the workspace
+request("https://mpjashby.github.io/crimemappingdata/japan_prefectures.gpkg") |>
+  req_perform(path = here("data", "raw", "japan_prefectures.gpkg"))
+```
+
+```{r}
+#| label: load-data
+#| output: false
+
+# Read crime and population data, removing the repeated prefix from measure
+# names
+violence <- here("data", "raw", "japan_violence_counts.rds") |>
+  read_rds() |>
+  janitor::clean_names() |>
+  mutate(measure = str_remove(measure, "number of "))
+
+# Read prefecture boundaries as spatial data, then transform to use longitude
+# and latitude
+prefectures <- here("data", "raw", "japan_prefectures.gpkg") |>
+  read_sf() |>
+  janitor::clean_names() |>
+  st_transform("EPSG:4326")
+```
+
+```{r}
+#| label: calculate-rates
+#| output: false
+
+# Extract population from the raw data
+prefecture_pop <- violence |>
+  filter(measure == "population (thousands)") |>
+  # Keep only the prefecture names and the population value, but change the name
+  # to `pop` since `value` is ambiguous
+  select(prefecture, pop = value) |>
+  # Convert the population measure to number of people, since in the raw data it
+  # is in thousands
+  mutate(pop = pop * 1000)
+
+# Extract violence counts from the raw data
+violence_counts <- violence |>
+  filter(measure %in% c("violent crimes", "homicides", "robberies", "rapes")) |>
+  # Rename the ambiguous `measure` and `value` columns
+  rename(crime_type = measure, crimes = value)
+
+# Join the data then calculate crime rates and ranks
+violence_rates <- prefectures |>
+  # Select only the columns from the prefecture boundary data that we need, and
+  # rename the column containing the English name for each prefecture
+  select(prefecture = adm1_en, geom) |>
+  # Join violence counts to prefecture boundaries
+  left_join(violence_counts, by = join_by(prefecture == prefecture)) |>
+  # Join population counts
+  left_join(prefecture_pop, by = join_by(prefecture == prefecture)) |>
+  # Calculate an incidence rate
+  mutate(rate = crimes / pop * 100000) |>
+  # Rank each prefecture for each type of crime (note that `.by = crime_type`
+  # means the ranks are calculated separately for each crime type)
+  mutate(rank = min_rank(desc(rate)), .by = crime_type) |>
+  mutate(
+    # Create a label describing the rate in each prefecture to be used in the
+    # report *text*
+    label = str_glue(
+      "{prefecture} ({number(rate, accuracy = 0.1)} per 100,000)"
+    ),
+    # Create a label to be used in the *maps*
+    map_label = str_glue(
+      "{prefecture}: {number(rate, accuracy = 0.1)} {crime_type} per 100,000 ",
+      "residents (rank {ordinal(rank)} of {nrow(prefectures)})"
+    )
+  )
+```
+
+```{r}
+#| label: summary-statistics
+#| output: false
+
+# Calculate national rates from total counts and total population
+national_rates <- violence_rates |>
+  st_drop_geometry() |>
+  summarise(rate = sum(crimes) / sum(pop) * 100000, .by = crime_type)
+
+# Extract the five highest rates of overall violence into a vector in descending
+# order, including any ties
+high_five <- violence_rates |>
+  # Keep only the overall violence rates
+  filter(crime_type == "violent crimes") |>
+  # Keep just the five prefectures with the highest rates
+  slice_max(order_by = rate, n = 5) |>
+  # Extract the labels into a vector that we can include in the report text
+  pull("label")
+
+# Select the highest and lowest rate prefecture for each individual crime type
+highest <- violence_rates |>
+  slice_max(order_by = rate, n = 1, by = crime_type)
+lowest <- violence_rates |>
+  slice_min(order_by = rate, n = 1, by = crime_type)
+```
+
+The Statistics Bureau of Japan supplies crime counts for Japan's `r nrow(prefectures)` prefectures. This report describes regional variation in recorded violent crime in 2012. It covers overall violent crime and separately homicides, robberies and rapes.
+
+
+## Overall violent crime
+
+The national rate of overall violent crime was `r number(pull(filter(national_rates, crime_type == "violent crimes"), "rate"), accuracy = 0.1)` recorded violent crimes per 100,000 residents. The five prefectures with the highest rates were `r high_five`, while the lowest was in `r pull(filter(lowest, crime_type == "violent crimes"), "label")`. @fig-overall-violence shows the distribution across all prefectures. Select a prefecture to read its rate, or move the pointer over it to show its label.
+
+```{r}
+#| label: fig-overall-violence
+#| fig-cap: "Overall recorded violent crime per 100,000 residents in Japanese prefectures, 2012"
+#| out-width: "100%"
+
+# Extract just the overall violence rates
+overall_rates <- filter(violence_rates, crime_type == "violent crimes")
+
+# Create a sequential palette with a fixed domain for this crime rate
+overall_colours <- colorNumeric(
+  palette = "Reds",
+  domain = pull(overall_rates, "rate")
+)
+
+# Create the interactive map
+leaflet(overall_rates) |>
+  # Add a light base map
+  addProviderTiles(
+    "OpenStreetMap.Mapnik",
+    options = providerTileOptions(opacity = 0.4)
+  ) |>
+  # Colour prefectures by rate, with labels and click-to-open popups
+  addPolygons(
+    fillColor = ~ overall_colours(rate),
+    fillOpacity = 0.75,
+    label = ~map_label,
+    popup = ~map_label,
+    weight = 1,
+    color = "black"
+  ) |>
+  # Give the rate units and year in the legend
+  addLegend(
+    pal = overall_colours,
+    values = ~rate,
+    title = htmltools::HTML("violent crimes<br>per 100,000<br>residents, 2012"),
+    position = "bottomright"
+  ) |>
+  # Acknowledge the statistical and boundary sources
+  addControl(
+    "Crime: Statistics Bureau of Japan (CC BY)<br>Boundaries: OCHA (CC BY-IGO)",
+    position = "topright"
+  )
+```
+
+
+## Recorded homicides
+
+The national rate was `r number(pull(filter(national_rates, crime_type == "homicides"), "rate"), accuracy = 0.1)` homicides per 100,000 residents. The highest prefecture rate was in `r pull(filter(highest, crime_type == "homicides"), "label")` and the lowest was `r pull(filter(lowest, crime_type == "homicides"), "label")`. @fig-homicides shows how rates varied across the country.
+
+```{r}
+#| label: fig-homicides
+#| fig-cap: "Recorded homicides per 100,000 residents in Japanese prefectures, 2012"
+#| out-width: "100%"
+
+# Extract just the homicide rates
+homicide_rates <- filter(violence_rates, crime_type == "homicides")
+
+# Create a sequential palette with a fixed domain for this crime rate
+homicide_colours <- colorNumeric(
+  palette = "Reds",
+  domain = pull(homicide_rates, "rate")
+)
+
+# Create the interactive map
+leaflet(homicide_rates) |>
+  # Add a light base map
+  addProviderTiles(
+    "OpenStreetMap.Mapnik",
+    options = providerTileOptions(opacity = 0.4)
+  ) |>
+  # Colour prefectures by rate, with labels and click-to-open popups
+  addPolygons(
+    fillColor = ~ homicide_colours(rate),
+    fillOpacity = 0.75,
+    label = ~map_label,
+    popup = ~map_label,
+    weight = 1,
+    color = "black"
+  ) |>
+  # Give the rate units and year in the legend
+  addLegend(
+    pal = homicide_colours,
+    values = ~rate,
+    title = htmltools::HTML("homicides<br>per 100,000<br>residents, 2012"),
+    position = "bottomright"
+  ) |>
+  # Acknowledge the statistical and boundary sources
+  addControl(
+    "Crime: Statistics Bureau of Japan (CC BY)<br>Boundaries: OCHA (CC BY-IGO)",
+    position = "topright"
+  )
+```
+
+
+## Recorded robberies
+
+The national rate was `r number(pull(filter(national_rates, crime_type == "robberies"), "rate"), accuracy = 0.1)` robberies per 100,000 residents. The highest prefecture rate was in `r pull(filter(highest, crime_type == "robberies"), "label")` and the lowest was `r pull(filter(lowest, crime_type == "robberies"), "label")`. @fig-robberies shows how rates varied across the country.
+
+```{r}
+#| label: fig-robberies
+#| fig-cap: "Recorded robberies per 100,000 residents in Japanese prefectures, 2012"
+#| out-width: "100%"
+
+# Extract just the robbery rates
+robbery_rates <- filter(violence_rates, crime_type == "robberies")
+
+# Create a sequential palette with a fixed domain for this crime rate
+robbery_colours <- colorNumeric(
+  palette = "Reds",
+  domain = pull(robbery_rates, "rate")
+)
+
+# Create the interactive map
+leaflet(robbery_rates) |>
+  # Add a light base map
+  addProviderTiles(
+    "OpenStreetMap.Mapnik",
+    options = providerTileOptions(opacity = 0.4)
+  ) |>
+  # Colour prefectures by rate, with labels and click-to-open popups
+  addPolygons(
+    fillColor = ~ robbery_colours(rate),
+    fillOpacity = 0.75,
+    label = ~map_label,
+    popup = ~map_label,
+    weight = 1,
+    color = "black"
+  ) |>
+  # Give the rate units and year in the legend
+  addLegend(
+    pal = robbery_colours,
+    values = ~rate,
+    title = htmltools::HTML("robberies<br>per 100,000<br>residents, 2012"),
+    position = "bottomright"
+  ) |>
+  # Acknowledge the statistical and boundary sources
+  addControl(
+    "Crime: Statistics Bureau of Japan (CC BY)<br>Boundaries: OCHA (CC BY-IGO)",
+    position = "topright"
+  )
+```
+
+
+
+## Recorded rapes
+
+The national rate was `r number(pull(filter(national_rates, crime_type == "rapes"), "rate"), accuracy = 0.1)` rapes per 100,000 residents. The highest prefecture rate was in `r pull(filter(highest, crime_type == "rapes"), "label")` and the lowest was `r pull(filter(lowest, crime_type == "rapes"), "label")`. @fig-rapes shows how rates varied across the country.
+
+
+```{r}
+#| label: fig-rapes
+#| fig-cap: "Recorded rapes per 100,000 residents in Japanese prefectures, 2012"
+#| out-width: "100%"
+
+# Extract just the rape rates
+rape_rates <- filter(violence_rates, crime_type == "rapes")
+
+# Create a sequential palette with a fixed domain for this crime rate
+rape_colours <- colorNumeric(
+  palette = "Reds",
+  domain = pull(rape_rates, "rate")
+)
+
+# Create the interactive map
+leaflet(rape_rates) |>
+  # Add a light base map
+  addProviderTiles(
+    "OpenStreetMap.Mapnik",
+    options = providerTileOptions(opacity = 0.4)
+  ) |>
+  # Colour prefectures by rate, with labels and click-to-open popups
+  addPolygons(
+    fillColor = ~ rape_colours(rate),
+    fillOpacity = 0.75,
+    label = ~map_label,
+    popup = ~map_label,
+    weight = 1,
+    color = "black"
+  ) |>
+  # Give the rate units and year in the legend
+  addLegend(
+    pal = rape_colours,
+    values = ~rate,
+    title = htmltools::HTML("rapes<br>per 100,000<br>residents, 2012"),
+    position = "bottomright"
+  ) |>
+  # Acknowledge the statistical and boundary sources
+  addControl(
+    "Crime: Statistics Bureau of Japan (CC BY)<br>Boundaries: OCHA (CC BY-IGO)",
+    position = "topright"
+  )
+```
+
+
+## Data sources
+
+- [Crime counts and population: Statistics Bureau of Japan](https://pkgs.lesscrime.info/crimemappingdata/reference/japan_violence_counts.html) (CC BY).
+- [Prefecture boundaries, 2019: OCHA](https://pkgs.lesscrime.info/crimemappingdata/reference/japan_prefectures.html) (CC BY-IGO).

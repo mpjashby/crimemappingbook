@@ -1,0 +1,309 @@
+---
+listing: false
+format:
+  html:
+    code-overflow: wrap
+title: "Reporting violent crime in Japanese prefectures: specimen answer"
+---
+
+[Return to the exercise](index.qmd).
+
+{{< include ../_specimen_header_r.qmd >}}
+
+## The finished report
+
+[Read the finished specimen report](japan_prefecture_violence.html).
+
+[Download the complete Quarto specimen](japan_prefecture_violence.qmd){download="japan_prefecture_violence.qmd"}.
+
+
+## Step 1: The YAML header
+
+The first part of a Quarto document is the header, written in a format called YAML. This specifies a variety of document settings.
+
+```yaml
+---
+title: "Violent crime in Japanese prefectures, 2012" #<1>
+author: "Joe Bloggs" #<2>
+date: today #<3>
+date-format: "D MMMM YYYY"
+format: #<4>
+  html:
+    embed-resources: true #<5>
+execute: #<6>
+  echo: false
+---
+```
+1. Specify a document title. A good title makes it easier for readers to understand what the report is about as soon as they open the document.
+2. Specify the document author to help readers understand who produced a document and who they should contact with any questions they have. If you were completing this exercise for an assessment that was going to be marked anonymously, you should follow the assessment instructions to keep your submission anonymous.
+3. Specify the date on which the report was produced, so that readers can make sure they are reading the most-recent version. The special value `today` tells Quarto to automatically insert today's date. The `date-format` specifies the format that should be used for the date: `D` specifies that the date should show the day of the month without leading zeros, `MMMM` that it should show the full month name, and `YYYY` that it should show the year using four digits.
+4. The `format:` header option specifies the file format that the report will be rendered into. This can either be a single value, such as `format: html` to produce a web page or `format: docx` to produce a Word document, or we can specify the format with additional options (as in the code here). In that case, `html` appears on the line _after_ `format:`, `html` is indented by two spaces and is followed by a colon -- that tells Quarto to look for additional options on the subsequent lines. 
+5. `embed-resources: true` is an option that is used only for HTML output. By default, web pages only include the text of the page itself, with items such as images (including maps and charts) stored in separate files. That makes it hard to move web pages around, so `embed-resources: true` tells Quarto to include all supporting resources in the HTML file itself. This makes it easier to share the report with others, because they only need the single HTML file to view the report.
+6. The `execute:` options control how Quarto treats the code in the code chunks that follow. There are lots of options that we can specify here, but the only one we use in this case is `echo: false`. That tells Quarto that the R code in each code chunk should _not_ be printed ('echoed', in coding jargon) in the final report. The code is still run, but it is hidden from the reader. This is important for this exercise, because the report is intended for a non-technical audience and they would be likely to find the R code confusing.
+
+
+## Step 2: Load packages
+
+
+````{verbatim}
+```{r} #<7>
+#| label: setup #<8>
+#| output: false #<9>
+
+# Load packages
+pacman::p_load(here, httr2, leaflet, sf, scales, tidyverse) #<10>
+``` #<11>
+````
+7. To run R code in a Quarto document we need to tell Quarto that the code we have included is R code. We do that by surrounding the code with a code _fence_: for R code, the code fence is a line starting with ```` ```{r} ````. Note that this code _must_ appear at the start of the line -- if there are any spaces or other characters before the code fence, Quarto will not recognise it.
+8. Code fences contain a code _chunk_. At the start of a code chunk, we can specify different options to control how the chunk is run, where any output appears, etc. We specify these options in lines beginning `#| ` (note the space after the `|` character). It's almost always useful to specify a label for each chunk using `#| label: `, since when we render the complete document that chunk label will be used in any error messages (making errors much easier to find in long documents). 
+9. One thing we can specify at the start of a code chunk is how any output produced by the code should be displayed. It is important to do this to make sure that no raw R messages, warnings, etc. appear in our finished report, since a non-technical audience would probably be confused by that. For this chunk we don't want any output to appear, so we specify `output: false` so that no output from this chunk is printed. 
+10. Inside the chunk we load all the packages we need for this script: **[here](https://here.r-lib.org/)** allows us to specify where to find files in the workspace; **[httr2](https://httr2.r-lib.org)** downloads data from the internet; **[leaflet](https://rstudio.github.io/leaflet/)** creates interactive maps; **[sf](https://r-spatial.github.io/sf/)** handles spatial objects; **[scales](https://scales.r-lib.org/)** formats numbers for including in text; **[tidyverse](https://tidyverse.tidyverse.org)** provides tools for reading, wrangling and plotting data.
+11. We close each code chunk with the closing fence ```` ``` ````, which must also be at the very start of a line.
+
+
+## Step 3: Download the original data
+
+````{verbatim}
+```{r}
+#| label: download-data
+#| output: false
+
+# Download original crime and population data into the workspace #<12>
+request(
+  "https://mpjashby.github.io/crimemappingdata/japan_violence_counts.rds"
+) |>
+  req_perform(path = here("data", "raw", "japan_violence_counts.rds")) #<13>
+
+# Download original prefecture boundaries into the workspace
+request("https://mpjashby.github.io/crimemappingdata/japan_prefectures.gpkg") |>
+  req_perform(path = here("data", "raw", "japan_prefectures.gpkg"))
+```
+````
+12. `request()` specifies the URL of the file to download. The pipe operator (`|>`) passes that request to the next function. See [Downloading and loading data](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-load-data); [Stringing functions together](https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator).
+13. `req_perform()` performs the download that was set up by `request()`. `here()` specifies where the original file should be saved, relative to the `crime_mapping` workspace. Keeping the original data in `data/raw` means we can return to it if we make a mistake while wrangling the data. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project).
+
+
+## Step 4: Load and prepare the data
+
+````{verbatim}
+```{r}
+#| label: load-data
+#| output: false
+
+# Read crime and population data, removing the repeated prefix from measure
+# names
+violence <- here("data", "raw", "japan_violence_counts.rds") |> #<14>
+  read_rds() |> #<15>
+  janitor::clean_names() |> #<16>
+  mutate(measure = str_remove(measure, "number of ")) #<17>
+
+# Read prefecture boundaries as spatial data, then transform to use longitude
+# and latitude
+prefectures <- here("data", "raw", "japan_prefectures.gpkg") |>
+  read_sf() |>
+  janitor::clean_names() |>
+  st_transform("EPSG:4326") #<18>
+```
+````
+14. `here()` specifies the location of the downloaded file. `<-` stores the result of the whole pipeline as `violence`. See [Keeping your files organised](https://books.lesscrime.info/learncrimemapping/2026/01_getting_started/index.html#sec-create-project); [Naming objects](https://books.lesscrime.info/learncrimemapping/2026/03_data_wrangling/index.html#sec-naming-objects); [Stringing functions together](https://books.lesscrime.info/learncrimemapping/2026/04_transforming_data/index.html#sec-pipe-operator).
+15. `read_rds()` from [readr](https://readr.tidyverse.org) reads the data (`.rds` means the file is in R-data format).
+16. `janitor::clean_names()` from [janitor](https://sfirke.github.io/janitor/) converts column names to `snake_case`. Using `::` allows us to use this function without loading the whole package. See [Cleaning column names](https://books.lesscrime.info/learncrimemapping/2026/05_your_second_crime_map/index.html#sec-your-second-crime-map-cleaning-column-names); [Loading packages](https://books.lesscrime.info/learncrimemapping/2026/02_your_first_crime_map/index.html#sec-loading-packages).
+17. If we were to look at the data we would see that most of the values in the `measure` column start with the fixed text "number of ". To make the data easier to wrangle later, we will remove the text at this point.
+18. `st_transform()` transforms spatial data to use a coordinate reference system that is appropriate for the purpose we want to use it for. In the case of interactive web maps this needs to be "EPSG:4326".
+
+
+## Step 5: Wrangle the data
+
+The data provided for this exercise did not have a tidy data structure, so they need quite substantial wrangling before they can be used to calculate crime rates.
+
+
+````{verbatim}
+```{r}
+#| label: calculate-rates
+#| output: false #<19>
+
+# Extract population from the raw data #<20>
+prefecture_pop <- violence |>
+  filter(measure == "population (thousands)") |>
+  # Keep only the prefecture names and the population value, but change the name
+  # to `pop` since `value` is ambiguous
+  select(prefecture, pop = value) |>
+  # Convert the population measure to number of people, since in the raw data it
+  # is in thousands
+  mutate(pop = pop * 1000)
+
+# Extract violence counts from the raw data #<21>
+violence_counts <- violence |>
+  filter(measure %in% c("violent crimes", "homicides", "robberies", "rapes")) |>
+  # Rename the ambiguous `measure` and `value` columns
+  rename(crime_type = measure, crimes = value)
+
+# Join the data then calculate crime rates and ranks
+violence_rates <- prefectures |> #<22>
+  # Select only the columns from the prefecture boundary data that we need, and
+  # rename the column containing the English name for each prefecture
+  select(prefecture = adm1_en, geom) |> #<23>
+  # Join violence counts to prefecture boundaries
+  left_join(violence_counts, by = join_by(prefecture == prefecture)) |> #<24>
+  # Join population counts
+  left_join(prefecture_pop, by = join_by(prefecture == prefecture)) |> #<25>
+  # Calculate an incidence rate
+  mutate(rate = crimes / pop * 100000) |> #<26>
+  # Rank each prefecture for each type of crime (note that `.by = crime_type`
+  # means the ranks are calculated separately for each crime type)
+  mutate(rank = min_rank(desc(rate)), .by = crime_type) |> #<27>
+  mutate(
+    # Create a label describing the rate in each prefecture to be used in the #<28>
+    # report *text*
+    label = str_glue(
+      "{prefecture} ({number(rate, accuracy = 0.1)} per 100,000)"
+    ),
+    # Create a label to be used in the *maps* #<29>
+    map_label = str_glue(
+      "{prefecture}: {number(rate, accuracy = 0.1)} {crime_type} per 100,000 ",
+      "residents (rank {ordinal(rank)} of {nrow(prefectures)})"
+    )
+  )
+```
+````
+19. All the output from this chunk is stored in objects for later use, so we set `output: false` to make sure no stray output appears in the final report.
+20. In the original data, some rows represent crime counts and some represent population counts. Subsequent wrangling steps are easier if the two types of data are stored in separate objects, so here we create an object containing only the rows of population data.
+21. We now create a dataset that contains only the rows that contain crime counts. Note that we also rename some of the columns so that when we combine the data in the next step, we know which columns hold population counts and which columns hold crime counts.
+22. Start a new pipeline based on the prefecture boundaries stored in the `prefectures` object. Starting with an object we _know_ contains one row for each prefecture means that we will be able to identify if any of the other objects are missing values for some prefectures.
+23. The `prefectures` dataset has many columns, so we keep only the column (`adm1_en`) containing the English language prefecture names, and rename that column to have a name that is easier to remember. At this point the result holds two columns: `prefecture` (the prefecture name) and `geom` (the boundary of the prefecture in SF format).
+24. Add the violence counts from the `violence_counts` object. At this point the result holds four columns: `prefecture` and `geom` from the original `prefectures` object, and `crime_type` and `crimes` from the `violence_counts` object.
+25. Add the population counts from the `prefecture_pop` object. At this point the result holds five columns: `prefecture`, `geom`, `crime_type`, `crimes` and `pop`, which is all the columns we need to calculate crime rates.
+26. Use `mutate()` to calculate a rate of crimes per 100,000 people.
+27. Use `min_rank()` to assign ranks for each prefecture for each type of crime. `desc()` means that the ranks will be assigned in _descending_ order, i.e. the prefecture with the highest rate will be assigned the rank 1 and the prefecture with the lowest rate will be assigned the rank 47. `.by = crime_type` means that the ranks will be calculated separately for each value of the `crime_type` column in the data.
+28. Use `str_glue()` to create a new column in the data that contains a text value that we can use in the report _text_ to describe the crime rate in a particular prefecture. 
+29. Use `str_glue()` to create another new column containing a label that can be used on the _maps_ in the report. This label is longer than the label to be used in the text because it specifies the rank along with the rate.
+
+
+## Step 6: Calculate summary values
+
+It will be useful to use some summary statistics in the report text, and the code will be better organised if we calculate these all at once rather than separately each time we need a particular value.
+
+
+````{verbatim}
+```{r}
+#| label: summary-statistics
+#| output: false
+
+# Calculate national rates from total counts and total population
+national_rates <- violence_rates |>
+  st_drop_geometry() |> #<30>
+  summarise(rate = sum(crimes) / sum(pop) * 100000, .by = crime_type) #<31>
+
+# Extract the five highest rates of overall violence into a vector in descending
+# order, including any ties
+high_five <- violence_rates |>
+  # Keep only the overall violence rates
+  filter(crime_type == "violent crimes") |>
+  # Keep just the five prefectures with the highest rates
+  slice_max(order_by = rate, n = 5) |> #<32>
+  # Extract the labels into a vector that we can include in the report text
+  pull("label") #<33>
+
+# Select the highest and lowest rate prefecture for each individual crime type
+highest <- violence_rates |>
+  slice_max(order_by = rate, n = 1, by = crime_type)
+lowest <- violence_rates |>
+  slice_min(order_by = rate, n = 1, by = crime_type)
+```
+````
+30. Before using `summarise()` on an SF object it is usually better to convert the data to a tibble by calling `st_drop_geometry()`, since this means `summarise()` runs much faster.
+31. Calculate the national rate for each type of crime by taking the total of all the values in the `crimes` column (`sum(crimes)`) and dividing it by the total of all the rows in the `pop` column (`sum(pop)`). `.by = crime_type` specifies that this should be done separately for rows containing each unique value in the `crime_type` column, so we get a national rate for each crime type.
+32. Use `slice_max()` to keep rows based on which 5 rows (`n = 5`) have the highest values in the `rate` column (`order_by = rate`).
+33. Use `pull()` to extract only the `label` column from the result to produce a _vector_ of values that we can use in the report text.
+
+
+## Step 7: Start writing the report text
+
+This is the first part of the Quarto file that is not part of a code chunk. Since we have set `output: false` for all the code chunks above this point, that also means this will be the first content that appears in the report itself.
+
+````{verbatim}
+The Statistics Bureau of Japan supplies crime counts for Japan's `r nrow(prefectures)` prefectures. This report describes regional variation in recorded violent crime in 2012. It covers overall violent crime and separately homicides, robberies and rapes.
+````
+
+The code `` `r knitr::inline_expr("nrow(prefectures)")` `` allows us to include R code within a paragraph of text in the report. Note that _inline code_ such as this must start with `` `r `` (_without_ a space between `` ` `` and `r`, but _with_ a space after `r`) and end with `` ` ``. It's usually best to only put simple R code within text paragraphs like this -- longer code is usually easier to read if it's put in a code chunk (we will see some examples of this shortly).
+
+
+## Step 8: Write a section for each crime type
+
+::: {.callout-note}
+In the code file (downloadable above) there is a code to produce a section of the report for each crime type. Since these sections each have the same structure, only the first section (for overall violent crime) is reproduced here.
+:::
+
+The section for each crime type starts with an introductory paragraph of text. This includes both text and inline R code.
+
+````{verbatim}
+## Overall violent crime
+
+The national rate of overall violent crime was `r number(pull(filter(national_rates, crime_type == "violent crimes"), "rate"), accuracy = 0.1)` recorded violent crimes per 100,000 residents. The five prefectures with the highest rates were `r high_five`, while the lowest was in `r pull(filter(lowest, crime_type == "violent crimes"), "label")`. @fig-overall-violence shows the distribution across all prefectures. Select a prefecture to read its rate, or move the pointer over it to show its label.
+````
+
+The code `` `r knitr::inline_expr('number(pull(filter(national_rates, crime_type == "violent crimes"), "rate"), accuracy = 0.1)')` `` takes the `national_rates` object we created above, filters it to contain only the row for which `crime_type == "violent crimes"`, extracts the `rate` column using `pull()` and then formats the rate into a human-readable number using `number()` from the scales package. The argument `accuracy = 0.1` specifies that the rate should be rounded to one decimal place.
+
+The code `` `r knitr::inline_expr("high_five")` `` includes the value that we stored earlier in the `high_five` object, which is a vector of labels for the five prefectures with highest rates of overall violence.
+
+The code `` `r knitr::inline_expr('pull(filter(lowest, crime_type == "violent crimes"), "label")')` `` takes the `lowest` object we created before, filters it to contain only the row for which `crime_type == "violent crimes"` and then uses `pull()` to extract only the label column.
+
+We now need another code chunk, this time to add the first interactive map to the report.
+
+
+````{verbatim}
+```{r}
+#| label: fig-overall-violence #<34>
+#| fig-cap: "Overall recorded violent crime per 100,000 residents in Japanese prefectures, 2012" #<35>
+#| out-width: "100%" #<36>
+
+# Extract just the overall violence rates #<37>
+overall_rates <- filter(violence_rates, crime_type == "violent crimes")
+
+# Create a sequential palette with a fixed domain for this crime rate #<38>
+overall_colours <- colorNumeric(
+  palette = "Reds",
+  domain = pull(overall_rates, "rate")
+)
+
+# Create the interactive map
+leaflet(overall_rates) |> #<39>
+  # Add a light base map #<40>
+  addProviderTiles(
+    "OpenStreetMap.Mapnik",
+    options = providerTileOptions(opacity = 0.4)
+  ) |>
+  # Colour prefectures by rate, with labels and click-to-open popups #<41>
+  addPolygons(
+    fillColor = ~ overall_colours(rate),
+    fillOpacity = 0.75,
+    label = ~map_label, #<42>
+    popup = ~map_label,
+    weight = 1,
+    color = "black"
+  ) |>
+  # Give the rate units and year in the legend #<43>
+  addLegend(
+    pal = overall_colours,
+    values = ~rate,
+    title = htmltools::HTML("violent crimes<br>per 100,000<br>residents, 2012"),
+    position = "bottomright"
+  ) |>
+  # Acknowledge the statistical and boundary sources #<44>
+  addControl(
+    "Crime: Statistics Bureau of Japan (CC BY)<br>Boundaries: OCHA (CC BY-IGO)",
+    position = "topright"
+  )
+```
+````
+34. This chunk produces a figure, which means we need to do a couple of things differently to the previous chunks. First, the chunk label must start with `fig-` so that Quarto understands it will produce a figure that we can refer to elsewhere in the report using (in this case) `@fig-overall-violence`. You can see we have already done that in the text above the figure. Quarto will automatically convert the cross-reference `@fig-overall-violence` into (in this case) the text 'Figure 1'. Secondly, note that for this code chunk we have _not_ set `output: false` because we want the output from the chunk (the map) to appear in the report.
+35. We can use the `#| fig-cap: ` chunk option to provide a caption that will (by default) appear just underneath the figure. 
+36. The `#| out-width: "100%"` chunk option specifies that we want the map to occupy the full width of the text column in the report. It is usually a good idea to make maps as big as reasonably possible so that readers can see a reasonable level of detail.
+37. In creating the interactive map we will need to repeatedly use a version of the data that contains only the row relating to overall violence rates. Rather than filtering the data multiple times, we create a version of the data containing only the relevant rows here.
+38. `colorNumeric()` creates a function that converts crime rates into colours. `palette = "Reds"` gives a sequential scale, with darker colours representing higher rates. `domain = pull(overall_rates, "rate")` specifies that the colour values should be based on the range of values in the `rate` column in the `overall_rates` object.
+39. `leaflet()` creates a new, blank, interactive map using the prepared spatial data.
+40. `addProviderTiles()` adds a base map to the blank map, using map tiles from OpenStreetMap. `providerTileOptions(opacity = 0.4)` makes the base map semi-transparent, making it less visually prominent so that the crime-data layer is the most prominent layer on the map.
+41. `addPolygons()` adds the crime data to the map (with each prefecture being represented by a polygon). `fillColor` uses the `overall_colours()` palette function we created earlier; `~` tells leaflet to look up columns in the map's data. `fillOpacity = 0.75` lets the base map show through, and `weight = 1` keeps outlines relatively thin.
+42. `label` specifies the text (from the `map_label` column in the data) to display when a user hovers their mouse over a prefecture, while **`popup`** makes the same information available when a prefecture is clicked or tapped.
+43. `addLegend()` uses the same palette and rate column. Wrapping the legend title in `htmltools::HTML()` allows us to use `<br>` to create a line break in its title.
+44. **`addControl()`** adds the source acknowledgement as text on the map. Its first argument is the content to display, `<br>` separates its two lines, and `position` places it in the top-right corner away from the legend.
